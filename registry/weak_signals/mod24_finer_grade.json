@@ -1,0 +1,453 @@
+{
+  "family": "mod24_finer_grade",
+  "signals": {
+    "mod24_finer_u1_alpha_only_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u1_alpha_only vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0046465111671435124,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.017031768458194565,
+        0.008417669103727404
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.2458,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u1_greedy_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u1_greedy vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.06491285950412527,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        0.014740752537446137,
+        0.11753328688189885
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.9951,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u2_divergence_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_divergence vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.011801628556783515,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.02180741535053313,
+        -0.002906919667320293
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u2_full_strength_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_full_strength vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.003365811596893069,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.010441871293479366,
+        0.005063548139937702
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.1916,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u2_lineup_and_divergence_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_lineup_and_divergence vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.01634157846781162,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.02603079431928434,
+        -0.0060528208215827215
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.0004,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u2_lineup_total_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_lineup_total vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.004238644607668308,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.011779532655978024,
+        0.004442105514204287
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.1647,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u2_qb_out_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_qb_out vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.03197178897655119,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.06310191470824442,
+        0.001756960524010209
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.0367,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u2_qb_quality_loss_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_qb_quality_loss vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.03252424673709673,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.09994778514724274,
+        0.019277643807713688
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.1492,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u3_add_adjusted_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u3_add_adjusted vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.055091089802753145,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.10203079204141391,
+        0.0012328736097998478
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.029,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u3_compact_net_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u3_compact_net vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.04551672545868169,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        0.006909980986978688,
+        0.08183185554642333
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.9899,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u3_replace_adjusted_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u3_replace_adjusted vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.013564981400866443,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.043820808145410416,
+        0.018931975165169108
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.1951,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u4_blend_unit1_trimmed_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u4_blend_unit1_trimmed vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.06491285950412527,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        0.014740752537446137,
+        0.11753328688189885
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.9951,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u4_shrink_served_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u4_shrink_served vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.0691585057014354,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        0.027005272698007073,
+        0.11271150393703366
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.9997,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u5_both_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u5_both vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.006226499415479302,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.03017105292925699,
+        0.02352487304342188
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.3032,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u5_coverage_type_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u5_coverage_type vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.005997945673976191,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.01567453811285927,
+        0.02991698397938345
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.6881,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    },
+    "mod24_finer_u5_man_zone_margin_abs_error_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Six season blocks; no positive control of this size; not a refuted mechanism.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u5_man_zone vs served base at Tuesday opener 2020-2025: paired absolute error of the arm's own margin forecast vs margin_vs_open (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.0028298416070127474,
+      "effect_units": "mae_improvement",
+      "family": "mod24_finer_grade",
+      "interval": [
+        -0.00810986009373766,
+        0.015005943296882554
+      ],
+      "league": "nfl",
+      "notes": "Look of 32 (16 arms x squared and absolute error). Squared error is in results.json only, because the registry has no squared-error unit; absolute error is recorded as mae_improvement.",
+      "plain_summary": "Whether this variant forecasts the game margin more accurately than the base model at the opener.",
+      "probability_positive": 0.634,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_finer_grade/results.json",
+      "standard_error": null
+    }
+  }
+}

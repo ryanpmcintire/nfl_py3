@@ -1,0 +1,1573 @@
+{
+  "family": "mod24_cross_league_alpha",
+  "signals": {
+    "mod24_xleague_alpha10000_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000 vs served alpha 10, same walk-forward harness, graded at opener, cfb, accuracy",
+      "effect": 0.8439836026042923,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.08536152930589948,
+        1.5973605330813243
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.988,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.38788463689500735
+    },
+    "mod24_xleague_alpha10000_cfb_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, commonfeat harness, cfb, accuracy, 14 common features",
+      "effect": 0.5305039787798409,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.04996719002028299,
+        1.0912826814273475
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.3021430183982591
+    },
+    "mod24_xleague_alpha10000_cfb_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, openermatch harness, cfb, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.9570395576350489,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.11080584940393824,
+        1.7763427045433962
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9865,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.4290620740500454
+    },
+    "mod24_xleague_alpha10000_cfb_accuracy_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, accuracy",
+      "effect": 0.5425608873884735,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.2931260614195554,
+        1.3844513564867147
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8266,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.4277993040357728
+    },
+    "mod24_xleague_alpha10000_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000 vs served alpha 10, same walk-forward harness, graded at opener, cfb, log_loss",
+      "effect": 0.0007163691634316077,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00025046145712498945,
+        0.0016915384954253364
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9275,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.0004926410707019619
+    },
+    "mod24_xleague_alpha10000_cfb_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, commonfeat harness, cfb, log_loss, 14 common features",
+      "effect": 0.00020058586983301053,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00041837932977312214,
+        0.0008550548929555898
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.7315,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00031844202444331423
+    },
+    "mod24_xleague_alpha10000_cfb_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, openermatch harness, cfb, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.0005419570967713501,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0003692650601286307,
+        0.0015064405068434229
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8785,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00047518075927398967
+    },
+    "mod24_xleague_alpha10000_cfb_log_loss_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, log_loss",
+      "effect": 0.0017355830662686774,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.00032833908910659545,
+        0.003125910771302721
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9892000000000001,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.0007109110978282649
+    },
+    "mod24_xleague_alpha10000_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000 vs served alpha 10, same walk-forward harness, graded at opener, nfl, accuracy",
+      "effect": -0.998003992015968,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -3.255813953488372,
+        1.2566762125658741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.174,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 1.12484685211109
+    },
+    "mod24_xleague_alpha10000_nfl_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, commonfeat harness, nfl, accuracy, 14 common features",
+      "effect": 1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.06618024259486867,
+        3.4023818149975726
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.976,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.8509241279423346
+    },
+    "mod24_xleague_alpha10000_nfl_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, openermatch harness, nfl, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.06618024259486867,
+        3.4023818149975726
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.976,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.8509241279423346
+    },
+    "mod24_xleague_alpha10000_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000 vs served alpha 10, same walk-forward harness, graded at opener, nfl, log_loss",
+      "effect": 0.0017584874547372582,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.002690612629903255,
+        0.006456688892839498
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.7815,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.0023231949132404457
+    },
+    "mod24_xleague_alpha10000_nfl_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, commonfeat harness, nfl, log_loss, 14 common features",
+      "effect": 0.0010132932126570647,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0008312435321842581,
+        0.002850133781606407
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.851,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.0009432470214873894
+    },
+    "mod24_xleague_alpha10000_nfl_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 10000.0 vs served alpha 10, openermatch harness, nfl, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.0010132932126570647,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0008312435321842581,
+        0.002850133781606407
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.851,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.0009432470214873894
+    },
+    "mod24_xleague_alpha1000_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000 vs served alpha 10, same walk-forward harness, graded at opener, cfb, accuracy",
+      "effect": 0.4461056185194116,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.057767628942559344,
+        0.9666306510025466
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9535,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.2578750353911787
+    },
+    "mod24_xleague_alpha1000_cfb_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, commonfeat harness, cfb, accuracy, 14 common features",
+      "effect": 0.26525198938992045,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.13455780984071813,
+        0.6735893168461227
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9015,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.20384535484184044
+    },
+    "mod24_xleague_alpha1000_cfb_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, openermatch harness, cfb, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.5742237345810294,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.019704931285367853,
+        1.1292462146911444
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.975,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.28683859606634127
+    },
+    "mod24_xleague_alpha1000_cfb_accuracy_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, accuracy",
+      "effect": 0.26766337111164706,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.33439818190223314,
+        0.8843228131749334
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.7619,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.30745944529981445
+    },
+    "mod24_xleague_alpha1000_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000 vs served alpha 10, same walk-forward harness, graded at opener, cfb, log_loss",
+      "effect": 0.0005417501591778361,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.00012134283044293916,
+        0.0009667465257333875
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9935,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.00021829325783467358
+    },
+    "mod24_xleague_alpha1000_cfb_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, commonfeat harness, cfb, log_loss, 14 common features",
+      "effect": 0.00015741215789964234,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -9.171421570090929e-05,
+        0.0004127044172865573
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.88,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00013235732911762375
+    },
+    "mod24_xleague_alpha1000_cfb_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, openermatch harness, cfb, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.0003230129244482671,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -6.268756997090967e-05,
+        0.0007378246268119911
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.0002068705979473263
+    },
+    "mod24_xleague_alpha1000_cfb_log_loss_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, log_loss",
+      "effect": 0.0013700254303298637,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.0006065005455190233,
+        0.00215636899736876
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.00039567101564750266
+    },
+    "mod24_xleague_alpha1000_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000 vs served alpha 10, same walk-forward harness, graded at opener, nfl, accuracy",
+      "effect": -1.66333998669328,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -3.0222663567919126,
+        -0.25980646092983817
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.0075,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.7200965799828307
+    },
+    "mod24_xleague_alpha1000_nfl_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, commonfeat harness, nfl, accuracy, 14 common features",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.0,
+        1.8445626770123056
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9745,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.474125686941682
+    },
+    "mod24_xleague_alpha1000_nfl_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, openermatch harness, nfl, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.0,
+        1.8445626770123056
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9745,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.474125686941682
+    },
+    "mod24_xleague_alpha1000_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000 vs served alpha 10, same walk-forward harness, graded at opener, nfl, log_loss",
+      "effect": 0.00014072032503819655,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0026795642082048663,
+        0.003036473094849434
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.532,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.001467010584625588
+    },
+    "mod24_xleague_alpha1000_nfl_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, commonfeat harness, nfl, log_loss, 14 common features",
+      "effect": 0.00023906741047437024,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00047836931383109883,
+        0.0010291773440690005
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.739,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.0003834642426260927
+    },
+    "mod24_xleague_alpha1000_nfl_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1000.0 vs served alpha 10, openermatch harness, nfl, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.00023906741047437024,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00047836931383109883,
+        0.0010291773440690005
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.739,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.0003834642426260927
+    },
+    "mod24_xleague_alpha100_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 100 vs served alpha 10, same walk-forward harness, graded at opener, cfb, accuracy",
+      "effect": 0.024113817217265493,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.1492904055452014,
+        0.1936249558223915
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.577,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.09035902366128205
+    },
+    "mod24_xleague_alpha100_cfb_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, commonfeat harness, cfb, accuracy, 14 common features",
+      "effect": 0.06028454304316373,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.12127239061089409,
+        0.24131346929856642
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.7165,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.09210647140578734
+    },
+    "mod24_xleague_alpha100_cfb_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, openermatch harness, cfb, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.12760527435133986,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.11115252600520842,
+        0.39225505719509596
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.816,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.1288662977958631
+    },
+    "mod24_xleague_alpha100_cfb_accuracy_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 100 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, accuracy",
+      "effect": 0.05063901615625753,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.2346986445391297,
+        0.3360088768765219
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.5339,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.14624076975804276
+    },
+    "mod24_xleague_alpha100_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 100 vs served alpha 10, same walk-forward harness, graded at opener, cfb, log_loss",
+      "effect": 0.00011865368074565268,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -6.971689400928895e-06,
+        0.00024214278969553646
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 6.478574016461173e-05
+    },
+    "mod24_xleague_alpha100_cfb_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, commonfeat harness, cfb, log_loss, 14 common features",
+      "effect": 1.4838195948004917e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -8.46471158233212e-05,
+        0.0001147105429948576
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.6145,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 5.049132391756593e-05
+    },
+    "mod24_xleague_alpha100_cfb_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, openermatch harness, cfb, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 6.402321259157829e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -8.245740391458673e-05,
+        0.00020850982951998507
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8115,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 7.358238672506785e-05
+    },
+    "mod24_xleague_alpha100_cfb_log_loss_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 100 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, log_loss",
+      "effect": 0.00037245673414422204,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        0.00016030219061170982,
+        0.0005810484496721627
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.9994,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.00010750239152088599
+    },
+    "mod24_xleague_alpha100_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 100 vs served alpha 10, same walk-forward harness, graded at opener, nfl, accuracy",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -2.0013676229190622,
+        0.13423044158279282
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.042,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.5515852016430619
+    },
+    "mod24_xleague_alpha100_nfl_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, commonfeat harness, nfl, accuracy, 14 common features",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.20126525776094834,
+        1.1929819220495923
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8865,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.3655918167534087
+    },
+    "mod24_xleague_alpha100_nfl_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, openermatch harness, nfl, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.20126525776094834,
+        1.1929819220495923
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8865,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.3655918167534087
+    },
+    "mod24_xleague_alpha100_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 100 vs served alpha 10, same walk-forward harness, graded at opener, nfl, log_loss",
+      "effect": 1.5560697642896394e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0014860996148840734,
+        0.0014710752497262645
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.528,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.000744157043133501
+    },
+    "mod24_xleague_alpha100_nfl_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, commonfeat harness, nfl, log_loss, 14 common features",
+      "effect": -0.00015068837558143344,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0005166934957908297,
+        0.00024018766615165117
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.223,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00019455983827182497
+    },
+    "mod24_xleague_alpha100_nfl_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 100.0 vs served alpha 10, openermatch harness, nfl, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": -0.00015068837558143344,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.0005166934957908297,
+        0.00024018766615165117
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.223,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00019455983827182497
+    },
+    "mod24_xleague_alpha1_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1 vs served alpha 10, same walk-forward harness, graded at opener, cfb, accuracy",
+      "effect": -0.07234145165179648,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.16607650400651586,
+        0.012675561559893423
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.0525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.047907555115204295
+    },
+    "mod24_xleague_alpha1_cfb_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, commonfeat harness, cfb, accuracy, 14 common features",
+      "effect": 0.06028454304316373,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.024678571147471184,
+        0.1560446289830885
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.871,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.047166537003383927
+    },
+    "mod24_xleague_alpha1_cfb_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, openermatch harness, cfb, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.08507018290089324,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.06153909296121486,
+        0.23120418920505956
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.849,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.0734856480270419
+    },
+    "mod24_xleague_alpha1_cfb_accuracy_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, accuracy",
+      "effect": -0.004822763443453099,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.12091035569712238,
+        0.11112782330069951
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.4166,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.05991195342626371
+    },
+    "mod24_xleague_alpha1_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1 vs served alpha 10, same walk-forward harness, graded at opener, cfb, log_loss",
+      "effect": -6.0869928792989746e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00030684095407744737,
+        0.00016530041235180974
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.2955,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.00011946606061954954
+    },
+    "mod24_xleague_alpha1_cfb_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, commonfeat harness, cfb, log_loss, 14 common features",
+      "effect": 5.465190164922445e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -4.825439796396208e-05,
+        5.588217980085934e-05
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.6,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 2.6294393020003575e-05
+    },
+    "mod24_xleague_alpha1_cfb_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, openermatch harness, cfb, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": -5.42249755045141e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -7.033872576904685e-05,
+        5.7032120440674915e-05
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.4485,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 3.1564457826053454e-05
+    },
+    "mod24_xleague_alpha1_cfb_log_loss_sizematched": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; size-matched CFB, 5 subsample seeds averaged, season-week block bootstrap 2000 draws.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1 vs served alpha 10, CFB training subsampled to 260 rows per season (NFL mean), mean over 5 subsample seeds, log_loss",
+      "effect": -0.00012835199217020485,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00046360697236367274,
+        0.00015362299035827777
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.223,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 183,
+      "sample_games": 8294,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/size_matched_report.json",
+      "standard_error": 0.00015665383488974814
+    },
+    "mod24_xleague_alpha1_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1 vs served alpha 10, same walk-forward harness, graded at opener, nfl, accuracy",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -1.3395847287340925,
+        0.724697548780137
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.224,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.5099237801208246
+    },
+    "mod24_xleague_alpha1_nfl_accuracy_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, commonfeat harness, nfl, accuracy, 14 common features",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.53085600530856,
+        0.53156146179402
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.4395,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.2659838201954271
+    },
+    "mod24_xleague_alpha1_nfl_accuracy_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, openermatch harness, nfl, accuracy, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.53085600530856,
+        0.53156146179402
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.4395,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.2659838201954271
+    },
+    "mod24_xleague_alpha1_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week block bootstrap 2000 draws; CFB opener is a first-observed/ESPN-era quote.",
+      "closing_ground": null,
+      "description": "Ridge alpha 1 vs served alpha 10, same walk-forward harness, graded at opener, nfl, log_loss",
+      "effect": -0.0014121949480335547,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00286777165162828,
+        -9.7493725704361e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.018,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/report.json",
+      "standard_error": 0.0007247054190597575
+    },
+    "mod24_xleague_alpha1_nfl_log_loss_commonfeat": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, commonfeat harness, nfl, log_loss, 14 common features",
+      "effect": 0.00017863256208506073,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00018613743124851363,
+        0.0005651908474058596
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8295,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00018991180567177728
+    },
+    "mod24_xleague_alpha1_nfl_log_loss_openermatch": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ridge alpha 1.0 vs served alpha 10, openermatch harness, nfl, log_loss, 14 common features, CFB SBR-multibook opener regime only",
+      "effect": 0.00017863256208506073,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_cross_league_alpha",
+      "interval": [
+        -0.00018613743124851363,
+        0.0005651908474058596
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares a stronger or weaker shrinkage setting against the served one on opening lines, in pro and college football.",
+      "probability_positive": 0.8295,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_more_games/commonfeat_report.json",
+      "standard_error": 0.00018991180567177728
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "family": "mod23_unit14_drive_playquality",
+  "signals": {
+    "mod23_unit14_drive_D_drive_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus input block (D_drive), paired vs base, 2020-2025; 797-706 vs 802-701.",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit14_drive_playquality",
+      "interval": [
+        -1.8439716312056738,
+        1.4829142488716958
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus a block of drive-efficiency or play-quality differential inputs, leave-one-season-out at the opener; two arms, one era, two looks.",
+      "plain_summary": "Adding drive-efficiency or play-quality differentials moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.31125,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit14_drive/report.json",
+      "standard_error": null
+    },
+    "mod23_unit14_drive_P_playquality_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus input block (P_playquality), paired vs base, 2020-2025; 789-714 vs 802-701.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit14_drive_playquality",
+      "interval": [
+        -2.0502645502645502,
+        0.136986301369863
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus a block of drive-efficiency or play-quality differential inputs, leave-one-season-out at the opener; two arms, one era, two looks.",
+      "plain_summary": "Adding drive-efficiency or play-quality differentials moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.036,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit14_drive/report.json",
+      "standard_error": null
+    }
+  }
+}

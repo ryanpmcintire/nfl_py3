@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T17:15:33.565277+00:00`
+Refreshed at: `2026-11-03T17:36:01.066947+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T17:15:33.565277+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b81ebe5ad4d4` — Refresh the session handoff and README research state
-- Pending change set: 277 paths
+- Baseline commit: `afc5b0283868` — Validation capture targets the enrolled v7 study; wave 3 research results
+- Pending change set: 281 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `A  docs/lanes/done/officials-wayback-test-2026-11-03.md`
-  - `R  docs/lanes/week8-lock-2026-10-27.md -> docs/lanes/done/week8-lock-2026-10-27.md`
-  - `R  docs/lanes/week8-postmortem-2026-11-02.md -> docs/lanes/done/week8-postmortem-2026-11-02.md`
-  - `R  docs/lanes/week8-saturday-checks-2026-10-31.md -> docs/lanes/done/week8-saturday-checks-2026-10-31.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
-  - `M  docs/lanes/mod23-unit11-2026-11-03.md`
-  - `A  docs/lanes/mod23-unit12-ftn-scheme-2026-11-03.md`
-  - `A  docs/lanes/mod23-unit13-2026-11-03.md`
-  - `A  docs/lanes/mod25-next-2026-11-03.md`
-  - ` M docs/lanes/sim07-power-2026-11-03.md`
+  - `A  docs/lanes/mod23-unit14-2026-11-03.md`
+  - `A  docs/lanes/mod23-unit15-2026-11-03.md`
+  - `A  docs/lanes/mod23-unit16-2026-11-03.md`
+  - `A  docs/lanes/mod24-finer-grade-2026-11-03.md`
+  - `A  docs/lanes/mod24-postseason-forward-2026-11-03.md`
+  - `A  docs/lanes/mod24-unit-next-2026-11-03.md`
+  - `M  docs/lanes/mod27-better-picks.md`
+  - `M  docs/lanes/sim07-power-2026-11-03.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
-  - ` M docs/lanes/sky03-matchups-2026-11-02.md`
+  - `M  docs/lanes/sky03-matchups-2026-11-02.md`
   - ` M docs/lanes/week9-lock-2026-11-03.md`
-  - `A  docs/lanes/week9-market-check-2026-11-03.md`
-  - ...and 257 more
+  - ` M docs/model.html`
+  - `A  registry/weak_signals/mod23_unit14_drive_playquality.json`
+  - `A  registry/weak_signals/mod23_unit15_pregame_variance_weights.json`
+  - ...and 261 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `9b7b416622f7538b`
+- Model ID: `5d851f9536dff5ac`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261101T151614Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261103T173420Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,146 / 2,182 (52.52%)**
-- Linked forecast: **2026 Week 8**, created `2026-11-02T17:10:20.491642+00:00`
+- Secondary close-grade historical classification: **1,153 / 2,196 (52.50%)**
+- Linked forecast: **2026 Week 9**, created `2026-11-03T17:30:56.901169+00:00`
 
-The 52.52% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.50% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 8** from model `9b7b416622f7538b`, published `2026-11-02T17:17:47.302697+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 8** from model `9b7b416622f7538b`, published `2026-11-02T17:17:47.302697+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
 
 ## Local reproducibility inventory
 

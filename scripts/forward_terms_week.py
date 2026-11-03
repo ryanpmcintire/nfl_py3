@@ -24,7 +24,7 @@ MOS_ROOT = ROOT / "data" / "raw" / "forecast_archive" / "mos_bulletins" / "MEX"
 STATION_MAP = ROOT / "registry" / "reference" / "stadium_station_map.csv"
 MARKET_ROOT = ROOT / "data" / "market" / "raw"
 SHARP_CUTOFF_ET = (12, 30)
-TERMS = ("sky03", "sky04", "env02", "sky01", "sky01snap", "surface")
+TERMS = ("sky03", "sky03_separated", "sky04", "env02", "sky01", "sky01snap", "surface")
 
 
 def sha_file(path):
@@ -61,6 +61,18 @@ def resolve_week(arg):
     if not weeks:
         raise SystemExit("no served card directory for the season")
     return max(weeks)
+
+
+def dry_card(week):
+    from nfl_ats.snapshots import latest_snapshot, load_snapshot
+
+    sc, _ = load_snapshot(latest_snapshot(ROOT / "data" / "raw"))
+    g = sc[(sc.season == SEASON) & (sc.week == week) & (sc.game_type == "REG")].copy()
+    local = pd.to_datetime(g.gameday + " " + g.gametime.fillna("13:00"))
+    g["kickoff_utc"] = local.dt.tz_localize(ET).dt.tz_convert("UTC")
+    g["base_home_probability"] = 0.5
+    cols = ["game_id", "home_team", "away_team", "kickoff_utc", "base_home_probability", "gameday"]
+    return g[cols].reset_index(drop=True), {"card_directory": None}
 
 
 def base_card(week):
@@ -268,6 +280,91 @@ def sky03_week(week, games, fetch):
         "weeks_lagged_vs_week_minus_1": int(week - 1 - through),
         "prior_season_traits": SEASON - 1,
         "pfr_fetch_utc": pdir.name,
+    }
+    return x, fr, timestamps
+
+
+def sky03_separated_frozen():
+    path = OUT / "sky03_separated" / "frozen_coefficients.json"
+    body = json.loads(path.read_text())
+    assert body["no_2026_outcomes"] is True
+    keys = ("c_A_epa_per_unit_product", "c_B_epa_per_unit_product", "b_logit_per_point")
+    assert body["coefficient_hash"] == sha_obj({k: body[k] for k in keys})
+    return body
+
+
+def sky03_separated_week(week, games):
+    import sky03_matchup as sm
+    import sky03_matchups as m
+
+    fr = sky03_separated_frozen()
+    g26, pbp_max, pbp_file = pbp_2026_games(week - 1)
+    through = min(week - 1, pbp_max)
+    g26 = g26[g26.week <= through]
+    assert g26.week.max() < week
+    wp = pd.read_parquet(
+        pbp_file,
+        columns=[
+            *("game_id", "season_type", "posteam", "qb_dropback", "qb_kneel", "qb_spike"),
+            *("epa", "wp", "week"),
+        ],
+    )
+    wp = wp[
+        (wp.season_type == "REG")
+        & (wp.qb_dropback == 1)
+        & (wp.qb_kneel != 1)
+        & (wp.qb_spike != 1)
+        & wp.epa.notna()
+        & wp.posteam.notna()
+        & wp.wp.notna()
+        & (wp.week <= through)
+    ]
+    sc = wp.groupby(["game_id", "posteam"], as_index=False).wp.mean()
+    sc = sc.rename(columns={"posteam": "off", "wp": "sc"})
+    g26 = g26.merge(sc, on=["game_id", "off"], how="left")
+    g26["sc"] = g26.sc.fillna(0.5)
+    hist = m.load_games().merge(sm.load_script(), on=["game_id", "off"], how="left")
+    hist["sc"] = hist.sc.fillna(0.5)
+    hist = hist[hist.season < SEASON]
+    rows = []
+    for r in games.itertuples():
+        for off, deff, sign in (
+            (r.home_team, r.away_team, 1.0),
+            (r.away_team, r.home_team, -1.0),
+        ):
+            rows.append(
+                {
+                    "game_id": r.game_id,
+                    "season": SEASON,
+                    "week": week,
+                    "key": SEASON * 100 + week,
+                    "off": off,
+                    "deff": deff,
+                    "sign": sign,
+                }
+            )
+    cur = pd.DataFrame(rows)
+    t = pd.concat([hist, g26, cur.drop(columns=["sign", "game_id"])], ignore_index=True)
+    t.loc[t.game_id.isna(), "game_id"] = "pending"
+    t["sc"] = t.sc.fillna(0.5)
+    rr = sm.build_rows(t, (SEASON,))
+    rr = rr[(rr.week == week) & (rr.game_id == "pending")]
+    rr = rr.drop(columns=["game_id"]).merge(
+        cur[["game_id", "off", "deff", "sign"]], on=["off", "deff"], how="inner"
+    )
+    rr["pts"] = rr.db_exp * (
+        fr["c_A_epa_per_unit_product"] * rr.zA
+        + fr["c_B_epa_per_unit_product"] * rr.zB * rr.ns_share
+    )
+    x = (rr.sign * rr.pts).groupby(rr.game_id).sum()
+    timestamps = {
+        "pbp_file": str(Path(pbp_file).relative_to(ROOT)),
+        "pbp_file_sha256": sha_file(pbp_file),
+        "pbp_max_week_on_disk": pbp_max,
+        "trait_data_through_week": through,
+        "weeks_lagged_vs_week_minus_1": int(week - 1 - through),
+        "prior_season_traits": SEASON - 1,
+        "script_column": "mean win probability on the team's dropbacks, prior games only",
     }
     return x, fr, timestamps
 
@@ -705,24 +802,34 @@ def main():
     ap.add_argument("--week", default="auto")
     ap.add_argument("--term", default="all", choices=("all",) + TERMS)  # noqa: RUF005
     ap.add_argument("--no-fetch", action="store_true")
+    ap.add_argument("--dry", action="store_true")
     a = ap.parse_args()
     week = resolve_week(a.week)
     now = now_utc()
-    games, basemeta = base_card(week)
-    games = games[games.kickoff_utc > pd.Timestamp(now)].reset_index(drop=True)
+    if a.dry and not glob.glob(
+        str(ROOT / "artifacts" / "margin_predictions" / f"{SEASON}-week-{week:02d}-*")
+    ):
+        games, basemeta = dry_card(week)
+    else:
+        games, basemeta = base_card(week)
+    if not a.dry:
+        games = games[games.kickoff_utc > pd.Timestamp(now)].reset_index(drop=True)
     if games.empty:
         raise SystemExit(f"week {week}: every game has kicked off; nothing pregame to freeze")
     status = {}
     for term in TERMS if a.term == "all" else (a.term,):
         d = OUT / term
-        d.mkdir(parents=True, exist_ok=True)
-        prior = sorted(glob.glob(str(d / f"{SEASON}_week{week:02d}_*.json")))
+        if not a.dry:
+            d.mkdir(parents=True, exist_ok=True)
+        prior = [] if a.dry else sorted(glob.glob(str(d / f"{SEASON}_week{week:02d}_*.json")))
         if prior:
             status[term] = f"already frozen: {Path(prior[-1]).name}"
             continue
         try:
             if term == "sky03":
                 x, fr, ts = sky03_week(week, games, not a.no_fetch)
+            elif term == "sky03_separated":
+                x, fr, ts = sky03_separated_week(week, games)
             elif term == "sky04":
                 x, fr, ts = sky04_week(week, games, now)
             elif term == "env02":
@@ -737,6 +844,17 @@ def main():
             status[term] = f"FAILED {type(ex).__name__}: {ex}"
             continue
         rows = combine(term, games, x, fr)
+        if a.dry:
+            vals = np.array([r["term_value"] for r in rows if r["term_value"] is not None], float)
+            status[term] = {
+                "n_games": len(rows),
+                "n_with_term": len(vals),
+                "mean": float(vals.mean()) if len(vals) else None,
+                "sd": float(vals.std(ddof=1)) if len(vals) > 1 else None,
+                "rows_sha256": sha_obj(rows),
+                "trait_data_through_week": ts.get("trait_data_through_week"),
+            }
+            continue
         nz = sum(1 for r in rows if r["term_value"] is not None)
         body = {
             "term": term,

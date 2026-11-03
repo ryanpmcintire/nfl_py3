@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit16_estimator_class",
+  "signals": {
+    "mod23_unit16_E_elastic_net_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base inputs with E_elastic_net, paired vs base ridge alpha 10, 2011-2019; 1139-1092 vs 1142-1089.",
+      "effect": -0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit16_estimator_class",
+      "interval": [
+        -1.8360949395432153,
+        1.4292094685127288
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, estimator swapped (elastic net or ridge with inner contiguous-fold selection); two arms by two eras, four looks.",
+      "plain_summary": "Swapping the fitting method on the same inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.4364,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit16/report.json",
+      "standard_error": null
+    },
+    "mod23_unit16_E_elastic_net_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block bootstrap interval [-3.86, -2.55] lies wholly below zero (6 blocks, 1,503 games); decisive flips 210-258 against the arm. The 2011-19 cell stays unresolved.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Base inputs with E_elastic_net, paired vs base ridge alpha 10, 2020-2025; 754-749 vs 802-701.",
+      "effect": -3.193612774451098,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit16_estimator_class",
+      "interval": [
+        -3.8615179760319576,
+        -2.553763440860215
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits; elastic net l1 ratio .2/.5/.8 chosen on inner contiguous folds of the training data. Calibration improved (log loss .6940 v .6969) while picks got worse.",
+      "plain_summary": "Fitting the same inputs with an elastic net instead of the served ridge made 2020-25 picks against the opener clearly worse.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit16/report.json",
+      "standard_error": null
+    },
+    "mod23_unit16_R_ridge_cv_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base inputs with R_ridge_cv, paired vs base ridge alpha 10, 2011-2019; 1163-1068 vs 1142-1089.",
+      "effect": 0.9412819363514119,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit16_estimator_class",
+      "interval": [
+        -0.5845389477891372,
+        2.416134420457479
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, estimator swapped (elastic net or ridge with inner contiguous-fold selection); two arms by two eras, four looks.",
+      "plain_summary": "Swapping the fitting method on the same inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.8839,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit16/report.json",
+      "standard_error": null
+    },
+    "mod23_unit16_R_ridge_cv_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base inputs with R_ridge_cv, paired vs base ridge alpha 10, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit16_estimator_class",
+      "interval": [
+        -1.4122394082044385,
+        -0.06447453255963895
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, estimator swapped (elastic net or ridge with inner contiguous-fold selection); two arms by two eras, four looks.",
+      "plain_summary": "Swapping the fitting method on the same inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0131,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit16/report.json",
+      "standard_error": null
+    }
+  }
+}

@@ -30,7 +30,8 @@ fl_py3_wt_hook.
 - Week 9 operations and post-lock checks: lane week9-lock-2026-11-03.md.
 - Deferred: generalized pool-offset term as a two-stage stage-2 term (no 2026 side changes; needs a pinned edit, so bundle with the next one and re-enroll validation); thin-book move repair (LV at NYJ had two leader books); day-level transaction dates for the deadline flag.
 - After the Week 9 Tuesday lock: finish unit 4 (atlas), merge, activate, enroll v7.
-- Grade the pool-relative log weekly (`scripts/pool_relative_move_forward_log.py --grade`).
+- Grade the pool-relative log weekly (`scripts/pool_relative_move_forward_log.py --grade`). 2026-11-03 12:19 (measured): Week 8 card 6-8, challenger 7-7; sides differ 1 (challenger 1-0); pool line off the Tuesday market in 7 games: better-number side 6-1, card against it 0-2 (the case the 11-02 pool hook term addresses, live from Week 9). All 14 Week 8 rows are backfilled, so not prospective evidence.
+- Day-level transaction dates: done 2026-11-02 (repaired term -0.40 pts P+ .029, unresolved, not served). Unit 4 / v7: v7 enrolled 2026-11-02 16:01Z; its captures were failing until afc5b028 fixed the CLI study default.
 
 ## Open
 - None yet.

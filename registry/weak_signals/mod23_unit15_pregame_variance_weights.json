@@ -1,0 +1,173 @@
+{
+  "family": "mod23_unit15_pregame_variance_weights",
+  "signals": {
+    "mod23_unit15_weights_S_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with pregame-variance training weights (S), paired vs base, 2011-2019; 1142-1089 vs 1142-1089.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit15_pregame_variance_weights",
+      "interval": [
+        -0.49261083743842365,
+        0.36036036036036034
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the prior-season out-of-fold residual variance of pregame strata (arm S: total-line tertile, absolute-spread tertile); three arms by two eras, six looks.",
+      "plain_summary": "Giving games with noisier expected scoring less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.4903,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit15/report.json",
+      "standard_error": null
+    },
+    "mod23_unit15_weights_S_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with pregame-variance training weights (S), paired vs base, 2020-2025; 803-700 vs 802-701.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit15_pregame_variance_weights",
+      "interval": [
+        -0.38461538461538464,
+        0.4745762711864407
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the prior-season out-of-fold residual variance of pregame strata (arm S: total-line tertile, absolute-spread tertile); three arms by two eras, six looks.",
+      "plain_summary": "Giving games with noisier expected scoring less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.56625,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit15/report.json",
+      "standard_error": null
+    },
+    "mod23_unit15_weights_TS_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with pregame-variance training weights (TS), paired vs base, 2011-2019; 1148-1083 vs 1142-1089.",
+      "effect": 0.2689376961004034,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit15_pregame_variance_weights",
+      "interval": [
+        -0.40053404539385845,
+        0.9892086330935251
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the prior-season out-of-fold residual variance of pregame strata (arm TS: total-line tertile, absolute-spread tertile); three arms by two eras, six looks.",
+      "plain_summary": "Giving games with noisier expected scoring less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.74945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit15/report.json",
+      "standard_error": null
+    },
+    "mod23_unit15_weights_TS_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with pregame-variance training weights (TS), paired vs base, 2020-2025; 795-708 vs 802-701.",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit15_pregame_variance_weights",
+      "interval": [
+        -0.9868421052631579,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the prior-season out-of-fold residual variance of pregame strata (arm TS: total-line tertile, absolute-spread tertile); three arms by two eras, six looks.",
+      "plain_summary": "Giving games with noisier expected scoring less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.01765,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit15/report.json",
+      "standard_error": null
+    },
+    "mod23_unit15_weights_T_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with pregame-variance training weights (T), paired vs base, 2011-2019; 1140-1091 vs 1142-1089.",
+      "effect": -0.08964589870013447,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit15_pregame_variance_weights",
+      "interval": [
+        -0.5816554809843401,
+        0.45126353790613716
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the prior-season out-of-fold residual variance of pregame strata (arm T: total-line tertile, absolute-spread tertile); three arms by two eras, six looks.",
+      "plain_summary": "Giving games with noisier expected scoring less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.32585,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit15/report.json",
+      "standard_error": null
+    },
+    "mod23_unit15_weights_T_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with pregame-variance training weights (T), paired vs base, 2020-2025; 801-702 vs 802-701.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit15_pregame_variance_weights",
+      "interval": [
+        -0.5758157389635317,
+        0.4791238877481177
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the prior-season out-of-fold residual variance of pregame strata (arm T: total-line tertile, absolute-spread tertile); three arms by two eras, six looks.",
+      "plain_summary": "Giving games with noisier expected scoring less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.36235,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit15/report.json",
+      "standard_error": null
+    }
+  }
+}
