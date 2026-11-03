@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:20:38.029914+00:00`
+Refreshed at: `2026-11-03T23:21:15.695698+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-11-03T23:20:38.029914+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0fa1b58c63be` — PER-16: teams and coaches differ persistently in how often Questionable players play (split-half r .42, season-to-season .32-.34); coach-keyed ladder beats the league ladder on held-out seasons (P(plays) log loss +.0074, P+ 1.0); the wording read still beats it
-- Pending change set: 255 paths
+- Baseline commit: `9d37bc2fec7c` — MOD-53 unit 2: penalty selection by opener cover log loss or pick accuracy does not beat alpha 10 (log-loss arm 2020-25 -1.13, refuted); keep the served penalty
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `M  docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `M  registry/weak_signals/mod53_penalty_grid_edge.json`
-  - `M  scripts/mod53_penalty_grid.py`
+  - ` M registry/weak_signals/mod54_mirrored_rows.json`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T23:20:38.029914+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 235 more
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
