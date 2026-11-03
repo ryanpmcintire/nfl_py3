@@ -12,6 +12,7 @@ RUN_FAMILIES = {
     "mod24": ("artifacts/mod24_forward/runs/*.json", "arm_home_cover_probability"),
     "mod25_combined": ("artifacts/mod25_forward/runs/*.json", "combined_home_cover_probability"),
     "mod25_wfj": ("artifacts/mod25_wfj_forward/runs/*.json", "student_home_cover_probability"),
+    "mod54": ("artifacts/mod54_forward/runs/*.json", "arm_home_cover_probability"),
     "draftcap": ("artifacts/draftcap_forward/runs/*.json", "arm_home_cover_probability"),
 }
 TERM_DIRS = [

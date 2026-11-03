@@ -2,16 +2,28 @@ from pathlib import Path
 
 import pandas as pd
 
-from nfl_ats.snapshots import latest_snapshot, load_snapshot
-
 ROOT = Path(__file__).resolve().parents[1]
 RAW_ROOT = ROOT / "data" / "raw"
+SCHEDULE_ROOT = ROOT / "data" / "raw_schedules"
 SCHEDULE_ZONE = "America/New_York"
 SCHEDULE_COLUMNS = ["game_id", "season", "week", "home_team", "away_team", "gameday", "gametime"]
 
 
+def newest_schedule():
+    candidates = []
+    for root in (RAW_ROOT, SCHEDULE_ROOT):
+        folders = [p for p in root.glob("*") if (p / "manifest.json").is_file()]
+        folders = [p for p in folders if (p / "schedules.parquet").is_file()]
+        if folders:
+            newest = max(folders, key=lambda p: p.name)
+            candidates.append(newest)
+    if not candidates:
+        raise FileNotFoundError("No schedule snapshots found")
+    return max(candidates, key=lambda p: p.name)
+
+
 def live_kickoffs():
-    schedule, _ = load_snapshot(latest_snapshot(RAW_ROOT))
+    schedule = pd.read_parquet(newest_schedule() / "schedules.parquet")
     games = schedule[SCHEDULE_COLUMNS].dropna(subset=["gameday", "gametime"]).copy()
     local = pd.to_datetime(games["gameday"].astype(str) + " " + games["gametime"].astype(str))
     games["live_kickoff"] = local.dt.tz_localize(SCHEDULE_ZONE).dt.tz_convert("UTC")

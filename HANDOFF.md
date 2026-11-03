@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:30:50.081618+00:00`
+Refreshed at: `2026-11-03T23:31:48.637307+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T23:30:50.081618+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fa9870d4c4ea` — ENG-58 unit 2: forward-log writers guard on min(own kickoff, latest schedule snapshot kickoff) via scripts/live_kickoff.py (Week 9 rows unchanged; an earlier-moved game is refused)
-- Pending change set: 250 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `267c21d5f28e` — Refresh session handoff
+- Pending change set: 256 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - ` M scripts/forward_ledger.py`
+  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `A  scripts/capture_schedule_snapshot.py`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/forward_ledger.py`
+  - `M  scripts/live_kickoff.py`
+  - `A  scripts/mod54_forward_log.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 230 more
+  - ...and 236 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

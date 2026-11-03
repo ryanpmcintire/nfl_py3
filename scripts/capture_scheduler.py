@@ -709,6 +709,39 @@ SCHEDULE: tuple[Job, ...] = (
             ("sunday", "sat", "18:00", 360),
         )
     ),
+    Job(
+        "mod54_forward_tue",
+        "tue",
+        "12:55",
+        90,
+        [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "mod54_forward_log.py")],
+        True,
+        "MOD-54 forward log: the mirrored-row base model's pregame home cover probabilities "
+        "for the current week, written before kickoff (forward-only candidate).",
+        requires=("weekly_lock",),
+        added_on="2026-11-03",
+    ),
+    *(
+        Job(
+            f"schedule_snapshot_{day}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "capture_schedule_snapshot.py"),
+            ],
+            True,
+            "ENG-58: daily nflverse schedule snapshot so a mid-week kickoff move reaches "
+            "the forward-log kickoff guards (scripts/live_kickoff.py).",
+            added_on="2026-11-03",
+            catch_up=True,
+        )
+        for day, at in (*((d, "09:00") for d in DAYS if d != "sun"), ("sun", "08:00"))
+    ),
     *(
         Job(
             f"lead101_delta_read_{view}_{day}_{at.replace(':', '')}",
