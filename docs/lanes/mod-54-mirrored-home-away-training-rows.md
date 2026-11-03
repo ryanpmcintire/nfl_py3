@@ -16,3 +16,10 @@ First unit for one agent: Read the feature builder to confirm whether inputs are
 
 ## Open
 Rules: Zero crossing closes nothing; one fitted probability selects the side; every penalty, weight and cut point chosen leave-one-season-out; every arm counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded on the fair opener test (base 802-701 in 2020-25 and 1142-1089 in 2011-19 reproduced first, opener not a model input) on the same market and simple-model baselines. Pinned model source stays untouched: run in a scratch harness script, no src edit unless the result is adopted. Look count and family declared before any sign is seen. Data: Base input table and feature builder (local).
+
+## Unit 2 (started Tue Nov 3 2026 6:18 PM)
+Script scripts/mod54_unit2_penalty.py (arms A mirrored alpha 20, H base alpha 5; alphas follow from the doubled/halved row count). Running in background (task bxwa2ev2m), log C:\Users\Ryan\AppData\Local\Temp\u2.log, outputs artifacts/mod54_unit2/report.json and weak_signals_batch.json. Next: read the log, record cells with nfl-ats weak-signals record under family mod54_mirrored_rows, fill results here.
+Unit 2 done Tue Nov 3 2026 6:21 PM; 4 cells recorded (unresolved_below_power). Base 1142-1089 / 802-701. Decisive W-L flips first.
+A (mirror, alpha 20): 2011-19 1142-1089 flips 233-233, +0.00 [-2.28,2.03] P+ .50; 2020-25 815-688 flips 124-111, +0.86 [-0.26,2.07] P+ .90; LL .6941 v base .6969 v mkt .6933; Brier .2504 v .2517 v .2501; train acc .544.
+H (base, alpha 5): 2011-19 1145-1086 flips 17-14, +0.13 [-0.31,0.54] P+ .70; 2020-25 788-715 flips 7-21, -0.93 [-1.59,-0.39] P+ 0.00; LL .6971; Brier .2518; train acc .559 (base .560).
+Mirroring effect (A v base) +0.86 in 2020-25; penalty effect (H v base) -0.93 in 2020-25, so unit 1's +0.20 was mirroring gain masked by weaker penalty. Not closed: H is a penalty-direction probe, not a refuted served mechanism. Next: season stability of A, alpha chosen LOSO rather than doubled.

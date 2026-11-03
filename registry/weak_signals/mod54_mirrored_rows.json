@@ -112,6 +112,118 @@
       ],
       "source": "artifacts/mod54_unit1/report.json",
       "standard_error": null
+    },
+    "mod54_unit2_base_alpha_halved_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model base_alpha_halved, paired vs base ridge alpha 10, 2020-2025; 1145-1086 vs 1142-1089.",
+      "effect": 0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -0.3125,
+        0.5412719891745602
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 90 inputs, past-only weekly refits, opener input; mirrored rows with a home-view column versus base ridge alpha 10; arms A mirrored with alpha 20 (row count doubled) and H base with alpha 5, by two eras, four looks.",
+      "plain_summary": "Separating row mirroring from penalty strength moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.6998,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit2/report.json",
+      "standard_error": null
+    },
+    "mod54_unit2_base_alpha_halved_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model base_alpha_halved, paired vs base ridge alpha 10, 2020-2025; 788-715 vs 802-701.",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -1.5862524785194976,
+        -0.39447731755424065
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 90 inputs, past-only weekly refits, opener input; mirrored rows with a home-view column versus base ridge alpha 10; arms A mirrored with alpha 20 (row count doubled) and H base with alpha 5, by two eras, four looks.",
+      "plain_summary": "Separating row mirroring from penalty strength moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit2/report.json",
+      "standard_error": null
+    },
+    "mod54_unit2_mirrored_rows_alpha_doubled_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model mirrored_rows_alpha_doubled, paired vs base ridge alpha 10, 2020-2025; 1142-1089 vs 1142-1089.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -2.2788713328569306,
+        2.0288777025468807
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 90 inputs, past-only weekly refits, opener input; mirrored rows with a home-view column versus base ridge alpha 10; arms A mirrored with alpha 20 (row count doubled) and H base with alpha 5, by two eras, four looks.",
+      "plain_summary": "Separating row mirroring from penalty strength moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.5032,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit2/report.json",
+      "standard_error": null
+    },
+    "mod54_unit2_mirrored_rows_alpha_doubled_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model mirrored_rows_alpha_doubled, paired vs base ridge alpha 10, 2020-2025; 815-688 vs 802-701.",
+      "effect": 0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -0.2631578947368421,
+        2.069425901201602
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 90 inputs, past-only weekly refits, opener input; mirrored rows with a home-view column versus base ridge alpha 10; arms A mirrored with alpha 20 (row count doubled) and H base with alpha 5, by two eras, four looks.",
+      "plain_summary": "Separating row mirroring from penalty strength moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.9046,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit2/report.json",
+      "standard_error": null
     }
   }
 }
