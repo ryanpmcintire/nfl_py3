@@ -1,0 +1,425 @@
+{
+  "family": "lead111_phrase_ablation",
+  "signals": {
+    "lead111_bodypart_gain_vs_designation": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, bodypart_gain_vs_designation (positive = first-named read better than comparator as defined)",
+      "effect": 0.05555,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        0.0012,
+        0.12444
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.9785,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.03144
+    },
+    "lead111_bodypart_gain_vs_designation_x_practice": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, bodypart_gain_vs_designation_x_practice (positive = first-named read better than comparator as defined)",
+      "effect": 0.03175,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.01068,
+        0.08109
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.9205,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.02341
+    },
+    "lead111_bodypart_vs_full": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, bodypart_vs_full (positive = first-named read better than comparator as defined)",
+      "effect": -0.00825,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.02487,
+        0.00569
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.122,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.0078
+    },
+    "lead111_bodypart_vs_repeat": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, bodypart_vs_repeat (positive = first-named read better than comparator as defined)",
+      "effect": -0.00462,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.02197,
+        0.01183
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.2795,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.00862
+    },
+    "lead111_headlines_gain_vs_designation": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, headlines_gain_vs_designation (positive = first-named read better than comparator as defined)",
+      "effect": 0.03419,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        0.00322,
+        0.0696
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.9885,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.01693
+    },
+    "lead111_headlines_gain_vs_designation_x_practice": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, headlines_gain_vs_designation_x_practice (positive = first-named read better than comparator as defined)",
+      "effect": 0.01039,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.0141,
+        0.04344
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.7165,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.01468
+    },
+    "lead111_headlines_vs_full": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, headlines_vs_full (positive = first-named read better than comparator as defined)",
+      "effect": -0.02961,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.07093,
+        0.00118
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.036,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.0184
+    },
+    "lead111_headlines_vs_repeat": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, headlines_vs_repeat (positive = first-named read better than comparator as defined)",
+      "effect": -0.02598,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.06845,
+        0.00704
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.074,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.01926
+    },
+    "lead111_practice_gain_vs_designation": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, practice_gain_vs_designation (positive = first-named read better than comparator as defined)",
+      "effect": 0.04811,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.00406,
+        0.11642
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.958,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.03073
+    },
+    "lead111_practice_gain_vs_designation_x_practice": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, practice_gain_vs_designation_x_practice (positive = first-named read better than comparator as defined)",
+      "effect": 0.02431,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.0238,
+        0.08184
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.799,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.02695
+    },
+    "lead111_practice_vs_full": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, practice_vs_full (positive = first-named read better than comparator as defined)",
+      "effect": -0.01569,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.04324,
+        0.00987
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.127,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.01355
+    },
+    "lead111_practice_vs_repeat": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, practice_vs_repeat (positive = first-named read better than comparator as defined)",
+      "effect": -0.01206,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.03902,
+        0.01354
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.189,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.01341
+    },
+    "lead111_repeat_gain_vs_designation": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, repeat_gain_vs_designation (positive = first-named read better than comparator as defined)",
+      "effect": 0.06017,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        0.00963,
+        0.12695
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.02993
+    },
+    "lead111_repeat_gain_vs_designation_x_practice": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, repeat_gain_vs_designation_x_practice (positive = first-named read better than comparator as defined)",
+      "effect": 0.03637,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.001,
+        0.08183
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.971,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.02113
+    },
+    "lead111_repeat_vs_full": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; team-week cluster bootstrap 2000 reps.",
+      "closing_ground": null,
+      "description": "LEAD-111 log loss on P(plays), 207-row subsample, repeat_vs_full (positive = first-named read better than comparator as defined)",
+      "effect": -0.00363,
+      "effect_units": "log_loss_improvement",
+      "family": "lead111_phrase_ablation",
+      "interval": [
+        -0.01573,
+        0.00959
+      ],
+      "league": "nfl",
+      "notes": "Effect = log loss of comparator minus ablated read; negative on *_vs_full means removal cost accuracy.",
+      "plain_summary": null,
+      "probability_positive": 0.279,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 207,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/ablation/score.json",
+      "standard_error": 0.00646
+    }
+  }
+}
