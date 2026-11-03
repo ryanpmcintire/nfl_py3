@@ -14,3 +14,6 @@ First unit: Add the percentile and field median to the strip for Weeks 1-8 and r
 
 ## Open
 Changes: Page: History. Data: data/splash/field/*_field_distribution.tsv and standings. Percentile and median in the existing History strip. Zero crossing closes nothing; record unresolved results with nfl-ats weak-signals record and a closing ground. Look count and family declared before any sign is seen.
+
+## Unit 1 done 2026-11-03T20:56Z
+Strip now prints "beat N% of entries; field median M wins" per chip, from data/splash/field/2026_weekly_points_w01-08.parquet (241 of 250 entries). Code: board_site_content.py _field_week_texts + SeasonSoFar.field_week_texts; board_terminal.py _week_strip_html. Built in memory (not published); 309 board tests pass. Next: view at 390 width; root publishes.

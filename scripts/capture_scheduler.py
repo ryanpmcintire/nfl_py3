@@ -651,6 +651,30 @@ SCHEDULE: tuple[Job, ...] = (
             ("sun", "10:00"),
         )
     ),
+    *(
+        Job(
+            f"lead101_delta_read_{view}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead101_delta_read.py"),
+                "run",
+                "--view",
+                view,
+            ],
+            True,
+            "LEAD-101 forward log: a no-web LLM read of only the news captured after the "
+            "Tuesday freeze, forecasting each game's home-spread move to the deadline line, "
+            "frozen prompt and model, recorded before the deadline.",
+            added_on="2026-11-03",
+        )
+        for view, day, at in (("thursday", "thu", "18:30"), ("sunday", "sun", "11:30"))
+    ),
     Job(
         "prospective_scorecard_tue",
         "tue",

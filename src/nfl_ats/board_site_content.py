@@ -434,6 +434,7 @@ class SeasonSoFar:
     week_by_week_text: str = ""
     week_records: tuple[tuple[int, int, int, int], ...] = ()
     tuesday_week_records: tuple[tuple[int, int, int, int], ...] = ()
+    field_week_texts: tuple[tuple[int, str], ...] = ()
 
     @property
     def has_rows(self) -> bool:
@@ -472,6 +473,29 @@ def _week_by_week_text(rows: Sequence[HistoryPickRow]) -> str:
     if len(parts) < 2:
         return ""
     return "Week by week: " + ", ".join(parts) + "."
+
+
+def _field_week_texts(
+    week_records: Sequence[tuple[int, int, int, int]], data_root: Path, season: int | None
+) -> tuple[tuple[int, str], ...]:
+    path = data_root / "splash" / "field" / f"{season}_weekly_points_w01-08.parquet"
+    if season is None or not path.is_file():
+        return ()
+    try:
+        field = pd.read_parquet(path)
+    except (OSError, ValueError):
+        return ()
+    texts = []
+    for week, wins, _losses, _pushes in week_records:
+        column = f"w{week}"
+        if column not in field.columns:
+            continue
+        points = field[column].dropna()
+        if points.empty:
+            continue
+        beaten = float((points < wins).mean())
+        texts.append((week, f"beat {beaten:.0%} of entries; field median {points.median():g} wins"))
+    return tuple(texts)
 
 
 def _season_so_far_caveat(settled: int) -> str:
@@ -553,6 +577,7 @@ def _build_season_so_far(
     season: int | None,
     tiebreaker_text: str,
     tuesday_picks: Sequence[HistoryPickRow] = (),
+    data_root: Path | None = None,
 ) -> SeasonSoFar:
 
     season_rows = [row for row in picks if season is None or row.season == season]
@@ -591,6 +616,7 @@ def _build_season_so_far(
         best_pick_text = "The pick singled out as this week's strongest has not finished yet."
     else:
         best_pick_text = "No pick has been singled out as a week's strongest yet."
+    week_records = _week_records(season_rows)
     return SeasonSoFar(
         season=season,
         settled_games=settled,
@@ -604,7 +630,8 @@ def _build_season_so_far(
         challenger_summary_text=challenger_summary,
         nothing_settled_text=None,
         week_by_week_text=_week_by_week_text(season_rows),
-        week_records=_week_records(season_rows),
+        week_records=week_records,
+        field_week_texts=_field_week_texts(week_records, data_root or _default_data_root(), season),
         tuesday_week_records=_week_records(
             [row for row in tuesday_picks if season is None or row.season == season],
             minimum_weeks=1,
@@ -1813,6 +1840,7 @@ def _load_history_page_content(
         season=board.ticker_chrome.season,
         tiebreaker_text=_season_tiebreaker_text(artifacts_root, active, outcomes),
         tuesday_picks=tuesday_picks,
+        data_root=data_root,
     )
     grade_caption = HISTORY_GRADE_CAPTION if (season_grades or week_grades) else ""
     if archived_week_grades:
