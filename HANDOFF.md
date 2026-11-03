@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:08:49.979168+00:00`
+Refreshed at: `2026-11-03T21:12:55.788477+00:00`
 
 ## Start here
 
@@ -21,12 +21,20 @@ Refreshed at: `2026-11-03T21:08:49.979168+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b6f74a2e9e29` — Master lane state 16:30
-- Pending change set: 251 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `422a5daf0af8` — Refresh session handoff
+- Pending change set: 261 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - ` M docs/lanes/eng-49-eng49-matched-forward-ledger.md`
+  - ` M docs/lanes/eng-50-online-forward-stacker.md`
+  - ` M docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - ` M docs/lanes/lead-102-name-blinded-control-read.md`
   - ` M docs/lanes/lead-103-read-block-ablation.md`
+  - ` M docs/lanes/pool-leader-romana.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
+  - ` M registry/weak_signals/eng50_online_stacker.json`
+  - ` M scripts/forward_ledger.py`
   - ` M scripts/mod24_more_games.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
@@ -35,15 +43,7 @@ Refreshed at: `2026-11-03T21:08:49.979168+00:00`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 231 more
+  - ...and 241 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
