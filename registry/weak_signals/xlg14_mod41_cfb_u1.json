@@ -1,0 +1,173 @@
+{
+  "family": "xlg14_mod41_cfb_u1",
+  "signals": {
+    "xlg14_u1_joint_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; CFB-only, not commensurable with NFL; season-week block bootstrap, 6 looks; opener input, base accuracy 50.3%.",
+      "closing_ground": null,
+      "description": "MOD-41 CFB analog term joint added to opener-input ridge logit, LOSO 2012-25 ex 2020, opener grade, log loss gain vs base; decisive 1074-995 of 2069; in-sample gap 0.00037.",
+      "effect": 0.0002105722486218653,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_mod41_cfb_u1",
+      "interval": [
+        -0.0005523265348810007,
+        0.0009303896186781429
+      ],
+      "league": "cfb",
+      "notes": "Usable 6145 of 8925 games carry term, others 0.",
+      "plain_summary": "Tests whether recent play workload adds to a college opener-based cover probability.",
+      "probability_positive": 0.724,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/mod41_cfb.json",
+      "standard_error": 0.0003782439167242713
+    },
+    "xlg14_u1_opp_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; CFB-only, not commensurable with NFL; season-week block bootstrap, 6 looks; opener input, base accuracy 50.3%.",
+      "closing_ground": null,
+      "description": "MOD-41 CFB analog term opp added to opener-input ridge logit, LOSO 2012-25 ex 2020, opener grade, log loss gain vs base; decisive 949-910 of 1859; in-sample gap 0.00012.",
+      "effect": 0.00023688946868127836,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_mod41_cfb_u1",
+      "interval": [
+        -0.00032707496096090195,
+        0.0008432639153757387
+      ],
+      "league": "cfb",
+      "notes": "Usable 6145 of 8925 games carry term, others 0.",
+      "plain_summary": "Tests whether recent play workload adds to a college opener-based cover probability.",
+      "probability_positive": 0.788,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/mod41_cfb.json",
+      "standard_error": 0.0002985558358001634
+    },
+    "xlg14_u1_own_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; CFB-only, not commensurable with NFL; season-week block bootstrap, 6 looks; opener input, base accuracy 50.3%.",
+      "closing_ground": null,
+      "description": "MOD-41 CFB analog term own added to opener-input ridge logit, LOSO 2012-25 ex 2020, opener grade, log loss gain vs base; decisive 879-804 of 1683; in-sample gap 0.00011.",
+      "effect": 0.00015328004725467803,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_mod41_cfb_u1",
+      "interval": [
+        -0.0002933811422063504,
+        0.000623729308395729
+      ],
+      "league": "cfb",
+      "notes": "Usable 6145 of 8925 games carry term, others 0.",
+      "plain_summary": "Tests whether recent play workload adds to a college opener-based cover probability.",
+      "probability_positive": 0.741,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/mod41_cfb.json",
+      "standard_error": 0.00023395674760257127
+    },
+    "xlg14_u1_resid_placebo_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; CFB-only, not commensurable with NFL; season-week block bootstrap, 6 looks; opener input, base accuracy 50.3%.",
+      "closing_ground": null,
+      "description": "MOD-41 CFB analog term resid_placebo added to opener-input ridge logit, LOSO 2012-25 ex 2020, opener grade, log loss gain vs base; decisive 788-793 of 1581; in-sample gap 0.00012.",
+      "effect": 8.451770365502931e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_mod41_cfb_u1",
+      "interval": [
+        -0.0003514447594385683,
+        0.0005320588744157556
+      ],
+      "league": "cfb",
+      "notes": "Usable 6145 of 8925 games carry term, others 0.",
+      "plain_summary": "Tests whether recent play workload adds to a college opener-based cover probability.",
+      "probability_positive": 0.612,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/mod41_cfb.json",
+      "standard_error": 0.00022538358006487857
+    },
+    "xlg14_u1_resid_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; CFB-only, not commensurable with NFL; season-week block bootstrap, 6 looks; opener input, base accuracy 50.3%.",
+      "closing_ground": null,
+      "description": "MOD-41 CFB analog term resid added to opener-input ridge logit, LOSO 2012-25 ex 2020, opener grade, log loss gain vs base; decisive 202-191 of 393; in-sample gap 0.00014.",
+      "effect": -0.00012815309246794193,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_mod41_cfb_u1",
+      "interval": [
+        -0.0002540700473625562,
+        -1.3816439940853061e-05
+      ],
+      "league": "cfb",
+      "notes": "Usable 6145 of 8925 games carry term, others 0.",
+      "plain_summary": "Tests whether recent play workload adds to a college opener-based cover probability.",
+      "probability_positive": 0.014,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/mod41_cfb.json",
+      "standard_error": 6.128918556676102e-05
+    },
+    "xlg14_u1_total_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; CFB-only, not commensurable with NFL; season-week block bootstrap, 6 looks; opener input, base accuracy 50.3%.",
+      "closing_ground": null,
+      "description": "MOD-41 CFB analog term total added to opener-input ridge logit, LOSO 2012-25 ex 2020, opener grade, log loss gain vs base; decisive 258-256 of 514; in-sample gap 0.00013.",
+      "effect": -0.00011195583042156176,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_mod41_cfb_u1",
+      "interval": [
+        -0.0002687124495617171,
+        4.557592847917456e-05
+      ],
+      "league": "cfb",
+      "notes": "Usable 6145 of 8925 games carry term, others 0.",
+      "plain_summary": "Tests whether recent play workload adds to a college opener-based cover probability.",
+      "probability_positive": 0.092,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/mod41_cfb.json",
+      "standard_error": 8.017560664308461e-05
+    }
+  }
+}
