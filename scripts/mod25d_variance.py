@@ -24,20 +24,39 @@ def real_load(seasons):
     pbp = sim.load_reg_seasons(tuple(seasons))
     tr = sim.build_transition_frame(pbp)
     at = c25.attrs_from(pbp, tr)
-    tr = tr.assign(tov=at["tov"], epa=at["epa"], yards=at["yards"]).sort_values(["game_id", "play_id"]).reset_index(drop=True)
+    tr = (
+        tr.assign(tov=at["tov"], epa=at["epa"], yards=at["yards"])
+        .sort_values(["game_id", "play_id"])
+        .reset_index(drop=True)
+    )
     gid, gids = pd.factorize(tr["game_id"])
     P = pd.DataFrame(
         {
-            "g": gid, "down": tr["down_i"].to_numpy(), "dist": tr["dist_raw"].to_numpy(), "yl": tr["fp_raw"].to_numpy(),
-            "sd": tr["sc_raw"].to_numpy(), "gsr": tr["gsr_actual"].to_numpy(), "qtr": tr["qtr_actual"].to_numpy(),
-            "code": tr["play_type_code"].to_numpy(), "po": tr["points_off"].to_numpy(), "pdf": tr["points_def"].to_numpy(),
-            "flip": tr["possession_flip"].to_numpy().astype(bool), "el": tr["clock_elapsed"].to_numpy(),
-            "epa": tr["epa"].to_numpy(), "yards": tr["yards"].to_numpy(), "tov": tr["tov"].to_numpy(),
+            "g": gid,
+            "down": tr["down_i"].to_numpy(),
+            "dist": tr["dist_raw"].to_numpy(),
+            "yl": tr["fp_raw"].to_numpy(),
+            "sd": tr["sc_raw"].to_numpy(),
+            "gsr": tr["gsr_actual"].to_numpy(),
+            "qtr": tr["qtr_actual"].to_numpy(),
+            "code": tr["play_type_code"].to_numpy(),
+            "po": tr["points_off"].to_numpy(),
+            "pdf": tr["points_def"].to_numpy(),
+            "flip": tr["possession_flip"].to_numpy().astype(bool),
+            "el": tr["clock_elapsed"].to_numpy(),
+            "epa": tr["epa"].to_numpy(),
+            "yards": tr["yards"].to_numpy(),
+            "tov": tr["tov"].to_numpy(),
         }
     )
     last = tr.groupby(gid).tail(1)
     M = pd.Series(last["home_margin_post"].to_numpy(), index=gid[last.index.to_numpy()])
-    meta = pbp.drop_duplicates("game_id").set_index("game_id").loc[gids, ["season", "home_team", "away_team"]].reset_index(drop=True)
+    meta = (
+        pbp.drop_duplicates("game_id")
+        .set_index("game_id")
+        .loc[gids, ["season", "home_team", "away_team"]]
+        .reset_index(drop=True)
+    )
     return P, M, meta, pbp
 
 
@@ -101,8 +120,14 @@ def poss_analysis(P, M):
     gp = R.groupby("poss", sort=True)
     pk = pd.DataFrame(
         {
-            "g": gp["g"].first(), "side": gp["side"].first(), "po": gp["po"].sum(), "pdf": gp["pdf"].sum(),
-            "n": gp.size(), "sd0": gp["sd"].first(), "q0": gp["qtr"].first(), "gsr0": gp["gsr"].first(),
+            "g": gp["g"].first(),
+            "side": gp["side"].first(),
+            "po": gp["po"].sum(),
+            "pdf": gp["pdf"].sum(),
+            "n": gp.size(),
+            "sd0": gp["sd"].first(),
+            "q0": gp["qtr"].first(),
+            "gsr0": gp["gsr"].first(),
             "secs": gp["el"].sum(),
         }
     ).reset_index()
@@ -144,14 +169,22 @@ def poss_analysis(P, M):
     out["signed_poss_var"] = float(sk.var())
     out["iid_margin_var"] = float(nA.mean() * sk.var() + nA.var() * sk.mean() ** 2)
     tot_pts = pk.groupby("g")["po"].sum() + pk.groupby("g")["pdf"].sum()
-    out["cov_nposs_totpts"] = float(np.cov(cnt.to_numpy(), tot_pts.reindex(cnt.index).to_numpy())[0, 1])
-    out["corr_nposs_totpts"] = float(np.corrcoef(cnt.to_numpy(), tot_pts.reindex(cnt.index).to_numpy())[0, 1])
+    out["cov_nposs_totpts"] = float(
+        np.cov(cnt.to_numpy(), tot_pts.reindex(cnt.index).to_numpy())[0, 1]
+    )
+    out["corr_nposs_totpts"] = float(
+        np.corrcoef(cnt.to_numpy(), tot_pts.reindex(cnt.index).to_numpy())[0, 1]
+    )
     out["totpts_var"] = float(tot_pts.var())
     out["totpts_mean"] = float(tot_pts.mean())
     pk["q4late"] = (pk["q0"] == 4) & (pk["gsr0"] <= 900)
     out["plays_per_poss"] = float(pk["n"].mean())
     out["secs_per_poss"] = float(pk["secs"].mean())
-    for nm, m_ in (("all", np.ones(len(pk), bool)), ("q1q3", pk["q0"].isin([1, 2, 3]).to_numpy()), ("q4", (pk["q0"] == 4).to_numpy())):
+    for nm, m_ in (
+        ("all", np.ones(len(pk), bool)),
+        ("q1q3", pk["q0"].isin([1, 2, 3]).to_numpy()),
+        ("q4", (pk["q0"] == 4).to_numpy()),
+    ):
         d = pk[m_]
         out[f"fb_corr_sd0_y_{nm}"] = float(np.corrcoef(d["sd0"], d["y"])[0, 1])
         out[f"fb_slope_sd0_y_{nm}"] = float(np.polyfit(d["sd0"], d["y"], 1)[0])
@@ -193,7 +226,13 @@ def lag_analysis(pk, P):
     q = pk["q0"].to_numpy()
     sg = np.where(side == 0, pk["po"], pk["pdf"]).astype(float)
     sb = np.where(side == 1, pk["po"], pk["pdf"]).astype(float)
-    dfq = pd.DataFrame({"g": g, "q": q, "a": sg, "b": sb}).groupby(["g", "q"])[["a", "b"]].sum().unstack("q").fillna(0.0)
+    dfq = (
+        pd.DataFrame({"g": g, "q": q, "a": sg, "b": sb})
+        .groupby(["g", "q"])[["a", "b"]]
+        .sum()
+        .unstack("q")
+        .fillna(0.0)
+    )
     A = dfq["a"].sum(axis=1)
     B = dfq["b"].sum(axis=1)
     out["var_A_pts"] = float(A.var())
@@ -235,11 +274,22 @@ def random_effects(meta, M, iters=300):
             se2, sa2 = se2_n, sa2_n
             break
         se2, sa2 = se2_n, sa2_n
-    return {"hfa": float(beta[0]), "sigma_strength_var_per_team": float(sa2), "strength_diff_var": float(2 * sa2), "noise_var": float(se2), "total_var": float(y.var()), "implied_total": float(2 * sa2 + se2), "n_games": int(n), "n_teams": int(p)}
+    return {
+        "hfa": float(beta[0]),
+        "sigma_strength_var_per_team": float(sa2),
+        "strength_diff_var": float(2 * sa2),
+        "noise_var": float(se2),
+        "total_var": float(y.var()),
+        "implied_total": float(2 * sa2 + se2),
+        "n_games": int(n),
+        "n_teams": int(p),
+    }
 
 
 def team_effects_plays(pbp, seasons, col):
-    d = pbp[pbp["season"].isin(seasons) & pbp["play_type"].isin(["run", "pass"]) & pbp[col].notna()].copy()
+    d = pbp[
+        pbp["season"].isin(seasons) & pbp["play_type"].isin(["run", "pass"]) & pbp[col].notna()
+    ].copy()
     d = d[d["posteam"].notna() & d["defteam"].notna()]
     d["o"] = d["season"].astype(str) + "_" + d["posteam"]
     d["f"] = d["season"].astype(str) + "_" + d["defteam"]
@@ -266,9 +316,17 @@ def fit_play_effects(d, col, iters=40):
         ef = np.bincount(fc, weights=rf, minlength=len(fu)) / (nf + se2 / sf2)
         res = yc - eo[oc] - ef[fc]
         se2 = float(res.var())
-        so2 = max(float((eo ** 2).mean() + (se2 / (no + se2 / so2)).mean()), 1e-9)
-        sf2 = max(float((ef ** 2).mean() + (se2 / (nf + se2 / sf2)).mean()), 1e-9)
-    return {"mu": mu, "var_raw": float(var_tot), "var_resid": float(res.var()), "share_explained": float(1 - res.var() / var_tot), "off_sd": float(np.sqrt(so2)), "def_sd": float(np.sqrt(sf2)), "n": int(len(y))}, (oc, fc, eo, ef, ou, fu, mu)
+        so2 = max(float((eo**2).mean() + (se2 / (no + se2 / so2)).mean()), 1e-9)
+        sf2 = max(float((ef**2).mean() + (se2 / (nf + se2 / sf2)).mean()), 1e-9)
+    return {
+        "mu": mu,
+        "var_raw": float(var_tot),
+        "var_resid": float(res.var()),
+        "share_explained": float(1 - res.var() / var_tot),
+        "off_sd": float(np.sqrt(so2)),
+        "def_sd": float(np.sqrt(sf2)),
+        "n": int(len(y)),
+    }, (oc, fc, eo, ef, ou, fu, mu)
 
 
 def d_batch(task):
@@ -291,11 +349,26 @@ def d_batch(task):
         _G["log"].clear()
         ns["PLAYLOG"].clear()
         state = sim.initial_kickoff_state(rng, t["opening_pool"])
-        rec, _ = ns["run_one_game"](state, t, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar)
+        rec, _ = ns["run_one_game"](
+            state, t, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar
+        )
         a = np.array(_G["log"], dtype=np.float64).reshape(-1, 12)
         ix = a[:, 11].astype(np.int64)
         pl = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
-        rows.append(np.column_stack([np.full(len(a), gi), a[:, :11], tov[ix], to_arr[ix], ep[ix], yd[ix], pl[:, 0], pl[:, 2]]))
+        rows.append(
+            np.column_stack(
+                [
+                    np.full(len(a), gi),
+                    a[:, :11],
+                    tov[ix],
+                    to_arr[ix],
+                    ep[ix],
+                    yd[ix],
+                    pl[:, 0],
+                    pl[:, 2],
+                ]
+            )
+        )
         margins.append(rec["margin"])
     return seed, np.concatenate(rows), np.array(margins)
 
@@ -314,7 +387,9 @@ def run_neutral(variant, games, workers, seed):
         cfg["yard_bias"] = cfg["ybias"]
     per = max(50, games // (workers * 4))
     tasks = [(seed * 100000 + i, per) for i in range((games + per - 1) // per)]
-    with mp.get_context("spawn").Pool(workers, initializer=d_init, initargs=(TRAIN, json.dumps(cfg))) as pool:
+    with mp.get_context("spawn").Pool(
+        workers, initializer=d_init, initargs=(TRAIN, json.dumps(cfg))
+    ) as pool:
         res = pool.map(d_batch, tasks, chunksize=1)
     frames, ms, off = [], [], 0
     for _, a, m in res:
@@ -362,14 +437,26 @@ def cmd_decomp(args):
         r["margin_var_neutral"] = float(MS.var())
         res["sim_" + v] = r
         print(v, f"{time.time() - t0:.0f}s", flush=True)
-    (OUT / f"decomp_{args.tag}.json").write_text(json.dumps(m25.clean(res), indent=1, default=float))
+    (OUT / f"decomp_{args.tag}.json").write_text(
+        json.dumps(m25.clean(res), indent=1, default=float)
+    )
     keys = [k for k in res["real_train"] if not isinstance(res["real_train"][k], dict)]
     names = list(res)
     print(f"{'key':34s} " + " ".join(f"{n:>12s}" for n in names))
     for k in keys:
         print(f"{k:34s} " + " ".join(f"{res[n].get(k, float('nan')):12.4f}" for n in names))
     for n in names:
-        print("lags", n, json.dumps({a: (round(b, 2) if not isinstance(b, list) else np.round(b, 1).tolist()) for a, b in res[n]["lags"].items() if not a.startswith("cov_lag") or a == "cov_lag1"}))
+        print(
+            "lags",
+            n,
+            json.dumps(
+                {
+                    a: (round(b, 2) if not isinstance(b, list) else np.round(b, 1).tolist())
+                    for a, b in res[n]["lags"].items()
+                    if not a.startswith("cov_lag") or a == "cov_lag1"
+                }
+            ),
+        )
     for k in ("RE", "play_effects_epa", "play_effects_yards_gained"):
         for n in names:
             if k in res[n]:
@@ -377,11 +464,15 @@ def cmd_decomp(args):
 
 
 def blup_rows(pbp, trans, train):
-    d = team_effects_plays(pbp, list(train) if pbp["season"].nunique() > 1 else list(pbp["season"].unique()), "epa")
+    d = team_effects_plays(
+        pbp, list(train) if pbp["season"].nunique() > 1 else list(pbp["season"].unique()), "epa"
+    )
     _, (oc, fc, eo, ef, ou, fu, mu) = fit_play_effects(d, "epa")
     omap = dict(zip(ou, eo))
     fmap = dict(zip(fu, ef))
-    meta = pbp[["game_id", "play_id", "season", "posteam", "defteam"]].drop_duplicates(["game_id", "play_id"])
+    meta = pbp[["game_id", "play_id", "season", "posteam", "defteam"]].drop_duplicates(
+        ["game_id", "play_id"]
+    )
     t = trans[["game_id", "play_id"]].merge(meta, on=["game_id", "play_id"], how="left")
     ok = t["season"].astype(str) + "_" + t["posteam"].astype(str)
     fk = t["season"].astype(str) + "_" + t["defteam"].astype(str)
@@ -446,7 +537,9 @@ def rate_defs(trans, at):
 
 
 def team_keys(pbp, trans):
-    meta = pbp[["game_id", "play_id", "season", "posteam", "defteam"]].drop_duplicates(["game_id", "play_id"])
+    meta = pbp[["game_id", "play_id", "season", "posteam", "defteam"]].drop_duplicates(
+        ["game_id", "play_id"]
+    )
     t = trans[["game_id", "play_id"]].merge(meta, on=["game_id", "play_id"], how="left")
     ok = (t["season"].astype(str) + "_" + t["posteam"].astype(str)).to_numpy()
     fk = (t["season"].astype(str) + "_" + t["defteam"].astype(str)).to_numpy()
@@ -469,10 +562,16 @@ def rate_effects(trans, pbp, at, train):
         sd_ = pd.Series(ef, index=fu)
         co = so.index.intersection(epa_o.index)
         cd = sd_.index.intersection(epa_d.index)
-        res.append({
-            "name": RATE_NAMES[k], "p": float(I[D[:, k], k].mean()), "off_sd": st["off_sd"], "def_sd": st["def_sd"],
-            "off_corr_epa": float(np.corrcoef(so[co], epa_o[co])[0, 1]), "def_corr_epa": float(np.corrcoef(sd_[cd], epa_d[cd])[0, 1]),
-        })
+        res.append(
+            {
+                "name": RATE_NAMES[k],
+                "p": float(I[D[:, k], k].mean()),
+                "off_sd": st["off_sd"],
+                "def_sd": st["def_sd"],
+                "off_corr_epa": float(np.corrcoef(so[co], epa_o[co])[0, 1]),
+                "def_corr_epa": float(np.corrcoef(sd_[cd], epa_d[cd])[0, 1]),
+            }
+        )
     return res, D, I
 
 
@@ -483,11 +582,25 @@ def fit_tilt(cfg, pbp, trans, ns):
     res, D, I = rate_effects(trans, pbp, at, TRAIN)
     fit = gen.load_fit()
     qb = fit["qb"]
-    var_off = max(1e-6, fit["off"]["var_mu"] - qb["backup_rate"] * (1 - qb["backup_rate"]) * qb["backup_off_epa_effect"] ** 2)
+    var_off = max(
+        1e-6,
+        fit["off"]["var_mu"]
+        - qb["backup_rate"] * (1 - qb["backup_rate"]) * qb["backup_off_epa_effect"] ** 2,
+    )
     zo, zd = float(np.sqrt(var_off)), float(np.sqrt(fit["def"]["var_mu"]))
     mult = float(cfg.get("tilt_mult", 1.0))
-    ao = np.array([np.sign(r["off_corr_epa"]) * r["off_sd"] / (r["p"] * (1 - r["p"]) * zo) for r in res]) * mult
-    ad = np.array([np.sign(r["def_corr_epa"]) * r["def_sd"] / (r["p"] * (1 - r["p"]) * zd) for r in res]) * mult
+    ao = (
+        np.array(
+            [np.sign(r["off_corr_epa"]) * r["off_sd"] / (r["p"] * (1 - r["p"]) * zo) for r in res]
+        )
+        * mult
+    )
+    ad = (
+        np.array(
+            [np.sign(r["def_corr_epa"]) * r["def_sd"] / (r["p"] * (1 - r["p"]) * zd) for r in res]
+        )
+        * mult
+    )
     if cfg.get("tilt_file"):
         tf = json.loads(Path(cfg["tilt_file"]).read_text())
         ao = np.array([tf[n]["off"] for n in RATE_NAMES]) * mult
@@ -507,7 +620,9 @@ def fit_tilt(cfg, pbp, trans, ns):
 
 
 def tiltp(p):
-    th = c25.TOV_AO * (c25.RATING_CTX[0] - c25.TOV_LO) + c25.TOV_AD * (c25.RATING_CTX[1] - c25.TOV_LD)
+    th = c25.TOV_AO * (c25.RATING_CTX[0] - c25.TOV_LO) + c25.TOV_AD * (
+        c25.RATING_CTX[1] - c25.TOV_LD
+    )
     p = min(max(float(p), 1e-6), 1 - 1e-6)
     q = p / (1 - p) * float(np.exp(th))
     return q / (1 + q)
@@ -536,7 +651,13 @@ def clean_clock(trans):
     art = el > EL_MAX
     code = trans["play_type_code"].to_numpy()
     flip = trans["possession_flip"].to_numpy().astype(bool)
-    cl = c25.cls_of(code, flip, trans["points_off"].to_numpy(), trans["points_def"].to_numpy(), trans["yards_gained"].to_numpy())
+    cl = c25.cls_of(
+        code,
+        flip,
+        trans["points_off"].to_numpy(),
+        trans["points_def"].to_numpy(),
+        trans["yards_gained"].to_numpy(),
+    )
     zn = c25.zone_v(trans["qtr_actual"].to_numpy(), trans["gsr_actual"].to_numpy())
     sb = c25.sb_v(trans["sc_raw"].to_numpy())
     key = (cl * 8 + zn) * 8 + sb
@@ -602,8 +723,18 @@ def calibrate_p4(P4, trans, shrink=10.0):
     dtf = (trans["def_to_raw"].to_numpy() > 0).astype(int)
     m4 = (down == 4) & np.isin(code, (0, 1, 2, 3))
     ix = lambda ax, x: np.abs(ax[None, :] - x[:, None]).argmin(1)
-    sd, gsr, qtr, yl, dist, otf, dtf, code = (a[m4] for a in (sd, gsr, qtr, yl, dist, otf, dtf, code))
-    pr = P4[ix(M.SD_AX, sd), ix(M.T4_AX, gsr), (qtr >= 5).astype(int), ix(M.Y4_AX, yl), ix(M.D4_AX, dist), otf, dtf]
+    sd, gsr, qtr, yl, dist, otf, dtf, code = (
+        a[m4] for a in (sd, gsr, qtr, yl, dist, otf, dtf, code)
+    )
+    pr = P4[
+        ix(M.SD_AX, sd),
+        ix(M.T4_AX, gsr),
+        (qtr >= 5).astype(int),
+        ix(M.Y4_AX, yl),
+        ix(M.D4_AX, dist),
+        otf,
+        dtf,
+    ]
     cls = M.cls4_of(code)
     cell = cal_cell(yl, dist, gsr)
     ncell = (len(CAL_YB) - 1) * (len(CAL_DB) - 1) * (len(CAL_TB) - 1)
@@ -613,7 +744,9 @@ def calibrate_p4(P4, trans, shrink=10.0):
         mp = np.bincount(cell, weights=pr[:, c], minlength=ncell)
         rc = np.bincount(cell, weights=(cls == c).astype(float), minlength=ncell)
         mm = np.where(n > 0, mp / np.maximum(n, 1), 0.0)
-        fac[:, c] = np.where(mm > 1e-6, (rc + shrink * mm) / np.maximum(mp + shrink * mm, 1e-9), 1.0)
+        fac[:, c] = np.where(
+            mm > 1e-6, (rc + shrink * mm) / np.maximum(mp + shrink * mm, 1e-9), 1.0
+        )
     gy = cal_cell_grid(M)
     out = P4 * fac[gy][..., :]
     return (out / out.sum(-1, keepdims=True)).astype(np.float32)
@@ -664,8 +797,18 @@ def calibrate_p4s(P4, trans, shrink=10.0):
     dtf = (trans["def_to_raw"].to_numpy() > 0).astype(int)
     m4 = (down == 4) & np.isin(code, (0, 1, 2, 3))
     ix = lambda ax, x: np.abs(ax[None, :] - x[:, None]).argmin(1)
-    sd, gsr, qtr, yl, dist, otf, dtf, code = (a[m4] for a in (sd, gsr, qtr, yl, dist, otf, dtf, code))
-    pr = P4[ix(M.SD_AX, sd), ix(M.T4_AX, gsr), (qtr >= 5).astype(int), ix(M.Y4_AX, yl), ix(M.D4_AX, dist), otf, dtf]
+    sd, gsr, qtr, yl, dist, otf, dtf, code = (
+        a[m4] for a in (sd, gsr, qtr, yl, dist, otf, dtf, code)
+    )
+    pr = P4[
+        ix(M.SD_AX, sd),
+        ix(M.T4_AX, gsr),
+        (qtr >= 5).astype(int),
+        ix(M.Y4_AX, yl),
+        ix(M.D4_AX, dist),
+        otf,
+        dtf,
+    ]
     cls = M.cls4_of(code)
     cell = cal2_cell(sd, dist, gsr)
     ncell = (len(SDB) - 1) * (len(DB2) - 1) * (len(CAL_TB) - 1)
@@ -675,7 +818,9 @@ def calibrate_p4s(P4, trans, shrink=10.0):
         mp = np.bincount(cell, weights=pr[:, c], minlength=ncell)
         rc = np.bincount(cell, weights=(cls == c).astype(float), minlength=ncell)
         mm = np.where(n > 0, mp / np.maximum(n, 1), 0.0)
-        fac[:, c] = np.where(mm > 1e-6, (rc + shrink * mm) / np.maximum(mp + shrink * mm, 1e-9), 1.0)
+        fac[:, c] = np.where(
+            mm > 1e-6, (rc + shrink * mm) / np.maximum(mp + shrink * mm, 1e-9), 1.0
+        )
     sh = (len(M.SD_AX), len(M.T4_AX), 2, len(M.Y4_AX), len(M.D4_AX), 2, 2)
     S = M.SD_AX[:, None, None, None, None, None, None]
     T = M.T4_AX[None, :, None, None, None, None, None]
@@ -699,7 +844,16 @@ def install_cal4s():
 
 
 EP_MODEL_PATH = OUT / "ep_model.joblib"
-EP_COLS = ["down", "ydstogo", "yardline_100", "half_seconds_remaining", "score_differential", "posteam_to", "defteam_to", "half"]
+EP_COLS = [
+    "down",
+    "ydstogo",
+    "yardline_100",
+    "half_seconds_remaining",
+    "score_differential",
+    "posteam_to",
+    "defteam_to",
+    "half",
+]
 from nv_path import NV as _NV  # noqa: E402
 
 NV_DIR = _NV.as_posix()
@@ -712,19 +866,58 @@ def ep_features(down, dist, yl, hs, sd, to_o, to_d, half):
 def load_nv_ep(seasons):
     frames = []
     for s in seasons:
-        d = pd.read_parquet(f"{NV_DIR}/pbp_{s}.parquet", columns=["season_type", "ep", "down", "ydstogo", "yardline_100", "half_seconds_remaining", "score_differential", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "game_half", "qtr", "season"])
-        d = d[(d["season_type"] == "REG") & d["down"].notna() & d["ep"].notna() & d["yardline_100"].notna() & d["score_differential"].notna() & d["half_seconds_remaining"].notna()]
+        d = pd.read_parquet(
+            f"{NV_DIR}/pbp_{s}.parquet",
+            columns=[
+                "season_type",
+                "ep",
+                "down",
+                "ydstogo",
+                "yardline_100",
+                "half_seconds_remaining",
+                "score_differential",
+                "posteam_timeouts_remaining",
+                "defteam_timeouts_remaining",
+                "game_half",
+                "qtr",
+                "season",
+            ],
+        )
+        d = d[
+            (d["season_type"] == "REG")
+            & d["down"].notna()
+            & d["ep"].notna()
+            & d["yardline_100"].notna()
+            & d["score_differential"].notna()
+            & d["half_seconds_remaining"].notna()
+        ]
         frames.append(d)
     d = pd.concat(frames, ignore_index=True)
     half = np.where(d["qtr"].to_numpy() >= 5, 3, np.where(d["qtr"].to_numpy() <= 2, 1, 2))
-    X = ep_features(d["down"].to_numpy(), d["ydstogo"].to_numpy(), d["yardline_100"].to_numpy(), d["half_seconds_remaining"].to_numpy(), d["score_differential"].to_numpy(), d["posteam_timeouts_remaining"].fillna(3).to_numpy(), d["defteam_timeouts_remaining"].fillna(3).to_numpy(), half)
+    X = ep_features(
+        d["down"].to_numpy(),
+        d["ydstogo"].to_numpy(),
+        d["yardline_100"].to_numpy(),
+        d["half_seconds_remaining"].to_numpy(),
+        d["score_differential"].to_numpy(),
+        d["posteam_timeouts_remaining"].fillna(3).to_numpy(),
+        d["defteam_timeouts_remaining"].fillna(3).to_numpy(),
+        half,
+    )
     return X, d["ep"].to_numpy(dtype=float), d["season"].to_numpy()
 
 
 def fit_ep_model(X, y, cols=None):
     from sklearn.ensemble import HistGradientBoostingRegressor
 
-    m = HistGradientBoostingRegressor(max_iter=400, learning_rate=0.08, max_leaf_nodes=48, min_samples_leaf=40, l2_regularization=1.0, random_state=0)
+    m = HistGradientBoostingRegressor(
+        max_iter=400,
+        learning_rate=0.08,
+        max_leaf_nodes=48,
+        min_samples_leaf=40,
+        l2_regularization=1.0,
+        random_state=0,
+    )
     return m.fit(X if cols is None else X[:, cols], y)
 
 
@@ -738,9 +931,16 @@ def cmd_epfit(args):
     for nm, cols in (("state_only_down_dist_yl", [0, 1, 2]), ("full", None)):
         m = fit_ep_model(X[tr], y[tr], cols)
         pr = m.predict(X[te] if cols is None else X[te][:, cols])
-        res[nm] = {"r2_heldout_2016_17": float(1 - ((y[te] - pr) ** 2).sum() / ((y[te] - y[te].mean()) ** 2).sum()), "mae_heldout": float(np.abs(y[te] - pr).mean())}
+        res[nm] = {
+            "r2_heldout_2016_17": float(
+                1 - ((y[te] - pr) ** 2).sum() / ((y[te] - y[te].mean()) ** 2).sum()
+            ),
+            "mae_heldout": float(np.abs(y[te] - pr).mean()),
+        }
         pi = m.predict(X[tr] if cols is None else X[tr][:, cols])
-        res[nm]["r2_insample"] = float(1 - ((y[tr] - pi) ** 2).sum() / ((y[tr] - y[tr].mean()) ** 2).sum())
+        res[nm]["r2_insample"] = float(
+            1 - ((y[tr] - pi) ** 2).sum() / ((y[tr] - y[tr].mean()) ** 2).sum()
+        )
     joblib.dump(fit_ep_model(X, y), EP_MODEL_PATH)
     (OUT / "epfit.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
@@ -755,9 +955,37 @@ def install_chain2():
     dec = ns["DECIDE"]
     st = {"to": (3.0, 3.0)}
 
-    def decide(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, *rest):
+    def decide(
+        idx,
+        rng,
+        tbl,
+        qtr,
+        clock_val,
+        in_ot,
+        down,
+        distance,
+        yardline,
+        score_diff,
+        off_to,
+        def_to,
+        *rest,
+    ):
         st["to"] = (float(off_to), float(def_to))
-        return dec(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, *rest)
+        return dec(
+            idx,
+            rng,
+            tbl,
+            qtr,
+            clock_val,
+            in_ot,
+            down,
+            distance,
+            yardline,
+            score_diff,
+            off_to,
+            def_to,
+            *rest,
+        )
 
     ns["DECIDE"] = decide
     base = _G["pol"]
@@ -779,7 +1007,11 @@ def chain2_epa(log, tol, model, offhome):
     clock = log[:, 4]
     hs = np.where(qtr <= 2, clock - 1800.0, clock)
     half = np.where(qtr >= 5, 3, np.where(qtr <= 2, 1, 2))
-    ep = model.predict(ep_features(down, log[:, 1], log[:, 2], np.maximum(hs, 0.0), log[:, 3], tol[:, 0], tol[:, 1], half))
+    ep = model.predict(
+        ep_features(
+            down, log[:, 1], log[:, 2], np.maximum(hs, 0.0), log[:, 3], tol[:, 0], tol[:, 1], half
+        )
+    )
     pts = norm_pts(log[:, 7]) - norm_pts(log[:, 8])
     scored = (log[:, 7] > 0) | (log[:, 8] > 0)
     n = len(ep)
@@ -811,7 +1043,11 @@ def fit_ep_table(P, shrink=20.0):
     net = (R["po"] - R["pdf"]).groupby(R["poss"]).transform("sum").to_numpy()
     rem = R["epa"][::-1].groupby(R["poss"][::-1]).cumsum()[::-1].to_numpy()
     ep = net - rem
-    cell = ep_cell(R["down"].to_numpy(dtype=float), R["dist"].to_numpy(dtype=float), R["yl"].to_numpy(dtype=float))
+    cell = ep_cell(
+        R["down"].to_numpy(dtype=float),
+        R["dist"].to_numpy(dtype=float),
+        R["yl"].to_numpy(dtype=float),
+    )
     nc = 4 * (len(EP_DB) - 1) * (len(EP_YB) - 1)
     n = np.bincount(cell, minlength=nc).astype(float)
     s = np.bincount(cell, weights=ep, minlength=nc)
@@ -820,7 +1056,9 @@ def fit_ep_table(P, shrink=20.0):
     n2 = np.bincount(cd, minlength=nco).astype(float)
     s2 = np.bincount(cd, weights=ep, minlength=nco)
     coarse = np.where(n2 > 0, s2 / np.maximum(n2, 1), 0.0)
-    ci = np.arange(nc) // (len(EP_DB) - 1) // (len(EP_YB) - 1) * (len(EP_YB) - 1) + np.arange(nc) % (len(EP_YB) - 1)
+    ci = np.arange(nc) // (len(EP_DB) - 1) // (len(EP_YB) - 1) * (len(EP_YB) - 1) + np.arange(
+        nc
+    ) % (len(EP_YB) - 1)
     return (s + shrink * coarse[ci]) / (n + shrink)
 
 
@@ -905,9 +1143,14 @@ def _d_init(train, cfg_json):
         def patched_gs(o):
             src_ = orig_gs(o)
             if o is sim.run_one_game:
-                old_ = 'if drawn["auto_first"] or (not drawn["repeat_down"] and gained >= distance):'
+                old_ = (
+                    'if drawn["auto_first"] or (not drawn["repeat_down"] and gained >= distance):'
+                )
                 assert old_ in src_
-                src_ = src_.replace(old_, 'if drawn["auto_first"] or (not drawn["repeat_down"] and (gained >= distance or (down >= 4 and arrays["next_down"][idx] == 1))):')
+                src_ = src_.replace(
+                    old_,
+                    'if drawn["auto_first"] or (not drawn["repeat_down"] and (gained >= distance or (down >= 4 and arrays["next_down"][idx] == 1))):',
+                )
             return src_
 
         inspect.getsource = patched_gs
@@ -961,7 +1204,9 @@ def _d_init(train, cfg_json):
             ns["DKH"] = float(cfg["dkern"])
             ns["DKR"] = float(cfg.get("fined") or sim.ROUND_DIST)
             extra += " * np.exp(-0.5 * ((DISTR[neighbors] - key[2] * DKR) / (DKH * max(1.0, key[2] * DKR) ** 0.5)) ** 2)"
-        ctx = "    RATING_CTX[0] = off_sim\n    RATING_CTX[1] = def_sim\n" if cfg.get("tilt") else ""
+        ctx = (
+            "    RATING_CTX[0] = off_sim\n    RATING_CTX[1] = def_sim\n" if cfg.get("tilt") else ""
+        )
         exec(src.replace(old, old + extra).replace(hdr, ctx + hdr), ns)
     if cfg.get("chain"):
         P, M, meta, pbp2 = real_load(train)
@@ -975,7 +1220,12 @@ def _d_init(train, cfg_json):
 
 def d_gen_init(setting):
     cfg = json.loads(setting["mech"])
-    cfg.update(condition=1, yard_gain=setting["yard_gain"], def_sign=1.0, yard_bias=cfg.get("ybias", setting.get("yard_bias", 0.0)))
+    cfg.update(
+        condition=1,
+        yard_gain=setting["yard_gain"],
+        def_sign=1.0,
+        yard_bias=cfg.get("ybias", setting.get("yard_bias", 0.0)),
+    )
     d_init(TRAIN, json.dumps(cfg))
 
 
@@ -987,7 +1237,14 @@ DV["crw"] = dict(DV["cre"], ipw=1)
 DV["crk"] = dict(DV["crw"], clean=1)
 DV["crt"] = dict(DV["crk"], tilt=1, tilt_file=str(OUT / "tilt_coef.json"))
 DV["crwt"] = dict(DV["crw"], tilt=1)
-for _nm, _drop in (("late", ("late",)), ("fourth", ("fourth",)), ("pat", ("pat",)), ("fine", ("inner", "outer", "stime")), ("ipw", ("ipw",)), ("clean", ("clean",))):
+for _nm, _drop in (
+    ("late", ("late",)),
+    ("fourth", ("fourth",)),
+    ("pat", ("pat",)),
+    ("fine", ("inner", "outer", "stime")),
+    ("ipw", ("ipw",)),
+    ("clean", ("clean",)),
+):
     DV["crt_no" + _nm] = {k: v for k, v in DV["crt"].items() if k not in _drop}
 for _sg in (4, 8, 12, 16, 20):
     DV[f"crp{_sg:02d}"] = dict(DV["crt"], pace=_sg / 100.0)
@@ -1038,7 +1295,9 @@ def d_play_season(task):
         _G["tolog"].clear() if "tolog" in _G else None
         hr = {"off": gen.quant(ratings[week][h][0]), "def": gen.quant(ratings[week][h][1])}
         ar = {"off": gen.quant(ratings[week][a][0]), "def": gen.quant(ratings[week][a][1])}
-        rec, cap_hit = ns["run_one_game"](state, tables, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar)
+        rec, cap_hit = ns["run_one_game"](
+            state, tables, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar
+        )
         tables["nn_weight_cache_cond"].clear()
         log = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
         idx = log[:, 1].astype(np.int64)
@@ -1069,10 +1328,32 @@ def d_play_season(task):
         else:
             epa = arr["epa"][idx] + (shift - bias) / gain + arr["adv"][idx]
         yards = arr["yards"][idx] + shift
-        turn = np.where(arr["int"][idx] == 1, 1, np.where(arr["fl"][idx] == 1, 2, 0)).astype(np.int8)
-        chunks.append(np.rec.fromarrays([np.full(len(idx), gi, dtype=np.int16), offhome, kind, epa.astype(np.float32), yards.astype(np.float32), turn], names="g,offhome,kind,epa,yards,turn"))
+        turn = np.where(arr["int"][idx] == 1, 1, np.where(arr["fl"][idx] == 1, 2, 0)).astype(
+            np.int8
+        )
+        chunks.append(
+            np.rec.fromarrays(
+                [
+                    np.full(len(idx), gi, dtype=np.int16),
+                    offhome,
+                    kind,
+                    epa.astype(np.float32),
+                    yards.astype(np.float32),
+                    turn,
+                ],
+                names="g,offhome,kind,epa,yards,turn",
+            )
+        )
         total, margin = float(rec["total"]), float(rec["margin"])
-        gm_rows.append((gi, (total + margin) / 2.0, (total - margin) / 2.0, bool(rec["went_ot"]), bool(cap_hit)))
+        gm_rows.append(
+            (
+                gi,
+                (total + margin) / 2.0,
+                (total - margin) / 2.0,
+                bool(rec["went_ot"]),
+                bool(cap_hit),
+            )
+        )
     plays = np.concatenate(chunks) if chunks else np.empty(0)
     if rates is not None:
         dd = OUT / "diag"
@@ -1087,10 +1368,21 @@ def gen_eval_d(variant, scale, yard_gain, worlds, seasons, workers, seed, yard_b
 
     cfgj = json.dumps(dict(DV[variant], seed=seed, name=f"{variant}_s{scale:g}"))
     setting = dict(gen.SETTING_DEFAULTS)
-    setting.update({"scale": scale, "yard_gain": yard_gain, "def_sign": 1.0, "yard_bias": yard_bias, "drift": 1.0, "mech": cfgj})
+    setting.update(
+        {
+            "scale": scale,
+            "yard_gain": yard_gain,
+            "def_sign": 1.0,
+            "yard_bias": yard_bias,
+            "drift": 1.0,
+            "mech": cfgj,
+        }
+    )
     gen.init_worker = d_gen_init
     gen.play_season = d_play_season
-    games, plays, latents, elapsed = gen.run_generation(setting, worlds, seasons, workers, seed, progress=False)
+    games, plays, latents, elapsed = gen.run_generation(
+        setting, worlds, seasons, workers, seed, progress=False
+    )
     ts = gen.team_stats_from_plays(plays)
     keep = [w * 1000 + s + 1 for w in range(worlds) for s in range(2, seasons)]
     m, ac, dd = gen.all_metrics(games, ts, keep)
@@ -1102,10 +1394,21 @@ def gen_eval_d(variant, scale, yard_gain, worlds, seasons, workers, seed, yard_b
 
 def cmd_grid(args):
     real = c25.real_gate_metrics()["2011_2017"]
-    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())["gates"]
+    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())[
+        "gates"
+    ]
     rows = {}
     for sc in [float(x) for x in args.scales.split(",")]:
-        m = gen_eval_d(args.variant, sc, args.yard_gain, args.worlds, args.seasons, args.workers, args.seed, args.yard_bias)
+        m = gen_eval_d(
+            args.variant,
+            sc,
+            args.yard_gain,
+            args.worlds,
+            args.seasons,
+            args.workers,
+            args.seed,
+            args.yard_bias,
+        )
         loss = 0.0
         for k in ("epa_autocorr_lag1", "r2_w1_4", "r2_w5_9", "r2_w10_18"):
             hw = (tg[k]["hi"] - tg[k]["lo"]) / 2.0
@@ -1113,7 +1416,9 @@ def cmd_grid(args):
         m["loss"] = float(loss)
         rows[str(sc)] = m
         print(sc, json.dumps({k: round(m[k], 4) for k in c25.GK + ["loss"]}), flush=True)
-    (OUT / f"grid_{args.variant}.json").write_text(json.dumps({"real_2011_2017": real, "rows": rows}, indent=1))
+    (OUT / f"grid_{args.variant}.json").write_text(
+        json.dumps({"real_2011_2017": real, "rows": rows}, indent=1)
+    )
 
 
 def cmd_grid2(args):
@@ -1121,10 +1426,14 @@ def cmd_grid2(args):
 
     OUT.mkdir(parents=True, exist_ok=True)
     real = c25.real_gate_metrics()["2011_2017"]
-    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())["gates"]
+    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())[
+        "gates"
+    ]
     rows = {}
     for sc in [float(x) for x in args.scales.split(",")]:
-        games, plays, latents = gen_full(args.variant, sc, args.worlds, args.seasons, args.workers, args.seed)
+        games, plays, latents = gen_full(
+            args.variant, sc, args.worlds, args.seasons, args.workers, args.seed
+        )
         ts = gen.team_stats_from_plays(plays)
         keep = [w * 1000 + s + 1 for w in range(args.worlds) for s in range(2, args.seasons)]
         m, ac, dd = gen.all_metrics(games, ts, keep)
@@ -1146,18 +1455,55 @@ def cmd_grid2(args):
         loss += ((m["between_sd_off"] - 0.0928) / 0.005) ** 2
         m["loss"] = float(loss)
         rows[str(sc)] = m
-        print(sc, json.dumps({k: round(v_, 4) for k, v_ in m.items() if k in ("epa_autocorr_lag1", "r2_w1_4", "r2_w5_9", "r2_w10_18", "within_sd_off", "between_sd_off", "slope_pts_per_epa", "resid_var_margin_on_epa", "margin_sd", "loss")}), flush=True)
-    (OUT / f"grid2_{args.tag}.json").write_text(json.dumps({"real_2011_2017": real, "rows": rows}, indent=1))
+        print(
+            sc,
+            json.dumps(
+                {
+                    k: round(v_, 4)
+                    for k, v_ in m.items()
+                    if k
+                    in (
+                        "epa_autocorr_lag1",
+                        "r2_w1_4",
+                        "r2_w5_9",
+                        "r2_w10_18",
+                        "within_sd_off",
+                        "between_sd_off",
+                        "slope_pts_per_epa",
+                        "resid_var_margin_on_epa",
+                        "margin_sd",
+                        "loss",
+                    )
+                }
+            ),
+            flush=True,
+        )
+    (OUT / f"grid2_{args.tag}.json").write_text(
+        json.dumps({"real_2011_2017": real, "rows": rows}, indent=1)
+    )
 
 
 def cmd_gate(args):
     real = c25.real_gate_metrics()["2018_2025"]
-    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())["gates"]
+    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())[
+        "gates"
+    ]
     res = {}
     for v in args.variants.split(","):
-        res[v] = gen_eval_d(v, args.scale, args.yard_gain, args.worlds, args.seasons, args.workers, args.seed, args.yard_bias)
+        res[v] = gen_eval_d(
+            v,
+            args.scale,
+            args.yard_gain,
+            args.worlds,
+            args.seasons,
+            args.workers,
+            args.seed,
+            args.yard_bias,
+        )
         print(v, flush=True)
-    (OUT / f"gate_{args.tag}.json").write_text(json.dumps({"real_2018_2025": real, "res": res, "scale": args.scale}, indent=1))
+    (OUT / f"gate_{args.tag}.json").write_text(
+        json.dumps({"real_2018_2025": real, "res": res, "scale": args.scale}, indent=1)
+    )
     print(f"{'gate':20s} {'real':>9s} {'lo':>7s} {'hi':>7s} " + " ".join(f"{n:>10s}" for n in res))
     for k in c25.GK:
         lo = tg.get(k, {}).get("lo", float("nan"))
@@ -1176,7 +1522,12 @@ def cmd_tilt(args):
     fh = fh.assign(b=pd.cut(fh["score_differential"], bins))
     t = fh.groupby("b", observed=True)["adv"].agg(["mean", "size"])
     print(t.to_string())
-    print("sd of play-level advantage", float(d["adv"].std()), "slope per point of lead", float(np.polyfit(fh["score_differential"], fh["adv"], 1)[0]))
+    print(
+        "sd of play-level advantage",
+        float(d["adv"].std()),
+        "slope per point of lead",
+        float(np.polyfit(fh["score_differential"], fh["adv"], 1)[0]),
+    )
     t.to_csv(OUT / "tilt.csv")
 
 
@@ -1189,12 +1540,34 @@ def cmd_ipwcheck(args):
     b = pd.cut(sd, IPW_BINS)
     h = trans["qtr_actual"].to_numpy() <= 2
     rows = []
-    for lab, g in pd.DataFrame({"b": b, "h": h, "o": eo, "d": ef, "w": w}).groupby(["b"], observed=True):
-        rows.append({"bin": str(lab), "n": len(g), "off_raw": g["o"].mean(), "off_w": np.average(g["o"], weights=g["w"]), "def_raw": g["d"].mean(), "def_w": np.average(g["d"], weights=g["w"]), "net_raw": (g["o"] + g["d"]).mean(), "net_w": np.average(g["o"] + g["d"], weights=g["w"])})
+    for lab, g in pd.DataFrame({"b": b, "h": h, "o": eo, "d": ef, "w": w}).groupby(
+        ["b"], observed=True
+    ):
+        rows.append(
+            {
+                "bin": str(lab),
+                "n": len(g),
+                "off_raw": g["o"].mean(),
+                "off_w": np.average(g["o"], weights=g["w"]),
+                "def_raw": g["d"].mean(),
+                "def_w": np.average(g["d"], weights=g["w"]),
+                "net_raw": (g["o"] + g["d"]).mean(),
+                "net_w": np.average(g["o"] + g["d"], weights=g["w"]),
+            }
+        )
     t = pd.DataFrame(rows)
     print(t.to_string())
     t.to_csv(OUT / "ipwcheck.csv", index=False)
-    print("weight mean sd min max", float(w.mean()), float(w.std()), float(w.min()), float(w.max()), "ess frac", float(w.sum() ** 2 / (w ** 2).sum() / len(w)), info)
+    print(
+        "weight mean sd min max",
+        float(w.mean()),
+        float(w.std()),
+        float(w.min()),
+        float(w.max()),
+        "ess frac",
+        float(w.sum() ** 2 / (w**2).sum() / len(w)),
+        info,
+    )
 
 
 def main():
@@ -1207,7 +1580,10 @@ def main():
     d.add_argument("--seed", type=int, default=5)
     d.add_argument("--tag", default="d1")
     d.add_argument("--skip-sim", dest="skip_sim", action="store_true")
-    d.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    d.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     sub.add_parser("tilt")
     sub.add_parser("ipwcheck")
     ab = sub.add_parser("ablate")
@@ -1216,17 +1592,26 @@ def main():
     ab.add_argument("--workers", type=int, default=6)
     ab.add_argument("--seed", type=int, default=5)
     ab.add_argument("--tag", default="h1")
-    ab.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    ab.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     sc_ = sub.add_parser("simcache")
     sc_.add_argument("--variants", default="crp04")
     sc_.add_argument("--games", type=int, default=12000)
     sc_.add_argument("--workers", type=int, default=6)
     sc_.add_argument("--seed", type=int, default=5)
-    sc_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    sc_.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     pd_ = sub.add_parser("possdiag")
     pd_.add_argument("--variants", default="crp04")
     pd_.add_argument("--tag", default="p1")
-    pd_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    pd_.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     sg = sub.add_parser("strdiag")
     sg.add_argument("--variants", default="crf@0.75")
     sg.add_argument("--worlds", type=int, default=6)
@@ -1237,7 +1622,10 @@ def main():
     ed = sub.add_parser("epadiag")
     ed.add_argument("--variants", default="crf")
     ed.add_argument("--tag", default="e1")
-    ed.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    ed.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     sub.add_parser("epfit")
     g2 = sub.add_parser("grid2")
     g2.add_argument("--variant", default="crj")
@@ -1260,19 +1648,31 @@ def main():
     pdg = sub.add_parser("pacediag")
     pdg.add_argument("--variants", default="crw")
     pdg.add_argument("--tag", default="e1")
-    pdg.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    pdg.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     cd = sub.add_parser("corrdiag")
     cd.add_argument("--variants", default="crw")
     cd.add_argument("--tag", default="e1")
-    cd.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    cd.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     cv_ = sub.add_parser("covdecomp")
     cv_.add_argument("--variants", default="crj")
     cv_.add_argument("--tag", default="k1")
-    cv_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    cv_.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     dd_ = sub.add_parser("downdiag")
     dd_.add_argument("--variants", default="crj")
     dd_.add_argument("--tag", default="k1")
-    dd_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    dd_.add_argument(
+        "--cache",
+        default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad",
+    )
     cs_ = sub.add_parser("covsim")
     cs_.add_argument("--variants", default="crj@0.9")
     cs_.add_argument("--worlds", type=int, default=6)
@@ -1294,8 +1694,28 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.0)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag, "epfit": cmd_epfit, "grid2": cmd_grid2, "covdecomp": cmd_covdecomp, "downdiag": cmd_downdiag, "covsim": cmd_covsim}[args.cmd](args)
-
+    {
+        "decomp": cmd_decomp,
+        "tilt": cmd_tilt,
+        "ipwcheck": cmd_ipwcheck,
+        "grid": cmd_grid,
+        "gate": cmd_gate,
+        "corrdiag": cmd_corrdiag,
+        "pacediag": cmd_pacediag,
+        "ratediag": cmd_ratediag,
+        "tiltcoef": cmd_tiltcoef,
+        "ablate": cmd_ablate,
+        "pacefit": cmd_pacefit,
+        "simcache": cmd_simcache,
+        "possdiag": cmd_possdiag,
+        "strdiag": cmd_strdiag,
+        "epadiag": cmd_epadiag,
+        "epfit": cmd_epfit,
+        "grid2": cmd_grid2,
+        "covdecomp": cmd_covdecomp,
+        "downdiag": cmd_downdiag,
+        "covsim": cmd_covsim,
+    }[args.cmd](args)
 
 
 def corr_blocks(pk):
@@ -1331,7 +1751,11 @@ def corr_blocks(pk):
     d = pk[pk["q0"].isin((1, 2, 3))]
     out["corr_secs_pts_poss_q13"] = float(np.corrcoef(d["secs"], d["pts"])[0, 1])
     out["corr_plays_pts_poss_q13"] = float(np.corrcoef(d["n"], d["pts"])[0, 1])
-    for nm, m_ in (("td", d["td"] == 1), ("fg", d["fgp"] == 1), ("none", (d["td"] == 0) & (d["fgp"] == 0))):
+    for nm, m_ in (
+        ("td", d["td"] == 1),
+        ("fg", d["fgp"] == 1),
+        ("none", (d["td"] == 0) & (d["fgp"] == 0)),
+    ):
         out[f"secs_{nm}_mean"] = float(d.loc[m_, "secs"].mean())
         out[f"secs_{nm}_sd"] = float(d.loc[m_, "secs"].std())
         out[f"plays_{nm}_mean"] = float(d.loc[m_, "n"].mean())
@@ -1364,7 +1788,6 @@ def cmd_corrdiag(args):
     for k in res[names[0]]:
         print(f"{k:28s} " + " ".join(f"{res[n][k]:12.4f}" for n in names))
     (OUT / f"corrdiag_{args.tag}.json").write_text(json.dumps(res, indent=1))
-
 
 
 def pace_blocks(P):
@@ -1402,7 +1825,15 @@ def pace_blocks(P):
         out[f"plays_sd_q{c_}"] = float(q[c_].std())
     gs = P["gsr"].to_numpy(dtype=float)
     ng = P["g"].nunique()
-    for lo, hi in ((2700, 3601), (1920, 2700), (1800, 1920), (900, 1800), (300, 900), (120, 300), (0, 120)):
+    for lo, hi in (
+        (2700, 3601),
+        (1920, 2700),
+        (1800, 1920),
+        (900, 1800),
+        (300, 900),
+        (120, 300),
+        (0, 120),
+    ):
         m = (gs >= lo) & (gs < hi)
         w = P[m].groupby("g").size().reindex(n.index).fillna(0)
         out[f"w{lo}_mean"] = float(w.mean())
@@ -1431,7 +1862,6 @@ def cmd_pacediag(args):
     (OUT / f"pacediag_{args.tag}.json").write_text(json.dumps(res, indent=1))
 
 
-
 def mom_sd(num, den, floor=200):
     m = den >= floor
     r = num[m] / den[m]
@@ -1450,7 +1880,11 @@ def real_rate_spread(seasons):
     out = {}
     for side, key in (("off", ok), ("def", fk)):
         for k, nm in enumerate(RATE_NAMES):
-            df = pd.DataFrame({"t": key, "n": I[:, k].astype(float), "d": D[:, k].astype(float)}).groupby("t").sum()
+            df = (
+                pd.DataFrame({"t": key, "n": I[:, k].astype(float), "d": D[:, k].astype(float)})
+                .groupby("t")
+                .sum()
+            )
             out[f"{side}_{nm}"] = mom_sd(df["n"].to_numpy(), df["d"].to_numpy())
     return out
 
@@ -1472,7 +1906,6 @@ def cmd_ratediag(args):
     (OUT / f"ratediag_{args.tag}.json").write_text(json.dumps(res, indent=1))
 
 
-
 def cmd_tiltcoef(args):
     import mod25_generator as gen
 
@@ -1483,7 +1916,11 @@ def cmd_tiltcoef(args):
     res, D, I = rate_effects(trans, pbp, at, TRAIN)
     fit = gen.load_fit()
     qb = fit["qb"]
-    var_off = max(1e-6, fit["off"]["var_mu"] - qb["backup_rate"] * (1 - qb["backup_rate"]) * qb["backup_off_epa_effect"] ** 2)
+    var_off = max(
+        1e-6,
+        fit["off"]["var_mu"]
+        - qb["backup_rate"] * (1 - qb["backup_rate"]) * qb["backup_off_epa_effect"] ** 2,
+    )
     zo, zd = float(np.sqrt(var_off)), float(np.sqrt(fit["def"]["var_mu"]))
     real = real_rate_spread(TRAIN)
     fs = sorted((OUT / "diag").glob(f"{args.base}_*.npz"))
@@ -1496,9 +1933,16 @@ def cmd_tiltcoef(args):
         pq = r["p"] * (1 - r["p"])
         out[nm] = {
             "off": float(np.sign(r["off_corr_epa"]) * max(0.0, real[f"off_{nm}"] - so) / (pq * zo)),
-            "def": float(np.sign(r["def_corr_epa"]) * max(0.0, real[f"def_{nm}"] - sd_) / (pq * zd)),
-            "real_off": real[f"off_{nm}"], "real_def": real[f"def_{nm}"], "base_off": so, "base_def": sd_,
-            "p": r["p"], "off_corr_epa": r["off_corr_epa"], "def_corr_epa": r["def_corr_epa"],
+            "def": float(
+                np.sign(r["def_corr_epa"]) * max(0.0, real[f"def_{nm}"] - sd_) / (pq * zd)
+            ),
+            "real_off": real[f"off_{nm}"],
+            "real_def": real[f"def_{nm}"],
+            "base_off": so,
+            "base_def": sd_,
+            "p": r["p"],
+            "off_corr_epa": r["off_corr_epa"],
+            "def_corr_epa": r["def_corr_epa"],
         }
     (OUT / "tilt_coef.json").write_text(json.dumps(out, indent=1))
     for nm, v in out.items():
@@ -1557,10 +2001,22 @@ def real_reversion(seasons):
     gid, gids = pd.factorize(tr["game_id"])
     last = tr.groupby(gid).tail(1)
     Mall = pd.Series(last["home_margin_post"].to_numpy(), index=gid[last.index.to_numpy()])
-    meta = pbp.drop_duplicates("game_id").set_index("game_id").loc[gids, ["season", "home_team", "away_team"]].reset_index(drop=True)
+    meta = (
+        pbp.drop_duplicates("game_id")
+        .set_index("game_id")
+        .loc[gids, ["season", "home_team", "away_team"]]
+        .reset_index(drop=True)
+    )
     mu = blup_mu(meta, Mall)
     reg = tr["qtr_actual"].to_numpy() <= 4
-    R = pd.DataFrame({"g": gid[reg], "gsr": tr["gsr_actual"].to_numpy()[reg], "pre": tr["home_margin_pre"].to_numpy()[reg], "post": tr["home_margin_post"].to_numpy()[reg]})
+    R = pd.DataFrame(
+        {
+            "g": gid[reg],
+            "gsr": tr["gsr_actual"].to_numpy()[reg],
+            "pre": tr["home_margin_pre"].to_numpy()[reg],
+            "post": tr["home_margin_post"].to_numpy()[reg],
+        }
+    )
     fin = R.groupby("g")["post"].last()
     out = {}
     for t in REV_T:
@@ -1611,9 +2067,27 @@ def cmd_ablate(args):
         rv["n_games"] = int(len(MS))
         rv["plays_per_game"] = float(len(S) / len(MS))
         res[v] = rv
-        print(v, f"{time.time() - t0:.0f}s", json.dumps({k: round(x, 3) for k, x in rv.items()}), flush=True)
-        (OUT / f"ablate_{args.tag}.json").write_text(json.dumps({"real": real, "sim": res}, indent=1))
-    print("real", json.dumps({p: {t: (round(d["raw"], 3), round(d["adj"], 3), round(d["adj_se"], 3)) for t, d in real[p].items()} for p in real}))
+        print(
+            v,
+            f"{time.time() - t0:.0f}s",
+            json.dumps({k: round(x, 3) for k, x in rv.items()}),
+            flush=True,
+        )
+        (OUT / f"ablate_{args.tag}.json").write_text(
+            json.dumps({"real": real, "sim": res}, indent=1)
+        )
+    print(
+        "real",
+        json.dumps(
+            {
+                p: {
+                    t: (round(d["raw"], 3), round(d["adj"], 3), round(d["adj_se"], 3))
+                    for t, d in real[p].items()
+                }
+                for p in real
+            }
+        ),
+    )
 
 
 def cmd_pacefit(args):
@@ -1628,7 +2102,15 @@ def cmd_pacefit(args):
         r, pk = poss_analysis(S, MS)
         res["sim_" + v] = {**pace_blocks(S), **corr_blocks(pk)}
         print(v, flush=True)
-    keys = ["plays_cov_between_qtrs", "plays_sd", "plays_mean", "plays_var_sum_qtrs", "corr_n_pts", "corr_n_secs", "g_el_sum_sd"]
+    keys = [
+        "plays_cov_between_qtrs",
+        "plays_sd",
+        "plays_mean",
+        "plays_var_sum_qtrs",
+        "corr_n_pts",
+        "corr_n_secs",
+        "g_el_sum_sd",
+    ]
     print(f"{'key':26s} " + " ".join(f"{n[:11]:>11s}" for n in res))
     for k in keys:
         print(f"{k:26s} " + " ".join(f"{res[n][k]:11.3f}" for n in res))
@@ -1657,10 +2139,22 @@ def drive_table(P):
     gp = R.groupby("poss", sort=True)
     D = pd.DataFrame(
         {
-            "g": gp["g"].first(), "trk": gp["trk"].first(), "yl0": gp["yl"].first(), "ylmin": gp["yl"].min(), "q0": gp["qtr"].first(),
-            "gsr0": gp["gsr"].first(), "n": gp.size(), "secs": gp["el"].sum(), "po": gp["po"].sum(), "pdf": gp["pdf"].sum(),
-            "code": gp["code"].last(), "tov": gp["tov"].last(), "flip": gp["flip"].last(), "sd0": gp["sd"].first(),
-            "ql": gp["qtr"].last(), "elmax": gp["el"].max(),
+            "g": gp["g"].first(),
+            "trk": gp["trk"].first(),
+            "yl0": gp["yl"].first(),
+            "ylmin": gp["yl"].min(),
+            "q0": gp["qtr"].first(),
+            "gsr0": gp["gsr"].first(),
+            "n": gp.size(),
+            "secs": gp["el"].sum(),
+            "po": gp["po"].sum(),
+            "pdf": gp["pdf"].sum(),
+            "code": gp["code"].last(),
+            "tov": gp["tov"].last(),
+            "flip": gp["flip"].last(),
+            "sd0": gp["sd"].first(),
+            "ql": gp["qtr"].last(),
+            "elmax": gp["el"].max(),
         }
     ).reset_index()
     ng_ = D["g"].to_numpy()
@@ -1670,7 +2164,17 @@ def drive_table(P):
     term = last_g | last_h
     po, pdf, code, tov, flip = (D[c].to_numpy() for c in ("po", "pdf", "code", "tov", "flip"))
     oc = np.select(
-        [po >= 6, (po == 3) & (code == 3), pdf > 0, (code == 3) & (po == 0), code == 2, term, (tov == 1) & flip, flip & (po == 0), ~flip],
+        [
+            po >= 6,
+            (po == 3) & (code == 3),
+            pdf > 0,
+            (code == 3) & (po == 0),
+            code == 2,
+            term,
+            (tov == 1) & flip,
+            flip & (po == 0),
+            ~flip,
+        ],
         ["td", "fg", "def_score", "fg_miss", "punt", "end_half", "turnover", "downs", "end_half"],
         default="other",
     )
@@ -1702,24 +2206,63 @@ def drive_tables(P):
         out["pts_" + lab] = float(d["pts"].mean())
     D["ylb"] = pd.cut(D["yl0"], YL_BINS, right=False)
     D["lnb"] = pd.cut(D["n"], LEN_BINS, right=False)
-    out["by_start"] = {str(k): dict(n=int(len(g)), pts=float(g["pts"].mean()), td=float((g["oc"] == "td").mean()), fg=float((g["oc"] == "fg").mean()), len=float(g["n"].mean())) for k, g in D.groupby("ylb", observed=True)}
-    out["by_len"] = {str(k): dict(n=int(len(g)), share=float(len(g) / len(D)), pts=float(g["pts"].mean()), td=float((g["oc"] == "td").mean()), fg=float((g["oc"] == "fg").mean())) for k, g in D.groupby("lnb", observed=True)}
+    out["by_start"] = {
+        str(k): dict(
+            n=int(len(g)),
+            pts=float(g["pts"].mean()),
+            td=float((g["oc"] == "td").mean()),
+            fg=float((g["oc"] == "fg").mean()),
+            len=float(g["n"].mean()),
+        )
+        for k, g in D.groupby("ylb", observed=True)
+    }
+    out["by_len"] = {
+        str(k): dict(
+            n=int(len(g)),
+            share=float(len(g) / len(D)),
+            pts=float(g["pts"].mean()),
+            td=float((g["oc"] == "td").mean()),
+            fg=float((g["oc"] == "fg").mean()),
+        )
+        for k, g in D.groupby("lnb", observed=True)
+    }
     rz = D[D["rz"]]
-    out["rz"] = dict(share=float(D["rz"].mean()), td=float((rz["oc"] == "td").mean()), fg=float((rz["oc"] == "fg").mean()), fg_miss=float((rz["oc"] == "fg_miss").mean()), tov=float((rz["oc"] == "turnover").mean()), downs=float((rz["oc"] == "downs").mean()), pts=float(rz["pts"].mean()))
+    out["rz"] = dict(
+        share=float(D["rz"].mean()),
+        td=float((rz["oc"] == "td").mean()),
+        fg=float((rz["oc"] == "fg").mean()),
+        fg_miss=float((rz["oc"] == "fg_miss").mean()),
+        tov=float((rz["oc"] == "turnover").mean()),
+        downs=float((rz["oc"] == "downs").mean()),
+        pts=float(rz["pts"].mean()),
+    )
     f = R[(R["code"] == 3)].copy()
     f["b"] = pd.cut(f["yl"], [0, 10, 20, 25, 30, 35, 40, 50])
-    f["mk"] = (f["po"] == 3)
-    out["fg_make"] = {str(k): dict(n=int(len(g)), make=float(g["mk"].mean())) for k, g in f.groupby("b", observed=True)}
+    f["mk"] = f["po"] == 3
+    out["fg_make"] = {
+        str(k): dict(n=int(len(g)), make=float(g["mk"].mean()))
+        for k, g in f.groupby("b", observed=True)
+    }
     fd = R[(R["down"] == 4) & R["code"].isin([0, 1, 2, 3])].copy()
     fd["b"] = pd.cut(fd["yl"], [0, 10, 20, 25, 30, 35, 40, 50, 60, 75, 101])
     fd["fgp"] = fd["code"] == 3
     fd["pn"] = fd["code"] == 2
     fd["go"] = fd["code"].isin([0, 1])
-    out["fourth"] = {str(k): dict(n=int(len(g)), fg=float(g["fgp"].mean()), punt=float(g["pn"].mean()), go=float(g["go"].mean())) for k, g in fd.groupby("b", observed=True)}
-    okg = (D.groupby("g")["elmax"].max() <= EL_MAX)
+    out["fourth"] = {
+        str(k): dict(
+            n=int(len(g)),
+            fg=float(g["fgp"].mean()),
+            punt=float(g["pn"].mean()),
+            go=float(g["go"].mean()),
+        )
+        for k, g in fd.groupby("b", observed=True)
+    }
+    okg = D.groupby("g")["elmax"].max() <= EL_MAX
     out["clean_game_share"] = float(okg.mean())
     D = D[D["g"].isin(okg.index[okg.to_numpy()])].copy()
-    G = D.groupby("g").agg(n=("n", "sum"), nd=("n", "size"), pts=("pts", "sum"), secs=("secs", "sum"))
+    G = D.groupby("g").agg(
+        n=("n", "sum"), nd=("n", "size"), pts=("pts", "sum"), secs=("secs", "sum")
+    )
     G["pdf"] = D.groupby("g")["pdf"].sum()
     G["tp"] = G["pts"] + G["pdf"]
     G["ppd"] = G["n"] / G["nd"]
@@ -1775,10 +2318,21 @@ def gen_full(variant, scale, worlds, seasons, workers, seed, yard_gain=0.0, yard
 
     cfgj = json.dumps(dict(DV[variant], seed=seed, name=f"{variant}_s{scale:g}"))
     setting = dict(gen.SETTING_DEFAULTS)
-    setting.update({"scale": scale, "yard_gain": yard_gain, "def_sign": 1.0, "yard_bias": yard_bias, "drift": 1.0, "mech": cfgj})
+    setting.update(
+        {
+            "scale": scale,
+            "yard_gain": yard_gain,
+            "def_sign": 1.0,
+            "yard_bias": yard_bias,
+            "drift": 1.0,
+            "mech": cfgj,
+        }
+    )
     gen.init_worker = d_gen_init
     gen.play_season = d_play_season
-    games, plays, latents, elapsed = gen.run_generation(setting, worlds, seasons, workers, seed, progress=False)
+    games, plays, latents, elapsed = gen.run_generation(
+        setting, worlds, seasons, workers, seed, progress=False
+    )
     return games, plays, latents
 
 
@@ -1807,7 +2361,9 @@ def x_frame(games, ts):
         idx = pd.MultiIndex.from_arrays([g["game_id"], g[f"{side}_team"]])
         for c in ("off_epa_per_play", "def_epa_per_play"):
             g[f"{side}_state_{c}"] = st[c].reindex(idx).to_numpy()
-    g["x"] = (g["home_state_off_epa_per_play"] - g["home_state_def_epa_per_play"]) - (g["away_state_off_epa_per_play"] - g["away_state_def_epa_per_play"])
+    g["x"] = (g["home_state_off_epa_per_play"] - g["home_state_def_epa_per_play"]) - (
+        g["away_state_off_epa_per_play"] - g["away_state_def_epa_per_play"]
+    )
     g["y"] = g["home_score"] - g["away_score"]
     return g, tg
 
@@ -1828,7 +2384,9 @@ def bucket_corr(g, col_a, col_b):
     out = {}
     for lo, hi in ((1, 4), (5, 9), (10, 18)):
         b = g[(g["week"] >= lo) & (g["week"] <= hi)].dropna(subset=[col_a, col_b])
-        out[f"w{lo}_{hi}"] = float(np.corrcoef(b[col_a], b[col_b])[0, 1]) if len(b) > 30 else float("nan")
+        out[f"w{lo}_{hi}"] = (
+            float(np.corrcoef(b[col_a], b[col_b])[0, 1]) if len(b) > 30 else float("nan")
+        )
     return out
 
 
@@ -1883,20 +2441,39 @@ def team_latent(tg, latents):
 
 def conv_stats(g, tg):
     m = tg.set_index(["game_id", "team"])["off_epa_per_play"]
-    d = m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["home_team"]])).to_numpy() - m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["away_team"]])).to_numpy()
+    d = (
+        m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["home_team"]])).to_numpy()
+        - m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["away_team"]])).to_numpy()
+    )
     n = tg.set_index(["game_id", "team"])
     ok = ~np.isnan(d)
     y = g["y"].to_numpy(dtype=float)
     c = float(np.corrcoef(d[ok], y[ok])[0, 1])
     sl = float(np.cov(d[ok], y[ok])[0, 1] / np.var(d[ok], ddof=1))
     pts = (g["home_score"] + g["away_score"]).to_numpy(dtype=float)
-    return {"y_on_epa_corr": c, "y_on_epa_slope": sl, "y_resid_var": float(np.var(y[ok], ddof=1) * (1 - c * c)), "epa_diff_sd": float(np.std(d[ok], ddof=1)), "y_sd": float(np.std(y[ok], ddof=1)), "total_sd": float(np.std(pts[ok], ddof=1)), "total_mean": float(np.mean(pts[ok]))}
+    return {
+        "y_on_epa_corr": c,
+        "y_on_epa_slope": sl,
+        "y_resid_var": float(np.var(y[ok], ddof=1) * (1 - c * c)),
+        "epa_diff_sd": float(np.std(d[ok], ddof=1)),
+        "y_sd": float(np.std(y[ok], ddof=1)),
+        "total_sd": float(np.std(pts[ok], ddof=1)),
+        "total_mean": float(np.mean(pts[ok])),
+    }
 
 
 def strdiag_one(g, tg, latents=None):
     g = g.copy()
     g["z2"] = loo_season_net(g, tg)
-    res = {"x_vs_loo_season": bucket_corr(g, "x", "z2"), "x_vs_y": bucket_corr(g, "x", "y"), "loo_vs_y": bucket_corr(g, "z2", "y"), "within": within_stats(tg), "sd_x": {}, "sd_z2": float(g["z2"].std()), "conv": conv_stats(g, tg)}
+    res = {
+        "x_vs_loo_season": bucket_corr(g, "x", "z2"),
+        "x_vs_y": bucket_corr(g, "x", "y"),
+        "loo_vs_y": bucket_corr(g, "z2", "y"),
+        "within": within_stats(tg),
+        "sd_x": {},
+        "sd_z2": float(g["z2"].std()),
+        "conv": conv_stats(g, tg),
+    }
     for lo, hi in ((1, 4), (5, 9), (10, 18)):
         b = g[(g["week"] >= lo) & (g["week"] <= hi)]
         res["sd_x"][f"w{lo}_{hi}"] = float(b["x"].std())
@@ -1917,7 +2494,9 @@ def strdiag_one(g, tg, latents=None):
             res[f"slope_{c}"] = float(np.cov(dev, lat)[0, 1] / lat.var())
             res[f"corr_{c}"] = float(np.corrcoef(dev, lat)[0, 1])
             res[f"latent_sd_{c}"] = float(lat.std())
-        dev = t["off_epa_per_play"] - t.groupby(["team", "season"])["off_epa_per_play"].transform("mean")
+        dev = t["off_epa_per_play"] - t.groupby(["team", "season"])["off_epa_per_play"].transform(
+            "mean"
+        )
         res["qb_backup_share"] = float(t["q"].mean())
         res["qb_dev_gap"] = float(dev[t["q"]].mean() - dev[~t["q"]].mean())
     return res
@@ -1939,7 +2518,9 @@ def cmd_strdiag(args):
         print(nm, flush=True)
     for spec in args.variants.split(","):
         v, sc = spec.split("@")
-        games, plays, latents = gen_full(v, float(sc), args.worlds, args.seasons, args.workers, args.seed)
+        games, plays, latents = gen_full(
+            v, float(sc), args.worlds, args.seasons, args.workers, args.seed
+        )
         ts = gen.team_stats_from_plays(plays)
         g, tg = x_frame(games, ts)
         keep = [w * 1000 + s + 1 for w in range(args.worlds) for s in range(2, args.seasons)]
@@ -1966,8 +2547,18 @@ def epa_blocks(P):
     R["epa"] = R["epa"].fillna(0.0)
     de = R.groupby("poss")["epa"].sum()
     D["epa_sum"] = de.reindex(D["poss"]).to_numpy() if "poss" in D else de.to_numpy()
-    D["res"] = D["pts"] + R.groupby("poss")["pdf"].sum().reindex(D["poss"]).to_numpy() * 0 - D["epa_sum"] if False else D["pts"] - D["epa_sum"]
-    out = {"drive_res_mean": float(D["res"].mean()), "drive_res_var": float(D["res"].var()), "drive_epa_var": float(D["epa_sum"].var()), "drive_pts_var": float(D["pts"].var()), "drive_corr_pts_epa": float(np.corrcoef(D["pts"], D["epa_sum"])[0, 1])}
+    D["res"] = (
+        D["pts"] + R.groupby("poss")["pdf"].sum().reindex(D["poss"]).to_numpy() * 0 - D["epa_sum"]
+        if False
+        else D["pts"] - D["epa_sum"]
+    )
+    out = {
+        "drive_res_mean": float(D["res"].mean()),
+        "drive_res_var": float(D["res"].var()),
+        "drive_epa_var": float(D["epa_sum"].var()),
+        "drive_pts_var": float(D["pts"].var()),
+        "drive_corr_pts_epa": float(np.corrcoef(D["pts"], D["epa_sum"])[0, 1]),
+    }
     for k in OUTCOMES:
         d = D[D["oc"] == k]
         if len(d) > 50:
@@ -2030,7 +2621,14 @@ def side_game_table(P):
         m = D["trk"] == t
         a = D[m].groupby("g")
         b = D[~m].groupby("g")
-        res[t] = pd.DataFrame({"n": a.size(), "secs": a["secs"].sum(), "plays": a["n"].sum(), "pts": a["pts"].sum() + b["pdf"].sum()})
+        res[t] = pd.DataFrame(
+            {
+                "n": a.size(),
+                "secs": a["secs"].sum(),
+                "plays": a["n"].sum(),
+                "pts": a["pts"].sum() + b["pdf"].sum(),
+            }
+        )
     G = res[0].join(res[1], lsuffix="A", rsuffix="B", how="inner").fillna(0)
     return G
 
@@ -2052,7 +2650,11 @@ def trade_stats(G):
     ppdB = G["ptsB"] / G["nB"].clip(lower=1)
     out["ppd_corr_AB"] = float(np.corrcoef(ppdA, ppdB)[0, 1])
     out["ppd_cov_AB"] = float(np.cov(ppdA, ppdB)[0, 1])
-    out["spp_corr_AB"] = float(np.corrcoef(G["secsA"] / G["playsA"].clip(lower=1), G["secsB"] / G["playsB"].clip(lower=1))[0, 1])
+    out["spp_corr_AB"] = float(
+        np.corrcoef(G["secsA"] / G["playsA"].clip(lower=1), G["secsB"] / G["playsB"].clip(lower=1))[
+            0, 1
+        ]
+    )
     return out
 
 
@@ -2061,19 +2663,54 @@ def real_cond_frame(seasons):
     sch = sch[(sch["season"].isin(list(seasons))) & (sch["game_type"] == "REG")].copy()
     fr = []
     for s in seasons:
-        d = pd.read_parquet(f"{NV_DIR}/pbp_{s}.parquet", columns=["game_id", "season_type", "qtr", "play_type", "penalty", "weather", "posteam", "fixed_drive", "game_seconds_remaining", "drive_time_of_possession"])
+        d = pd.read_parquet(
+            f"{NV_DIR}/pbp_{s}.parquet",
+            columns=[
+                "game_id",
+                "season_type",
+                "qtr",
+                "play_type",
+                "penalty",
+                "weather",
+                "posteam",
+                "fixed_drive",
+                "game_seconds_remaining",
+                "drive_time_of_possession",
+            ],
+        )
         d = d[d["season_type"] == "REG"]
         fr.append(d)
     d = pd.concat(fr, ignore_index=True)
     pl = d[d["play_type"].isin(["pass", "run", "no_play"])]
     g = pl.groupby("game_id")
     rp = d[d["play_type"].isin(["pass", "run"])].groupby("game_id").size()
-    C = pd.DataFrame({"plays": rp, "pen_rate": g["penalty"].mean(), "weather": g["weather"].first()})
-    C = C.join(sch.set_index("game_id")[["season", "week", "home_score", "away_score", "roof", "surface", "temp", "wind", "referee", "home_team", "away_team", "total_line", "spread_line"]], how="inner")
+    C = pd.DataFrame(
+        {"plays": rp, "pen_rate": g["penalty"].mean(), "weather": g["weather"].first()}
+    )
+    C = C.join(
+        sch.set_index("game_id")[
+            [
+                "season",
+                "week",
+                "home_score",
+                "away_score",
+                "roof",
+                "surface",
+                "temp",
+                "wind",
+                "referee",
+                "home_team",
+                "away_team",
+                "total_line",
+                "spread_line",
+            ]
+        ],
+        how="inner",
+    )
     C["dome"] = C["roof"].isin(["dome", "closed"]).astype(float)
     C["turf"] = (~C["surface"].isin(["grass", "dessograss"])).astype(float)
     C["precip"] = C["weather"].fillna("").str.lower().str.contains(PRECIP_RE).astype(float)
-    outdoor = (C["dome"] == 0)
+    outdoor = C["dome"] == 0
     C["wind_o"] = np.where(outdoor, C["wind"].fillna(0), 0.0)
     C["windy"] = (C["wind_o"] >= 15).astype(float)
     C["temp_o"] = np.where(outdoor, C["temp"].fillna(C["temp"].median()), 70.0)
@@ -2098,7 +2735,18 @@ COND_GROUPS = {
     "crew_penalty_rate": ["crew_pen"],
     "game_pace_plays": ["pace_plays"],
     "env_all": ["dome", "turf", "wind_o", "windy", "precip_o", "temp_o", "cold", "hot", "crew_pen"],
-    "env_all_plus_pace": ["dome", "turf", "wind_o", "windy", "precip_o", "temp_o", "cold", "hot", "crew_pen", "pace_plays"],
+    "env_all_plus_pace": [
+        "dome",
+        "turf",
+        "wind_o",
+        "windy",
+        "precip_o",
+        "temp_o",
+        "cold",
+        "hot",
+        "crew_pen",
+        "pace_plays",
+    ],
 }
 
 
@@ -2116,7 +2764,14 @@ def crossfit_pred(C, cols, ycol):
 def cond_decomp(C):
     h = C["home_score"].to_numpy(float)
     a = C["away_score"].to_numpy(float)
-    out = {"games": int(len(C)), "cov_home_away": float(np.cov(h, a)[0, 1]), "var_home": float(h.var(ddof=1)), "var_away": float(a.var(ddof=1)), "sd_total": float((h + a).std()), "sd_margin": float((h - a).std())}
+    out = {
+        "games": int(len(C)),
+        "cov_home_away": float(np.cov(h, a)[0, 1]),
+        "var_home": float(h.var(ddof=1)),
+        "var_away": float(a.var(ddof=1)),
+        "sd_total": float((h + a).std()),
+        "sd_margin": float((h - a).std()),
+    }
     rows = {}
     for nm, cols in COND_GROUPS.items():
         ph = crossfit_pred(C.assign(y=h), cols, "y")
@@ -2138,7 +2793,11 @@ def cond_effects(C):
         X = np.column_stack([np.ones(len(C))] + [C[c].to_numpy(float) for c in cols])
         b_tot = np.linalg.lstsq(X, tot, rcond=None)[0][1:]
         b_pl = np.linalg.lstsq(X, C["plays"].to_numpy(float), rcond=None)[0][1:]
-        res[nm] = {"cols": cols, "total_pts": [float(x) for x in b_tot], "plays": [float(x) for x in b_pl]}
+        res[nm] = {
+            "cols": cols,
+            "total_pts": [float(x) for x in b_tot],
+            "plays": [float(x) for x in b_pl],
+        }
     return res
 
 
@@ -2148,7 +2807,10 @@ def cmd_covdecomp(args):
     C = real_cond_frame(range(2009, 2018))
     res["real_cond"] = cond_decomp(C)
     res["real_effects"] = cond_effects(C)
-    res["real_cond_means"] = {c: float(C[c].mean()) for c in ("dome", "turf", "windy", "precip_o", "cold", "hot", "plays", "pen_rate")}
+    res["real_cond_means"] = {
+        c: float(C[c].mean())
+        for c in ("dome", "turf", "windy", "precip_o", "cold", "hot", "plays", "pen_rate")
+    }
     P, M, meta, pbp = real_load(range(2009, 2018))
     res["real_trade_2009_17"] = trade_stats(side_game_table(P))
     for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
@@ -2234,13 +2896,25 @@ def sim_cov_row(games, plays, latents, worlds, seasons):
     g = games[games["season"].isin(keep)].copy()
     h = g["home_score"].to_numpy(float)
     a = g["away_score"].to_numpy(float)
-    out = {"games": int(len(g)), "cov_home_away": float(np.cov(h, a)[0, 1]), "var_total": float((h + a).var(ddof=1)), "var_margin": float((h - a).var(ddof=1)), "sd_total": float((h + a).std()), "sd_margin": float((h - a).std())}
+    out = {
+        "games": int(len(g)),
+        "cov_home_away": float(np.cov(h, a)[0, 1]),
+        "var_total": float((h + a).var(ddof=1)),
+        "var_margin": float((h - a).var(ddof=1)),
+        "sd_total": float((h + a).std()),
+        "sd_margin": float((h - a).std()),
+    }
     pl = plays[plays["play_type"].isin(["run", "pass"])]
     n = pl.groupby("game_id").size()
     g = g.assign(plays=g["game_id"].map(n).to_numpy(float))
     g["pace_plays"] = g["plays"] - g["plays"].mean()
     g["hs"], g["as_"] = h, a
-    out["pace_explained_cov"] = float(np.cov(crossfit_pred(g.assign(y=g["hs"]), ["pace_plays"], "y"), crossfit_pred(g.assign(y=g["as_"]), ["pace_plays"], "y"))[0, 1])
+    out["pace_explained_cov"] = float(
+        np.cov(
+            crossfit_pred(g.assign(y=g["hs"]), ["pace_plays"], "y"),
+            crossfit_pred(g.assign(y=g["as_"]), ["pace_plays"], "y"),
+        )[0, 1]
+    )
     po = pl.groupby(["game_id", "posteam"]).size().reset_index(name="n")
     po["r"] = po.groupby("game_id").cumcount()
     ph = po[po["r"] == 0].set_index("game_id")["n"].reindex(gm.index).to_numpy(float)
@@ -2256,7 +2930,9 @@ def cmd_covsim(args):
     res = {}
     for spec in args.variants.split(","):
         v, sc = spec.split("@")
-        games, plays, latents = gen_full(v, float(sc), args.worlds, args.seasons, args.workers, args.seed)
+        games, plays, latents = gen_full(
+            v, float(sc), args.worlds, args.seasons, args.workers, args.seed
+        )
         games.to_parquet(OUT / f"covsim_games_{v}.parquet")
         res[spec] = sim_cov_row(games, plays, latents, args.worlds, args.seasons)
         print(spec, json.dumps(res[spec]), flush=True)

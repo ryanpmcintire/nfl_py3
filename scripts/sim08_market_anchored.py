@@ -677,6 +677,7 @@ def cmd_control(a):
         print(json.dumps(brief), flush=True)
     Path(a.out).write_text(json.dumps(results, indent=1))
 
+
 DESIGN_N = 9600
 DESIGN_CHUNK = 100
 X_DIFF_BOX = 0.5
@@ -739,7 +740,9 @@ def cmd_fold(a):
                 }
             )
             fit_path.write_text(json.dumps(fit, indent=1))
-        print(f"fold {HELD} design done {time.time() - t0:.0f}s free_gb {free_gb():.1f}", flush=True)
+        print(
+            f"fold {HELD} design done {time.time() - t0:.0f}s free_gb {free_gb():.1f}", flush=True
+        )
         spread_only = a.arm == "spread"
         tasks = [
             (
@@ -755,7 +758,9 @@ def cmd_fold(a):
         for k, r in enumerate(pool.imap(game_task, tasks, chunksize=1)):
             res.append(r)
             if k % 16 == 0:
-                print(f"fold {HELD} {a.arm} game {k}/{len(tasks)} {time.time() - t0:.0f}s", flush=True)
+                print(
+                    f"fold {HELD} {a.arm} game {k}/{len(tasks)} {time.time() - t0:.0f}s", flush=True
+                )
     np.savez(
         npz,
         game_id=test["game_id"].to_numpy().astype(str),

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:30:01.803999+00:00`
+Refreshed at: `2026-11-03T16:33:07.378274+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T16:30:01.803999+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e2eb357cf14c` — SIM-08: the inverted sim cover read is within-line anchor miss, not a convention bug
-- Pending change set: 250 paths
-  - `M  .gitignore`
+- Baseline commit: `0d05aa8f7fc1` — Untrack cache parquets committed by mistake; ignore scripts/artifacts/
+- Pending change set: 247 paths
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/model.html`
-  - `D  scripts/artifacts/cache/opener_pick_evaluation/7df008b0d05e1e4a58a0988350dfcd4c673b287bd1dd7e9ed598c99b164d8133.parquet`
-  - `D  scripts/artifacts/cache/opener_pick_evaluation/dfffb3c0b3f9b538c9b4895c34a450ee3f9ba20746edd750a4db5fb95215c6a9.parquet`
-  - `D  scripts/artifacts/cache/pairing_table/82c9a8a48479026a8631999c0318b72021abe94ada6b9ec6dca6b1a7230017f3.parquet`
   - ` M scripts/capture_scheduler.py`
-  - ` M scripts/mod25d_variance.py`
-  - ` M scripts/mod25e_desp.py`
-  - ` M scripts/mod25e_rulestr.py`
-  - ` M scripts/sim08_market_anchored.py`
-  - `M  scripts/sim08_negcoef_cells.py`
-  - ` M scripts/sim09_f3.py`
-  - ` M scripts/sim09_personnel.py`
-  - ` M scripts/sim09_u4d.py`
-  - ` M scripts/sim09_urgency.py`
-  - ` M scripts/sim10_drive.py`
+  - `M  scripts/mod25d_variance.py`
+  - `M  scripts/mod25e_desp.py`
+  - `M  scripts/mod25e_rulestr.py`
+  - `M  scripts/sim08_market_anchored.py`
+  - `M  scripts/sim09_f3.py`
+  - `M  scripts/sim09_personnel.py`
+  - `M  scripts/sim09_u4d.py`
+  - `M  scripts/sim09_urgency.py`
+  - `M  scripts/sim10_drive.py`
   - `?? an.csv`
-  - ...and 230 more
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - ...and 227 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

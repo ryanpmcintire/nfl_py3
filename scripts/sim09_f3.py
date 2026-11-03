@@ -12,12 +12,82 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 from nv_path import NV  # noqa: E402
+
 OUT = REPO / "artifacts" / "sim09" / "f3"
-PRE = {"False Start", "Delay of Game", "Illegal Formation", "Illegal Shift", "Defensive Offside", "Neutral Zone Infraction", "Encroachment", "Defensive 12 On-field", "Offensive 12 On-field", "Illegal Motion", "Illegal Substitution", "Defensive Delay of Game", "Offensive Offside"}
+PRE = {
+    "False Start",
+    "Delay of Game",
+    "Illegal Formation",
+    "Illegal Shift",
+    "Defensive Offside",
+    "Neutral Zone Infraction",
+    "Encroachment",
+    "Defensive 12 On-field",
+    "Offensive 12 On-field",
+    "Illegal Motion",
+    "Illegal Substitution",
+    "Defensive Delay of Game",
+    "Offensive Offside",
+}
 GROUPS = ["pre_off", "pre_def", "in_off", "in_def"]
-FEATS = ["one", "d2", "d3", "d4", "logdist", "yl", "trail", "sd", "q2", "q3", "q4", "ot", "home", "nh", "sg", "ispass", "deep"]
+FEATS = [
+    "one",
+    "d2",
+    "d3",
+    "d4",
+    "logdist",
+    "yl",
+    "trail",
+    "sd",
+    "q2",
+    "q3",
+    "q4",
+    "ot",
+    "home",
+    "nh",
+    "sg",
+    "ispass",
+    "deep",
+]
 PEN = re.compile(r"(?i)Penalty on (\w+)-[^,]+, ([^,]+), (declined|offsetting)")
-COLS = ["game_id", "old_game_id", "play_id", "season", "week", "posteam", "defteam", "home_team", "away_team", "down", "ydstogo", "yardline_100", "score_differential", "qtr", "game_seconds_remaining", "play_type", "no_huddle", "shotgun", "qb_dropback", "qb_kneel", "qb_spike", "air_yards", "pass_length", "yards_gained", "penalty", "penalty_type", "penalty_yards", "penalty_team", "first_down_penalty", "desc", "touchdown", "interception", "fumble_lost", "sack", "posteam_timeouts_remaining", "defteam_timeouts_remaining"]
+COLS = [
+    "game_id",
+    "old_game_id",
+    "play_id",
+    "season",
+    "week",
+    "posteam",
+    "defteam",
+    "home_team",
+    "away_team",
+    "down",
+    "ydstogo",
+    "yardline_100",
+    "score_differential",
+    "qtr",
+    "game_seconds_remaining",
+    "play_type",
+    "no_huddle",
+    "shotgun",
+    "qb_dropback",
+    "qb_kneel",
+    "qb_spike",
+    "air_yards",
+    "pass_length",
+    "yards_gained",
+    "penalty",
+    "penalty_type",
+    "penalty_yards",
+    "penalty_team",
+    "first_down_penalty",
+    "desc",
+    "touchdown",
+    "interception",
+    "fumble_lost",
+    "sack",
+    "posteam_timeouts_remaining",
+    "defteam_timeouts_remaining",
+]
 
 
 COLS2 = COLS + ["incomplete_pass"]
@@ -35,21 +105,57 @@ def fx(down, dist, yl, sd, qtr, home, nh, sg, ispass, deep, sdsd):
     n = len(down)
     sdv = np.asarray(sd, float)
     q = np.asarray(qtr)
-    cols = [np.ones(n), down == 2, down == 3, down == 4, np.log(np.maximum(np.asarray(dist, float), 1.0)), np.asarray(yl, float) / 100.0, sdv < 0, sdv / sdsd, q == 2, q == 3, q == 4, q >= 5, np.asarray(home, float), np.asarray(nh, float), np.asarray(sg, float), np.asarray(ispass, float), np.asarray(deep, float)]
+    cols = [
+        np.ones(n),
+        down == 2,
+        down == 3,
+        down == 4,
+        np.log(np.maximum(np.asarray(dist, float), 1.0)),
+        np.asarray(yl, float) / 100.0,
+        sdv < 0,
+        sdv / sdsd,
+        q == 2,
+        q == 3,
+        q == 4,
+        q >= 5,
+        np.asarray(home, float),
+        np.asarray(nh, float),
+        np.asarray(sg, float),
+        np.asarray(ispass, float),
+        np.asarray(deep, float),
+    ]
     return np.column_stack([np.asarray(c, float) for c in cols])
 
 
 def load_nv(seasons=range(2009, 2018), cols=COLS):
-    d = pd.concat([pd.read_parquet(NV / f"pbp_{s}.parquet", columns=cols) for s in seasons], ignore_index=True)
+    d = pd.concat(
+        [pd.read_parquet(NV / f"pbp_{s}.parquet", columns=cols) for s in seasons], ignore_index=True
+    )
     return d.drop_duplicates(["game_id", "play_id"])
 
 
 def snap_table(d):
-    s = d[d.posteam.notna() & d.down.isin([1, 2, 3, 4]) & d.play_type.isin(["run", "pass", "no_play"]) & (d.qb_kneel != 1) & (d.qb_spike != 1) & d.score_differential.notna()].copy().reset_index(drop=True)
+    s = (
+        d[
+            d.posteam.notna()
+            & d.down.isin([1, 2, 3, 4])
+            & d.play_type.isin(["run", "pass", "no_play"])
+            & (d.qb_kneel != 1)
+            & (d.qb_spike != 1)
+            & d.score_differential.notna()
+        ]
+        .copy()
+        .reset_index(drop=True)
+    )
     desc = s["desc"].fillna("")
     nopl = s.play_type == "no_play"
-    s["ispass"] = ((s.play_type == "pass") | (nopl & ((s.qb_dropback == 1) | desc.str.contains(r"pass|sacked|scrambl", case=False)))).astype(int)
-    s["deep"] = ((s.pass_length == "deep") | desc.str.contains(r"\bdeep\b", case=False)).astype(int) * s.ispass
+    s["ispass"] = (
+        (s.play_type == "pass")
+        | (nopl & ((s.qb_dropback == 1) | desc.str.contains(r"pass|sacked|scrambl", case=False)))
+    ).astype(int)
+    s["deep"] = ((s.pass_length == "deep") | desc.str.contains(r"\bdeep\b", case=False)).astype(
+        int
+    ) * s.ispass
     s["home"] = (s.posteam == s.home_team).astype(int)
     s["nh"] = s.no_huddle.fillna(0).astype(int)
     s["sg"] = s.shotgun.fillna(0).astype(int)
@@ -66,7 +172,9 @@ def snap_table(d):
     ftype = s["penalty_type"].where(s["acc"], s["dtype"])
     foff = np.where(s["acc"], s["aoff"], s["doff"])
     s["ftype"] = ftype
-    s["group"] = np.where(ftype.isna(), None, np.where(ftype.isin(PRE), "pre", "in") + np.where(foff, "_off", "_def"))
+    s["group"] = np.where(
+        ftype.isna(), None, np.where(ftype.isin(PRE), "pre", "in") + np.where(foff, "_off", "_def")
+    )
     return s
 
 
@@ -75,7 +183,7 @@ def Xg(X, g):
         X = X.copy()
         X[:, FEATS.index("ispass")] = 0.0
         X[:, FEATS.index("deep")] = 0.0
-        X[:, len(FEATS):] = 0.0
+        X[:, len(FEATS) :] = 0.0
     return X
 
 
@@ -83,7 +191,14 @@ def inc_of(s):
     desc = s["desc"].fillna("").str.lower()
     isp = s.play_type == "pass"
     npl = s.play_type == "no_play"
-    return ((isp & (s.incomplete_pass == 1)) | (npl & (s.ispass == 1) & desc.str.contains("incomplete"))).astype(float).to_numpy()
+    return (
+        (
+            (isp & (s.incomplete_pass == 1))
+            | (npl & (s.ispass == 1) & desc.str.contains("incomplete"))
+        )
+        .astype(float)
+        .to_numpy()
+    )
 
 
 def aug(x, inc):
@@ -115,8 +230,18 @@ def cmd_haz2(args):
         n = len(y)
         co = np.array(co)
         w = fit_lr(XA, y, C)
-        out[g] = dict(C=C, w=w.tolist(), loso_ll_blind=llb / n, loso_ll_aware=lla / n, fold_inc=co[:, 0].tolist(), fold_incdeep=co[:, 1].tolist())
-        print(f"{g:7s} LOSO LL blind {llb / n:.5f} aware {lla / n:.5f} gain {(llb - lla) / n:.5f} inc coef mean {co[:, 0].mean():+.3f} sd {co[:, 0].std():.3f} sign+ {int((co[:, 0] > 0).sum())}/{len(co)}; incdeep mean {co[:, 1].mean():+.3f} sd {co[:, 1].std():.3f} sign+ {int((co[:, 1] > 0).sum())}/{len(co)}; full-fit inc {w[-2]:+.3f} incdeep {w[-1]:+.3f}", flush=True)
+        out[g] = dict(
+            C=C,
+            w=w.tolist(),
+            loso_ll_blind=llb / n,
+            loso_ll_aware=lla / n,
+            fold_inc=co[:, 0].tolist(),
+            fold_incdeep=co[:, 1].tolist(),
+        )
+        print(
+            f"{g:7s} LOSO LL blind {llb / n:.5f} aware {lla / n:.5f} gain {(llb - lla) / n:.5f} inc coef mean {co[:, 0].mean():+.3f} sd {co[:, 0].std():.3f} sign+ {int((co[:, 0] > 0).sum())}/{len(co)}; incdeep mean {co[:, 1].mean():+.3f} sd {co[:, 1].std():.3f} sign+ {int((co[:, 1] > 0).sum())}/{len(co)}; full-fit inc {w[-2]:+.3f} incdeep {w[-1]:+.3f}",
+            flush=True,
+        )
     json.dump(out, open(HAZ2, "w"))
 
 
@@ -132,7 +257,9 @@ def cmd_typ2(args):
     tp = {}
     for (g, k), z in c.groupby(["group", "key"]):
         v = z.ftype.value_counts(normalize=True)
-        tp.setdefault(g, {})[k] = dict(types=list(v.index), p=[float(x) for x in v.values], n=int(len(z)))
+        tp.setdefault(g, {})[k] = dict(
+            types=list(v.index), p=[float(x) for x in v.values], n=int(len(z))
+        )
     a = c[c.acc]
     cn = {}
     for (t_, i), z in a.groupby(["ftype", "inc"]):
@@ -145,7 +272,9 @@ def cmd_typ2(args):
         pt = tr.groupby("ftype").cnt.mean()
         pti = tr.groupby(["ftype", "inc"]).cnt.mean()
         p0 = te.ftype.map(pt).fillna(tr.cnt.mean()).to_numpy()
-        p1 = np.array([pti.get((f_, i_), pt.get(f_, tr.cnt.mean())) for f_, i_ in zip(te.ftype, te.inc)])
+        p1 = np.array(
+            [pti.get((f_, i_), pt.get(f_, tr.cnt.mean())) for f_, i_ in zip(te.ftype, te.inc)]
+        )
         y = te.cnt.to_numpy().astype(float)
         lln += logloss(y, p0) * len(te)
         llc += logloss(y, p1) * len(te)
@@ -153,7 +282,7 @@ def cmd_typ2(args):
         cr = c[c.season != sn]
         for gg, zz in ct.groupby("group"):
             base = cr[cr.group == gg].groupby("ftype").size()
-            base = (base / base.sum())
+            base = base / base.sum()
             cond = cr[cr.group == gg].groupby(["key", "ftype"]).size()
             for (kk, ff), nn in zz.groupby(["key", "ftype"]).size().items():
                 p_base = float(base.get(ff, 1e-6))
@@ -162,9 +291,13 @@ def cmd_typ2(args):
                 llt0 -= nn * np.log(max(p_base, 1e-6))
                 llt1 -= nn * np.log(max(p_c, 1e-6))
     n = len(a)
-    print(f"counted LOSO LL by type {lln / n:.5f} by type x inc {llc / n:.5f} gain {(lln - llc) / n:.5f} n {n}")
+    print(
+        f"counted LOSO LL by type {lln / n:.5f} by type x inc {llc / n:.5f} gain {(lln - llc) / n:.5f} n {n}"
+    )
     nc = len(c)
-    print(f"type LOSO LL group {llt0 / nc:.5f} group x key x inc {llt1 / nc:.5f} gain {(llt0 - llt1) / nc:.5f} n {nc}")
+    print(
+        f"type LOSO LL group {llt0 / nc:.5f} group x key x inc {llt1 / nc:.5f} gain {(llt0 - llt1) / nc:.5f} n {nc}"
+    )
     for g_ in ["in_off", "in_def"]:
         for i_ in (0, 1):
             z = a[(a.group == g_) & (a.inc == i_) & (a.ispass == 1)]
@@ -173,7 +306,19 @@ def cmd_typ2(args):
 
 
 def X_of(s, sdsd):
-    return fx(s.down, s.ydstogo, s.yardline_100, s.score_differential, s.qtr, s.home, s.nh, s.sg, s.ispass, s.deep, sdsd)
+    return fx(
+        s.down,
+        s.ydstogo,
+        s.yardline_100,
+        s.score_differential,
+        s.qtr,
+        s.home,
+        s.nh,
+        s.sg,
+        s.ispass,
+        s.deep,
+        sdsd,
+    )
 
 
 def logloss(y, p):
@@ -215,8 +360,17 @@ def hazard_fit(s, sdsd, log):
         llm = logloss(y[te], predict(w1, X[te]))
         llb = logloss(y[te], np.full(te.sum(), base))
         w = fit_lr(X, y, C)
-        res[g] = dict(C=C, w=w.tolist(), rate=float(y.mean()), test_ll_model=llm, test_ll_const=llb, test_gain=llb - llm)
-        log(f"hazard {g}: rate {y.mean():.4f} C {C} test LL model {llm:.5f} const {llb:.5f} gain {llb - llm:.5f}")
+        res[g] = dict(
+            C=C,
+            w=w.tolist(),
+            rate=float(y.mean()),
+            test_ll_model=llm,
+            test_ll_const=llb,
+            test_gain=llb - llm,
+        )
+        log(
+            f"hazard {g}: rate {y.mean():.4f} C {C} test LL model {llm:.5f} const {llb:.5f} gain {llb - llm:.5f}"
+        )
         log("  coefs " + ", ".join(f"{n}={v:+.3f}" for n, v in zip(FEATS, w)))
     return res
 
@@ -233,9 +387,22 @@ def type_tables(s, log):
         pmf = mid.penalty_yards.round().value_counts(normalize=True).sort_index()
         short = g[g.penalty_yards < g.ydstogo]
         af = float(short.first_down_penalty.fillna(0).mean()) if len(short) else float("nan")
-        rows[t] = dict(n=int(len(g)), declined=int((dec.ftype == t).sum()), offense_share=float(g.aoff.mean()), counted=counted, pre=bool(t in PRE), auto_first_share=af, pmf_yards=[float(k) for k in pmf.index], pmf_p=[float(v) for v in pmf.values], mean_yards=float(mid.penalty_yards.mean()), n_short=int(len(short)))
+        rows[t] = dict(
+            n=int(len(g)),
+            declined=int((dec.ftype == t).sum()),
+            offense_share=float(g.aoff.mean()),
+            counted=counted,
+            pre=bool(t in PRE),
+            auto_first_share=af,
+            pmf_yards=[float(k) for k in pmf.index],
+            pmf_p=[float(v) for v in pmf.values],
+            mean_yards=float(mid.penalty_yards.mean()),
+            n_short=int(len(short)),
+        )
     for t, r in sorted(rows.items(), key=lambda kv: -kv[1]["n"])[:24]:
-        log(f"type {t:30s} n {r['n']:5d} declined {r['declined']:4d} off {r['offense_share']:.2f} counted {r['counted']:.2f} autoFD {r['auto_first_share']:.2f} mean_yds {r['mean_yards']:.1f}")
+        log(
+            f"type {t:30s} n {r['n']:5d} declined {r['declined']:4d} off {r['offense_share']:.2f} counted {r['counted']:.2f} autoFD {r['auto_first_share']:.2f} mean_yds {r['mean_yards']:.1f}"
+        )
     return rows
 
 
@@ -243,21 +410,42 @@ def rule_checks(s, log):
     a = s[s.acc & s.aoff & ~s.play_type.isin(["pass", "run"])]
     near = a[(a.yardline_100 >= 90) & a.penalty_yards.notna()]
     half = (100 - near.yardline_100) / 2
-    log(f"offensive fouls replayed from own 10 or deeper: n {len(near)} share yards == half distance {float((np.abs(near.penalty_yards - half) <= 0.5).mean()):.3f}, share exceeding half distance {float((near.penalty_yards > half + 0.5).mean()):.3f}")
-    nd = s[s.acc & ~s.aoff & s.ftype.isin(["Defensive Offside", "Neutral Zone Infraction", "Encroachment"]) & (s.yardline_100 <= 9)]
-    log(f"defensive pre-snap from opp 9 or closer: n {len(nd)} share yards == half distance {float((np.abs(nd.penalty_yards - nd.yardline_100 / 2) <= 0.5).mean()):.3f}")
+    log(
+        f"offensive fouls replayed from own 10 or deeper: n {len(near)} share yards == half distance {float((np.abs(near.penalty_yards - half) <= 0.5).mean()):.3f}, share exceeding half distance {float((near.penalty_yards > half + 0.5).mean()):.3f}"
+    )
+    nd = s[
+        s.acc
+        & ~s.aoff
+        & s.ftype.isin(["Defensive Offside", "Neutral Zone Infraction", "Encroachment"])
+        & (s.yardline_100 <= 9)
+    ]
+    log(
+        f"defensive pre-snap from opp 9 or closer: n {len(nd)} share yards == half distance {float((np.abs(nd.penalty_yards - nd.yardline_100 / 2) <= 0.5).mean()):.3f}"
+    )
     dp = s[s.acc & (s.ftype == "Defensive Pass Interference")]
-    log(f"DPI: n {len(dp)} yards exceeding yardline_100 share {float((dp.penalty_yards > dp.yardline_100).mean()):.4f}, yards==yl-1 share {float((dp.penalty_yards == dp.yardline_100 - 1).mean()):.3f}, counted-play share {float(dp.play_type.isin(['pass']).mean()):.3f}")
+    log(
+        f"DPI: n {len(dp)} yards exceeding yardline_100 share {float((dp.penalty_yards > dp.yardline_100).mean()):.4f}, yards==yl-1 share {float((dp.penalty_yards == dp.yardline_100 - 1).mean()):.3f}, counted-play share {float(dp.play_type.isin(['pass']).mean()):.3f}"
+    )
     dpn = dp[dp.yardline_100 <= 20]
-    log(f"DPI inside 20: n {len(dpn)} mean yards/yl {float((dpn.penalty_yards / dpn.yardline_100).mean()):.3f}")
-    log("DPI yards by deep flag: " + str(dp.groupby("deep").penalty_yards.agg(["mean", "median", "count"]).round(1).to_dict()))
+    log(
+        f"DPI inside 20: n {len(dpn)} mean yards/yl {float((dpn.penalty_yards / dpn.yardline_100).mean()):.3f}"
+    )
+    log(
+        "DPI yards by deep flag: "
+        + str(dp.groupby("deep").penalty_yards.agg(["mean", "median", "count"]).round(1).to_dict())
+    )
     allacc = s[s.acc & ~s.aoff & ~s.ftype.isin(PRE)]
-    log(f"defensive in-play accepted: first_down_penalty share {float(allacc.first_down_penalty.fillna(0).mean()):.3f}")
+    log(
+        f"defensive in-play accepted: first_down_penalty share {float(allacc.first_down_penalty.fillna(0).mean()):.3f}"
+    )
     n_comm = int(s.ftype.notna().sum())
     n_acc = int(s.acc.sum())
     log(f"snaps {len(s)} committed {n_comm} accepted {n_acc} accept share {n_acc / n_comm:.3f}")
     log("groups " + str(s.groupby("group").size().to_dict()))
-    log("accepted share by group " + str(s[s.group.notna()].groupby("group").acc.mean().round(3).to_dict()))
+    log(
+        "accepted share by group "
+        + str(s[s.group.notna()].groupby("group").acc.mean().round(3).to_dict())
+    )
 
 
 def latents(s, haz, sdsd, log):
@@ -279,18 +467,31 @@ def latents(s, haz, sdsd, log):
         ru["next"] = ru["season"] + 1
         m = ru.merge(ru, left_on=[col, "next"], right_on=[col, "season"], suffixes=("", "_n"))
         co = float(np.corrcoef(m["r"], m["r_n"])[0, 1])
-        out[g] = dict(team_tau2=tau2, team_tau=float(np.sqrt(max(tau2, 0.0))), split_half_r=sh, carry_over_r=co, n_units=int(len(u)), mean_E=float(u.E.mean()))
-        log(f"team latent {g}: units {len(u)} meanE {u.E.mean():.1f} excess var tau2 {tau2:+.4f} (tau {np.sqrt(max(tau2, 0)):.3f}) split-half r {sh:.3f} next-season r {co:.3f}")
+        out[g] = dict(
+            team_tau2=tau2,
+            team_tau=float(np.sqrt(max(tau2, 0.0))),
+            split_half_r=sh,
+            carry_over_r=co,
+            n_units=int(len(u)),
+            mean_E=float(u.E.mean()),
+        )
+        log(
+            f"team latent {g}: units {len(u)} meanE {u.E.mean():.1f} excess var tau2 {tau2:+.4f} (tau {np.sqrt(max(tau2, 0)):.3f}) split-half r {sh:.3f} next-season r {co:.3f}"
+        )
     return out
 
 
 def load_refs(log):
     parts = []
-    for p in (REPO / "data" / "processed" / "officials_pfr_wayback").glob("*/officials_2009_2014.parquet"):
+    for p in (REPO / "data" / "processed" / "officials_pfr_wayback").glob(
+        "*/officials_2009_2014.parquet"
+    ):
         w = pd.read_parquet(p)
         log("wayback cols " + str(w.columns.tolist()))
         parts.append(w)
-    raw = pd.read_parquet(sorted((REPO / "data" / "raw" / "officials").glob("*/officials.parquet"))[-1])
+    raw = pd.read_parquet(
+        sorted((REPO / "data" / "raw" / "officials").glob("*/officials.parquet"))[-1]
+    )
     parts.append(raw)
     keep = []
     for p in parts:
@@ -298,7 +499,10 @@ def load_refs(log):
             keep.append(p[["game_id", "official_name", "position"]])
     o = pd.concat(keep, ignore_index=True)
     pos = o.position.astype(str)
-    o = o[pos.str.contains("Referee", case=False) & ~pos.str.contains("Umpire|Replay|Head Linesman", case=False)].drop_duplicates("game_id")
+    o = o[
+        pos.str.contains("Referee", case=False)
+        & ~pos.str.contains("Umpire|Replay|Head Linesman", case=False)
+    ].drop_duplicates("game_id")
     o["game_id"] = o["game_id"].astype(str)
     return o
 
@@ -307,7 +511,9 @@ def crews(s, haz, sdsd, log):
     o = load_refs(log)
     s = s.copy()
     s["gk"] = s["old_game_id"].astype(str)
-    m = s.merge(o[["game_id", "official_name"]].rename(columns={"game_id": "gk"}), on="gk", how="inner")
+    m = s.merge(
+        o[["game_id", "official_name"]].rename(columns={"game_id": "gk"}), on="gk", how="inner"
+    )
     log(f"games with referee {m.gk.nunique()} of {s.gk.nunique()}")
     X = X_of(m, sdsd)
     out = {}
@@ -319,11 +525,24 @@ def crews(s, haz, sdsd, log):
         r = u.O / u.E
         tau2 = float(r.var() - (1.0 / u.E).mean())
         m["half"] = pd.factorize(m.gk)[0] % 2
-        hh = m.groupby(["official_name", "half"]).agg(O=("O", "sum"), E=("E", "sum")).reset_index().pivot(index="official_name", columns="half", values=["O", "E"]).dropna()
+        hh = (
+            m.groupby(["official_name", "half"])
+            .agg(O=("O", "sum"), E=("E", "sum"))
+            .reset_index()
+            .pivot(index="official_name", columns="half", values=["O", "E"])
+            .dropna()
+        )
         hh = hh.loc[hh.index.isin(u.index)]
         sh = float(np.corrcoef(hh[("O", 0)] / hh[("E", 0)], hh[("O", 1)] / hh[("E", 1)])[0, 1])
-        out[g] = dict(crew_tau2=tau2, crew_tau=float(np.sqrt(max(tau2, 0.0))), split_half_r=sh, n_refs=int(len(u)))
-        log(f"crew latent {g}: refs {len(u)} (>=16 games) excess var tau2 {tau2:+.5f} (tau {np.sqrt(max(tau2, 0)):.3f}) split-half r {sh:.3f}")
+        out[g] = dict(
+            crew_tau2=tau2,
+            crew_tau=float(np.sqrt(max(tau2, 0.0))),
+            split_half_r=sh,
+            n_refs=int(len(u)),
+        )
+        log(
+            f"crew latent {g}: refs {len(u)} (>=16 games) excess var tau2 {tau2:+.5f} (tau {np.sqrt(max(tau2, 0)):.3f}) split-half r {sh:.3f}"
+        )
     return out
 
 
@@ -338,7 +557,9 @@ def cmd_measure(args):
     s = snap_table(load_nv())
     sdsd = float(s.score_differential.std())
     log(f"snaps {len(s)} sd std {sdsd:.2f}")
-    deepmin = float(s[(s.deep == 1) & s.air_yards.notna() & (s.play_type == "pass")].air_yards.quantile(0.01))
+    deepmin = float(
+        s[(s.deep == 1) & s.air_yards.notna() & (s.play_type == "pass")].air_yards.quantile(0.01)
+    )
     log(f"deep pass air_yards 1st percentile {deepmin}")
     rule_checks(s, log)
     tt = type_tables(s, log)
@@ -346,17 +567,45 @@ def cmd_measure(args):
     lat = latents(s, haz, sdsd, log)
     cr = crews(s, haz, sdsd, log)
     c = s[s.ftype.notna()].copy()
-    c["key"] = np.where(c.group.str.startswith("pre"), "00", c.ispass.astype(str) + c.deep.astype(str))
+    c["key"] = np.where(
+        c.group.str.startswith("pre"), "00", c.ispass.astype(str) + c.deep.astype(str)
+    )
     tp = {}
     for (g, k), z in c.groupby(["group", "key"]):
         z = z[z.ftype.isin(list(tt))]
         v = z.ftype.value_counts(normalize=True)
-        tp.setdefault(g, {})[k] = dict(types=list(v.index), p=[float(x) for x in v.values], n=int(len(z)))
-    json.dump(dict(typepmf=tp, sdsd=sdsd, deep_air_min=deepmin, hazard=haz, types=tt, team=lat, crew=cr, feats=FEATS), open(OUT / "f3_params.json", "w"))
+        tp.setdefault(g, {})[k] = dict(
+            types=list(v.index), p=[float(x) for x in v.values], n=int(len(z))
+        )
+    json.dump(
+        dict(
+            typepmf=tp,
+            sdsd=sdsd,
+            deep_air_min=deepmin,
+            hazard=haz,
+            types=tt,
+            team=lat,
+            crew=cr,
+            feats=FEATS,
+        ),
+        open(OUT / "f3_params.json", "w"),
+    )
     (OUT / "measure.log").write_text("\n".join(lines))
 
+
 EPM = REPO / "artifacts" / "mod25d" / "ep_model.joblib"
-AFEATS = ["grp_pre_off", "grp_pre_def", "grp_in_off", "grp_in_def", "g_dec_def", "g_dec_off", "stf", "sd_dec", "late", "g_late"]
+AFEATS = [
+    "grp_pre_off",
+    "grp_pre_def",
+    "grp_in_off",
+    "grp_in_def",
+    "g_dec_def",
+    "g_dec_off",
+    "stf",
+    "sd_dec",
+    "late",
+    "g_late",
+]
 HALF_SECONDS = 1800.0
 
 
@@ -377,7 +626,9 @@ class EPQ:
         sd = -c["sd"] if swap else c["sd"]
         a = c["to_d"] if swap else c["to_o"]
         b = c["to_o"] if swap else c["to_d"]
-        cols = np.broadcast_arrays(*[np.asarray(v, float) for v in (down, dist, yl, c["hs"], sd, a, b, c["half"])])
+        cols = np.broadcast_arrays(
+            *[np.asarray(v, float) for v in (down, dist, yl, c["hs"], sd, a, b, c["half"])]
+        )
         self.rows.append(np.column_stack(cols))
         return len(self.rows) - 1
 
@@ -426,7 +677,9 @@ def gain_dec(m, c, y, po, pdf, turn, nom, af, counted, isoff, dpi):
     vc = af_val(q, c, yc, np.where(isoff, 0.0, np.where(yc < dist, af, 1.0)), False)
     q.run(m)
     vpl, tvp = vp()
-    play = np.where(po > 0, norm_pts(po), np.where(pdf > 0, -norm_pts(pdf), np.where(turn, tvp, vpl)))
+    play = np.where(
+        po > 0, norm_pts(po), np.where(pdf > 0, -norm_pts(pdf), np.where(turn, tvp, vpl))
+    )
     stf = (po > 0) | (pdf > 0) | turn
     vcn = np.where(stf, play, vc()[0])
     acc = counted * vcn + (1.0 - counted) * vr()[0]
@@ -440,7 +693,9 @@ def acc_X(g, grp, stf, sd, hs, isoff, sdsd):
     oh[np.arange(n), grp] = 1.0
     sd_dec = np.where(isoff, -sd, sd) / sdsd
     late = 1.0 - np.clip(hs, 0.0, HALF_SECONDS) / HALF_SECONDS
-    return np.column_stack([oh, g * isoff, g * np.logical_not(isoff), stf.astype(float), sd_dec, late, g * late])
+    return np.column_stack(
+        [oh, g * isoff, g * np.logical_not(isoff), stf.astype(float), sd_dec, late, g * late]
+    )
 
 
 def nll_grad(w, Xo, yo, Xl, lam, pm):
@@ -468,15 +723,23 @@ snap_table_clean = [None]
 def build_accept_tables(s, P, K, seed):
     m = ep_model()
     clean = snap_table_clean[0]
-    s = s[s.ftype.notna() & s.ftype.isin(list(P["types"])) & ~s["desc"].fillna("").str.contains("(?i)offsetting")].copy()
+    s = s[
+        s.ftype.notna()
+        & s.ftype.isin(list(P["types"]))
+        & ~s["desc"].fillna("").str.contains("(?i)offsetting")
+    ].copy()
     s = s[s.group.notna()]
     s = s[s.acc | s.play_type.isin(["run", "pass"])].copy()
     isacc = s.acc.to_numpy()
     lat = (isacc & (s.play_type == "no_play")).to_numpy()
     info = s.ftype.map(P["types"])
     s["nom"] = np.where(isacc, s.penalty_yards.abs(), info.map(lambda r: r["mean_yards"]))
-    s["af"] = info.map(lambda r: r["auto_first_share"] if np.isfinite(r["auto_first_share"]) else 0.0)
-    s["cm"] = np.where(isacc, s.play_type.isin(["run", "pass"]).astype(float), info.map(lambda r: r["counted"])) * (~s.group.str.startswith("pre")).astype(float)
+    s["af"] = info.map(
+        lambda r: r["auto_first_share"] if np.isfinite(r["auto_first_share"]) else 0.0
+    )
+    s["cm"] = np.where(
+        isacc, s.play_type.isin(["run", "pass"]).astype(float), info.map(lambda r: r["counted"])
+    ) * (~s.group.str.startswith("pre")).astype(float)
     s["isoff"] = s.group.str.endswith("_off")
     s["dpi"] = s.ftype == "Defensive Pass Interference"
     s["grp"] = s.group.map({g: i for i, g in enumerate(GROUPS)})
@@ -496,11 +759,32 @@ def build_accept_tables(s, P, K, seed):
     sdsd = P["sdsd"]
 
     def ctx(d):
-        return dict(down=d.down.to_numpy(float), dist=d.ydstogo.to_numpy(float), yl=d.yardline_100.to_numpy(float), hs=d.hs.to_numpy(float), half=d.half.to_numpy(float), sd=d.score_differential.to_numpy(float), to_o=d.to_o.to_numpy(float), to_d=d.to_d.to_numpy(float))
+        return dict(
+            down=d.down.to_numpy(float),
+            dist=d.ydstogo.to_numpy(float),
+            yl=d.yardline_100.to_numpy(float),
+            hs=d.hs.to_numpy(float),
+            half=d.half.to_numpy(float),
+            sd=d.score_differential.to_numpy(float),
+            to_o=d.to_o.to_numpy(float),
+            to_d=d.to_d.to_numpy(float),
+        )
 
     o = s[~lat]
     co = ctx(o)
-    g, stf = gain_dec(m, co, o.y.to_numpy(float), o.po.to_numpy(float), o.pdf.to_numpy(float), o.turn.to_numpy(bool), o.nom.to_numpy(float), o.af.to_numpy(float), o.cm.to_numpy(float), o.isoff.to_numpy(bool), o.dpi.to_numpy(bool))
+    g, stf = gain_dec(
+        m,
+        co,
+        o.y.to_numpy(float),
+        o.po.to_numpy(float),
+        o.pdf.to_numpy(float),
+        o.turn.to_numpy(bool),
+        o.nom.to_numpy(float),
+        o.af.to_numpy(float),
+        o.cm.to_numpy(float),
+        o.isoff.to_numpy(bool),
+        o.dpi.to_numpy(bool),
+    )
     Xo = acc_X(g, o.grp.to_numpy(int), stf, co["sd"], co["hs"], o.isoff.to_numpy(bool), sdsd)
     yo = o.acc.to_numpy(float)
     L = s[lat].reset_index(drop=True)
@@ -520,9 +804,31 @@ def build_accept_tables(s, P, K, seed):
         trn[i] = a.turn.to_numpy()
     rep = lambda v: np.repeat(np.asarray(v), K)
     cf = {k: rep(v) for k, v in cl.items()}
-    gl, sl = gain_dec(m, cf, ys.ravel(), pos.ravel(), pds.ravel(), trn.ravel(), rep(L.nom.to_numpy(float)), rep(L.af.to_numpy(float)), np.zeros(len(L) * K), rep(L.isoff.to_numpy(bool)), rep(L.dpi.to_numpy(bool)))
-    Xl = acc_X(gl, rep(L.grp.to_numpy(int)), sl, cf["sd"], cf["hs"], rep(L.isoff.to_numpy(bool)), sdsd).reshape(len(L), K, -1)
-    return dict(Xo=Xo, yo=yo, Xl=Xl, so=o.season.to_numpy(), sl=L.season.to_numpy(), go=o.group.to_numpy(), gl=L.group.to_numpy())
+    gl, sl = gain_dec(
+        m,
+        cf,
+        ys.ravel(),
+        pos.ravel(),
+        pds.ravel(),
+        trn.ravel(),
+        rep(L.nom.to_numpy(float)),
+        rep(L.af.to_numpy(float)),
+        np.zeros(len(L) * K),
+        rep(L.isoff.to_numpy(bool)),
+        rep(L.dpi.to_numpy(bool)),
+    )
+    Xl = acc_X(
+        gl, rep(L.grp.to_numpy(int)), sl, cf["sd"], cf["hs"], rep(L.isoff.to_numpy(bool)), sdsd
+    ).reshape(len(L), K, -1)
+    return dict(
+        Xo=Xo,
+        yo=yo,
+        Xl=Xl,
+        so=o.season.to_numpy(),
+        sl=L.season.to_numpy(),
+        go=o.group.to_numpy(),
+        gl=L.group.to_numpy(),
+    )
 
 
 def cmd_accept(args):
@@ -543,7 +849,13 @@ def cmd_accept(args):
     va_o, va_l = T["so"] >= 2015, T["sl"] >= 2015
 
     def fitw(mo, ml, lam):
-        return minimize(nll_grad, np.zeros(nf), args=(T["Xo"][mo], T["yo"][mo], T["Xl"][ml], lam, pm), jac=True, method="L-BFGS-B").x
+        return minimize(
+            nll_grad,
+            np.zeros(nf),
+            args=(T["Xo"][mo], T["yo"][mo], T["Xl"][ml], lam, pm),
+            jac=True,
+            method="L-BFGS-B",
+        ).x
 
     base = {}
     for g in GROUPS:
@@ -554,12 +866,17 @@ def cmd_accept(args):
     yv = T["yo"][va_o]
     bo = np.array([base[g] for g in vo])
     bl = np.array([base[g] for g in vl])
-    llb = -(np.sum(np.where(yv == 1, np.log(bo), np.log(1 - bo))) + np.sum(np.log(bl))) / (len(vo) + len(vl))
+    llb = -(np.sum(np.where(yv == 1, np.log(bo), np.log(1 - bo))) + np.sum(np.log(bl))) / (
+        len(vo) + len(vl)
+    )
     best = None
     for lam in (0.0, 0.001, 0.01, 0.1, 1.0):
         w = fitw(tr_o, tr_l, lam)
         ll = acc_ll(w, T["Xo"][va_o], T["yo"][va_o], T["Xl"][va_l])
-        print(f"lam {lam} held-out 2015-17 LL {ll:.5f} group-constant {llb:.5f} gain {llb - ll:.5f}", flush=True)
+        print(
+            f"lam {lam} held-out 2015-17 LL {ll:.5f} group-constant {llb:.5f} gain {llb - ll:.5f}",
+            flush=True,
+        )
         if best is None or ll < best[0]:
             best = (ll, lam)
     lam = best[1]
@@ -571,8 +888,15 @@ def cmd_accept(args):
         mo, ml = T["go"] == g, T["gl"] == g
         pred = (po[mo].sum() + pl[ml].sum()) / (mo.sum() + ml.sum())
         real = (T["yo"][mo].sum() + ml.sum()) / (mo.sum() + ml.sum())
-        print(f"  {g}: committed {mo.sum() + ml.sum()} real accept share {real:.3f} fitted mean {pred:.3f}")
-    json.dump(dict(feats=AFEATS, w=w.tolist(), lam=lam, heldout_ll=best[0], const_ll=llb, draws=args.draws), open(OUT / "f3_accept.json", "w"))
+        print(
+            f"  {g}: committed {mo.sum() + ml.sum()} real accept share {real:.3f} fitted mean {pred:.3f}"
+        )
+    json.dump(
+        dict(
+            feats=AFEATS, w=w.tolist(), lam=lam, heldout_ll=best[0], const_ll=llb, draws=args.draws
+        ),
+        open(OUT / "f3_accept.json", "w"),
+    )
 
 
 SIMS = {}
@@ -589,7 +913,9 @@ def typ_of(P, g, kt):
         kb = kt[:-1] if len(kt) == 3 else kt
     else:
         kb = kt[:2] if len(kt) == 3 else kt
-    return P["typepmf"][g].get(kb) or P["typepmf"][g].get("00") or next(iter(P["typepmf"][g].values()))
+    return (
+        P["typepmf"][g].get(kb) or P["typepmf"][g].get("00") or next(iter(P["typepmf"][g].values()))
+    )
 
 
 def counted_of(P, tname, incb, base):
@@ -610,7 +936,16 @@ def removal_prob(P, pool, tr, a):
     elig = np.flatnonzero(np.isin(code, (0, 1)) & ~pool.pen.to_numpy())
     rng = np.random.default_rng([0, 31])
     num = lambda c: tr[c].to_numpy(float)
-    cols = dict(down=num("down_i"), dist=num("dist_raw"), yl=num("fp_raw"), sd=num("sc_raw"), qtr=num("qtr_actual"), gsr=num("gsr_actual"), to_o=np.nan_to_num(num("off_to_raw"), nan=3.0), to_d=np.nan_to_num(num("def_to_raw"), nan=3.0))
+    cols = dict(
+        down=num("down_i"),
+        dist=num("dist_raw"),
+        yl=num("fp_raw"),
+        sd=num("sc_raw"),
+        qtr=num("qtr_actual"),
+        gsr=num("gsr_actual"),
+        to_o=np.nan_to_num(num("off_to_raw"), nan=3.0),
+        to_d=np.nan_to_num(num("def_to_raw"), nan=3.0),
+    )
     yv = np.asarray(a["yards_gained"], float)
     pov = np.asarray(a["points_off"], float)
     pdv = np.asarray(a["points_def"], float)
@@ -620,19 +955,42 @@ def removal_prob(P, pool, tr, a):
     nh = pool.no_huddle.fillna(0).to_numpy(float)
     sg = pool.shotgun.fillna(0).to_numpy(float)
     for lo in range(0, len(elig), WCHUNK):
-        i = elig[lo:lo + WCHUNK]
+        i = elig[lo : lo + WCHUNK]
         n = len(i)
         c = {k: v[i] for k, v in cols.items()}
         ispass = code[i] == 1
         deep = ispass & np.isfinite(air[i]) & (air[i] >= deepmin)
-        hs = np.where(c["qtr"] <= 2, np.maximum(c["gsr"] - HALF_SECONDS, 0.0), np.maximum(c["gsr"], 0.0))
+        hs = np.where(
+            c["qtr"] <= 2, np.maximum(c["gsr"] - HALF_SECONDS, 0.0), np.maximum(c["gsr"], 0.0)
+        )
         half = np.where(c["qtr"] >= 5, 3.0, np.where(c["qtr"] <= 2, 1.0, 2.0))
-        cx = dict(down=c["down"], dist=c["dist"], yl=c["yl"], hs=hs, half=half, sd=c["sd"], to_o=c["to_o"], to_d=c["to_d"])
+        cx = dict(
+            down=c["down"],
+            dist=c["dist"],
+            yl=c["yl"],
+            hs=hs,
+            half=half,
+            sd=c["sd"],
+            to_o=c["to_o"],
+            to_d=c["to_d"],
+        )
         y = yv[i]
         po = pov[i]
         pdf = pdv[i]
         turn = flipv[i] | (pdf > 0)
-        x = fx(c["down"], c["dist"], c["yl"], c["sd"], c["qtr"], homev[i], nh[i], sg[i], ispass.astype(int), deep.astype(int), sdsd)
+        x = fx(
+            c["down"],
+            c["dist"],
+            c["yl"],
+            c["sd"],
+            c["qtr"],
+            homev[i],
+            nh[i],
+            sg[i],
+            ispass.astype(int),
+            deep.astype(int),
+            sdsd,
+        )
         key = np.where(ispass, np.where(deep, "11", "10"), "00")
         if w2():
             x = aug(x, incv[i])
@@ -643,7 +1001,11 @@ def removal_prob(P, pool, tr, a):
             tid = np.zeros(n, int)
             acc_sum = np.zeros(n)
             for d in range(WDRAWS):
-                kinc = key if not w2() else np.char.add(key.astype(str), (incv[i] > 0).astype(int).astype(str))
+                kinc = (
+                    key
+                    if not w2()
+                    else np.char.add(key.astype(str), (incv[i] > 0).astype(int).astype(str))
+                )
                 for kk in np.unique(kinc):
                     m = kinc == kk
                     kt = "00" if pre else kk
@@ -651,7 +1013,9 @@ def removal_prob(P, pool, tr, a):
                     pr = np.array(t["p"], float)
                     pr = pr / pr.sum()
                     names = np.array(t["types"])
-                    tid[m] = np.array([tnames.index(z) for z in names])[rng.choice(len(names), size=int(m.sum()), p=pr)]
+                    tid[m] = np.array([tnames.index(z) for z in names])[
+                        rng.choice(len(names), size=int(m.sum()), p=pr)
+                    ]
                 nom = np.zeros(n)
                 af = np.zeros(n)
                 cnt = np.zeros(n)
@@ -661,9 +1025,15 @@ def removal_prob(P, pool, tr, a):
                     info = P["types"][tnames[ti]]
                     pm = np.array(info["pmf_p"], float)
                     nom[m] = rng.choice(info["pmf_yards"], size=int(m.sum()), p=pm / pm.sum())
-                    af[m] = info["auto_first_share"] if np.isfinite(info["auto_first_share"]) else 0.0
+                    af[m] = (
+                        info["auto_first_share"] if np.isfinite(info["auto_first_share"]) else 0.0
+                    )
                     if not pre:
-                        pc = np.full(int(m.sum()), info["counted"]) if not w2() else counted_of(P, tnames[ti], incv[i][m] > 0, info["counted"])
+                        pc = (
+                            np.full(int(m.sum()), info["counted"])
+                            if not w2()
+                            else counted_of(P, tnames[ti], incv[i][m] > 0, info["counted"])
+                        )
                         cnt[m] = (rng.random(int(m.sum())) < pc).astype(float)
                     dpi[m] = tnames[ti] == "Defensive Pass Interference"
                 nom = np.where(dpi & ispass & np.isfinite(air[i]), np.maximum(air[i], 0.0), nom)
@@ -677,7 +1047,9 @@ def removal_prob(P, pool, tr, a):
 
 def load_params():
     P = json.load(open(OUT / "f3_params.json"))
-    P["accept"] = json.load(open(OUT / "f3_accept.json")) if (OUT / "f3_accept.json").exists() else None
+    P["accept"] = (
+        json.load(open(OUT / "f3_accept.json")) if (OUT / "f3_accept.json").exists() else None
+    )
     if w2():
         h2 = json.load(open(HAZ2))
         for g in GROUPS:
@@ -688,9 +1060,23 @@ def load_params():
 
 def removal_cached(P, pool, tr, a):
     h = hashlib.sha1()
-    for arr in (a["play_type_code"], a["yards_gained"], a["points_off"], a["points_def"], a["possession_flip"], a["is_home_off"], pool.inc.to_numpy(float), pool.pen.to_numpy(), pool.air_yards.to_numpy(float)):
+    for arr in (
+        a["play_type_code"],
+        a["yards_gained"],
+        a["points_off"],
+        a["points_def"],
+        a["possession_flip"],
+        a["is_home_off"],
+        pool.inc.to_numpy(float),
+        pool.pen.to_numpy(),
+        pool.air_yards.to_numpy(float),
+    ):
         h.update(np.ascontiguousarray(arr).tobytes())
-    h.update(json.dumps([P["hazard"], P["accept"], P["typepmf"], P["types"], P.get("typ2")], sort_keys=True).encode())
+    h.update(
+        json.dumps(
+            [P["hazard"], P["accept"], P["typepmf"], P["types"], P.get("typ2")], sort_keys=True
+        ).encode()
+    )
     key = h.hexdigest()
     f = R2 / "r2.npy"
     kf = R2 / "r2.key"
@@ -712,17 +1098,36 @@ def pool_arrays():
     pbp = dv.sim.load_reg_seasons(tuple(dv.TRAIN))
     tr = dv.sim.build_transition_frame(pbp)
     keys = tr[["game_id", "play_id"]].reset_index(drop=True)
-    cols = ["game_id", "play_id", "posteam", "penalty", "penalty_type", "penalty_team", "penalty_yards", "first_down_penalty", "air_yards", "no_huddle", "shotgun", "play_type"]
+    cols = [
+        "game_id",
+        "play_id",
+        "posteam",
+        "penalty",
+        "penalty_type",
+        "penalty_team",
+        "penalty_yards",
+        "first_down_penalty",
+        "air_yards",
+        "no_huddle",
+        "shotgun",
+        "play_type",
+    ]
     if w2():
         cols = cols + ["incomplete_pass"]
-    nv = load_nv(range(min(dv.TRAIN), max(dv.TRAIN) + 1), COLS2 if w2() else COLS)[cols].drop_duplicates(["game_id", "play_id"])
+    nv = load_nv(range(min(dv.TRAIN), max(dv.TRAIN) + 1), COLS2 if w2() else COLS)[
+        cols
+    ].drop_duplicates(["game_id", "play_id"])
     x = keys.merge(nv, on=["game_id", "play_id"], how="left")
     assert len(x) == len(keys)
     if w2():
         x["inc"] = ((x.play_type == "pass") & (x.incomplete_pass == 1)).astype(float)
     x["pen"] = ((x.penalty == 1) & x.penalty_type.notna() & x.penalty_team.notna()).to_numpy()
     x["poff"] = (x.penalty_team == x.posteam).to_numpy()
-    x["grp"] = np.where(x.pen, np.where(x.penalty_type.isin(PRE), "pre", "in") + np.where(x.poff, "_off", "_def"), "")
+    x["grp"] = np.where(
+        x.pen,
+        np.where(x.penalty_type.isin(PRE), "pre", "in") + np.where(x.poff, "_off", "_def"),
+        "",
+    )
     if os.environ.get("F3W") in ("1", "2"):
         POOL_TR[0] = tr
     return x
@@ -742,7 +1147,12 @@ class Overlay:
         self.nh = pool.no_huddle.fillna(0).to_numpy(float)
         self.sg = pool.shotgun.fillna(0).to_numpy(float)
         self.inc = pool.inc.to_numpy(float) if w2() else None
-        self.el = {g: np.asarray(a["clock_elapsed"])[(pool.grp == g).to_numpy() & (np.asarray(a["play_type_code"]) == 6)] for g in GROUPS}
+        self.el = {
+            g: np.asarray(a["clock_elapsed"])[
+                (pool.grp == g).to_numpy() & (np.asarray(a["play_type_code"]) == 6)
+            ]
+            for g in GROUPS
+        }
         self.ttau = np.array([P["team"][g]["team_tau"] for g in GROUPS])
         self.ctau = np.array([P["crew"][g]["crew_tau"] for g in GROUPS])
         self.rng = np.random.default_rng([0])
@@ -766,7 +1176,7 @@ class Overlay:
     def team(self, t):
         if t not in self.tm:
             z = np.random.default_rng([self.task[0], self.task[1], int(t), 91]).standard_normal(4)
-            self.tm[t] = np.exp(self.ttau * z - 0.5 * self.ttau ** 2)
+            self.tm[t] = np.exp(self.ttau * z - 0.5 * self.ttau**2)
         return self.tm[t]
 
     def new_game(self):
@@ -774,7 +1184,7 @@ class Overlay:
         week, h, a = self.sched[self.gi]
         self.home, self.away = h, a
         z = np.random.default_rng([self.task[0], self.task[1], self.gi, 92]).standard_normal(4)
-        self.crew = np.exp(self.ctau * z - 0.5 * self.ctau ** 2)
+        self.crew = np.exp(self.ctau * z - 0.5 * self.ctau**2)
 
     def haz(self, x, off_team, def_team):
         po = self.team(off_team)
@@ -794,7 +1204,9 @@ class Overlay:
             t = typ_of(self.P, g, key)
         else:
             t = self.tp[g].get(key) or self.tp[g].get("00") or next(iter(self.tp[g].values()))
-        return t["types"][int(self.rng.choice(len(t["types"]), p=np.array(t["p"]) / np.sum(t["p"])))]
+        return t["types"][
+            int(self.rng.choice(len(t["types"]), p=np.array(t["p"]) / np.sum(t["p"])))
+        ]
 
     def nominal(self, t):
         info = self.types[t]
@@ -811,7 +1223,19 @@ class Overlay:
         air = self.air[idx]
         deep = int(ispass and np.isfinite(air) and air >= self.deepmin)
         home_off = 1 if off_home else 0
-        x = fx([down], [dist], [yl], [sd], [qtr], [home_off], [self.nh[idx]], [self.sg[idx]], [int(ispass)], [deep], self.sdsd)
+        x = fx(
+            [down],
+            [dist],
+            [yl],
+            [sd],
+            [qtr],
+            [home_off],
+            [self.nh[idx]],
+            [self.sg[idx]],
+            [int(ispass)],
+            [deep],
+            self.sdsd,
+        )
         if self.inc is not None:
             x = aug(x, [self.inc[idx]])
         ot, dt = (self.home, self.away) if off_home else (self.away, self.home)
@@ -840,7 +1264,11 @@ class Overlay:
         af = info["auto_first_share"] if np.isfinite(info["auto_first_share"]) else 0.0
         is_off = g.endswith("_off")
         pre = g.startswith("pre")
-        pcnt = info["counted"] if not w2() else float(counted_of(self.P, t, np.array([self.inc[idx] > 0]), info["counted"])[0])
+        pcnt = (
+            info["counted"]
+            if not w2()
+            else float(counted_of(self.P, t, np.array([self.inc[idx] > 0]), info["counted"])[0])
+        )
         counted = (not pre) and self.rng.random() < pcnt
         row[7], row[10] = tid, nom
         if is_off:
@@ -851,8 +1279,29 @@ class Overlay:
         po = float(d["points_off"])
         pdf = float(d["points_def"])
         hs = max(clock_val - HALF_SECONDS, 0.0) if qtr <= 2 else max(clock_val, 0.0)
-        cx = dict(down=np.array([float(down)]), dist=np.array([float(dist)]), yl=np.array([float(yl)]), hs=np.array([hs]), half=np.array([3.0 if qtr >= 5 else (1.0 if qtr <= 2 else 2.0)]), sd=np.array([float(sd)]), to_o=np.array([float(off_to)]), to_d=np.array([float(def_to)]))
-        gv, stf = gain_dec(self.ep, cx, np.array([y]), np.array([po]), np.array([pdf]), np.array([turn]), np.array([nom]), np.array([af]), np.array([1.0 if counted else 0.0]), np.array([is_off]), np.array([t == "Defensive Pass Interference"]))
+        cx = dict(
+            down=np.array([float(down)]),
+            dist=np.array([float(dist)]),
+            yl=np.array([float(yl)]),
+            hs=np.array([hs]),
+            half=np.array([3.0 if qtr >= 5 else (1.0 if qtr <= 2 else 2.0)]),
+            sd=np.array([float(sd)]),
+            to_o=np.array([float(off_to)]),
+            to_d=np.array([float(def_to)]),
+        )
+        gv, stf = gain_dec(
+            self.ep,
+            cx,
+            np.array([y]),
+            np.array([po]),
+            np.array([pdf]),
+            np.array([turn]),
+            np.array([nom]),
+            np.array([af]),
+            np.array([1.0 if counted else 0.0]),
+            np.array([is_off]),
+            np.array([t == "Defensive Pass Interference"]),
+        )
         xa = acc_X(gv, np.array([gk]), stf, cx["sd"], cx["hs"], np.array([is_off]), self.sdsd)
         acc = bool(self.rng.random() < float(predict(self.acw, xa)[0]))
         if not acc:
@@ -875,7 +1324,14 @@ class Overlay:
             self.ev.append(row)
             return out
         el = self.el[g]
-        out.update(points_off=0.0, points_def=0.0, flip=False, play_type_code=6, off_to_used=0.0, def_to_used=0.0)
+        out.update(
+            points_off=0.0,
+            points_def=0.0,
+            flip=False,
+            play_type_code=6,
+            off_to_used=0.0,
+            def_to_used=0.0,
+        )
         out["clock_elapsed"] = float(el[int(self.rng.integers(len(el)))]) if len(el) else 0.0
         if is_off:
             out["yards_gained"] = -amt
@@ -919,7 +1375,20 @@ def f3_install():
     def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
         fr = sys._getframe(1)
         off_home = fr.f_locals["offense"] == "home"
-        drawn = ov.apply(drawn, (down, distance, yardline, score_diff, qtr, off_home, clock_val, fr.f_locals["off_to"], fr.f_locals["def_to"]))
+        drawn = ov.apply(
+            drawn,
+            (
+                down,
+                distance,
+                yardline,
+                score_diff,
+                qtr,
+                off_home,
+                clock_val,
+                fr.f_locals["off_to"],
+                fr.f_locals["def_to"],
+            ),
+        )
         return inner(down, distance, yardline, score_diff, qtr, clock_val, drawn)
 
     dv._G["pol"] = pol
@@ -935,8 +1404,28 @@ def f3_install():
     def dps(task):
         ov.start_task(task)
         res = origp(task)
-        ev = pd.DataFrame(ov.ev, columns=["gi", "down", "dist", "yl", "qtr", "code", "grp", "tid", "acc", "counted", "yards", "el", "fd", "play_y"])
-        ev.to_parquet(Path(__import__("os").environ["BUD_OUT"]) / f"events_{task[0]}_{task[1]}.parquet")
+        ev = pd.DataFrame(
+            ov.ev,
+            columns=[
+                "gi",
+                "down",
+                "dist",
+                "yl",
+                "qtr",
+                "code",
+                "grp",
+                "tid",
+                "acc",
+                "counted",
+                "yards",
+                "el",
+                "fd",
+                "play_y",
+            ],
+        )
+        ev.to_parquet(
+            Path(__import__("os").environ["BUD_OUT"]) / f"events_{task[0]}_{task[1]}.parquet"
+        )
         return res
 
     dv.d_play_season = dps
@@ -974,6 +1463,7 @@ def cmd_sim(args):
 
     import mod25_generator as gen
     import mod25e_budget as bud
+
     register()
     import mod25d_variance as dv
 
@@ -984,10 +1474,21 @@ def cmd_sim(args):
     v = dv.DV[args.variant]
     cfgj = json.dumps(dict(v, seed=args.seed, name=f"{args.variant}_s{v['scale']:g}"))
     setting = dict(gen.SETTING_DEFAULTS)
-    setting.update({"scale": v["scale"], "yard_gain": v["yard_gain"], "def_sign": 1.0, "yard_bias": 0.0, "drift": 1.0, "mech": cfgj})
+    setting.update(
+        {
+            "scale": v["scale"],
+            "yard_gain": v["yard_gain"],
+            "def_sign": 1.0,
+            "yard_bias": 0.0,
+            "drift": 1.0,
+            "mech": cfgj,
+        }
+    )
     gen.init_worker = f3_init_budget
     gen.play_season = f3_play_season
-    games, plays, latents_, el = gen.run_generation(setting, args.worlds, args.seasons, args.workers, args.seed, progress=True)
+    games, plays, latents_, el = gen.run_generation(
+        setting, args.worlds, args.seasons, args.workers, args.seed, progress=True
+    )
     games.to_parquet(bud.OUT / "sim_games.parquet")
     print("done", len(games), el, flush=True)
 
@@ -1004,7 +1505,11 @@ def cmd_e5(args):
 def cmd_audit(args):
     P = load_params()
     pool = pool_arrays()
-    auto = {t for t, r in P["types"].items() if np.isfinite(r["auto_first_share"]) and r["auto_first_share"] >= 0.5}
+    auto = {
+        t
+        for t, r in P["types"].items()
+        if np.isfinite(r["auto_first_share"]) and r["auto_first_share"] >= 0.5
+    }
     d = Path(args.frames)
     fs = sorted(d.glob("play_*_*.parquet"))
     out = []
@@ -1026,37 +1531,67 @@ def cmd_audit(args):
     S["ndown"] = np.where(same, nxt.down, np.nan)
     sc = S[S.code.isin([0, 1, 6])]
     print(f"games {ng} scrimmage snaps {len(sc)} per game {len(sc) / ng:.1f}")
-    print(f"no-play share sim {float((sc.code == 6).mean()):.4f}; inherited penalty rows (accepted foul in drawn row) share {float(sc.pen.mean()):.4f}; per game {float(sc.pen.sum()) / ng:.2f}")
+    print(
+        f"no-play share sim {float((sc.code == 6).mean()):.4f}; inherited penalty rows (accepted foul in drawn row) share {float(sc.pen.mean()):.4f}; per game {float(sc.pen.sum()) / ng:.2f}"
+    )
     rep = sc[sc.pen & sc.moved.notna() & (sc.code == 6)]
     off = rep[rep.grp.str.endswith("_off")]
     de = rep[rep.grp.str.endswith("_def")]
     half_o = (100 - off.yl) / 2
     v1 = off[(-off.moved) > half_o + 0.5]
-    print(f"A offensive replay fouls n {len(off)}: loss beyond half distance to own goal {len(v1)} ({len(v1) / max(len(off), 1):.4f}), per game {len(v1) / ng:.3f}; mean excess yards {float(((-v1.moved) - (100 - v1.yl) / 2).mean()) if len(v1) else 0:.2f}")
+    print(
+        f"A offensive replay fouls n {len(off)}: loss beyond half distance to own goal {len(v1)} ({len(v1) / max(len(off), 1):.4f}), per game {len(v1) / ng:.3f}; mean excess yards {float(((-v1.moved) - (100 - v1.yl) / 2).mean()) if len(v1) else 0:.2f}"
+    )
     dpi = de[de.ptype == "Defensive Pass Interference"]
     ndp = de[de.ptype != "Defensive Pass Interference"]
     v2 = ndp[ndp.moved > ndp.yl / 2 + 0.5]
     v3 = dpi[dpi.moved > dpi.yl - 1 + 0.5]
-    print(f"B defensive replay non-spot fouls n {len(ndp)}: gain beyond half distance to goal {len(v2)} ({len(v2) / max(len(ndp), 1):.4f}) per game {len(v2) / ng:.3f}; DPI n {len(dpi)}: spot beyond goal line {len(v3)} per game {len(v3) / ng:.3f}")
+    print(
+        f"B defensive replay non-spot fouls n {len(ndp)}: gain beyond half distance to goal {len(v2)} ({len(v2) / max(len(ndp), 1):.4f}) per game {len(v2) / ng:.3f}; DPI n {len(dpi)}: spot beyond goal line {len(v3)} per game {len(v3) / ng:.3f}"
+    )
     nd_short = de[(de.moved < de.dist)]
     spur = nd_short[(nd_short.ndown == 1) & ~nd_short.ptype.isin(auto)]
     miss = nd_short[(nd_short.ndown != 1) & nd_short.ptype.isin(auto)]
-    print(f"C defensive fouls with gain short of sim distance n {len(nd_short)}: first down credited for non-automatic foul {len(spur)} per game {len(spur) / ng:.3f}; automatic foul without first down {len(miss)} per game {len(miss) / ng:.3f}")
+    print(
+        f"C defensive fouls with gain short of sim distance n {len(nd_short)}: first down credited for non-automatic foul {len(spur)} per game {len(spur) / ng:.3f}; automatic foul without first down {len(miss)} per game {len(miss) / ng:.3f}"
+    )
     fd_long = de[(de.moved >= de.dist) & (de.ndown != 1)]
-    print(f"D defensive gain >= sim distance without first down {len(fd_long)} per game {len(fd_long) / ng:.3f}")
+    print(
+        f"D defensive gain >= sim distance without first down {len(fd_long)} per game {len(fd_long) / ng:.3f}"
+    )
     byd = sc.groupby("down").apply(lambda q: float((q.code == 6).mean()))
     print("E no-play share by down sim " + str(byd.round(4).to_dict()))
     s = snap_table(load_nv())
     r = s[s.down.isin([1, 2, 3, 4])]
-    print("E no-play share by down real " + str(r.groupby("down").apply(lambda q: float((q.play_type == "no_play").mean())).round(4).to_dict()))
-    print("E accepted-foul rate by group real " + str(s.groupby("group").apply(lambda q: float(q.acc.sum())).div(len(s)).round(4).to_dict()))
-    print("E inherited rows by group sim " + str((sc[sc.pen].groupby("grp").size() / len(sc)).round(4).to_dict()))
+    print(
+        "E no-play share by down real "
+        + str(
+            r.groupby("down")
+            .apply(lambda q: float((q.play_type == "no_play").mean()))
+            .round(4)
+            .to_dict()
+        )
+    )
+    print(
+        "E accepted-foul rate by group real "
+        + str(s.groupby("group").apply(lambda q: float(q.acc.sum())).div(len(s)).round(4).to_dict())
+    )
+    print(
+        "E inherited rows by group sim "
+        + str((sc[sc.pen].groupby("grp").size() / len(sc)).round(4).to_dict())
+    )
 
 
 def cmd_validate(args):
     P = load_params()
     d = Path(args.events)
-    ev = pd.concat([pd.read_parquet(f).assign(task=i) for i, f in enumerate(sorted(d.glob("events_*.parquet")))], ignore_index=True)
+    ev = pd.concat(
+        [
+            pd.read_parquet(f).assign(task=i)
+            for i, f in enumerate(sorted(d.glob("events_*.parquet")))
+        ],
+        ignore_index=True,
+    )
     ng = ev.groupby("task").gi.nunique().sum()
     tn = sorted(P["types"])
     print(f"sim snaps {len(ev)} games {ng} per game {len(ev) / ng:.1f}")
@@ -1069,7 +1604,9 @@ def cmd_validate(args):
         sim_a = ((ev.grp == k) & (ev.acc == 1)).mean()
         rc = (s.group == g).mean()
         ra = ((s.group == g) & s.acc).mean()
-        print(f"  {g}: committed {sim_c:.4f} | {rc:.4f}; accepted {sim_a:.4f} | {ra:.4f}; accept share {sim_a / max(sim_c, 1e-9):.3f} | {ra / rc:.3f}")
+        print(
+            f"  {g}: committed {sim_c:.4f} | {rc:.4f}; accepted {sim_a:.4f} | {ra:.4f}; accept share {sim_a / max(sim_c, 1e-9):.3f} | {ra / rc:.3f}"
+        )
     tn_by = {i: t for i, t in enumerate(tn)}
     ev["ft"] = ev.tid.map(tn_by)
     rt = s[s.ftype.notna() & ~s["desc"].fillna("").str.contains("(?i)offsetting")]
@@ -1078,17 +1615,38 @@ def cmd_validate(args):
     for t in top:
         sc_ = ev[ev.ft == t]
         rc_ = rt[rt.ftype == t]
-        print(f"  {t}: n sim {len(sc_)} real {len(rc_)}; accept share {(sc_.acc == 1).mean():.3f} | {rc_.acc.mean():.3f}")
+        print(
+            f"  {t}: n sim {len(sc_)} real {len(rc_)}; accept share {(sc_.acc == 1).mean():.3f} | {rc_.acc.mean():.3f}"
+        )
     ev["noplay"] = ((ev.acc == 1) & (ev.counted == 0)).astype(int)
     rn = (s.play_type == "no_play").mean()
     print(f"no-play share sim {ev.noplay.mean():.4f} real {rn:.4f}")
     sdn = ev.groupby("down").apply(lambda q: pd.Series({"acc": (q.acc == 1).mean(), "n": len(q)}))
     rdn = s.groupby("down").apply(lambda q: pd.Series({"acc": q.acc.mean(), "n": len(q)}))
-    print("accepted rate by down sim " + str(sdn.acc.round(4).to_dict()) + " real " + str(rdn.acc.round(4).to_dict()))
-    qz = lambda df, y: pd.cut(df[y], [-1, 20, 80, 101], labels=["opp<=20", "mid", "own<=20"]).value_counts().sort_index()
+    print(
+        "accepted rate by down sim "
+        + str(sdn.acc.round(4).to_dict())
+        + " real "
+        + str(rdn.acc.round(4).to_dict())
+    )
+    qz = lambda df, y: (
+        pd.cut(df[y], [-1, 20, 80, 101], labels=["opp<=20", "mid", "own<=20"])
+        .value_counts()
+        .sort_index()
+    )
     ev["zone"] = pd.cut(ev.yl, [-1, 20, 80, 101], labels=["opp<=20", "mid", "own<=20"])
     s["zone"] = pd.cut(s.yardline_100, [-1, 20, 80, 101], labels=["opp<=20", "mid", "own<=20"])
-    print("accepted rate by field zone sim " + str(ev.groupby("zone", observed=True).acc.apply(lambda x: (x == 1).mean()).round(4).to_dict()) + " real " + str(s.groupby("zone", observed=True).acc.mean().round(4).to_dict()))
+    print(
+        "accepted rate by field zone sim "
+        + str(
+            ev.groupby("zone", observed=True)
+            .acc.apply(lambda x: (x == 1).mean())
+            .round(4)
+            .to_dict()
+        )
+        + " real "
+        + str(s.groupby("zone", observed=True).acc.mean().round(4).to_dict())
+    )
     a = ev[ev.acc == 1]
     off = a.grp.isin([0, 2])
     ro = a[off & (a.counted == 0)]
@@ -1101,9 +1659,22 @@ def cmd_validate(args):
     fdok = short[short.fd == 1]
     af = {i: P["types"][t]["auto_first_share"] for i, t in enumerate(tn)}
     spur = fdok[fdok.tid.map(af).fillna(0) < 0.5]
-    print(f"rule consistency per game (sim): half-distance violations offence {len(v1) / ng:.4f}, defence non-spot {len(v2) / ng:.4f}, DPI beyond goal {len(v3) / ng:.4f}; defensive replay with yards>=distance but no first down {int(((de.yards >= de.dist) & (de.fd == 0)).sum()) / ng:.4f}; first downs credited short of distance on non-automatic types (Bernoulli of type share, rule-fitted) {len(spur) / ng:.4f}")
-    print(f"events per game sim {len(a) / ng:.2f} accepted; real accepted per game {len(s[s.acc]) / s.game_id.nunique():.2f}")
-    print("accepted yards mean (replay) sim off " + str(round(float(ro.yards.mean()), 2)) + " real " + str(round(float(s[s.acc & s.aoff & (s.play_type == 'no_play')].penalty_yards.mean() * -1), 2)))
+    print(
+        f"rule consistency per game (sim): half-distance violations offence {len(v1) / ng:.4f}, defence non-spot {len(v2) / ng:.4f}, DPI beyond goal {len(v3) / ng:.4f}; defensive replay with yards>=distance but no first down {int(((de.yards >= de.dist) & (de.fd == 0)).sum()) / ng:.4f}; first downs credited short of distance on non-automatic types (Bernoulli of type share, rule-fitted) {len(spur) / ng:.4f}"
+    )
+    print(
+        f"events per game sim {len(a) / ng:.2f} accepted; real accepted per game {len(s[s.acc]) / s.game_id.nunique():.2f}"
+    )
+    print(
+        "accepted yards mean (replay) sim off "
+        + str(round(float(ro.yards.mean()), 2))
+        + " real "
+        + str(
+            round(
+                float(s[s.acc & s.aoff & (s.play_type == "no_play")].penalty_yards.mean() * -1), 2
+            )
+        )
+    )
 
 
 def main():
@@ -1132,7 +1703,16 @@ def main():
     v = sub.add_parser("validate")
     v.add_argument("--events", default=str(OUT / "play_crzf3"))
     args = ap.parse_args()
-    {"measure": cmd_measure, "haz2": cmd_haz2, "typ2": cmd_typ2, "accept": cmd_accept, "audit": cmd_audit, "sim": cmd_sim, "e5": cmd_e5, "validate": cmd_validate}[args.cmd](args)
+    {
+        "measure": cmd_measure,
+        "haz2": cmd_haz2,
+        "typ2": cmd_typ2,
+        "accept": cmd_accept,
+        "audit": cmd_audit,
+        "sim": cmd_sim,
+        "e5": cmd_e5,
+        "validate": cmd_validate,
+    }[args.cmd](args)
 
 
 if __name__ == "__main__":

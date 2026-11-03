@@ -452,7 +452,13 @@ def fit_head(seg):
         ),
     ).fit(F[fit], cls[fit])
     sc, net = m[0], m[1]
-    arrs = {"n": np.array(len(seg)), "k": np.array(k), "classes": net.classes_, "mean": sc.mean_, "scale": sc.scale_}
+    arrs = {
+        "n": np.array(len(seg)),
+        "k": np.array(k),
+        "classes": net.classes_,
+        "mean": sc.mean_,
+        "scale": sc.scale_,
+    }
     for i, (w_, b_) in enumerate(zip(net.coefs_, net.intercepts_, strict=True)):
         arrs[f"w{i}"] = w_
         arrs[f"b{i}"] = b_
@@ -1113,14 +1119,22 @@ class Engine:
             if os.environ.get("SIM10_STSLOPE") == "1" and len(tb["slope_seg"]) == len(seg):
                 self.stslope = tb["slope_seg"]
             if os.environ.get("SIM10_KOSEASON") == "1":
-                self.koseason = {int(y): tb["ko_values"][tb["ko_years"] == y] for y in np.unique(tb["ko_years"])}
+                self.koseason = {
+                    int(y): tb["ko_values"][tb["ko_years"] == y] for y in np.unique(tb["ko_years"])
+                }
         self.mucurve = os.environ.get("SIM10_MUCURVE") == "1" and self.ptab is not None
         self.joint = None
         if os.environ.get("SIM10_JOINT") == "1" and self.ptab is not None:
-            vs_ = json.loads(Path("artifacts/sim11/frontier.json").read_text())["true_strength_sd"] ** 2
+            vs_ = (
+                json.loads(Path("artifacts/sim11/frontier.json").read_text())["true_strength_sd"]
+                ** 2
+            )
             okj = (seg["bad"].to_numpy() == 0) & (seg["half"].to_numpy() < 3)
             bj = np.array(
-                [post_bin(h_, s_) for h_, s_ in zip(seg["half"].to_numpy(), seg["secs"].to_numpy(), strict=True)]
+                [
+                    post_bin(h_, s_)
+                    for h_, s_ in zip(seg["half"].to_numpy(), seg["secs"].to_numpy(), strict=True)
+                ]
             )
             xj = seg["x"].to_numpy(float)
             self.joint = {}
@@ -1594,7 +1608,10 @@ def sim_world(task):
     setting = dict(gen.SETTING_DEFAULTS)
     if os.environ.get("SIM10_FORM") == "3":
         ff = json.loads((REPO / "artifacts" / "sim11" / "form_fit.json").read_text())
-        setting["form_var"] = [ff["eras"]["2009_2025"]["var_off"], ff["eras"]["2009_2025"]["var_def"]]
+        setting["form_var"] = [
+            ff["eras"]["2009_2025"]["var_off"],
+            ff["eras"]["2009_2025"]["var_def"],
+        ]
         setting["form_phi"] = ff["phi"]
     elif os.environ.get("SIM10_FORM") in ("1", "2"):
         setting["form_preserve"] = os.environ.get("SIM10_FORM") == "2"
