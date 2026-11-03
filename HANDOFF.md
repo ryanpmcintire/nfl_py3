@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:46:38.539539+00:00`
+Refreshed at: `2026-11-03T22:46:59.343482+00:00`
 
 ## Start here
 
@@ -21,16 +21,15 @@ Refreshed at: `2026-11-03T22:46:38.539539+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c79082ffa0a3` — Refresh session handoff
-- Pending change set: 254 paths
+- Baseline commit: `a804ecb3496c` — MOD-50: carrying MOD-41 workload into weeks 1-4 does not help; the prior-season carry coefficient is opposite in sign (+.065 [.022,.112]) so the in-season signal does not cross the offseason; unresolved
+- Pending change set: 252 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
-  - `M  docs/lanes/mod-50-mod41-early-season-carryover.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/sim-26-prevent-defense-yardage-shape.md`
-  - `A  registry/weak_signals/mod50_mod41_early.json`
-  - `A  scripts/mod50_early_carryover.py`
+  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
   - ` M scripts/sim10_drive.py`
+  - `A  scripts/sim26_prevent_shape.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/dashboard/findings_content.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T22:46:38.539539+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 234 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
