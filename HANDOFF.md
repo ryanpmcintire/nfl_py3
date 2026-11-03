@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:01:20.074341+00:00`
+Refreshed at: `2026-11-03T23:01:32.504249+00:00`
 
 ## Start here
 
@@ -21,13 +21,11 @@ Refreshed at: `2026-11-03T23:01:20.074341+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `311b29175fa4` — Backlog round 9: 13 new rows (MOD-53/54 base-model levers, PER-16, LEAD-112, SIM-27..30, ENG-58..60, UI-36/37); inventory 66/216
-- Pending change set: 249 paths
+- Baseline commit: `0df4cdc7424d` — SIM-26 unit 3: with the engine's regime bandwidths, late-game score-difference bandwidths are far wider than real games support (last 2 min 178 v 3.2; 2nd-half 18.8 v 7.4); measured bandwidths cut the trailing-minus-leading late TD gap at the draw from .108 to .031
+- Pending change set: 247 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
-  - `M  docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim26_unit3_bandwidth.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T23:01:20.074341+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 229 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - ...and 227 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
