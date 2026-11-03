@@ -4,20 +4,20 @@
     "xlg11_free_minus_fav_11_19_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 free accuracy minus fav rule on 1747 games, game-level paired bootstrap, accuracy points",
-      "effect": 6.8117,
+      "effect": 3.606182026330853,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        3.6062,
-        9.9027
+        0.7441327990841442,
+        6.3537492844876935
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the fav rule: +6.81 correct games per hundred so far.",
-      "probability_positive": 1.0,
+      "plain_summary": null,
+      "probability_positive": 0.995,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -27,333 +27,165 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.6304
+      "standard_error": 1.4085384747483194
     },
     "xlg11_free_minus_fav_20_25_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.998; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 free accuracy minus fav rule on 1503 games, game-level paired bootstrap, accuracy points",
-      "effect": 5.2562,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        1.7947,
-        8.5828
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": "The college-centered model's picks versus the fav rule: +5.26 correct games per hundred so far.",
-      "probability_positive": 0.998,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.7238
-    },
-    "xlg11_free_minus_home_11_19_u3": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
-      "closing_ground": null,
-      "description": "XLG-11 free accuracy minus home rule on 1747 games, game-level paired bootstrap, accuracy points",
-      "effect": 5.0944,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        1.9462,
-        8.2441
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": "The college-centered model's picks versus the home rule: +5.09 correct games per hundred so far.",
-      "probability_positive": 0.9995,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1747,
-      "seasons": [
-        2011,
-        2019
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.6377
-    },
-    "xlg11_free_minus_home_20_25_u3": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.990; no admissible closing ground; unresolved_below_power per AGENTS.md.",
-      "closing_ground": null,
-      "description": "XLG-11 free accuracy minus home rule on 1503 games, game-level paired bootstrap, accuracy points",
-      "effect": 4.5243,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        0.6637,
-        8.2518
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": "The college-centered model's picks versus the home rule: +4.52 correct games per hundred so far.",
-      "probability_positive": 0.9895,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.8953
-    },
-    "xlg11_free_minus_icpt_11_19_u3": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.750; no admissible closing ground; unresolved_below_power per AGENTS.md.",
-      "closing_ground": null,
-      "description": "XLG-11 free accuracy minus icpt rule on 1747 games, game-level paired bootstrap, accuracy points",
-      "effect": 0.5724,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -0.9731,
-        2.1179
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": "The college-centered model's picks versus the icpt rule: +0.57 correct games per hundred so far.",
-      "probability_positive": 0.7495,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1747,
-      "seasons": [
-        2011,
-        2019
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 0.7998
-    },
-    "xlg11_free_minus_icpt_20_25_u3": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.464; no admissible closing ground; unresolved_below_power per AGENTS.md.",
-      "closing_ground": null,
-      "description": "XLG-11 free accuracy minus icpt rule on 1503 games, game-level paired bootstrap, accuracy points",
-      "effect": -0.0665,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -1.7964,
-        1.5968
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": "The college-centered model's picks versus the icpt rule: -0.07 correct games per hundred so far.",
-      "probability_positive": 0.464,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 0.8682
-    },
-    "xlg11_h2h_base14_accuracy_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "base 14-feature arm vs served 88-input model, accuracy, Tuesday opener (positive = arm better)",
-      "effect": -0.5322687957418496,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -3.286516333021168,
-        2.3778376596984425
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.355,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 1.448366384510827
-    },
-    "xlg11_h2h_base14_brier_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "base 14-feature arm vs served 88-input model, brier, Tuesday opener (positive = arm better)",
-      "effect": 0.0043230540256218595,
-      "effect_units": "brier_improvement",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -0.00037345970476219183,
-        0.008810991864873243
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.9665,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.002346104214924019
-    },
-    "xlg11_h2h_base14_log_loss_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "base 14-feature arm vs served 88-input model, log_loss, Tuesday opener (positive = arm better)",
-      "effect": 0.009136781137500584,
-      "effect_units": "log_loss_improvement",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -0.00028333347095532913,
-        0.01851589776343559
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.9715,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.004902816308637162
-    },
-    "xlg11_h2h_free_accuracy_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "free 14-feature arm vs served 88-input model, accuracy, Tuesday opener (positive = arm better)",
-      "effect": 1.3306719893546242,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -1.7322453823379418,
-        4.41900088200023
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.81,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 1.5902956767620624
-    },
-    "xlg11_h2h_free_brier_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "free 14-feature arm vs served 88-input model, brier, Tuesday opener (positive = arm better)",
-      "effect": 0.004811864127833888,
-      "effect_units": "brier_improvement",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -0.000506002740582358,
-        0.009191543493178954
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.9665,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.002447622050849891
-    },
-    "xlg11_h2h_free_log_loss_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "free 14-feature arm vs served 88-input model, log_loss, Tuesday opener (positive = arm better)",
-      "effect": 0.010121761567502354,
-      "effect_units": "log_loss_improvement",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        0.0005159778589941111,
-        0.02060712997539881
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.979,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.005118266890361084
-    },
-    "xlg11_h2h_u1_accuracy_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "u1 14-feature arm vs served 88-input model, accuracy, Tuesday opener (positive = arm better)",
       "effect": 2.1956087824351296,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.8652136427952719,
-        5.38721644832026
+        -0.998003992015968,
+        5.455755156353959
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.913,
+      "probability_positive": 0.911,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.6336399794852974
+    },
+    "xlg11_free_minus_home_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus home rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 1.8889524899828276,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.4310246136233544,
+        5.208929593589009
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8655,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.6638315110659645
+    },
+    "xlg11_free_minus_home_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus home rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 1.4637391882900865,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -3.193612774451098,
+        5.721889554224884
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7435,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 2.289764223034583
+    },
+    "xlg11_free_minus_icpt_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus icpt rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 1.316542644533486,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.6614195764167143,
+        4.5220377790498
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8065,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.5897360046865368
+    },
+    "xlg11_free_minus_icpt_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus icpt rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.7964071856287425,
+        3.260146373918829
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.713,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.3006914048974376
+    },
+    "xlg11_h2h_base14_accuracy_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "base 14-feature arm vs served 88-input model, accuracy, Tuesday opener (positive = arm better)",
+      "effect": -2.6613439787092483,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -5.418101094859048,
+        0.06676350940534166
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.026,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -363,132 +195,188 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 1.5946742584388458
+      "standard_error": 1.3879390453355018
+    },
+    "xlg11_h2h_base14_brier_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "base 14-feature arm vs served 88-input model, brier, Tuesday opener (positive = arm better)",
+      "effect": 0.001517909182552779,
+      "effect_units": "brier_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.0019499885364643794,
+        0.005005437219025782
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.799,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 0.0018103565337195095
+    },
+    "xlg11_h2h_base14_log_loss_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "base 14-feature arm vs served 88-input model, log_loss, Tuesday opener (positive = arm better)",
+      "effect": 0.003425506590387669,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.003853006548572307,
+        0.011019200525050309
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.813,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 0.00386237419644688
+    },
+    "xlg11_h2h_free_accuracy_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "free 14-feature arm vs served 88-input model, accuracy, Tuesday opener (positive = arm better)",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -4.690108643152738,
+        1.185146973543585
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.117,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 1.4777318932539336
+    },
+    "xlg11_h2h_free_brier_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "free 14-feature arm vs served 88-input model, brier, Tuesday opener (positive = arm better)",
+      "effect": 0.002177950464488073,
+      "effect_units": "brier_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.0018812933389213984,
+        0.005810809315322096
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8585,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 0.0019609549553136324
+    },
+    "xlg11_h2h_free_log_loss_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "free 14-feature arm vs served 88-input model, log_loss, Tuesday opener (positive = arm better)",
+      "effect": 0.004758987736832582,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.0025925489486807395,
+        0.013060220944588861
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8865,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 0.0040456424778386344
+    },
+    "xlg11_h2h_u1_accuracy_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "u1 14-feature arm vs served 88-input model, accuracy, Tuesday opener (positive = arm better)",
+      "effect": -1.5302727877578177,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -4.7367339597525575,
+        1.6603319164812307
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.17,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 1.6006248691930203
     },
     "xlg11_h2h_u1_brier_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "u1 14-feature arm vs served 88-input model, brier, Tuesday opener (positive = arm better)",
-      "effect": 0.004698395017291558,
+      "effect": 0.0013968934734531408,
       "effect_units": "brier_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.00020373796949051248,
-        0.009817208826831035
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.9685,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.0025304696519942603
-    },
-    "xlg11_h2h_u1_log_loss_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "u1 14-feature arm vs served 88-input model, log_loss, Tuesday opener (positive = arm better)",
-      "effect": 0.009885203931532832,
-      "effect_units": "log_loss_improvement",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        0.00014681872260319885,
-        0.01995480758049384
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.976,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.005055189139487021
-    },
-    "xlg11_opener_accuracy": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; inner strength hit grid edge 10000",
-      "closing_ground": null,
-      "description": "CFB-centered NFL ridge vs zero-centered alpha 10, accuracy, opener",
-      "effect": 2.72788,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        0.81024,
-        4.58243
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.999,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report.json",
-      "standard_error": 0.9392
-    },
-    "xlg11_opener_accuracy_freescale_u2": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
-      "closing_ground": null,
-      "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, accuracy, opener",
-      "effect": 1.8629407850964737,
-      "effect_units": "accuracy_points",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        0.13421696482682768,
-        3.5648110982285672
-      ],
-      "league": "nfl",
-      "notes": "",
-      "plain_summary": null,
-      "probability_positive": 0.982,
-      "recorded_at": "2026-11-03",
-      "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.8648500982850166
-    },
-    "xlg11_opener_brier": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; inner strength hit grid edge 10000",
-      "closing_ground": null,
-      "description": "CFB-centered NFL ridge vs zero-centered alpha 10, brier, opener",
-      "effect": 0.00038,
-      "effect_units": "brier_improvement",
-      "family": "xlg11_cfb_centered_ridge",
-      "interval": [
-        -0.00063,
-        0.00139
+        -0.002372590946721797,
+        0.005100970820083818
       ],
       "league": "nfl",
       "notes": "",
@@ -502,26 +390,138 @@
         2020,
         2025
       ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 0.0019443738289976053
+    },
+    "xlg11_h2h_u1_log_loss_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "u1 14-feature arm vs served 88-input model, log_loss, Tuesday opener (positive = arm better)",
+      "effect": 0.0031869188358896487,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.004107207464475142,
+        0.011241801333224959
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.801,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 0.0039188491032949935
+    },
+    "xlg11_opener_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "CFB-centered NFL ridge vs zero-centered alpha 10, accuracy, opener",
+      "effect": 1.1310711909514304,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.7931787989840204,
+        3.060852243408972
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8695,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
       "source": "artifacts/xlg11_cfb_centered/report.json",
-      "standard_error": 0.00052
+      "standard_error": 0.9695590525547745
+    },
+    "xlg11_opener_accuracy_freescale_u2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, accuracy, opener",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.0808707816051757,
+        3.111542809100591
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.804,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u2.json",
+      "standard_error": 1.0843642270679674
+    },
+    "xlg11_opener_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
+      "closing_ground": null,
+      "description": "CFB-centered NFL ridge vs zero-centered alpha 10, brier, opener",
+      "effect": -0.00012101570909963711,
+      "effect_units": "brier_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.0006762104071621447,
+        0.0003917731299939195
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3195,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report.json",
+      "standard_error": 0.0002730552840853503
     },
     "xlg11_opener_brier_freescale_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, brier, opener",
-      "effect": 0.0004888101022120292,
+      "effect": 0.000660041281935295,
       "effect_units": "brier_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.0003801433720831176,
-        0.0014054057542988415
+        -0.00017163129977317815,
+        0.0015684209458380778
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.8625,
+      "probability_positive": 0.94,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -531,25 +531,25 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.0004591691657288569
+      "standard_error": 0.000445344725119421
     },
     "xlg11_opener_log_loss_freescale_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, log_loss, opener",
-      "effect": 0.0009849804300017726,
+      "effect": 0.001333481146444912,
       "effect_units": "log_loss_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.000792051068786383,
-        0.0027937206111948
+        -0.0004023296328329041,
+        0.003050773240233831
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.866,
+      "probability_positive": 0.9375,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -559,25 +559,25 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.0009370977337785659
+      "standard_error": 0.0008810350522096631
     },
     "xlg11_opener_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; inner strength hit grid edge 10000",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered NFL ridge vs zero-centered alpha 10, logloss, opener",
-      "effect": 0.00075,
+      "effect": -0.00023858775449802185,
       "effect_units": "log_loss_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.00139,
-        0.00276
+        -0.001297589994307949,
+        0.0008045200828840721
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.772,
+      "probability_positive": 0.316,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -587,25 +587,25 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report.json",
-      "standard_error": 0.00104
+      "standard_error": 0.000540834660668318
     },
     "xlg11_proxy_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; inner strength hit grid edge 10000",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered NFL ridge vs zero-centered alpha 10, accuracy, proxy",
-      "effect": 0.45793,
+      "effect": -1.2020606754436176,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -1.15749,
-        2.21343
+        -3.2113326784026026,
+        0.6250445156695155
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.691,
+      "probability_positive": 0.0985,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -615,25 +615,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report.json",
-      "standard_error": 0.8519
+      "standard_error": 0.9443701687617526
     },
     "xlg11_proxy_accuracy_freescale_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, accuracy, proxy",
-      "effect": 0.4006868918145392,
+      "effect": -0.8013737836290784,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -1.3016411997736277,
-        2.0710779176889242
+        -2.5260506224637185,
+        0.8441549893128975
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.6765,
+      "probability_positive": 0.169,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -643,25 +643,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.8459313035916398
+      "standard_error": 0.8528087006047118
     },
     "xlg11_proxy_brier": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; inner strength hit grid edge 10000",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered NFL ridge vs zero-centered alpha 10, brier, proxy",
-      "effect": 0.00069,
+      "effect": 0.0008180934677397971,
       "effect_units": "brier_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.00042,
-        0.00177
+        -0.00011412157668074814,
+        0.001769643418390758
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.893,
+      "probability_positive": 0.954,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -671,25 +671,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report.json",
-      "standard_error": 0.00057
+      "standard_error": 0.00047749947229616387
     },
     "xlg11_proxy_brier_freescale_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, brier, proxy",
-      "effect": 0.0007547623200660577,
+      "effect": 0.0007930772978213466,
       "effect_units": "brier_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.00035303106095776066,
-        0.0018370722205418774
+        -0.00027525212226288967,
+        0.0018744704976080058
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.912,
+      "probability_positive": 0.923,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -699,25 +699,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.0005658014005957736
+      "standard_error": 0.0005521999578737357
     },
     "xlg11_proxy_log_loss_freescale_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; unit 2 audit found no leakage",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered ridge, in-window free scale and strength to 1e9, vs zero-centered ridge, log_loss, proxy",
-      "effect": 0.0017356190133491739,
+      "effect": 0.001685021019515343,
       "effect_units": "log_loss_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.0005513183092039538,
-        0.0039736271597059164
+        -0.0005114667168831491,
+        0.003870388006769867
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.928,
+      "probability_positive": 0.9255,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -727,25 +727,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
-      "standard_error": 0.001181285600572073
+      "standard_error": 0.0011454220236632947
     },
     "xlg11_proxy_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval not wholly on wrong side; no positive control; inner strength hit grid edge 10000",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "CFB-centered NFL ridge vs zero-centered alpha 10, logloss, proxy",
-      "effect": 0.0016,
+      "effect": 0.001735813227288254,
       "effect_units": "log_loss_improvement",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -0.00072,
-        0.00405
+        -0.000245506307215951,
+        0.0038125943716037663
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.913,
+      "probability_positive": 0.955,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -755,25 +755,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report.json",
-      "standard_error": 0.00121
+      "standard_error": 0.0010259285284354783
     },
     "xlg11_u1_minus_fav_11_19_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 u1 accuracy minus fav rule on 1747 games, game-level paired bootstrap, accuracy points",
-      "effect": 6.8689,
+      "effect": 3.2054951345163136,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        3.6634,
-        10.0172
+        0.2289639381797367,
+        6.18202633085289
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the fav rule: +6.87 correct games per hundred so far.",
-      "probability_positive": 1.0,
+      "plain_summary": null,
+      "probability_positive": 0.9845,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -783,25 +783,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.6276
+      "standard_error": 1.4881832595240407
     },
     "xlg11_u1_minus_fav_20_25_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 u1 accuracy minus fav rule on 1503 games, game-level paired bootstrap, accuracy points",
-      "effect": 6.1211,
+      "effect": 2.395209580838323,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        2.7944,
-        9.5143
+        -0.7318695941450433,
+        5.6570192947438365
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the fav rule: +6.12 correct games per hundred so far.",
-      "probability_positive": 1.0,
+      "plain_summary": null,
+      "probability_positive": 0.9285,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -811,25 +811,25 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.7178
+      "standard_error": 1.6657856370179394
     },
     "xlg11_u1_minus_home_11_19_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.998; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 u1 accuracy minus home rule on 1747 games, game-level paired bootstrap, accuracy points",
-      "effect": 5.1517,
+      "effect": 1.4882655981682884,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        1.9462,
-        8.2427
+        -1.833142530051517,
+        4.695191757298217
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the home rule: +5.15 correct games per hundred so far.",
-      "probability_positive": 0.998,
+      "plain_summary": null,
+      "probability_positive": 0.8,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -839,25 +839,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.6585
+      "standard_error": 1.6347126341116496
     },
     "xlg11_u1_minus_home_20_25_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.999; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 u1 accuracy minus home rule on 1503 games, game-level paired bootstrap, accuracy points",
-      "effect": 5.3892,
+      "effect": 1.66333998669328,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        1.7947,
-        9.0486
+        -2.1290751829673984,
+        5.655355954757153
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the home rule: +5.39 correct games per hundred so far.",
-      "probability_positive": 0.999,
+      "plain_summary": null,
+      "probability_positive": 0.7955,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -867,25 +867,25 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 1.8724
+      "standard_error": 1.988856183571436
     },
     "xlg11_u1_minus_icpt_11_19_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.746; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 u1 accuracy minus icpt rule on 1747 games, game-level paired bootstrap, accuracy points",
-      "effect": 0.6297,
+      "effect": 0.9158557527189468,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -1.0303,
-        2.3469
+        -2.404121350887235,
+        4.064109902690326
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the icpt rule: +0.63 correct games per hundred so far.",
-      "probability_positive": 0.746,
+      "plain_summary": null,
+      "probability_positive": 0.723,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -895,25 +895,25 @@
         2019
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 0.8634
+      "standard_error": 1.6211742534700462
     },
     "xlg11_u1_minus_icpt_20_25_u3": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "P+ 0.794; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; rerun on opener-input harness (35f7f070) replaces cell from closing-input run",
       "closing_ground": null,
       "description": "XLG-11 u1 accuracy minus icpt rule on 1503 games, game-level paired bootstrap, accuracy points",
-      "effect": 0.7984,
+      "effect": 0.9314703925482368,
       "effect_units": "accuracy_points",
       "family": "xlg11_cfb_centered_ridge",
       "interval": [
-        -1.0645,
-        2.6613
+        -2.2621423819028608,
+        3.9936793080505564
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "The college-centered model's picks versus the icpt rule: +0.80 correct games per hundred so far.",
-      "probability_positive": 0.7945,
+      "plain_summary": null,
+      "probability_positive": 0.6995,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -923,7 +923,7 @@
         2025
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
-      "standard_error": 0.9527
+      "standard_error": 1.6091769981453687
     },
     "xlg11_u1_openinput_nfl_opener_2020_25_accuracy": {
       "category": "modeling",

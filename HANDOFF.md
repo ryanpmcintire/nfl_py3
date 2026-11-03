@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:14:50.399880+00:00`
+Refreshed at: `2026-11-03T22:16:42.975364+00:00`
 
 ## Start here
 
@@ -21,12 +21,14 @@ Refreshed at: `2026-11-03T22:14:50.399880+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6f27a078bcb1` — Backlog round 7: 14 new rows (LEAD-108..111, POOL-09/10, ENG-54..56, MOD-47, SIM-22..24, UI-34); inventory 65/193
-- Pending change set: 260 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `efbe189f4397` — Refresh session handoff
+- Pending change set: 263 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/xlg-13-xlg13-screen-transfer.md`
+  - ` M docs/lanes/ui-32-key-number-chip.md`
+  - `M  docs/lanes/xlg-11-xlg11-cfb-prior-center.md`
+  - `M  docs/lanes/xlg-13-xlg13-screen-transfer.md`
+  - `M  registry/weak_signals/xlg11_cfb_centered_ridge.json`
   - ` M scripts/eng53_reliability.py`
   - ` M scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_drive.py`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T22:14:50.399880+00:00`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - ...and 240 more
+  - ...and 243 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
