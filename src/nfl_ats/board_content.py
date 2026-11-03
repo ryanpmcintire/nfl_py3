@@ -64,7 +64,11 @@ from nfl_ats.pick_revision_factors import (
     factor_move_sentence,
     model_only_factor_moves,
 )
-from nfl_ats.prospective_scoring import load_challenger_decisions
+from nfl_ats.prospective_scoring import (
+    DECISION_GRADE,
+    load_challenger_decisions,
+    settle_prospective_picks,
+)
 from nfl_ats.provenance import sha256_file
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
@@ -214,6 +218,23 @@ class GameRow:
     market_now_high: float | None = None
     qb_note: str | None = None
     qb_practice_flag: tuple[str, str] | None = None
+    pool_edge: float | None = None
+
+    @property
+    def pool_edge_text(self) -> str:
+        if self.pool_edge is None or self.pool_edge == 0:
+            return ""
+        size = "Half a point" if abs(self.pool_edge) == 0.5 else f"{abs(self.pool_edge):g} points"
+        return f"{size} {'better' if self.pool_edge > 0 else 'worse'} than Tuesday's books"
+
+    @property
+    def confidence_title(self) -> str:
+        if isnan(self.pick_probability):
+            return ""
+        return (
+            f"{self.confidence_label}: {self.probability_text} chance to cover, "
+            f"{self.coin_flip_gap_text}."
+        )
 
     @property
     def market_now_text(self) -> str:
@@ -2420,6 +2441,21 @@ def _build_pool_line_note(
     )
 
 
+def _tuesday_market_by_game(
+    data_root: Path | None, *, season: float | None, week: float | None, ordered: pd.DataFrame
+) -> dict[str, float]:
+    if data_root is None or season is None or week is None or ordered.empty:
+        return {}
+    from nfl_ats.pool_hook import tuesday_market_lines
+
+    ids = ordered["game_id"].astype(str).tolist()
+    try:
+        market = tuesday_market_lines(Path(data_root), int(season), int(week), ids)
+    except Exception:
+        return {}
+    return market
+
+
 def _pool_board_order(
     data_root: Path | None,
     *,
@@ -2441,12 +2477,32 @@ def _pool_board_order(
     return {game.game_id: index for index, game in enumerate(capture.games)}
 
 
+def _opener_week_record(
+    decisions: pd.DataFrame, outcomes: pd.DataFrame, week: int
+) -> tuple[int, int, int] | None:
+    if decisions.empty or "week" not in decisions.columns:
+        return None
+    rows = decisions.loc[pd.to_numeric(decisions["week"], errors="coerce").eq(float(week))]
+    if rows.empty:
+        return None
+    settled = settle_prospective_picks(rows, outcomes)
+    status = settled[f"status_at_{DECISION_GRADE}"].astype(str)
+    correct = pd.to_numeric(settled[f"correct_at_{DECISION_GRADE}"], errors="coerce")
+    wins = int((status.eq("settled") & correct.eq(1.0)).sum())
+    losses = int((status.eq("settled") & correct.eq(0.0)).sum())
+    pushes = int(status.eq("push").sum())
+    if wins + losses + pushes == 0:
+        return None
+    return wins, losses, pushes
+
+
 def _build_season_record(
     paper_decisions: pd.DataFrame,
     outcomes: pd.DataFrame,
     *,
     season: int | None,
     week: int | None,
+    first_posted: pd.DataFrame | None = None,
 ) -> SeasonRecordStrip | None:
 
     if paper_decisions.empty or season is None or "season" not in paper_decisions.columns:
@@ -2485,6 +2541,23 @@ def _build_season_record(
         if last_wins + last_losses + last_pushes > 0
         else None
     )
+    if last_week_record_text and first_posted is not None and week is not None:
+        final_graded = _opener_week_record(season_rows, outcomes, week - 1)
+        early_graded = _opener_week_record(
+            first_posted.loc[
+                pd.to_numeric(first_posted["season"], errors="coerce").eq(float(season))
+            ]
+            if "season" in first_posted.columns
+            else first_posted.iloc[0:0],
+            outcomes,
+            week - 1,
+        )
+        if final_graded is not None and early_graded is not None:
+            last_week_record_text = f"Last week: {_record_text(*final_graded)}"
+            if early_graded != final_graded:
+                last_week_record_text += (
+                    f" (as first posted Tuesday: {_record_text(*early_graded)})"
+                )
     season_record_text = (
         f"Season to date: {_record_text(season_wins, season_losses, season_pushes)}"
     )
@@ -3819,6 +3892,9 @@ def load_board_content(
         artifacts_root, season=season_number, week=week_number
     )
     market_now_by_game = _market_now_by_game(resolved_data_root, now=generated)
+    tuesday_market = _tuesday_market_by_game(
+        resolved_data_root, season=season_number, week=week_number, ordered=ordered
+    )
     qb_notes = _quarterback_notes(artifacts_root, ordered)
     qb_practice_flags = _quarterback_practice_flags(artifacts_root, ordered)
     best_pick_ranking, best_pick_ranking_as_of = load_best_pick_ranking(
@@ -3899,6 +3975,14 @@ def load_board_content(
             away_score=away_score,
         )
         market_now = market_now_by_game.get(game_id)
+        tuesday_line = tuesday_market.get(game_id)
+        pool_edge = (
+            None
+            if tuesday_line is None
+            else (tuesday_line - market_spread)
+            if team == home_team
+            else (market_spread - tuesday_line)
+        )
         games.append(
             GameRow(
                 game_id=game_id,
@@ -3941,6 +4025,7 @@ def load_board_content(
                 market_now_high=market_now[4] if market_now is not None else None,
                 qb_note=qb_notes.get(game_id),
                 qb_practice_flag=qb_practice_flags.get(game_id),
+                pool_edge=pool_edge,
             )
         )
 
@@ -3974,6 +4059,7 @@ def load_board_content(
         outcomes,
         season=artifacts.metadata.get("season"),
         week=artifacts.metadata.get("week"),
+        first_posted=paper_decisions,
     )
     pool_line_note = _build_pool_line_note(
         resolved_data_root,

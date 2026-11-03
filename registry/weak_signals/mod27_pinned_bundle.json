@@ -1,0 +1,89 @@
+{
+  "family": "mod27_pinned_bundle",
+  "signals": {
+    "mod27_bundle_arm_B_bundle_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Bundle (offset on guarded stage one) vs served, 6021 stacked rows LOSO, log loss gain; decisive 545-579 vs 579-545",
+      "effect": 0.002966,
+      "effect_units": "log_loss_improvement",
+      "family": "mod27_pinned_bundle",
+      "interval": [
+        0.000983,
+        0.004979
+      ],
+      "league": "nfl",
+      "notes": "Harness reproduced 833-670 after pinning stored counted-flag set",
+      "plain_summary": "The combined change tracks the offset term; the guard adds almost nothing on the stack.",
+      "probability_positive": 0.99725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 126,
+      "sample_games": 6021,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_pinned_bundle/results.json",
+      "standard_error": null
+    },
+    "mod27_bundle_arm_G_guard_game_level": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Thin-book guard (leader median needs 3 books) on the 2020-25 game level, LOSO log loss gain over served; harness reproduces 833-670; decisive 25-21 served vs 21-25 guard",
+      "effect": 7.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod27_pinned_bundle",
+      "interval": [
+        -0.000332,
+        0.000561
+      ],
+      "league": "nfl",
+      "notes": "Harness reproduced 833-670 after pinning stored counted-flag set",
+      "plain_summary": "Requiring all three sharp books for the market move changes five historical games and the decisive record goes slightly against it; the log loss effect is a coin flip.",
+      "probability_positive": 0.59875,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 126,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_pinned_bundle/results.json",
+      "standard_error": null
+    },
+    "mod27_bundle_arm_O_offset_on_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Generalized pool-offset term (offsets -1,-.5,.5,1) on served stage one, 6021 stacked rows LOSO, log loss gain over served; decisive 519-556 vs 556-519",
+      "effect": 0.002914,
+      "effect_units": "log_loss_improvement",
+      "family": "mod27_pinned_bundle",
+      "interval": [
+        0.000986,
+        0.004824
+      ],
+      "league": "nfl",
+      "notes": "Harness reproduced 833-670 after pinning stored counted-flag set",
+      "plain_summary": "Letting the model price any pool-versus-market line difference, not just half-point hooks, improves probability quality on simulated pool lines; pick accuracy gain is small.",
+      "probability_positive": 0.99825,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 126,
+      "sample_games": 6021,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_pinned_bundle/results.json",
+      "standard_error": null
+    }
+  }
+}

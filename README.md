@@ -7,32 +7,33 @@ constructs every feature strictly from information available before kickoff,
 and evaluates model choices with nested chronological walk-forward tests.
 
 <!-- CURRENT_PREDICTIONS:START -->
-## Current ATS forecast: 2026 Week 8
+## Current ATS forecast: 2026 Week 9
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,146 of 2,182 non-push games correctly (52.52%)**. The 95% range was 50.39%-54.65%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,153 of 2,196 non-push games correctly (52.50%)**. The 95% range was 50.34%-54.61%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CIN -10.5 in TEN at CIN. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
+**Best Pick of the week (★):** DEN -2.5 in DEN at CAR. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.1%          |
-| Sun, Nov 01 | ARI at DAL | DAL -6.5         | 54.6%          |
-| Sun, Nov 01 | ATL at TB  | ATL +2.5         | 50.2%          |
-| Sun, Nov 01 | BAL at BUF | BAL +3.5         | 55.7%          |
-| Sun, Nov 01 | CLE at PIT | CLE +3.5         | 50.7%          |
-| Sun, Nov 01 | IND at JAX | JAX -7.5         | 57.5%          |
-| Sun, Nov 01 | KC at DEN  | DEN +1.5         | 57.4%          |
-| Sun, Nov 01 | LAC at LA  | LA -6.5          | 51.2%          |
-| Sun, Nov 01 | LV at NYJ  | NYJ -1.5         | 52.6%          |
-| Sun, Nov 01 | MIN at DET | MIN +3.5         | 52.6%          |
-| Sun, Nov 01 | NE at MIA  | MIA +7.5         | 50.0%          |
-| Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.5%          |
-| Sun, Nov 01 | TEN at CIN | ★ CIN -10.5      | 70.4%          |
-| Mon, Nov 02 | CHI at SEA | CHI +3.5         | 59.3%          |
+| Thu, Nov 05 | JAX at BAL | JAX -9.5         | 51.1%          |
+| Sun, Nov 08 | ARI at SEA | SEA -10.5        | 50.7%          |
+| Sun, Nov 08 | CIN at ATL | CIN -2.5         | 55.5%          |
+| Sun, Nov 08 | CLE at NO  | NO -2.5          | 52.6%          |
+| Sun, Nov 08 | DAL at IND | DAL -5.5         | 50.9%          |
+| Sun, Nov 08 | DEN at CAR | ★ DEN -2.5       | 60.0%          |
+| Sun, Nov 08 | DET at MIA | DET -6.5         | 53.9%          |
+| Sun, Nov 08 | GB at NE   | NE -2.5          | 52.8%          |
+| Sun, Nov 08 | HOU at LAC | HOU -4.5         | 52.4%          |
+| Sun, Nov 08 | LA at WAS  | WAS +5.5         | 50.9%          |
+| Sun, Nov 08 | LV at SF   | SF -9.5          | 51.1%          |
+| Sun, Nov 08 | NYG at PHI | PHI +3.5         | 51.7%          |
+| Sun, Nov 08 | NYJ at KC  | NYJ +9.5         | 56.9%          |
+| Sun, Nov 08 | TB at CHI  | CHI -6.5         | 51.0%          |
+| Mon, Nov 09 | BUF at MIN | MIN +3.5         | 54.1%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -63,7 +64,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 8,470 results recorded -- 8,379 unresolved_below_power, 91 closed (81 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 8,493 results recorded -- 8,400 unresolved_below_power, 93 closed (83 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 63 of 69 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

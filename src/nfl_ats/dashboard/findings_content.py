@@ -1445,6 +1445,16 @@ HONESTY_SUB = (
 
 HONESTY_RULES: tuple[HonestyRule, ...] = (
     HonestyRule(
+        title="How this pool works",
+        body=(
+            "Every game in the pool is worth one point. The Best Pick earns no extra points; "
+            "it only breaks ties, and the tiebreaker total only matters if the Best Pick "
+            "does not settle one. Ties at the top of a week are uncommon, so neither "
+            "tiebreaker decides much. Picking against the crowd lowers the chance of "
+            "winning the pool, so the better plan is to pick each game's likelier side."
+        ),
+    ),
+    HonestyRule(
         title="Check how the comparison was made",
         body=(
             "A result should distinguish the games used to learn from the games used to "

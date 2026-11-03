@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from nfl_ats import board_assistant
+from nfl_ats.best_pick_nomination import SERVED_SPREAD_THRESHOLD
 from nfl_ats.board_content import (
     CADENCE_NOTE,
     INJURY_STATE_NAME,
@@ -518,7 +519,8 @@ def _confidence_meter_html(game: GameRow) -> str:
         f'<i class="{"on" if index < game.confidence_fill else ""}"></i>' for index in range(3)
     )
     return (
-        f'<div class="meter"><div class="segs">{segments}</div>'
+        f'<div class="meter" title="{escape(game.confidence_title, quote=True)}">'
+        f'<div class="segs">{segments}</div>'
         f'<span class="word">{escape(game.confidence_label)}</span></div>'
     )
 
@@ -707,7 +709,10 @@ def _best_pick_note_html(content: BoardContent) -> str:
         else ""
     )
     lead = (
-        '<p class="policy-note"><b>Best pick</b> &mdash; '
+        '<p class="policy-note"><b>Best pick</b> &mdash; the one game the card puts '
+        "its name behind each week: the highest cover chance among games where the books "
+        "agree on the line more closely than on a typical game this week and the spread is "
+        f"under {SERVED_SPREAD_THRESHOLD:g} points. This week it is "
         f"{escape(best.pick_team)} {escape(best.pick_spread_text)} at "
         f"{escape(best.probability_text)} cover chance. "
         f"{gap_note}{escape(content.best_pick_note)}</p>"
@@ -899,6 +904,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
             else:
                 pick_cell = pick_text
             pick_cell += _flip_pill_html(game)
+            if game.pool_edge_text and not game.final:
+                pick_cell += f'<span class="best-flag">{escape(game.pool_edge_text)}</span>'
             if game.qb_note:
                 pick_cell += (
                     f'<span class="best-flag" title="{escape(game.qb_note)}">QB1 out</span>'

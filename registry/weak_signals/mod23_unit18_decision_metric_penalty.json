@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit18_decision_metric_penalty",
+  "signals": {
+    "mod23_unit18_inner_loso_cover_logloss_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "inner_loso_cover_logloss ridge, paired vs base ridge alpha 10, 2011-2019; 1144-1087 vs 1142-1089.",
+      "effect": 0.08964589870013447,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit18_decision_metric_penalty",
+      "interval": [
+        -1.2641083521444696,
+        1.4621502750251223
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm ACC picks the penalty by inner leave-one-season-out cover accuracy, arm LL by discrete empirical-residual cover log loss; grid 10^(-1..5) step .5; four looks.",
+      "plain_summary": "Choosing the shrinkage strength inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.5358,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit18/report.json",
+      "standard_error": null
+    },
+    "mod23_unit18_inner_loso_cover_logloss_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block bootstrap interval [-1.67, -0.60] lies wholly below zero (6 blocks, 1,503 games). The 2011-19 cell of this arm stays unresolved.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "inner_loso_cover_logloss ridge, paired vs base ridge alpha 10, 2020-2025; 785-718 vs 802-701.",
+      "effect": -1.1310711909514304,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit18_decision_metric_penalty",
+      "interval": [
+        -1.6744809109176155,
+        -0.598404255319149
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm ACC picks the penalty by inner leave-one-season-out cover accuracy, arm LL by discrete empirical-residual cover log loss; grid 10^(-1..5) step .5; four looks.",
+      "plain_summary": "Choosing the ridge penalty by this inner criterion made 2020-25 picks against the opener clearly worse than the fixed served penalty.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit18/report.json",
+      "standard_error": null
+    },
+    "mod23_unit18_inner_loso_opener_accuracy_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "inner_loso_opener_accuracy ridge, paired vs base ridge alpha 10, 2011-2019; 1137-1094 vs 1142-1089.",
+      "effect": -0.22411474675033619,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit18_decision_metric_penalty",
+      "interval": [
+        -1.611459265890779,
+        1.2539184952978057
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm ACC picks the penalty by inner leave-one-season-out cover accuracy, arm LL by discrete empirical-residual cover log loss; grid 10^(-1..5) step .5; four looks.",
+      "plain_summary": "Choosing the shrinkage strength inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.3652,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit18/report.json",
+      "standard_error": null
+    },
+    "mod23_unit18_inner_loso_opener_accuracy_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block bootstrap interval [-3.06, -0.38] lies wholly below zero (6 blocks, 1,503 games). The 2011-19 cell of this arm stays unresolved.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "inner_loso_opener_accuracy ridge, paired vs base ridge alpha 10, 2020-2025; 775-728 vs 802-701.",
+      "effect": -1.7964071856287425,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit18_decision_metric_penalty",
+      "interval": [
+        -3.062583222370173,
+        -0.3826530612244898
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm ACC picks the penalty by inner leave-one-season-out cover accuracy, arm LL by discrete empirical-residual cover log loss; grid 10^(-1..5) step .5; four looks.",
+      "plain_summary": "Choosing the ridge penalty by this inner criterion made 2020-25 picks against the opener clearly worse than the fixed served penalty.",
+      "probability_positive": 0.00635,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit18/report.json",
+      "standard_error": null
+    }
+  }
+}

@@ -67,17 +67,17 @@
       "effect_units": "accuracy_points",
       "family": "mod24_postseason_rows",
       "interval": [
-        -5.882352941176471,
-        5.882352941176471
+        -5.172413793103448,
+        5.172413793103448
       ],
       "league": "nfl",
-      "notes": "Forward 2026 Weeks 1-8 requested; Week 8 results not yet in, so 102 decisive games from Weeks 1-7. Postseason rows through 2025 added to base ridge, weekly past-only refit, served locked margin shifted by arm-minus-base, mapped through locked line sweep at the Tuesday opener; arm 60-42 v served 60-42, 10 flips, decisive 5-5 v 5-5.",
+      "notes": "2026 Weeks 1-8 at the Tuesday opener, frozen rule; arm 63-53 v served 63-53, flips 10, decisive 5-5 v 5-5. Re-recorded 2026-11-03 13:00 after Week 8 results entered the features (was Weeks 1-7, n 102).",
       "plain_summary": null,
-      "probability_positive": 0.44495,
+      "probability_positive": 0.4274,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 102,
+      "sample_games": 116,
       "seasons": [
         2026,
         2026
@@ -147,21 +147,21 @@
       "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; rule frozen before 2026 scoring.",
       "closing_ground": null,
       "description": "Postseason rows in base ridge vs served at the opener, 2026, brier_gain",
-      "effect": 0.002348805121756434,
+      "effect": 0.001373719828815049,
       "effect_units": "brier_improvement",
       "family": "mod24_postseason_rows",
       "interval": [
-        -0.004462627741473945,
-        0.009369703343926655
+        -0.0047846895984891506,
+        0.007730628759643036
       ],
       "league": "nfl",
-      "notes": "Forward 2026 Weeks 1-8 requested; Week 8 results not yet in, so 102 decisive games from Weeks 1-7. Postseason rows through 2025 added to base ridge, weekly past-only refit, served locked margin shifted by arm-minus-base, mapped through locked line sweep at the Tuesday opener; arm 60-42 v served 60-42, 10 flips, decisive 5-5 v 5-5.",
+      "notes": "2026 Weeks 1-8 at the Tuesday opener, frozen rule; arm 63-53 v served 63-53, flips 10, decisive 5-5 v 5-5. Re-recorded 2026-11-03 13:00 after Week 8 results entered the features (was Weeks 1-7, n 102).",
       "plain_summary": null,
-      "probability_positive": 0.7473,
+      "probability_positive": 0.658,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 102,
+      "sample_games": 116,
       "seasons": [
         2026,
         2026
@@ -231,21 +231,21 @@
       "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; rule frozen before 2026 scoring.",
       "closing_ground": null,
       "description": "Postseason rows in base ridge vs served at the opener, 2026, log_loss_gain",
-      "effect": 0.004734515611337155,
+      "effect": 0.0027234337573426156,
       "effect_units": "log_loss_improvement",
       "family": "mod24_postseason_rows",
       "interval": [
-        -0.00905386594972495,
-        0.018956397383836043
+        -0.009766028974506586,
+        0.01566757376302695
       ],
       "league": "nfl",
-      "notes": "Forward 2026 Weeks 1-8 requested; Week 8 results not yet in, so 102 decisive games from Weeks 1-7. Postseason rows through 2025 added to base ridge, weekly past-only refit, served locked margin shifted by arm-minus-base, mapped through locked line sweep at the Tuesday opener; arm 60-42 v served 60-42, 10 flips, decisive 5-5 v 5-5.",
+      "notes": "2026 Weeks 1-8 at the Tuesday opener, frozen rule; arm 63-53 v served 63-53, flips 10, decisive 5-5 v 5-5. Re-recorded 2026-11-03 13:00 after Week 8 results entered the features (was Weeks 1-7, n 102).",
       "plain_summary": null,
-      "probability_positive": 0.7459,
+      "probability_positive": 0.65365,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 102,
+      "sample_games": 116,
       "seasons": [
         2026,
         2026

@@ -152,6 +152,67 @@ PRIVATE_SUNDAY_ODDS_CAPTURE = [
     str(REPO / "scripts" / "capture_private_sunday_odds.py"),
 ]
 
+ODDS_TAPE_CAPTURE = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    str(REPO / "scripts" / "capture_odds_tape.py"),
+]
+
+LEAD64_FRESHNESS_SCRIPT = (REPO / "scripts" / "lead64_freshness_audit.py").as_posix()
+
+LEAD64_FRESHNESS_AUDIT = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    "-c",
+    "import runpy, sys; from datetime import UTC, datetime; "
+    f"sys.argv = [{LEAD64_FRESHNESS_SCRIPT!r}, '--as-of', "
+    "datetime.now(UTC).strftime('%Y-%m-%dT%H:%M:%SZ')]; "
+    f"runpy.run_path({LEAD64_FRESHNESS_SCRIPT!r}, run_name='__main__')",
+]
+
+MOD25_WFJ_FORWARD_AUTO = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    "-c",
+    "import sys; sys.path.insert(0, 'scripts'); "
+    "import forward_terms_week, mod25_wfj_forward; "
+    "mod25_wfj_forward.record_week(forward_terms_week.resolve_week('auto'))",
+]
+
+MOD27_POOL_OFFSET_FORWARD_AUTO = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    "-c",
+    "import sys; sys.path.insert(0, 'scripts'); "
+    "import forward_terms_week, mod27_pool_offset_observed; "
+    "mod27_pool_offset_observed.forward(forward_terms_week.resolve_week('auto'))",
+]
+
+LEAD61_PROBE_ONLY_ON = "2026-11-05"
+
+LEAD61_PROBE_ON_DATE = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    "-c",
+    "import runpy, sys; from datetime import datetime; "
+    "from zoneinfo import ZoneInfo; "
+    f"sys.exit(0) if datetime.now(ZoneInfo('America/New_York')).date().isoformat() != "
+    f"{LEAD61_PROBE_ONLY_ON!r} else None; "
+    f"sys.argv = ['probe', '--repeat-minutes', '70']; "
+    f"runpy.run_path({(REPO / 'scripts' / 'probe_bovada_live_periods.py').as_posix()!r}, "
+    "run_name='__main__')",
+]
+
 
 def _sportradar_injury_job(day: str, at: str, report: str) -> Job:
     return Job(
@@ -562,6 +623,188 @@ SCHEDULE: tuple[Job, ...] = (
             added_on="2026-10-01",
         )
         for day in DAYS
+    ),
+    *(
+        Job(
+            (
+                f"travel_interruptions_{day}"
+                if at == "08:00"
+                else f"travel_interruptions_{day}_{at.replace(':', '')}"
+            ),
+            day,
+            at,
+            120,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "capture_travel_interruptions.py"),
+            ],
+            True,
+            "Timestamped travel-interruption mentions in NFL beat-reporter posts, cross-checked "
+            "with FAA delay status, kept as a forward-only log.",
+            added_on="2026-11-03",
+        )
+        for day, at in (
+            *((day, "08:00") for day in DAYS if day != "mon"),
+            ("sun", "10:00"),
+        )
+    ),
+    Job(
+        "prospective_scorecard_tue",
+        "tue",
+        "09:30",
+        20,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "prospective_scorecard_2026.py"),
+        ],
+        True,
+        "Weekly scorecard of the 2026 prospective record of the served picks.",
+        added_on="2026-11-03",
+        catch_up=True,
+    ),
+    Job(
+        "prospective_score_tue",
+        "tue",
+        "09:40",
+        30,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "nfl-ats",
+            "prospective-score",
+            "--features",
+            "data/processed/game_features.parquet",
+            "--start-season",
+            "2026",
+            "--bootstrap-samples",
+            "1000",
+        ],
+        True,
+        "Weekly prospective score of the 2026 served picks against the market with a "
+        "bootstrap interval.",
+        added_on="2026-11-03",
+        catch_up=True,
+    ),
+    Job(
+        "build_staff_state_tue",
+        "tue",
+        "07:45",
+        30,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "build_staff_state.py"),
+        ],
+        True,
+        "Rebuild the coordinator staff-state table after the Tuesday coordinator ingest so "
+        "in-season staff changes are visible to the change-validation writer.",
+        requires=("coordinators_tue",),
+        added_on="2026-11-03",
+    ),
+    Job(
+        "per07_staff_state_tue",
+        "tue",
+        "07:55",
+        30,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "per07_write_change_validation.py"),
+        ],
+        True,
+        "Write a stamped change-validation file from the rebuilt staff-state table so the "
+        "first-game-back overlay sees an in-season coordinator change before the noon lock.",
+        requires=("build_staff_state_tue",),
+        added_on="2026-11-03",
+    ),
+    Job(
+        "forward_terms_tue",
+        "tue",
+        "12:35",
+        105,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "forward_terms_week.py"),
+            "--week",
+            "auto",
+        ],
+        True,
+        "Freeze the SKY-03, SKY-04 and ENV-02 forward predictions for the coming week after "
+        "the weekly lock and before the 14:20 lock window closes. Research only, never "
+        "served. A failed odds capture blanks only the SKY-04 term.",
+        requires=("weekly_lock",),
+        added_on="2026-11-03",
+    ),
+    Job(
+        "mod25_wfj_forward_tue",
+        "tue",
+        "12:50",
+        90,
+        MOD25_WFJ_FORWARD_AUTO,
+        True,
+        "Log the joint-engine distilled student's pregame picks for the coming week beside "
+        "the served model, after the weekly lock and before the 14:20 lock window closes. "
+        "Research only, never served.",
+        requires=("weekly_lock",),
+        added_on="2026-11-03",
+    ),
+    Job(
+        "mod27_pool_offset_forward_tue",
+        "tue",
+        "13:05",
+        60,
+        MOD27_POOL_OFFSET_FORWARD_AUTO,
+        True,
+        "Log the pool-offset challenger's pick changes for the coming week beside the served "
+        "card, after the weekly lock and before the 14:20 lock window closes. Research only, "
+        "never served.",
+        requires=("weekly_lock",),
+        added_on="2026-11-03",
+    ),
+    Job(
+        "nflverse_injuries_fri_2000",
+        "fri",
+        "20:00",
+        180,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "nflverse_injuries_ingest.py"),
+        ],
+        True,
+        "Evening snapshot of the nflverse injuries release: the Friday game-status report "
+        "was first seen only at the Saturday morning snapshot, so this one catches it "
+        "the night it is published.",
+        dedupe_dir="data/raw/nflverse_injuries",
+        dedupe_minutes=60,
+        added_on="2026-11-03",
+    ),
+    Job(
+        "lead64_freshness_fri",
+        "fri",
+        "10:00",
+        120,
+        LEAD64_FRESHNESS_AUDIT,
+        True,
+        "Friday audit of whether captured injury designations are fresh before kickoff, "
+        "stamped with the run time.",
+        added_on="2026-11-03",
     ),
     *(
         Job(
@@ -1103,6 +1346,33 @@ SCHEDULE: tuple[Job, ...] = (
         "source age guard skips redundant calls and HTTP blocks stop a source.",
         season_guarded=False,
         added_on="2026-09-20",
+    ),
+    Job(
+        "odds_tape_sun",
+        "sun",
+        "12:12",
+        35,
+        [*ODDS_TAPE_CAPTURE, "--duration-minutes", "48"],
+        True,
+        "Sunday 12:12-13:00 ET Bovada spread tape sampled every 8.5 seconds with the "
+        "provider's last-updated time, for the lead-lag latency estimate. Starts after "
+        "odds_private_sun because both read the same Bovada endpoint; the run lasts 48 "
+        "minutes and has no age guard.",
+        season_guarded=False,
+        added_on="2026-11-03",
+    ),
+    Job(
+        "odds_2h_probe_thu_20261105",
+        "thu",
+        "21:25",
+        90,
+        LEAD61_PROBE_ON_DATE,
+        True,
+        "One-off probe: does Bovada list a second-half line at halftime of Jacksonville at "
+        "Baltimore on 2026-11-05 (kickoff 20:15 ET). Runs 70 minutes from 21:25; the argv "
+        "exits at once on any other Thursday because the scheduler has no single-date job.",
+        season_guarded=False,
+        added_on="2026-11-03",
     ),
     *(
         Job(

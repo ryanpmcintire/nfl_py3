@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit17_block_penalty",
+  "signals": {
+    "mod23_unit17_single_penalty_inner_loso_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "single_penalty_inner_loso ridge, paired vs base ridge alpha 10, 2011-2019; 1153-1078 vs 1142-1089.",
+      "effect": 0.49305244285073957,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit17_block_penalty",
+      "interval": [
+        -0.7671480144404332,
+        1.6143678819957856
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm C one penalty, arm B separate penalties for the shared and NFL-only blocks; two arms by two eras, four looks.",
+      "plain_summary": "Choosing the shrinkage strength inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.7866,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit17/report.json",
+      "standard_error": null
+    },
+    "mod23_unit17_single_penalty_inner_loso_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "single_penalty_inner_loso ridge, paired vs base ridge alpha 10, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit17_block_penalty",
+      "interval": [
+        -1.4122394082044385,
+        -0.06447453255963895
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm C one penalty, arm B separate penalties for the shared and NFL-only blocks; two arms by two eras, four looks.",
+      "plain_summary": "Choosing the shrinkage strength inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0131,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit17/report.json",
+      "standard_error": null
+    },
+    "mod23_unit17_two_block_penalty_inner_loso_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "two_block_penalty_inner_loso ridge, paired vs base ridge alpha 10, 2011-2019; 1147-1084 vs 1142-1089.",
+      "effect": 0.22411474675033619,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit17_block_penalty",
+      "interval": [
+        -1.029082774049217,
+        1.3864198012590383
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm C one penalty, arm B separate penalties for the shared and NFL-only blocks; two arms by two eras, four looks.",
+      "plain_summary": "Choosing the shrinkage strength inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.64085,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit17/report.json",
+      "standard_error": null
+    },
+    "mod23_unit17_two_block_penalty_inner_loso_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "two_block_penalty_inner_loso ridge, paired vs base ridge alpha 10, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit17_block_penalty",
+      "interval": [
+        -1.4122394082044385,
+        -0.06447453255963895
+      ],
+      "league": "nfl",
+      "notes": "Same 88 inputs, past-only weekly refits, penalties chosen by inner leave-one-season-out; arm C one penalty, arm B separate penalties for the shared and NFL-only blocks; two arms by two eras, four looks.",
+      "plain_summary": "Choosing the shrinkage strength inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0131,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit17/report.json",
+      "standard_error": null
+    }
+  }
+}
