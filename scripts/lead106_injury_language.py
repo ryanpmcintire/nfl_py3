@@ -3,12 +3,14 @@ import hashlib
 import json
 import re
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import forward_terms_week as FTW
 import lead99_llm_read as L99
 
 ROOT = L99.ROOT
@@ -22,6 +24,9 @@ PER_STRATUM_BUDGET = 100
 BATCH_ROWS = 40
 BOOTSTRAP_REPS = 2000
 HEADLINE_WINDOW_DAYS = 7
+THURSDAY = 3
+STAMP = "%Y%m%dT%H%M%SZ"
+FORWARD = ART / "forward"
 
 
 def sha(b):
@@ -467,11 +472,149 @@ def cmd_ids(_):
     print(json.dumps(rep, indent=1))
 
 
+def live_inputs(week, view):
+    inj_dir = sorted((ROOT / "data" / "raw" / "nflverse_injuries").iterdir())[-1]
+    capture = pd.Timestamp(datetime.strptime(inj_dir.name, "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC))
+    x = pd.read_parquet(inj_dir / "injuries.parquet")
+    x = x[(x["season"] == SEASON) & (x["week"] == week)].copy()
+    x["week"] = x["week"].astype(int)
+    x = x.drop_duplicates(["gsis_id", "week"], keep="last")
+    x["designation"] = x["report_status"].fillna("none")
+    g = pd.read_parquet(
+        ROOT / "data" / "processed" / "game_features.parquet",
+        columns=["season", "week", "home_team", "away_team", "kickoff"],
+    )
+    g = g[(g["season"] == SEASON) & (g["week"] == week)].copy()
+    g["kickoff"] = pd.to_datetime(g["kickoff"], utc=True)
+    g["thursday"] = g["kickoff"].dt.tz_convert("America/New_York").dt.weekday == THURSDAY
+    g = g[g["thursday"] if view == "thursday" else ~g["thursday"]]
+    g["game_id"] = g["away_team"] + "@" + g["home_team"]
+    k = pd.concat(
+        [
+            g[["home_team", "game_id", "kickoff"]].rename(columns={"home_team": "team"}),
+            g[["away_team", "game_id", "kickoff"]].rename(columns={"away_team": "team"}),
+        ]
+    )
+    x = x.merge(k, on="team", how="inner")
+    x["key"] = x["full_name"].map(norm_name)
+    nd = sorted((ROOT / "data" / "raw" / "injury_news").iterdir())[-1]
+    c = pd.read_parquet(nd / "current.parquet")
+    c = c[c["injury_relevant"] & (c["lastmod"] <= capture.tz_convert(None).tz_localize("UTC"))]
+    heads = []
+    for _, a in x.iterrows():
+        lo = a["kickoff"] - pd.Timedelta(days=HEADLINE_WINDOW_DAYS)
+        r = c[
+            (c["lastmod"] < a["kickoff"])
+            & (c["lastmod"] >= lo)
+            & bool(a["key"])
+            & c["slug"].str.contains(a["key"], regex=False)
+        ]
+        heads.append(
+            [
+                str(h).replace(a["key"].replace("-", " "), "the player")
+                for h in r.sort_values("lastmod")["headline_guess"]
+            ]
+        )
+    x["headlines"] = heads
+    x = x.reset_index(drop=True)
+    x["rid"] = [f"f{i:04d}" for i in range(len(x))]
+    x["text"] = [row_text(r) for _, r in x.iterrows()]
+    return x, capture, g
+
+
+def cmd_forward(a):
+    fz = json.loads((ART / "frozen.json").read_text())
+    if fz["prompt_sha256"] != sha(PROMPT.read_bytes()) or fz["model"] != L99.MODEL:
+        raise SystemExit("prompt or model differs from frozen enrollment")
+    week = FTW.resolve_week(a.week)
+    x, capture, g = live_inputs(week, a.view)
+    now = datetime.now(UTC)
+    started = x["kickoff"] <= pd.Timestamp(now)
+    counts = x.groupby("game_id").size().reindex(g["game_id"], fill_value=0)
+    kick = g.set_index("game_id")["kickoff"]
+    print(
+        json.dumps(
+            {
+                "week": week,
+                "view": a.view,
+                "capture_utc": capture.strftime(STAMP),
+                "players": len(x),
+                "per_game": {
+                    gid: {
+                        "players": int(n),
+                        "kickoff_utc": kick[gid].strftime(STAMP),
+                        "kicked_off": bool(kick[gid] <= pd.Timestamp(now)),
+                    }
+                    for gid, n in counts.items()
+                },
+            },
+            indent=1,
+        )
+    )
+    if a.dry:
+        return
+    x = x[~started].reset_index(drop=True)
+    out = FORWARD / f"{SEASON}_week{week:02d}_{a.view}_{capture.strftime(STAMP)}.json"
+    if out.exists():
+        print("exists", out)
+        return
+    if x.empty:
+        print("no players before kickoff")
+        return
+    FORWARD.mkdir(parents=True, exist_ok=True)
+    L99.TOOLS = ""
+    cwd = ART / "cwd"
+    cwd.mkdir(exist_ok=True)
+    prompt = PROMPT.read_text()
+    reads = {}
+    for b in range(0, len(x), BATCH_ROWS):
+        chunk = x.iloc[b : b + BATCH_ROWS]
+        packet = json.dumps([{"id": r.rid, "text": r.text} for r in chunk.itertuples()], indent=1)
+        _, text = L99.call_claude(prompt, packet, cwd)
+        for o in json.loads(text[text.index("[") : text.rindex("]") + 1]):
+            reads[o["id"]] = (float(o["p_plays"]), float(o["snap_share"]))
+    recorded = datetime.now(UTC)
+    rows = []
+    for r in x.itertuples():
+        if r.rid not in reads or r.kickoff <= pd.Timestamp(recorded):
+            continue
+        rows.append(
+            {
+                "gsis_id": r.gsis_id,
+                "player": r.full_name,
+                "team": r.team,
+                "game_id": r.game_id,
+                "designation": r.designation,
+                "p_plays": reads[r.rid][0],
+                "snap_share": reads[r.rid][1],
+                "capture_utc": capture.strftime(STAMP),
+                "kickoff_utc": r.kickoff.strftime(STAMP),
+            }
+        )
+    rec = {
+        "season": SEASON,
+        "week": week,
+        "view": a.view,
+        "capture_utc": capture.strftime(STAMP),
+        "recorded_utc": recorded.strftime(STAMP),
+        "prompt_sha256": fz["prompt_sha256"],
+        "model": L99.MODEL,
+        "rows": rows,
+    }
+    out.write_text(json.dumps(rec, indent=1))
+    print(out, len(rows))
+
+
 def main():
     p = argparse.ArgumentParser()
     sp = p.add_subparsers(dest="cmd", required=True)
     for n, f in (("freeze", cmd_freeze), ("run", cmd_run), ("score", cmd_score), ("ids", cmd_ids)):
         sp.add_parser(n).set_defaults(fn=f)
+    fp = sp.add_parser("forward")
+    fp.add_argument("--week", default="auto")
+    fp.add_argument("--view", choices=["thursday", "sunday"], required=True)
+    fp.add_argument("--dry", action="store_true")
+    fp.set_defaults(fn=cmd_forward)
     a = p.parse_args()
     a.fn(a)
 

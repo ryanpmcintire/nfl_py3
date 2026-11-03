@@ -685,6 +685,32 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"lead106_forward_{view}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead106_injury_language.py"),
+                "forward",
+                "--view",
+                view,
+            ],
+            True,
+            "LEAD-106 forward log: frozen-prompt read of each listed player's injury wording "
+            "(play probability) after the final injury report, written before kickoff.",
+            added_on="2026-11-03",
+        )
+        for view, day, at, grace in (
+            ("thursday", "thu", "17:30", 120),
+            ("sunday", "sat", "18:00", 360),
+        )
+    ),
+    *(
+        Job(
             f"lead101_delta_read_{view}_{day}_{at.replace(':', '')}",
             day,
             at,

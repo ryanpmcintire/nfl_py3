@@ -21,3 +21,7 @@ Pooled summary (`pool --league nfl --full`, saved artifacts/eng57/pool_*.json): 
 Reading: treat the pooled log_loss and accuracy numbers as a mixed-base descriptive summary only; cfb_base cells are a different population (commensurability rule). Prefer the served_card subset for any decision about the card.
 
 - 2026-11-03 17:49 ET (root decision): the pool --base filter and per-base subtotals are a change to the non-pinned weak-signals CLI (PINNED_NAMES in src/nfl_ats/independent_validation.py:40 does not include it); queued as ENG-57 unit 2, no approval step needed. Until then, card decisions read only served_card rows of registry/weak_signals_base_tags.csv.
+
+## Unit 2 result (2026-11-03 17:53:48)
+Added `weak-signals pool --base` (raw_model|served_card|cfb_base|not_applicable|untagged) and by_base subtotals (signals, effective_signals, pooled_effect, interval, probability_positive) in cli_commands/registry.py and weak_signals.py (load_base_tags, restrict_to_base). Default output diff vs before: only generated_at_utc and the added by_base block. tests/test_weak_signals.py 64 passed.
+Next: none queued; subtotals are descriptive, overlapping re-tests still double count.

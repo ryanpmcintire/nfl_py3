@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import bisect
 import contextlib
+import csv
 import dataclasses
 import hashlib
 import json
@@ -628,6 +629,40 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
         "notes": list(registry.notes),
         "signals": signals,
     }
+
+
+BASE_TAGS_FILENAME = "weak_signals_base_tags.csv"
+BASE_UNTAGGED = "untagged"
+BASE_TAG_VALUES = ("raw_model", "served_card", "cfb_base", "not_applicable")
+BASE_CHOICES = (*BASE_TAG_VALUES, BASE_UNTAGGED)
+BASE_SUBTOTAL_FIELDS = (
+    "signals",
+    "effective_signals",
+    "pooled_effect",
+    "interval",
+    "probability_positive",
+)
+
+
+def default_base_tags_path(root: Path | None = None) -> Path:
+    base = Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry")) if root is None else root
+    return base / BASE_TAGS_FILENAME
+
+
+def load_base_tags(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    with path.open(newline="", encoding="utf-8") as handle:
+        return {row["signal"]: row["base"] for row in csv.DictReader(handle)}
+
+
+def restrict_to_base(registry: Registry, base: str, tags: Mapping[str, str]) -> Registry:
+    kept = {
+        name: signal
+        for name, signal in registry.signals.items()
+        if tags.get(name, BASE_UNTAGGED) == base
+    }
+    return replace(registry, signals=kept)
 
 
 def default_registry_path(root: Path | None = None) -> Path:

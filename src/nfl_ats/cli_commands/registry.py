@@ -32,6 +32,8 @@ from nfl_ats.rotation import (
     set_plain_summary,
     validate_registry,
 )
+from nfl_ats.weak_signals import BASE_CHOICES as WEAK_SIGNAL_BASE_CHOICES
+from nfl_ats.weak_signals import BASE_SUBTOTAL_FIELDS as WEAK_SIGNAL_BASE_SUBTOTAL_FIELDS
 from nfl_ats.weak_signals import CATEGORIES as WEAK_SIGNAL_CATEGORIES
 from nfl_ats.weak_signals import (
     CLASSIFICATIONS,
@@ -53,8 +55,11 @@ from nfl_ats.weak_signals import (
 from nfl_ats.weak_signals import CLOSING_GROUNDS as WEAK_SIGNAL_CLOSING_GROUNDS
 from nfl_ats.weak_signals import Registry as WeakSignalRegistry
 from nfl_ats.weak_signals import coherence_problems as weak_signal_coherence_problems
+from nfl_ats.weak_signals import default_base_tags_path as weak_signal_base_tags_path
 from nfl_ats.weak_signals import default_registry_path as weak_signal_registry_path
+from nfl_ats.weak_signals import load_base_tags as load_weak_signal_base_tags
 from nfl_ats.weak_signals import load_registry as load_weak_signals
+from nfl_ats.weak_signals import restrict_to_base as restrict_weak_signals_to_base
 from nfl_ats.weak_signals import save_registry as save_weak_signals
 
 
@@ -335,16 +340,35 @@ def _cmd_weak_signals_record_batch(args: argparse.Namespace) -> None:
 
 
 def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
-
     path = weak_signal_registry_path()
     registry = load_weak_signals(path)
-    report = combination_report(
-        registry,
-        league=args.league,
-        effect_units=args.effect_units,
-        method=args.method,
-        weighting=args.weighting,
-    )
+    tags = load_weak_signal_base_tags(weak_signal_base_tags_path())
+
+    def build(source: WeakSignalRegistry) -> dict[str, Any]:
+        return combination_report(
+            source,
+            league=args.league,
+            effect_units=args.effect_units,
+            method=args.method,
+            weighting=args.weighting,
+        )
+
+    if args.base:
+        report = build(restrict_weak_signals_to_base(registry, args.base, tags))
+        report["base"] = args.base
+    else:
+        report = build(registry)
+        report["by_base"] = {
+            base: {
+                "eligible_count": len(sub["eligible"]),
+                "pooled_by_unit": {
+                    unit: {key: cell.get(key) for key in WEAK_SIGNAL_BASE_SUBTOTAL_FIELDS}
+                    for unit, cell in sub["pooled_by_unit"].items()
+                },
+            }
+            for base in WEAK_SIGNAL_BASE_CHOICES
+            for sub in (build(restrict_weak_signals_to_base(registry, base, tags)),)
+        }
     if args.full:
         _print_json({"registry": str(path), **report})
         return
@@ -770,6 +794,14 @@ def register(
         "below what its own sample size can support; inverse_variance is the superseded "
         "raw 1/SE^2 scheme, kept for audit only because bootstrap bands narrow as a cell "
         "gets smaller and it handed the thinnest cells the most weight",
+    )
+    weak_signals_pool.add_argument(
+        "--base",
+        choices=WEAK_SIGNAL_BASE_CHOICES,
+        default=None,
+        help="pool only cells whose base in registry/weak_signals_base_tags.csv matches; "
+        "cells missing from the table are untagged; without it the summary adds per-base "
+        "subtotals",
     )
     weak_signals_pool.add_argument(
         "--full",
