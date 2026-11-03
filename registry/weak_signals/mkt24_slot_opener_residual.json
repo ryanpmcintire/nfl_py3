@@ -1,0 +1,565 @@
+{
+  "family": "mkt24_slot_opener_residual",
+  "signals": {
+    "mkt24_opener_2020_2025_holiday_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, holiday slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw -7.84 pp.",
+      "effect": -0.42700000000000005,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.789000000000001,
+        3.936
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.42396,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 29,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.226
+    },
+    "mkt24_opener_2020_2025_international_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, international slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw 14.79 pp.",
+      "effect": 0.822,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.5380000000000003,
+        5.1819999999999995
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.64414,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 28,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.2239999999999998
+    },
+    "mkt24_opener_2020_2025_monday_night_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, monday_night slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw -2.19 pp.",
+      "effect": -0.41200000000000003,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.454000000000001,
+        3.6290000000000004
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.42072,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.062
+    },
+    "mkt24_opener_2020_2025_saturday_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, saturday slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw -12.76 pp.",
+      "effect": -1.087,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -5.377,
+        3.2039999999999997
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.30982,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 44,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.189
+    },
+    "mkt24_opener_2020_2025_slot_term_loso_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Slot dummies added to the served logit, leave-one-season-out, vs served alone, opener_2020_2025; decisive flips {'flips': 191, 'slot_right': 77, 'served_right': 114}.",
+      "effect": -2.466666666666667,
+      "effect_units": "accuracy_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.816053511705685,
+        -0.0693000693000693
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.019,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1500,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": null
+    },
+    "mkt24_opener_2020_2025_slot_term_loso_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Slot dummies added to the served logit, leave-one-season-out, vs served alone, opener_2020_2025; decisive flips {'flips': 191, 'slot_right': 77, 'served_right': 114}.",
+      "effect": -0.000882789221327305,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.0028717951925622963,
+        0.0003908945280360717
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.2084,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1500,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": null
+    },
+    "mkt24_opener_2020_2025_sunday_early_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, sunday_early slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw 2.50 pp.",
+      "effect": 1.508,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -1.323,
+        4.338
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.8518,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 735,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 1.444
+    },
+    "mkt24_opener_2020_2025_sunday_late_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, sunday_late slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw 4.06 pp.",
+      "effect": 1.772,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -1.595,
+        5.138
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.84886,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 368,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 1.718
+    },
+    "mkt24_opener_2020_2025_sunday_night_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, sunday_night slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw 1.90 pp.",
+      "effect": 0.32299999999999995,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.763,
+        4.41
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.56159,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 100,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.085
+    },
+    "mkt24_opener_2020_2025_thursday_night_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, thursday_night slot, opener_2020_2025; shrunk by empirical Bayes (tau2 0.00052); raw -3.04 pp.",
+      "effect": -0.49899999999999994,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.601,
+        3.6029999999999998
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.40577,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 89,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.093
+    },
+    "mkt24_sbr_proxy_2011_2019_holiday_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, holiday slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw -17.68 pp.",
+      "effect": -1.865,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -7.369000000000001,
+        3.64
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.25335,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 29,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.8080000000000003
+    },
+    "mkt24_sbr_proxy_2011_2019_international_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, international slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw -2.18 pp.",
+      "effect": -0.185,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -5.752,
+        5.382
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.47405,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 29,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.8400000000000003
+    },
+    "mkt24_sbr_proxy_2011_2019_monday_night_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, monday_night slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw -0.61 pp.",
+      "effect": -0.20400000000000001,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.9590000000000005,
+        4.55
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.46642,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 147,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.426
+    },
+    "mkt24_sbr_proxy_2011_2019_saturday_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, saturday slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw -9.55 pp.",
+      "effect": -1.221,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -6.656,
+        4.213
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.3298,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 41,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.773
+    },
+    "mkt24_sbr_proxy_2011_2019_slot_term_loso_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Slot dummies added to the served logit, leave-one-season-out, vs served alone, sbr_proxy_2011_2019; decisive flips {'flips': 323, 'slot_right': 164, 'served_right': 159}.",
+      "effect": 0.2242152466367713,
+      "effect_units": "accuracy_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.8042895442359249,
+        1.358281570425999
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.6404,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2230,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": null
+    },
+    "mkt24_sbr_proxy_2011_2019_slot_term_loso_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Slot dummies added to the served logit, leave-one-season-out, vs served alone, sbr_proxy_2011_2019; decisive flips {'flips': 323, 'slot_right': 164, 'served_right': 159}.",
+      "effect": 0.0004333246200555244,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.0009779239043018163,
+        0.001695114037287967
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.7408,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2230,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": null
+    },
+    "mkt24_sbr_proxy_2011_2019_sunday_early_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, sunday_early slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw 0.95 pp.",
+      "effect": 0.762,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -1.8499999999999999,
+        3.375
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.7163,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1180,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 1.333
+    },
+    "mkt24_sbr_proxy_2011_2019_sunday_late_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, sunday_late slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw 0.98 pp.",
+      "effect": 0.636,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -2.802,
+        4.074
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.64153,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 541,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 1.754
+    },
+    "mkt24_sbr_proxy_2011_2019_sunday_night_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, sunday_night slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw 5.97 pp.",
+      "effect": 2.098,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -2.589,
+        6.784999999999999
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.80986,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 144,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.391
+    },
+    "mkt24_sbr_proxy_2011_2019_thursday_night_home_cover_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; empirical-Bayes shrunk slot residual vs served opener probability, 8 slots x 2 populations plus 4 LOSO cells (24 looks declared in advance).",
+      "closing_ground": null,
+      "description": "Home cover residual vs served opener probability, thursday_night slot, sbr_proxy_2011_2019; shrunk by empirical Bayes (tau2 0.00088); raw 10.19 pp.",
+      "effect": 2.857,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -2.0789999999999997,
+        7.794
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Asks whether the opening line is mispriced for a kickoff slot such as Thursday night, Monday night, holiday or international games.",
+      "probability_positive": 0.87171,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 119,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/report.json",
+      "standard_error": 2.519
+    }
+  }
+}
