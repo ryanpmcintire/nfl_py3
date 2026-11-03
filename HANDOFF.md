@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:03:04.940172+00:00`
+Refreshed at: `2026-11-03T21:03:42.463227+00:00`
 
 ## Start here
 
@@ -21,17 +21,18 @@ Refreshed at: `2026-11-03T21:03:04.940172+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a22a0be37fd5` — Refresh session handoff
+- Baseline commit: `72a5fb79bb30` — UI-29: History shows the games where our pick split from the pool leader's and who was right (Weeks 1-7 captured; leader by rank only)
 - Pending change set: 261 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
   - ` M docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - ` M docs/lanes/mkt-23-spread-total-move-decomposition.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - ` M docs/lanes/pool-05-ownership-proxy-v2.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `M  docs/lanes/ui-29-where-we-trail-leader.md`
   - ` M scripts/forward_terms_week.py`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-03T21:03:04.940172+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - ...and 241 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
