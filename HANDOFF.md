@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:30:38.237523+00:00`
+Refreshed at: `2026-11-03T22:32:55.153669+00:00`
 
 ## Start here
 
@@ -21,15 +21,20 @@ Refreshed at: `2026-11-03T22:30:38.237523+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5830fc39055c` — Refresh session handoff
-- Pending change set: 256 paths
+- Baseline commit: `ca38d520a9b1` — SIM-24: sim next-drive start field matches real within ~0.5 yd by score sign; explains ~13% of the untruncated lead gap and widens the trail gap; minor
+- Pending change set: 262 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
+  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
+  - ` M docs/lanes/pool-10-best-pick-placement-on-half-point-sides.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/lanes/sim-24-next-drive-start-field-by-previous-drive.md`
+  - ` M docs/lanes/ui-34-half-point-games.md`
+  - `M  scripts/forward_ledger.py`
+  - `M  scripts/forward_terms_week.py`
+  - `A  scripts/mod41_freeze_residual_load_served.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim24_start_field.py`
   - ` M src/nfl_ats/board_site_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
@@ -38,12 +43,7 @@ Refreshed at: `2026-11-03T22:30:38.237523+00:00`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 236 more
+  - ...and 242 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

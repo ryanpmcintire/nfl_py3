@@ -28,6 +28,7 @@ TERMS = (
     *("sky03", "sky03_separated", "sky04", "env02", "sky01", "sky01snap", "surface"),
     "mod35_cold_exposure",
     "mod41_residual_load",
+    "mod41_residual_load_served",
 )
 
 
@@ -849,8 +850,8 @@ def mod35_week(week, games, now):
     return pd.Series(x, dtype=float), fr, ts
 
 
-def mod41_frozen():
-    path = OUT / "mod41_residual_load" / "frozen_coefficients.json"
+def mod41_frozen(term="mod41_residual_load"):
+    path = OUT / term / "frozen_coefficients.json"
     body = json.loads(path.read_text())
     assert body["no_2026_outcomes"] is True
     keys = ("b_logit_per_unit", "intercept", "decomposition_beta_const_own_opp")
@@ -859,10 +860,10 @@ def mod41_frozen():
     return body
 
 
-def mod41_week(week, games, now):
+def mod41_week(week, games, now, term="mod41_residual_load"):
     import mod41_freeze_residual_load as f41
 
-    fr = mod41_frozen()
+    fr = mod41_frozen(term)
     pbp = f41.latest_pbp(ROOT / "data" / "pbp" / "raw")
     t = f41.season_team_games(pbp, SEASON)
     assert int(t.week.max()) < week
@@ -897,8 +898,20 @@ def mod41_week(week, games, now):
     return pd.Series(x, dtype=float), fr, ts
 
 
-def combine(term, games, x, fr):
+def served_card_probability(week):
+    pub = pd.read_parquet(ROOT / "artifacts" / "clv_ledger" / "published_picks.parquet")
+    pub = pub[(pub.season == SEASON) & (pub.week == week)]
+    pub = pub[pd.to_datetime(pub.published_at_utc, utc=True) <= pd.Timestamp(now_utc())]
+    last = pub.sort_values("published_at_utc").groupby("game_id").tail(1)
+    home = np.where(
+        last.pick_team == last.home_team, last.displayed_score, 1.0 - last.displayed_score
+    )
+    return dict(zip(last.game_id, home, strict=True))
+
+
+def combine(term, games, x, fr, week):
     out = []
+    served = served_card_probability(week) if term == "mod41_residual_load_served" else {}
     if term == "env02":
         centre = fr["roof_term_train_mean"]
         beta = fr["roof_beta_natural"]
@@ -906,6 +919,10 @@ def combine(term, games, x, fr):
         centre = 0.0
         beta = fr["b_logit_per_point"]
     for r in games.itertuples():
+        if term == "mod41_residual_load_served":
+            if r.game_id not in served:
+                raise SystemExit(f"MISSING INPUT: no published card probability for {r.game_id}")
+            r = r._replace(base_home_probability=float(served[r.game_id]))
         v = x.get(r.game_id)
         if v is None or np.isnan(v):
             out.append(
@@ -922,6 +939,14 @@ def combine(term, games, x, fr):
             )
             continue
         dl = beta * (v - centre) if term == "env02" else beta * v
+        if term == "mod41_residual_load_served":
+            base_logit = logit(r.base_home_probability)
+            dl = (
+                fr["intercept"]
+                + fr["served_logit_coefficient"] * base_logit
+                + beta * v
+                - base_logit
+            )
         if term == "env02" and r.home_team not in ("ARI", "ATL", "DAL", "HOU", "IND"):
             dl = 0.0
         out.append(
@@ -980,8 +1005,8 @@ def main():
                 x, fr, ts = surface_week(week, games, now)
             elif term == "mod35_cold_exposure":
                 x, fr, ts = mod35_week(week, games, now)
-            elif term == "mod41_residual_load":
-                x, fr, ts = mod41_week(week, games, now)
+            elif term in ("mod41_residual_load", "mod41_residual_load_served"):
+                x, fr, ts = mod41_week(week, games, now, term)
             else:
                 x, fr, ts = sky01_week(week, games, now, term)
         except SystemExit:
@@ -989,7 +1014,7 @@ def main():
         except Exception as ex:
             status[term] = f"FAILED {type(ex).__name__}: {ex}"
             continue
-        rows = combine(term, games, x, fr)
+        rows = combine(term, games, x, fr, week)
         if a.dry:
             vals = np.array([r["term_value"] for r in rows if r["term_value"] is not None], float)
             status[term] = {
