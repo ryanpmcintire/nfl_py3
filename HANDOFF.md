@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:26:38.660828+00:00`
+Refreshed at: `2026-11-03T23:27:35.234538+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-11-03T23:26:38.660828+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3871eb6a2fe0` — Republish the site with the latest settled results
-- Pending change set: 254 paths
+- Baseline commit: `0eeaf52e4f8a` — UI-37: neutral-site games name the venue and give both teams' travel; home stadium excludes neutral-site home games
+- Pending change set: 253 paths
   - ` M config/source_policies.json`
+  - `M  docs/index.html`
   - ` M docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `M  docs/lanes/ui-37-rest-and-travel-facts-on-each-row.md`
-  - `M  src/nfl_ats/board_schedule_facts.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T23:26:38.660828+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 234 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
