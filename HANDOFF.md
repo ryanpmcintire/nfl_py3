@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:21:15.695698+00:00`
+Refreshed at: `2026-11-03T23:21:22.995582+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T23:21:15.695698+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9d37bc2fec7c` — MOD-53 unit 2: penalty selection by opener cover log loss or pick accuracy does not beat alpha 10 (log-loss arm 2020-25 -1.13, refuted); keep the served penalty
+- Baseline commit: `db42026f4245` — Master lane state
 - Pending change set: 254 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
   - ` M registry/weak_signals/mod54_mirrored_rows.json`
