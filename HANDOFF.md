@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:06:57.572249+00:00`
+Refreshed at: `2026-11-03T21:07:45.824997+00:00`
 
 ## Start here
 
@@ -21,18 +21,16 @@ Refreshed at: `2026-11-03T21:06:57.572249+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6473bc403ac0` — Master lane state 16:15
-- Pending change set: 258 paths
+- Baseline commit: `fe397854d8c1` — MOD-41 residual workload frozen as a forward term (coef -0.0439 logit per play, LOSO -0.0395..-0.0501); Week 9 record written before kickoff; injury-designation mediation leaves it unchanged (unresolved)
+- Pending change set: 256 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/eng-50-online-forward-stacker.md`
   - ` M docs/lanes/lead-103-read-block-ablation.md`
-  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - ` M docs/lanes/mkt-23-spread-total-move-decomposition.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `A  registry/weak_signals/mod41_residual_load_u3_injury_mechanism.json`
-  - `M  scripts/forward_ledger.py`
-  - `M  scripts/forward_terms_week.py`
+  - `A  registry/weak_signals/eng50_online_stacker.json`
+  - `A  scripts/eng50_online_stacker.py`
   - ` M scripts/mod24_more_games.py`
-  - `A  scripts/mod41_freeze_residual_load.py`
-  - `A  scripts/mod41_unit3_injury_mechanism.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T21:06:57.572249+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 238 more
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - ...and 236 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
