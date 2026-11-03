@@ -21,6 +21,7 @@ from nfl_ats.board_content import (
     load_board_content,
     verify_number_provenance,
 )
+from nfl_ats.board_swing import load_game_plays, swing_text
 from nfl_ats.clv import live_close_reference
 from nfl_ats.dashboard import findings_content as fc
 from nfl_ats.data import DataContractError
@@ -250,6 +251,7 @@ class HistoryPickRow:
     close_status: str = "pending"
     close_correct: bool | None = None
     close_home_spread: float | None = None
+    swing_text: str = ""
 
     @property
     def pick_team(self) -> str:
@@ -1286,9 +1288,11 @@ def _history_pick_rows(
     *,
     now: datetime | None = None,
     close_reference: pd.DataFrame | None = None,
+    data_root: Path | None = None,
 ) -> tuple[HistoryPickRow, ...]:
     if decisions.empty:
         return ()
+    plays_by_season: dict[int, pd.DataFrame] = {}
     settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
     frozen = frozen_picks(artifacts_root, now=now or datetime.now(UTC), include_open=True)
     rows: list[HistoryPickRow] = []
@@ -1309,6 +1313,9 @@ def _history_pick_rows(
             )
         else:
             close_correct = None
+        swing = ""
+        if data_root is not None and status == "settled" and correct is False:
+            swing = _history_swing_text(outcomes, row, data_root, plays_by_season)
         rows.append(
             HistoryPickRow(
                 game_id=str(row.get("game_id")),
@@ -1335,9 +1342,48 @@ def _history_pick_rows(
                 close_status=close_status,
                 close_correct=close_correct,
                 close_home_spread=_number(row.get("close_home_spread")),
+                swing_text=swing,
             )
         )
     return tuple(rows)
+
+
+def _history_swing_text(
+    outcomes: pd.DataFrame,
+    row: pd.Series,
+    data_root: Path,
+    plays_by_season: dict[int, pd.DataFrame],
+) -> str:
+    season = _number(row.get("season"))
+    spread = _number(row.get("decision_home_spread"))
+    game_id = str(row.get("game_id"))
+    games = (
+        outcomes.loc[outcomes["game_id"].astype(str).eq(game_id)]
+        if not outcomes.empty
+        else outcomes
+    )
+    if season is None or spread is None or games.empty:
+        return ""
+    home_score, away_score = (
+        _number(games.iloc[0].get("home_score")),
+        _number(games.iloc[0].get("away_score")),
+    )
+    if home_score is None or away_score is None:
+        return ""
+    year = int(season)
+    if year not in plays_by_season:
+        plays_by_season[year] = load_game_plays(data_root, year)
+    try:
+        text = swing_text(
+            plays_by_season[year],
+            game_id,
+            str(row.get("pick_side")),
+            spread,
+            home_score - away_score,
+        )
+    except (ValueError, IndexError, KeyError):
+        return ""
+    return text or ""
 
 
 _CLOSE_SCHEDULE_COLUMNS: tuple[str, ...] = ("game_id", "spread_line", "result")
@@ -1677,6 +1723,7 @@ def _load_history_page_content(
             outcomes,
             now=generated_at,
             close_reference=close_reference,
+            data_root=data_root,
         )
     except (ValueError, OSError) as error:
         picks = ()

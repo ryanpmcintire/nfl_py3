@@ -15,3 +15,10 @@ Rules: Zero crossing closes nothing; one fitted probability selects the side; we
 
 ## Open
 Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
+
+## Unit 1 result (2026-11-03)
+Script scripts/mod31_wind_elasticity.py (rel). Family mod31_wind_elasticity, 4 looks declared before signs (2 outcomes pass_rate/epa_play x odd-even seasons and 1000 random game halves); term fit (2 more looks) not run. Panel: 5950 outdoor team-games 2009-2025, observed wind, script-controlled WLS slope per team, 32 teams.
+Split-half r (Spearman-Brown): pass rate odd/even -0.29 (-0.84), perm p(r>=obs) 0.95; random halves -0.13 [-0.38,0.20], p+ 0.17. EPA/play odd/even -0.04 (-0.07), perm p 0.57; random halves 0.00 [-0.30,0.29], p+ 0.49.
+Read: the team-specific slope is not a stable trait at this sample; league-level wind effect (SIM-15) is real, the team differences are not. Recorded 4 cells refuted_mechanism / no_split_half_reliability, artifacts/mod31/record_batch.json.
+## Next
+Pregame term not built (stopped per rule). Forecast source if ever revisited: aware archive forecast_wind_mph (issuance before pool cutoff).

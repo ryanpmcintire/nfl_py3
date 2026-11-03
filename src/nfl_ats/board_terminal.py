@@ -6,6 +6,7 @@ from itertools import groupby
 from math import ceil, floor
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from nfl_ats import board_assistant
 from nfl_ats.best_pick_nomination import SERVED_SPREAD_THRESHOLD
@@ -352,7 +353,7 @@ def _header(
 
 def _cmd_row(chrome: TickerChrome) -> str:
 
-    method_arg = escape(chrome.model_method_label.split(" ", 1)[0])
+    method_arg = "market-line"
     suffix = f" {escape(chrome.page_command_suffix)}" if chrome.page_command_suffix else ""
     return (
         '<div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span>'
@@ -389,14 +390,14 @@ def _motion_status_rail(chrome: TickerChrome) -> str:
         f'<span class="rail-number" data-roll-to="{strong_count}">{strong_count}</span> '
         f"{'STRONG READ' if strong_count == 1 else 'STRONG READS'}</span>",
         f'<span class="status-frame" style="--frame-index:1">MODEL '
-        f'<span class="rail-accent">{escape(chrome.model_method_label)}</span></span>',
+        f'<span class="rail-accent">{PLAIN_MODEL_NAME}</span></span>',
         f'<span class="status-frame" style="--frame-index:2">{best_html}</span>',
         f'<span class="status-frame" style="--frame-index:3">{escape(season_week)}</span>',
     )
     accessible_summary = (
         f"Board snapshot: {game_count} {'game' if game_count == 1 else 'games'}, "
         f"{strong_count} {'strong read' if strong_count == 1 else 'strong reads'}. "
-        f"Model {chrome.model_method_label}. "
+        f"Model: {PLAIN_MODEL_NAME}. "
         f"{best_text}. {season_week}."
     )
     return (
@@ -477,7 +478,7 @@ def _headline_section(headline: HeadlineStats) -> str:
         '<span class="label">Played policy &middot; archive score</span>'
         f'<span class="value">{headline.played_card_value_text}</span>'
         f'<span class="foot">{escape(headline.played_card_foot_text)}</span>'
-        f'<span class="foot">{escape(headline.model_method_label)}</span>'
+        f'<span class="foot">{PLAIN_MODEL_NAME}</span>'
         "</div>"
         '<div class="caveat">'
         '<span class="caveat-flag">How to read this number'
@@ -506,7 +507,7 @@ def _headline_section(headline: HeadlineStats) -> str:
         '<div class="caveat"><span class="caveat-flag">What this second number is</span>'
         f"<p>{escape(headline.refresh_chain_caption)}</p></div></div>"
         '<div class="policy-note" style="margin-top:1px;border-left-color:var(--line);">'
-        f"Active model <b>{escape(headline.model_method_label)}</b>"
+        f"Active model <b>{PLAIN_MODEL_NAME}</b>"
         ". Four stats, four roles: headline archive score, the prior chain it's tracked "
         "against, the model-alone baseline it's built on, and the model's own close-graded "
         "classification. Full source-and-date detail is at the bottom of this page.</div>"
@@ -827,6 +828,9 @@ def _relative_update(raw: str | None, evaluated_at: str | None) -> str:
     return f"updated {_humanize_timestamp(raw)}"
 
 
+PLAIN_MODEL_NAME = "a model that adjusts the opening line"
+
+
 def _humanize_timestamp(raw: str | None) -> str:
 
     parsed = _parse_render_time(raw)
@@ -834,6 +838,15 @@ def _humanize_timestamp(raw: str | None) -> str:
         return "time unavailable"
     period = "morning" if parsed.hour < 12 else "afternoon" if parsed.hour < 18 else "evening"
     return f"{parsed:%A} {period}"
+
+
+def _generated_day(raw: str | None) -> str:
+
+    parsed = _parse_render_time(raw)
+    if parsed is None:
+        return "time unavailable"
+    local = parsed.astimezone(ZoneInfo("America/New_York"))
+    return f"{local:%A}, {local:%B} {local.day} (ET)"
 
 
 def _default_game_id(content: BoardContent) -> str:
@@ -1574,7 +1587,7 @@ def _footer_html(generated_at_text: str, *, model_bit: str) -> str:
     tail = f" &middot; {escape(model_bit)}" if model_bit else ""
     return (
         "<footer>"
-        f'<div class="gen">Generated {escape(_humanize_timestamp(generated_at_text))}{tail} '
+        f'<div class="gen">Generated {escape(_generated_day(generated_at_text))}{tail} '
         f"&middot; ATS Terminal &middot; {escape(CADENCE_NOTE)}</div>"
         "</footer>"
     )
@@ -1587,7 +1600,7 @@ def _generic_footer(generated_at_text: str, *, model_bit: str = "") -> str:
 
 def _footer(content: BoardContent) -> str:
 
-    model_bit = f"source model {content.headline.model_method_label}"
+    model_bit = ""
     return _footer_html(content.generated_at_text, model_bit=model_bit)
 
 
@@ -1950,15 +1963,19 @@ def _grouped_ledger_group_html(title: str, rows: tuple[ModelLedgerRowView, ...])
     )
 
 
+_PLAIN_SOURCE_KINDS = {"overlay subset composition": "replay of the picks actually played"}
+
+
 def _number_provenance_html(content: ModelPageContent) -> str:
 
     if content.number_provenance:
         rows_html = "".join(
             '<tr class="game">'
             f'<td data-label="Number">{escape(row.label)}</td>'
-            f'<td data-label="Source">{escape(row.artifact_kind)}</td>'
+            f'<td data-label="Source">'
+            f"{escape(_PLAIN_SOURCE_KINDS.get(row.artifact_kind, row.artifact_kind))}</td>"
             f'<td data-label="Dated">{escape(row.date_text)}</td>'
-            f'<td data-label="Model">{escape(row.model_text)}</td>'
+            f'<td data-label="Model">{PLAIN_MODEL_NAME}</td>'
             "</tr>"
             for row in content.number_provenance
         )
@@ -2259,7 +2276,10 @@ def _history_status_html(row: HistoryPickRow) -> str:
         if row.score_text and row.status in {"settled", "push"}
         else ""
     )
-    return f'<span class="outcome outcome-{escape(row.status)}">{escape(label)}</span>{score}'
+    swing = f'<span class="game-sub">{escape(row.swing_text)}</span>' if row.swing_text else ""
+    return (
+        f'<span class="outcome outcome-{escape(row.status)}">{escape(label)}</span>{score}{swing}'
+    )
 
 
 def _history_pick_row_html(row: HistoryPickRow) -> str:
@@ -2578,13 +2598,14 @@ def _trace_chip_html(finding: FindingItemView) -> str:
 
     if finding.trace_signal_name is None or finding.trace_probability_positive is None:
         return ""
-    label = humanize_identifier(finding.trace_signal_name)
-    if finding.trace_signal_name == "mod18_home_side_location_v1_s3_through_card_vs_s2":
-        label = "Big-spread push versus all-spread push"
+    label = (
+        "Big-spread push versus all-spread push &middot; "
+        if finding.trace_signal_name == "mod18_home_side_location_v1_s3_through_card_vs_s2"
+        else ""
+    )
     return (
         '<span class="trace-chip">'
-        f"{escape(label)} &middot; "
-        f"{_humanize_probability_positive(finding.trace_probability_positive)}</span>"
+        f"{label}{_humanize_probability_positive(finding.trace_probability_positive)}</span>"
     )
 
 

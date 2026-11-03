@@ -1,17 +1,25 @@
 # XLG-13 Screen-to-served transfer audit
 
 ## Goal
-Screen-to-served transfer audit: does a candidate gain on the pooled 14-input harness predict its gain on the 88-input served model ROADMAP row XLG-13.
+Does a gain on the pooled 14-input harness (scripts/pooled_screen.py) predict the gain on the 88-input served model, NFL 2020-25 opener (base 786-717 screen, 802-701 served; accuracy points).
 
 ## State
-Added 2026-11-03 as an unmeasured backlog row; nothing run, no registry window spent. Mechanism: The 2026-11-03 pooled grade shows the ranking of shrinkage arms holds across NFL and CFB (accuracy-gain Spearman 0.88), but levers that only change shrinkage or calibration help the 14-feature model and not the 88-input served model. Before XLG-10 may gate any served promotion, measure whether pooled-harness add-one gains rank the same candidates the same way as the served model does. Data: Candidate add-one results already on disk from MOD-23 units 6-18 and the MOD-24 arms (artifacts under artifacts/ and the unit lanes); no new fits needed for the first unit.
+Family xlg13_screen_transfer declared before any sign was read; 2 looks (Spearman, Pearson), recorded unresolved_below_power. Table (screen NFL-opener gain, artifacts/pooled_sweep/<arm>.json; served gain):
+ridgecv +0.93 (cv.json); -0.73 (mod23-unit16 R, unit17 C)
+enet +1.40 (enet.json); -3.19 (unit16 E)
+accalpha +0.80 (accalpha.json); -1.80 (unit18 ACC)
+huber +0.67 (huber.json); -0.87 (mod23-unit10r-robust-wide H)
+n=4. Spearman -0.40 (boot P+ .25, exact permutation P(rho<=obs) .375), Pearson -0.84 (P+ .21), sign agreement 0/4. Bootstrap intervals [-1,1] (n=4).
+Not paired: LL-chosen alpha (unit18 LL -1.13) has no screen arm; hgb/recency/ts/winsor served gains lack a same-window number.
 
 ## Tried
-Novelty check only: Nearest: XLG-10 (builds the screen, does not validate it against the served model), mod24-more-games-2026-11-03.md (rank agreement across shrinkage arms on one model, not across model sizes), forward_pooling_declaration_2026-11-03.md (forward pooling rules). Differs: tests transfer of the screen itself across model size using finished candidates; grep for screen-to-served and transfer validity returned no hit.
+Tabulation from existing artifacts only; no fits. Script scripts/xlg13_screen_transfer.py (ignored).
 
 ## Next
-First unit: Tabulate every completed candidate with its 14-input harness gain and its 88-input served gain (accuracy points and log loss, same opener population), then Spearman and Kendall with a bootstrap over candidates and a permutation null; report probability_positive and the count of candidates; decide only afterwards whether the pooled screen may rank lanes.
-Rules: Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener on the same market and simple-model baselines.
+Limit written to mod24-more-games lane: screen not a pre-screen for served changes. More pairs need served runs of slope, ts, hgb on 88 inputs.
 
 ## Open
-Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
+n=4, all shrinkage-type, so rank test has no power; the sign result (0/4) is the usable evidence.
+
+## ROOT CORRECTION 2026-11-03 13:55
+- The pooled harness used the closing spread_line as model input while grading at the opener (scripts/mod24_more_games.py:63-73), so these results include close-minus-open line movement unavailable on Tuesday; not evidence for the served model until the opener-input rerun (see docs/lanes/mod24-more-games-2026-11-03.md).

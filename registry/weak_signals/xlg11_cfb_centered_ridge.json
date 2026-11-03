@@ -1,6 +1,174 @@
 {
   "family": "xlg11_cfb_centered_ridge",
   "signals": {
+    "xlg11_free_minus_fav_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus fav rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 6.8117,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        3.6062,
+        9.9027
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the fav rule: +6.81 correct games per hundred so far.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.6304
+    },
+    "xlg11_free_minus_fav_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.998; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus fav rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 5.2562,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        1.7947,
+        8.5828
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the fav rule: +5.26 correct games per hundred so far.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.7238
+    },
+    "xlg11_free_minus_home_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus home rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 5.0944,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        1.9462,
+        8.2441
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the home rule: +5.09 correct games per hundred so far.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.6377
+    },
+    "xlg11_free_minus_home_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.990; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus home rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 4.5243,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        0.6637,
+        8.2518
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the home rule: +4.52 correct games per hundred so far.",
+      "probability_positive": 0.9895,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.8953
+    },
+    "xlg11_free_minus_icpt_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.750; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus icpt rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 0.5724,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.9731,
+        2.1179
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the icpt rule: +0.57 correct games per hundred so far.",
+      "probability_positive": 0.7495,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 0.7998
+    },
+    "xlg11_free_minus_icpt_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.464; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 free accuracy minus icpt rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": -0.0665,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.7964,
+        1.5968
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the icpt rule: -0.07 correct games per hundred so far.",
+      "probability_positive": 0.464,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 0.8682
+    },
     "xlg11_h2h_base14_accuracy_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -588,6 +756,174 @@
       ],
       "source": "artifacts/xlg11_cfb_centered/report.json",
       "standard_error": 0.00121
+    },
+    "xlg11_u1_minus_fav_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 u1 accuracy minus fav rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 6.8689,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        3.6634,
+        10.0172
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the fav rule: +6.87 correct games per hundred so far.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.6276
+    },
+    "xlg11_u1_minus_fav_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 1.000; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 u1 accuracy minus fav rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 6.1211,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        2.7944,
+        9.5143
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the fav rule: +6.12 correct games per hundred so far.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.7178
+    },
+    "xlg11_u1_minus_home_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.998; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 u1 accuracy minus home rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 5.1517,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        1.9462,
+        8.2427
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the home rule: +5.15 correct games per hundred so far.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.6585
+    },
+    "xlg11_u1_minus_home_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.999; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 u1 accuracy minus home rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 5.3892,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        1.7947,
+        9.0486
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the home rule: +5.39 correct games per hundred so far.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 1.8724
+    },
+    "xlg11_u1_minus_icpt_11_19_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.746; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 u1 accuracy minus icpt rule on 1747 games, game-level paired bootstrap, accuracy points",
+      "effect": 0.6297,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.0303,
+        2.3469
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the icpt rule: +0.63 correct games per hundred so far.",
+      "probability_positive": 0.746,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 0.8634
+    },
+    "xlg11_u1_minus_icpt_20_25_u3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "P+ 0.794; no admissible closing ground; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "XLG-11 u1 accuracy minus icpt rule on 1503 games, game-level paired bootstrap, accuracy points",
+      "effect": 0.7984,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.0645,
+        2.6613
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The college-centered model's picks versus the icpt rule: +0.80 correct games per hundred so far.",
+      "probability_positive": 0.7945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11_cfb_centered/report_u3.json",
+      "standard_error": 0.9527
     }
   }
 }

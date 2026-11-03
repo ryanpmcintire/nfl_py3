@@ -18,8 +18,13 @@ Inner LOSO strength: 1000 for 2012-14, then 10000 (grid top) every season 2015-2
 
 Unit 2 (scripts/xlg11_cfb_centered_u2.py, artifacts/xlg11_cfb_centered/report_u2.json, 15 cells *_u2 recorded). Audit: CFB fit uses games before train-window end (u2.py arms(): past = gameday < train max), sd ratio and NFL imputer/scaler computed in-window, 0 of 227 weeks violate; unit 1 reproduced exactly. Grid to 1e9: u1 picks 1e4 interior from 2015. Free in-window scale: median multiple of the ratio falls 1.0 (2013) to 0 (2023-25); opener 814 wins: +1.86 [0.13,3.56] P+ .982, flips 108-80, ll P+ .87; proxy +0.40 P+ .68. Vs served 88-input (794-709 on 1503): base14 -0.53 P+ .36, u1 +2.20 [-0.87,5.39] P+ .91 (flips 326-293), free +1.33 P+ .81; log loss P+ .97-.98 for all three incl. base14, so the ll edge is the Gaussian-vs-served probability, not CFB.
 
+Unit 3 controls (scripts/xlg11_cfb_centered_u3.py, report_u3.json, 12 paired cells *_u3 recorded, 12 looks). Opener 2020-25 n=1503, wins: home 746, away 757, favourite 735, underdog 756, intercept-only 815 (54.2%), base14 786, served 794, u1 827, free 814. Intercept-only is edge = (close - open) + walk-forward mean ats_margin, i.e. it follows line movement, not a fixed side. u1 agrees with it on 86.0% (free 88.6%), with served 58.8%. u1 minus intercept-only +0.80 [-1.06,2.66] P+ .79; free minus intercept-only -0.07 P+ .46; u1 minus favourite +6.12 P+ 1.0, minus home +5.39 P+ .999. Proxy 2011-19 n=1747: home 857, away 890, fav 827, dog 849, intercept-only 936, base 939, u1 947, free 946; u1 minus intercept-only +0.63 P+ .75, agreement 86.9%. Reading: the XLG-11 gain is not a fixed home/favourite effect, but over the line-movement rule it is within noise (P+ .79, .75), so CFB transfer is not distinguished from following movement; this does not close it.
+
 ## Next
-Control: very large strength with scale 0 (follow-the-line) to test if the gain is line-following, not CFB info. Declared, not run: CFB-centered prior on the 14-shared block inside the full 88-input ridge (same grids, inner LOSO), graded against served.
+Control: scale-0 follow-the-line arm explicitly; CFB prior inside the full 88-input ridge vs served.
 
 ## Open
 Scale shrinking to 0 as NFL data grows suggests the CFB prior fades; u1 gain may be inflated by a fixed ratio.
+
+## ROOT CORRECTION 2026-11-03 13:55
+- The pooled harness used the closing spread_line as model input while grading at the opener (scripts/mod24_more_games.py:63-73), so these results include close-minus-open line movement unavailable on Tuesday; not evidence for the served model until the opener-input rerun (see docs/lanes/mod24-more-games-2026-11-03.md).

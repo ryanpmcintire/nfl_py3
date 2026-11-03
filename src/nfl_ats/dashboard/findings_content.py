@@ -259,7 +259,7 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
     rungs.append(
         f"Best documented long-run bettors: roughly {BETTORS_VS_CLOSE_BAND}% against "
         f"the close. Measured pregame ceiling: about {MEASURED_CEILING_PCT}% (total-leak "
-        f"control, docs/leak_ceiling_control.md); the older {PREMEASUREMENT_GUESS_BAND}% "
+        f"control); the older {PREMEASUREMENT_GUESS_BAND}% "
         "band was the pre-measurement guess."
     )
     rungs.append(
@@ -647,11 +647,9 @@ FINDINGS: tuple[Finding, ...] = (
             "command reads that registry at run time; its random-effects estimate, interval, "
             "and sign test are a diagnostic reading, not the predeclared combined test, and "
             "deliberately are not copied into this page because they change whenever evidence "
-            "is recorded. Re-run `nfl-ats weak-signals pool --league nfl --effect-units "
-            "accuracy_points` for the current figure on winners picked, and "
-            "`nfl-ats weak-signals pool --league nfl "
-            "--effect-units mae_improvement` for the same pile read "
-            "on final-score closeness. The value in the registry is the ranked "
+            "is recorded. The current figure is available "
+            "on request, for winners picked and for final-score closeness. "
+            "The value in the registry is the ranked "
             "leads worth a second look (see 'What we're watching' below, generated fresh from "
             "this same file), not a pooled average that was never a finding on its own. What "
             "still has to happen is the one predeclared, scored pooling of a CHOSEN subset of "

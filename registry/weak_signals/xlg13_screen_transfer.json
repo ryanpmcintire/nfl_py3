@@ -1,0 +1,61 @@
+{
+  "family": "xlg13_screen_transfer",
+  "signals": {
+    "xlg13_screen_transfer_pearson_nfl_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain vs 88-input served gain (pearson)",
+      "effect": -0.84,
+      "effect_units": "correlation",
+      "family": "xlg13_screen_transfer",
+      "interval": [
+        -1.0,
+        1.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With four candidates the screen-to-served rank agreement is negative and unresolved",
+      "probability_positive": 0.208,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-13-xlg13-screen-transfer.md",
+      "standard_error": null
+    },
+    "xlg13_screen_transfer_spearman_nfl_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain vs 88-input served gain (spearman)",
+      "effect": -0.4,
+      "effect_units": "correlation",
+      "family": "xlg13_screen_transfer",
+      "interval": [
+        -1.0,
+        1.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With four candidates the screen-to-served rank agreement is negative and unresolved",
+      "probability_positive": 0.252,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-13-xlg13-screen-transfer.md",
+      "standard_error": null
+    }
+  }
+}

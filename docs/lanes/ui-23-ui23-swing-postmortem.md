@@ -15,3 +15,4 @@ Research rules: Zero crossing closes nothing; one fitted probability selects the
 
 ## Open
 Overlap with MOD-28 data must not become a feature leak: this column is display only.
+- 2026-11-03 built: src/nfl_ats/board_swing.py (quarter-end cover state + deciding score from local pbp), HistoryPickRow.swing_text, shown under Incorrect outcome in History. Scratch site3 only; docs/ not published.

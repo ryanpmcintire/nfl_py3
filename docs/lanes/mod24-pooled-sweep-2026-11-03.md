@@ -21,3 +21,6 @@ Screen is Gaussian-pick, 14 inputs; a pass still needs the 88-input served-path 
 
 ## Root adjudication 2026-11-03 ~13:10
 - 13 variants, 39 looks: the best cells (enet +0.79, slope +0.76, cv +0.68, accalpha +0.46) are not findings by themselves. Three of the four recommended arms were already run today on the full 88-input served model and lost 2020-25 picks (enet -3.19 recorded wrong_sign_resolved, cv -0.73, accalpha -1.80; mod23-unit16/18 lanes), so the shared-feature shrinkage gains do not transfer to the full model and no new 88-input unit is declared for them. slope rescales predictions; on the served market-residual target it mostly cannot change sides (inferred), so it is a calibration question for the served recalibration, not a pick lever.
+
+## ROOT CORRECTION 2026-11-03 13:55
+- The pooled harness used the closing spread_line as model input while grading at the opener (scripts/mod24_more_games.py:63-73), so these results include close-minus-open line movement unavailable on Tuesday; not evidence for the served model until the opener-input rerun (see docs/lanes/mod24-more-games-2026-11-03.md).

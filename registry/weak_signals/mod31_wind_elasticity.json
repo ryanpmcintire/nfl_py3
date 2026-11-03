@@ -1,0 +1,111 @@
+{
+  "family": "mod31_wind_elasticity",
+  "signals": {
+    "mod31_epa_play_odd_even_seasons": {
+      "category": "onfield",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "team-permutation null p(r>=obs)=0.573, 5000 perms; Spearman-Brown -0.073",
+      "closing_ground": "no_split_half_reliability",
+      "description": "team slope of game pass rate and EPA per play on observed wind (outdoor, 2009-2025, script-controlled WLS), split-half correlation across 32 teams; 4 declared looks (2 outcomes x odd/even seasons and 1000 random game halves)",
+      "effect": -0.035132835176289234,
+      "effect_units": "correlation",
+      "family": "mod31_wind_elasticity",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a team's own drop in passing or offensive EPA per play as wind rises is a stable trait that repeats across halves of its games.",
+      "probability_positive": 0.42679999999999996,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.0728241906391504,
+      "sample_blocks": 32,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod31/reliability.json",
+      "standard_error": null
+    },
+    "mod31_epa_play_random_game_halves": {
+      "category": "onfield",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "mean of 1000 random game-half splits; Spearman-Brown -0.003",
+      "closing_ground": "no_split_half_reliability",
+      "description": "team slope of game pass rate and EPA per play on observed wind (outdoor, 2009-2025, script-controlled WLS), split-half correlation across 32 teams; 4 declared looks (2 outcomes x odd/even seasons and 1000 random game halves)",
+      "effect": -0.0012803797954905104,
+      "effect_units": "correlation",
+      "family": "mod31_wind_elasticity",
+      "interval": [
+        -0.29561158999346054,
+        0.29478685514056685
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a team's own drop in passing or offensive EPA per play as wind rises is a stable trait that repeats across halves of its games.",
+      "probability_positive": 0.494,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.002564042539243046,
+      "sample_blocks": 32,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod31/reliability.json",
+      "standard_error": null
+    },
+    "mod31_pass_rate_odd_even_seasons": {
+      "category": "onfield",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "team-permutation null p(r>=obs)=0.947, 5000 perms; Spearman-Brown -0.835",
+      "closing_ground": "no_split_half_reliability",
+      "description": "team slope of game pass rate and EPA per play on observed wind (outdoor, 2009-2025, script-controlled WLS), split-half correlation across 32 teams; 4 declared looks (2 outcomes x odd/even seasons and 1000 random game halves)",
+      "effect": -0.2946183868876044,
+      "effect_units": "correlation",
+      "family": "mod31_wind_elasticity",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a team's own drop in passing or offensive EPA per play as wind rises is a stable trait that repeats across halves of its games.",
+      "probability_positive": 0.05300000000000005,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.8353446741761325,
+      "sample_blocks": 32,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod31/reliability.json",
+      "standard_error": null
+    },
+    "mod31_pass_rate_random_game_halves": {
+      "category": "onfield",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "mean of 1000 random game-half splits; Spearman-Brown -0.302",
+      "closing_ground": "no_split_half_reliability",
+      "description": "team slope of game pass rate and EPA per play on observed wind (outdoor, 2009-2025, script-controlled WLS), split-half correlation across 32 teams; 4 declared looks (2 outcomes x odd/even seasons and 1000 random game halves)",
+      "effect": -0.13131239750144172,
+      "effect_units": "correlation",
+      "family": "mod31_wind_elasticity",
+      "interval": [
+        -0.38358592752297116,
+        0.20239981046943656
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a team's own drop in passing or offensive EPA per play as wind rises is a stable trait that repeats across halves of its games.",
+      "probability_positive": 0.171,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.30232363653804917,
+      "sample_blocks": 32,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod31/reliability.json",
+      "standard_error": null
+    }
+  }
+}
