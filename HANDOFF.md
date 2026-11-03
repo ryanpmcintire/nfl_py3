@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:12:55.788477+00:00`
+Refreshed at: `2026-11-03T21:13:25.775710+00:00`
 
 ## Start here
 
@@ -21,21 +21,21 @@ Refreshed at: `2026-11-03T21:12:55.788477+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `422a5daf0af8` — Refresh session handoff
-- Pending change set: 261 paths
+- Baseline commit: `abf890a9a68a` — Republish the site with the latest settled results
+- Pending change set: 259 paths
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - ` M docs/lanes/eng-49-eng49-matched-forward-ledger.md`
-  - ` M docs/lanes/eng-50-online-forward-stacker.md`
-  - ` M docs/lanes/eng-51-opener-input-provenance-guard.md`
-  - ` M docs/lanes/lead-102-name-blinded-control-read.md`
+  - `M  docs/lanes/eng-49-eng49-matched-forward-ledger.md`
+  - `M  docs/lanes/eng-50-online-forward-stacker.md`
+  - `M  docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - `M  docs/lanes/lead-102-name-blinded-control-read.md`
   - ` M docs/lanes/lead-103-read-block-ablation.md`
-  - ` M docs/lanes/pool-leader-romana.md`
+  - `M  docs/lanes/pool-leader-romana.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - ` M registry/weak_signals/eng50_online_stacker.json`
-  - ` M scripts/forward_ledger.py`
-  - ` M scripts/mod24_more_games.py`
+  - `M  registry/weak_signals/eng50_online_stacker.json`
+  - `M  scripts/forward_ledger.py`
+  - `A  scripts/lead102_blinded_read.py`
+  - `M  scripts/mod24_more_games.py`
+  - `A  scripts/opener_input_guard.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-03T21:12:55.788477+00:00`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - ...and 241 more
+  - ...and 239 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

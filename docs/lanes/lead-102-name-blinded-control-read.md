@@ -14,3 +14,6 @@ First unit: Build the anonymiser for the Week 9 packet, check by diff that no na
 
 ## Open
 Changes: Control that locates where any LEAD-99 signal lives. Data: LEAD-99 packets; rating and injury fields already in the packet. Role-label anonymiser plus paired named/blinded runs. Zero crossing closes nothing; record unresolved results with nfl-ats weak-signals record and a closing ground. Look count and family declared before any sign is seen.
+
+## Unit 1 log (2026-11-03)
+Script scripts/lead102_blinded_read.py (subcommands blind / run --k / analyze --noise). Blinded packet + mapping: artifacts/lead99_llm_read/blinded/blinded_packet.json; reads: .../blinded/reads/. Anonymiser: Team A (away) / Team B (home), "Team X Player n", teams/cities/nicknames/abbrs/stadiums/other-team and other-player names replaced, urls/authors/sources redacted. Leak scan vs market team names, 2020+ roster names, stadiums, game-roster surnames: 0 leaks. Prompt hash 83800017... equals frozen. Caveat: partial first-name fragments in lowercase headlines (e.g. "vega") and unrostered coaches/staff are not scanned. 3 blinded reads launched by orchestrated background call (see task output); then run analyze --noise 0.052 (named = W9 run + 3 repeats).

@@ -98,6 +98,19 @@ def _records():
     return pd.DataFrame(rows)
 
 
+def _played_card():
+    picks = pd.read_parquet(ROOT / "artifacts/clv_ledger/published_picks.parquet")
+    picks = picks.loc[
+        picks["season"].eq(SEASON) & picks["published_at_utc"].le(picks["pick_deadline_utc"])
+    ]
+    picks = picks.sort_values("published_at_utc").drop_duplicates("game_id", keep="last").copy()
+    pick_home = picks["pick_team"].eq(picks["home_team"])
+    picks["served_p"] = np.where(pick_home, picks["displayed_score"], 1 - picks["displayed_score"])
+    picks["served_side"] = np.where(pick_home, "HOME", "AWAY")
+    picks["card_line"] = picks["market_spread"]
+    return picks[["game_id", "served_p", "served_side", "card_line"]]
+
+
 def _pol_records(ids):
     if not ids:
         return pd.DataFrame()
@@ -149,24 +162,33 @@ def _build(weeks, pol_ids, require):
     kept["p_side"] = np.where(
         kept["p"].notna(), np.where(kept["p"].ge(0.5), "HOME", "AWAY"), kept["side"]
     )
-    served = (
+    base = (
         records.loc[records["served_p"].notna()]
         .sort_values("written_at")
         .drop_duplicates("game_id")
         .set_index("game_id")
     )
-    games["served_p"] = games["game_id"].map(served["served_p"])
-    games["served_side"] = np.where(
-        games["served_p"].notna(), np.where(games["served_p"].ge(0.5), "HOME", "AWAY"), None
-    )
+    games["base_at_record_p"] = games["game_id"].map(base["served_p"])
+    games = games.merge(_played_card(), on="game_id", how="left")
     wide = games[
-        ["game_id", "week", "deadline_utc", "served_side", "served_p", "result", "home_cover"]
+        [
+            "game_id",
+            "week",
+            "deadline_utc",
+            "served_side",
+            "served_p",
+            "base_at_record_p",
+            "card_line",
+            "result",
+            "home_cover",
+        ]
     ].copy()
     for name, part in kept.groupby("candidate"):
         part = part.set_index("game_id")
         wide[f"{name}__side"] = wide["game_id"].map(part["p_side"])
         wide[f"{name}__p"] = wide["game_id"].map(part["p"])
         wide[f"{name}__written_at"] = wide["game_id"].map(part["written_at"])
+        wide[f"{name}__base_p"] = wide["game_id"].map(part["served_p"])
     present = sorted(set(kept["candidate"]))
     candidates = sorted(set(present).intersection(require)) if require else present
     wide["matched"] = (

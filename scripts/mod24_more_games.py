@@ -17,6 +17,9 @@ from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from opener_input_guard import assert_opener_input  # noqa: E402
 
 from nfl_ats.cfb_features import CFB_MODEL_FEATURE_COLUMNS  # noqa: E402
 from nfl_ats.clv import _ACTIVE_MODEL_FALLBACK_CONFIG  # noqa: E402
@@ -34,6 +37,7 @@ DRAWS = 2000
 SEED = 20261103
 SBR = ROOT / "data" / "processed" / "sbr_odds.parquet"
 OPENER_INPUT = os.environ.get("MOD24_CLOSE_INPUT") != "1"
+CLOSE_CONTROL_ENV = "MOD24_DECLARED_CLOSE_CONTROL"
 NFL_OPENER_SEASONS = (2020, 2025)
 
 
@@ -56,10 +60,18 @@ def cfb_prior_rows(cfb):
 
 def to_opener(frame):
     if not OPENER_INPUT:
+        guard_frame = frame.loc[frame["open"].notna()]
+        assert_opener_input(
+            guard_frame,
+            "spread_line",
+            "open",
+            allow_close_control=os.environ.get(CLOSE_CONTROL_ENV),
+        )
         return frame
     out = frame.loc[frame["open"].notna()].copy()
     out["spread_line"] = out["open"]
     out["ats_margin"] = out["result"] - out["open"]
+    assert_opener_input(out, "spread_line", "open")
     return out
 
 

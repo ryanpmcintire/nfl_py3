@@ -6,18 +6,18 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Online ridge-logistic stacker (served logit offset plus lead99, mod24, mod25_combined deltas), fit on Week 7 only, predicts Week 8 (14 games); paired log loss vs served",
-      "effect": -0.0209,
+      "description": "Online ridge-logistic stacker (played-card logit offset plus lead99, mod24, mod25_combined deltas), fit on Week 7 only, predicts Week 8 (14 games); paired log loss vs the played card",
+      "effect": 0.0023,
       "effect_units": "log_loss_improvement",
       "family": "eng50_online_stacker",
       "interval": [
-        -0.231,
-        0.18
+        -0.0793,
+        0.1076
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Fitting on one prior week of 14 games, the stacker was slightly worse than the served probability on the next week's log loss; far below power.",
-      "probability_positive": 0.428,
+      "plain_summary": "Fitting on one prior week of 14 games, the stacker matched the played card on the next week's log loss (probability positive 0.48) and won fewer decisive games, 2 of 5 against 3; far below power.",
+      "probability_positive": 0.4766,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": 1,
@@ -27,7 +27,7 @@
         2026
       ],
       "source": "artifacts/eng50_online_stacker/summary.json",
-      "standard_error": 0.103
+      "standard_error": null
     }
   }
 }
