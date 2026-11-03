@@ -3291,6 +3291,31 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
     )
 
 
+def _forward_tests_section_html(content: FindingsPageContent) -> str:
+    if not content.forward_tests:
+        return ""
+    rows_html = "".join(
+        '<tr class="game">'
+        f'<td data-label="Idea">{escape(name)}</td>'
+        f'<td data-label="Games scored">{escape(games)}</td>'
+        f'<td data-label="Versus the card">{escape(side)}</td>'
+        f'<td data-label="Evidence so far">{escape(status)}</td>'
+        f'<td data-label="More games needed">{escape(more)}</td>'
+        "</tr>"
+        for name, games, side, status, more in content.forward_tests
+    )
+    return (
+        '<section aria-labelledby="when-know-h"><div class="section-head">'
+        '<h2 id="when-know-h">When we will know</h2></div>'
+        '<p class="game-sub">These are live tests on games played after each idea was '
+        "frozen, so nothing in them has been tuned to the results.</p>"
+        '<div class="board-scroll"><table class="board"><thead><tr>'
+        "<th>Idea</th><th>Games scored</th><th>Versus the card</th>"
+        "<th>Evidence so far</th><th>More games needed</th>"
+        f"</tr></thead><tbody>{rows_html}</tbody></table></div></section>"
+    )
+
+
 def render_findings_page(content: FindingsPageContent) -> str:
 
     tiles = "".join(
@@ -3316,6 +3341,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
             "Explore the situations where a signal could add value.",
         )
         + _signal_atlas_section_html(content)
+        + _forward_tests_section_html(content)
         + '<details class="findings-disclosure"><summary>More findings and research notes</summary>'
         '<div class="findings-disclosure-body">'
         f'<div class="kpi-grid">{tiles}</div>{groups_html}</div></details>'

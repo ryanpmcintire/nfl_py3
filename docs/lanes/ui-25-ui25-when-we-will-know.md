@@ -14,3 +14,7 @@ First unit: Add a table to the Findings page listing each open question, the gam
 
 ## Open
 Data: Output of ENG-48 and the per-log declared effect sizes. Zero crossing closes nothing; record unresolved results with a closing ground.
+
+## Unit 1 (2026-11-03)
+Built: "When we will know" table on Findings, right after the signal atlas (board_terminal._forward_tests_section_html, board_site_content._load_forward_tests). Rows read only from artifacts/forward_monitor/monitor.json (games, sign of mean gain, final e vs threshold, inferred games to threshold; "Unknown" when null). Existing classes only. Rendered at 390 and 1440 in tests/scratch/ui-audit-2026-11-03/site11, looked fine. Not published to docs/, not committed.
+Next: orchestrator publishes; add MOD-35/SKY/ENV-02 rows when the monitor covers them.

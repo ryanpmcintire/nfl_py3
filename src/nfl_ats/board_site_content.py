@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, fields, replace
@@ -1195,6 +1196,51 @@ class FindingsPageContent:
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
     atlas: dict[str, Any] | None = None
+    forward_tests: tuple[tuple[str, str, str, str, str], ...] = ()
+
+
+_FORWARD_TEST_NAMES = (
+    ("mod24", "More games to learn from"),
+    ("mod25_combined", "Made-up practice seasons to learn from"),
+    ("lead99", "A sharp-style written read of each game"),
+)
+
+
+def _load_forward_tests(artifacts_root: Path | None) -> tuple[tuple[str, str, str, str, str], ...]:
+    if artifacts_root is None:
+        return ()
+    path = artifacts_root / "forward_monitor" / "monitor.json"
+    try:
+        monitor = json.loads(path.read_text(encoding="utf-8"))
+        candidates = monitor["candidates"]
+        threshold = float(monitor["threshold"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return ()
+    rows = []
+    for key, name in _FORWARD_TEST_NAMES:
+        entry = candidates.get(key)
+        if not isinstance(entry, dict):
+            continue
+        gain = _number(entry.get("mean_log_loss_gain"))
+        evidence = _number(entry.get("final_e"))
+        games = entry.get("games")
+        if gain is None or evidence is None or not isinstance(games, int):
+            continue
+        more = _number(entry.get("inferred_additional_games_to_threshold"))
+        if evidence >= threshold:
+            status = "Settled in its favour" if gain > 0 else "Settled against it"
+        else:
+            status = "Early lean for it, not settled" if gain > 0 else "Early lean against it, not settled"
+        rows.append(
+            (
+                name,
+                f"{games:,}",
+                "Ahead of the card" if gain > 0 else "Behind the card",
+                status,
+                f"About {round(more):,}" if more is not None else "Unknown",
+            )
+        )
+    return tuple(rows)
 
 
 def _history_forecast_probability(artifacts_root: Path, row: Mapping[Any, Any]) -> float | None:
@@ -1941,6 +1987,7 @@ def _load_findings_content(
             if artifacts_root is not None
             else None
         ),
+        forward_tests=_load_forward_tests(artifacts_root),
     )
 
 

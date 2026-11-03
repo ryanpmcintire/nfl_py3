@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T20:00:52.311420+00:00`
+Refreshed at: `2026-11-03T20:05:07.070234+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T20:00:52.311420+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4e32bd85fada` — UI-27: kickoff forecast chip on each unplayed pick card (temperature, wind, rain chance from the Tuesday MOS bulletin; Indoors for dome or closed roof)
-- Pending change set: 261 paths
+- Baseline commit: `545235c08321` — PER-13 locked-seed rest (opener does not price it; close does) and MOD-41 workload unit 1: unresolved
+- Pending change set: 274 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - `M  docs/lanes/per-13-per13-week17-rest-hazard.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - `M  docs/lanes/ui-25-ui25-when-we-will-know.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/mod41_cumulative_workload.json`
-  - `A  registry/weak_signals/per13_locked_seed_rest.json`
-  - `A  scripts/mod41_cumulative_workload.py`
-  - `A  scripts/per13_locked_seed_rest.py`
+  - ` M scripts/per13_locked_seed_rest.py`
   - ` M scripts/sim10_situational.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 241 more
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - ...and 254 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
