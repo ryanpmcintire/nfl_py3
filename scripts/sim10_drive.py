@@ -1118,6 +1118,7 @@ class Engine:
         self.orng = None
         if os.environ.get("SIM10_OLEXIT") == "1":
             self.olx = json.loads((REPO / "artifacts" / "sim12" / "ol_exit.json").read_text())
+            self.olx["exit_elapsed_seconds"] = np.sort(np.asarray(self.olx["exit_elapsed_seconds"]))
         self.stslope = self.koseason = None
         if os.environ.get("SIM10_STSLOPE") == "1" or os.environ.get("SIM10_KOSEASON") == "1":
             tb = np.load(REPO / "artifacts" / "sim06" / "start_tables.npz")
@@ -1349,11 +1350,17 @@ class Engine:
             cand = o
         return cand[rng.integers(len(cand))]
 
+    def olf(self, el):
+        t = self.olx["exit_elapsed_seconds"]
+        return float(np.searchsorted(t, el, side="right")) / len(t)
+
     def ol_shift(self, pos, hf, base, secs):
         if self.olt is None:
             return 0.0
         el = np.inf if hf == 3 else 3600.0 - (base + secs)
-        return self.olx["epa_per_play_shift"] / self.s * int((self.olt[pos] <= el).sum())
+        k = int((self.olt[pos] <= el).sum())
+        burden = self.olx["slots"] * self.olx["hazard_per_starter"] * self.olf(el)
+        return self.olx["epa_per_play_shift"] / self.s * (k - burden)
 
     def run_half(
         self, rng, hf, pos, yl, secs, sc, base, xq, season, evs, pls, ot_rule=None, week=9.0
@@ -1478,7 +1485,7 @@ class Engine:
         if self.olx is not None:
             n = 2 * self.olx["slots"]
             gone = self.orng.random(n) < self.olx["hazard_per_starter"]
-            at = self.orng.random(n) * self.olx["exit_window_elapsed_seconds"]
+            at = np.quantile(self.olx["exit_elapsed_seconds"], self.orng.random(n))
             at = np.where(gone, at, np.inf)
             self.olt = [at[: self.olx["slots"]], at[self.olx["slots"] :]]
         o = self.opening(1, season, rng)
