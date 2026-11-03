@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:10:50.840155+00:00`
+Refreshed at: `2026-11-03T23:11:03.666232+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-11-03T23:10:50.840155+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `30d0a2163309` — Refresh session handoff
-- Pending change set: 252 paths
+- Baseline commit: `dabc4270e361` — SIM-21 unit 3: truncation-aware tilt behind SIM10_TRUNCTILT (default off; flag-off identical to HEAD) aligns achieved and realized scoring but NOT ADOPTED (gates 10/11/10, pts_game 45.72 v real 44.83): it unmasks an upward scoring bias the double count was cancelling; next a joint test with the measured late-game bandwidths
+- Pending change set: 250 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  scripts/sim10_drive.py`
+  - `M  docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M src/nfl_ats/board_site_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T23:10:50.840155+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 232 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 230 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
