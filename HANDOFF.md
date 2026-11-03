@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:29:56.780925+00:00`
+Refreshed at: `2026-11-03T22:30:07.498373+00:00`
 
 ## Start here
 
@@ -21,17 +21,17 @@ Refreshed at: `2026-11-03T22:29:56.780925+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `28bd48e1053c` — Republish the site with the latest settled results
+- Baseline commit: `bad5947fe18a` — MOD-41 unit 6: residual workload survives on the true served base (log loss +.00404 P+ .94, accuracy +1.73 P+ .92, decisive 157-131, perm p .002); forward-only, not served
 - Pending change set: 257 paths
+  - `M  HANDOFF.md`
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
-  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
   - ` M docs/lanes/sim-24-next-drive-start-field-by-previous-drive.md`
-  - `A  registry/weak_signals/mod41_residual_load_u6_served_base.json`
-  - `A  scripts/mod41_unit6_served_base.py`
   - ` M scripts/sim10_drive.py`
+  - ` M src/nfl_ats/board_site_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
