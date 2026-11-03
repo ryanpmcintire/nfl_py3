@@ -30,6 +30,7 @@ data/cfb/**
 data/players/**
 data/quarterbacks/**
 artifacts/**
+scripts/artifacts/
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !artifacts/.gitkeep

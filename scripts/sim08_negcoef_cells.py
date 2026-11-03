@@ -45,14 +45,19 @@ def main():
     for name, idx in (
         ("home_fav", int(np.where((line >= 5) & nonpush)[0][0])),
         ("road_fav", int(np.where((line <= -5) & nonpush)[0][0])),
-        ("pickem", int(np.where(line == 0)[0][0]) if (line == 0).any() else int(np.argmin(np.abs(line)))),
+        (
+            "pickem",
+            int(np.where(line == 0)[0][0]) if (line == 0).any() else int(np.argmin(np.abs(line))),
+        ),
     ):
         hand[name] = {
             "game_id": str(frame["game_id"].iloc[idx]),
             "home_spread_line": float(line[idx]),
             "result_home_minus_away": float(res[idx]),
             "label": str(outcome[idx]),
-            "label_recomputed": "cover" if res[idx] > line[idx] else ("loss" if res[idx] < line[idx] else "push"),
+            "label_recomputed": "cover"
+            if res[idx] > line[idx]
+            else ("loss" if res[idx] < line[idx] else "push"),
             "sim_mean_margin": float(mean[idx]),
             "sim_p_cover": float(pc[idx]),
             "sim_p_loss": float(pl[idx]),
@@ -60,7 +65,9 @@ def main():
         }
     out["hand"] = hand
     out["signs"] = {
-        "corr_mean_margin_minus_line_vs_result_minus_line": float(np.corrcoef(mean - line, res - line)[0, 1]),
+        "corr_mean_margin_minus_line_vs_result_minus_line": float(
+            np.corrcoef(mean - line, res - line)[0, 1]
+        ),
         "corr_simlogit_vs_mean_margin_minus_line": float(np.corrcoef(sim, mean - line)[0, 1]),
         "corr_simlogit_vs_mean_minus_median": float(np.corrcoef(sim, mean - med)[0, 1]),
         "corr_simlogit_vs_median_minus_line": float(np.corrcoef(sim, med - line)[0, 1]),
@@ -81,7 +88,16 @@ def main():
     add("line_home_fav", line > 0)
     add("line_road_fav", line < 0)
     add("line_pickem", line == 0)
-    for lo, hi in ((0, 2.5), (2.5, 3.01), (3.01, 4), (4, 6), (6, 6.51), (6.51, 7.01), (7.01, 10), (10, 99)):
+    for lo, hi in (
+        (0, 2.5),
+        (2.5, 3.01),
+        (3.01, 4),
+        (4, 6),
+        (6, 6.51),
+        (6.51, 7.01),
+        (7.01, 10),
+        (10, 99),
+    ):
         add(f"absline_{lo}_{hi}", (a > lo) & (a <= hi) if lo > 0 else (a <= hi))
     for q in range(3):
         lo, hi = np.quantile(tot, [q / 3, (q + 1) / 3])
