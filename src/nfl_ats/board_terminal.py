@@ -1556,7 +1556,6 @@ def _inspector_section(content: BoardContent, *, archived: bool = False) -> str:
                     for part in (
                         row_by_id[dive.game_id].explanation_text,
                         row_by_id[dive.game_id].pool_line_note,
-                        row_by_id[dive.game_id].key_number_note,
                     )
                     if part
                 )
