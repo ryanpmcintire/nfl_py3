@@ -1,0 +1,89 @@
+{
+  "family": "mod10_graph_term",
+  "signals": {
+    "mod10_graph_term_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Receiver created-reception/contested trait graph term (target-share weighted, shrunk by measured reliability) added to served ridge, 2022-25 opener grade, graph v base",
+      "effect": -1.8147,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_term",
+      "interval": [
+        -3.3176,
+        -0.4753
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding receiver-trait graph term did not help the served pick over 2022-25 (4 seasons, small); coefficient unstable in sign across folds; not refuted, no positive control",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_term_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Receiver created-reception/contested trait graph term (target-share weighted, shrunk by measured reliability) added to served ridge, 2022-25 opener grade, graph v base",
+      "effect": -0.001703,
+      "effect_units": "brier_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.003714,
+        -0.00017
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding receiver-trait graph term did not help the served pick over 2022-25 (4 seasons, small); coefficient unstable in sign across folds; not refuted, no positive control",
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_term_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Receiver created-reception/contested trait graph term (target-share weighted, shrunk by measured reliability) added to served ridge, 2022-25 opener grade, graph v base",
+      "effect": -0.00353,
+      "effect_units": "log_loss_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.00774,
+        -0.000327
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding receiver-trait graph term did not help the served pick over 2022-25 (4 seasons, small); coefficient unstable in sign across folds; not refuted, no positive control",
+      "probability_positive": 0.012,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report.json",
+      "standard_error": null
+    }
+  }
+}

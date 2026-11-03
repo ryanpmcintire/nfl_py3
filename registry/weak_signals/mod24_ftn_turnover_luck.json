@@ -1,0 +1,257 @@
+{
+  "family": "mod24_ftn_turnover_luck",
+  "signals": {
+    "luck_2022_25_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no closing ground",
+      "closing_ground": null,
+      "description": "luck_2022_25_acc fair opener, FTN luck term v served base",
+      "effect": 0.5731,
+      "effect_units": "accuracy_points",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -1.3629,
+        2.4738
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6983,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod24_ftn_luck/report.json",
+      "standard_error": null
+    },
+    "luck_2022_25_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no closing ground",
+      "closing_ground": null,
+      "description": "luck_2022_25_brier fair opener, FTN luck term v served base",
+      "effect": -0.0009,
+      "effect_units": "brier_improvement",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -0.0024,
+        0.0005
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1187,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod24_ftn_luck/report.json",
+      "standard_error": null
+    },
+    "luck_2022_25_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no closing ground",
+      "closing_ground": null,
+      "description": "luck_2022_25_logloss fair opener, FTN luck term v served base",
+      "effect": -0.0019,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -0.0049,
+        0.0011
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1098,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod24_ftn_luck/report.json",
+      "standard_error": null
+    },
+    "luck_2023_25_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no closing ground",
+      "closing_ground": null,
+      "description": "luck_2023_25_acc fair opener, FTN luck term v served base",
+      "effect": 0.8761,
+      "effect_units": "accuracy_points",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -1.2642,
+        3.0306
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7758,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod24_ftn_luck/report.json",
+      "standard_error": null
+    },
+    "luck_2023_25_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no closing ground",
+      "closing_ground": null,
+      "description": "luck_2023_25_brier fair opener, FTN luck term v served base",
+      "effect": -0.0003,
+      "effect_units": "brier_improvement",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -0.0014,
+        0.0008
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3202,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod24_ftn_luck/report.json",
+      "standard_error": null
+    },
+    "luck_2023_25_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no closing ground",
+      "closing_ground": null,
+      "description": "luck_2023_25_logloss fair opener, FTN luck term v served base",
+      "effect": -0.0006,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -0.0029,
+        0.0016
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3095,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod24_ftn_luck/report.json",
+      "standard_error": null
+    },
+    "luck_fwd2026_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 55 games on unmoved opener lines, 2 flips; below power, no closing ground",
+      "closing_ground": null,
+      "description": "luck_fwd2026_acc opener-graded, frozen FTN luck term v locked served",
+      "effect": -3.6364,
+      "effect_units": "accuracy_points",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -10.9091,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "2026 W1-7 forward, frozen 2022-25 coefficients (sha d62ed070), added to locked served probit; locked-line n107 acc -3.74 [-9.62,0.95] P+ .064 LL -0.0004 P+ .41",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod24_ftn_luck/forward_2026.json",
+      "standard_error": null
+    },
+    "luck_fwd2026_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 55 games on unmoved opener lines, 2 flips; below power, no closing ground",
+      "closing_ground": null,
+      "description": "luck_fwd2026_brier opener-graded, frozen FTN luck term v locked served",
+      "effect": 0.0007,
+      "effect_units": "brier_improvement",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -0.00253,
+        0.00288
+      ],
+      "league": "nfl",
+      "notes": "2026 W1-7 forward, frozen 2022-25 coefficients (sha d62ed070), added to locked served probit; locked-line n107 acc -3.74 [-9.62,0.95] P+ .064 LL -0.0004 P+ .41",
+      "plain_summary": null,
+      "probability_positive": 0.7012,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod24_ftn_luck/forward_2026.json",
+      "standard_error": null
+    },
+    "luck_fwd2026_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 55 games on unmoved opener lines, 2 flips; below power, no closing ground",
+      "closing_ground": null,
+      "description": "luck_fwd2026_ll opener-graded, frozen FTN luck term v locked served",
+      "effect": 0.00136,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_ftn_turnover_luck",
+      "interval": [
+        -0.0052,
+        0.00579
+      ],
+      "league": "nfl",
+      "notes": "2026 W1-7 forward, frozen 2022-25 coefficients (sha d62ed070), added to locked served probit; locked-line n107 acc -3.74 [-9.62,0.95] P+ .064 LL -0.0004 P+ .41",
+      "plain_summary": null,
+      "probability_positive": 0.6949,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod24_ftn_luck/forward_2026.json",
+      "standard_error": null
+    }
+  }
+}

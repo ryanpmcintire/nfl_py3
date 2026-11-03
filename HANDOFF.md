@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:20:06.958792+00:00`
+Refreshed at: `2026-11-03T16:23:29.199924+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T16:20:06.958792+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `727c7f0314e8` — MOD-10 FTN traits clear the reliability gate; MOD-24 pre-2009 negative; SIM-07 FTN stability; forward-row power audits
-- Pending change set: 251 paths
+- Baseline commit: `61f3ac5c8c58` — Officials wayback sweep test: stub carries the summary fields added by 7164e885
+- Pending change set: 257 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/mod10-graph-reliability-2026-11-03.md`
-  - ` M docs/lanes/mod24-next-2026-11-03.md`
+  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - `MM docs/lanes/mod24-next-2026-11-03.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/lanes/ui20-2026-11-03.md`
   - ` M docs/model.html`
+  - `A  registry/weak_signals/mod10_graph_term.json`
+  - `A  registry/weak_signals/mod24_ftn_turnover_luck.json`
+  - `M  registry/weak_signals/sim08_market_anchored.json`
   - ` M scripts/capture_scheduler.py`
+  - `A  scripts/mod10_graph_term.py`
+  - `A  scripts/mod10_graph_term_warm.py`
+  - `A  scripts/mod24_ftn_luck_forward.py`
+  - `A  scripts/mod24_ftn_turnover_luck.py`
   - ` M scripts/mod25d_variance.py`
   - ` M scripts/mod25e_desp.py`
   - ` M scripts/mod25e_rulestr.py`
   - ` M scripts/sim08_market_anchored.py`
-  - ` M scripts/sim09_f3.py`
-  - ` M scripts/sim09_personnel.py`
-  - ` M scripts/sim09_u4d.py`
-  - ` M scripts/sim09_urgency.py`
-  - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
-  - `M  tests/test_officials_wayback_sweep.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - ...and 231 more
+  - ...and 237 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

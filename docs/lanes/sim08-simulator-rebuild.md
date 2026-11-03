@@ -169,3 +169,10 @@ Iterated Newton anchor (CRN, stop within 1 SE or no improvement, cap 4 steps = b
 Heavy command (only after spec A + OT-rule edits to sim10_drive.py land and heavy slot frees):
 F:\Repos\nfl_py3\.tools\uv.exe run --no-sync python F:\Repos\nfl_py3\scripts\sim08_market_anchored.py full --run amend4 --arms primary --workers 4 --draws 372 --amend4 1
 Then evaluate: sim08_evaluate.py --run amend4 --arms primary.
+
+## Negative blend coefficient decomposition (2026-11-03, subagent; measured, no simulation)
+Script `scripts/sim08_negcoef_decompose.py` -> `artifacts/sim08_market_anchored/main/negcoef_decompose.json` (ruff clean). Recorded 1 look: sim08_na_solo_sim_logit_coef.
+Per fold 2020..2025 (fit on other 5 seasons): corr(sim,served) train -.01/.03/.02/-.04/-.05/.02, held-out .04/.02/-.17/.25/.20/.06; solo sim coef -.48/-.41/-.38/-.47/-.49/-.47
+(pooled -0.452, Wald SE .208); served solo .42/.27/.31/.40/.34/.34, in blend .42/.28/.32/.38/.32/.35 (no suppressor lift); partial corr sim,y|served -.05..-.06 (train).
+Sim~served R2 <=.003; sim~served+market R2 <=.007, market b -.17..+.03. Adding market to served+sim leaves sim coef -.41..-.48.
+Test log loss pooled: served .69216, +sim .69059, +market .69316, +sim+market .69164. Not a suppressor, not a market re-weighting: sim logit is nearly orthogonal to both and carries its own negative solo slope (direction error). Why the sim cover read is inverted is NOT identified.

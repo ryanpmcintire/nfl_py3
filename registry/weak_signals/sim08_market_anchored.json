@@ -812,6 +812,34 @@
       ],
       "source": "artifacts/sim08_market_anchored/main/evaluation.json",
       "standard_error": 0.07137113173379954
+    },
+    "sim08_na_solo_sim_logit_coef": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pooled solo logistic coefficient of the simulator logit on cover (non-push games, Wald interval, in-sample pooled); per-fold LOSO train fits -0.38..-0.49; sim-served corr about 0 so not a suppressor",
+      "effect": -0.4517,
+      "effect_units": "logit_coefficient",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.8584,
+        -0.045
+      ],
+      "league": "nfl",
+      "notes": "1 look (decomposition). corr(sim,served) train -0.05..0.03; partial corr sim,y|served -0.05..-0.06; sim~market b -0.17..0.03 small",
+      "plain_summary": "The simulator's own cover read points the wrong way on its own in every fold; it is nearly unrelated to the served read, so it is not cancelling the served model",
+      "probability_positive": 0.015,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/negcoef_decompose.json",
+      "standard_error": 0.2075
     }
   }
 }
