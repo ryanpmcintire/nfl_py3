@@ -29,3 +29,9 @@ Forward log of the pool-relative challenger beside the card, Weeks 9-18, no serv
 - Feed final_probability is the home-cover probability; confirm after the first live run.
 
 **Measured 2026-11-03 Week 8 scored (CHI at SEA settled):** see docs/lanes/week8-forward-scoring-2026-11-03.md.
+
+## Fenced repairs replay (measured 2026-11-03, scripts/mod27_fenced_repairs_replay.py)
+Inputs copied to artifacts/mod27_replay_inputs (g26 feed frame, per-book base/final pickles, pool_offset2.csv); output artifacts/mod27_fenced_repairs_replay/results.json. No src edit. Recorded family mod27_fenced_repairs_replay (4 cells, unresolved_below_power).
+- Pool-offset term: 2026 Weeks 2-8 (103 games) 0 sides changed, mean |p shift| 0.009. Simulated-offset LOSO 2020-25 (5885 stacked rows): log loss gain 0.00238 [0.00099, 0.00379] P+ 1.0; Brier gain 0.00119 P+ 1.0; accuracy +0.92 pts P+ 0.87; offset coef 0.85-0.96 per fold.
+- Thin-book (<3 leader books): drop move+availability: 5 games 2020-25, LOSO gain 0.00007 [-0.00033, 0.00056] P+ 0.60, accuracy -0.27 pts; disagreement 46 games served 25-21 v repair 21-25. 2026: 5 sides change (W5 2, W7 1, W8 2), served 4-1 v repair 1-4 (IND_JAX 0.575 to 0.490 is the only non-coin-flip; harness agrees with feed side on 75 percent only, so approximate). All-books median variant changes 0 rows and 0 sides.
+- Implication: pool offset costs nothing to defer; thin-book drop has no historical support, so keep the v7 fence; both wait for Week 18.

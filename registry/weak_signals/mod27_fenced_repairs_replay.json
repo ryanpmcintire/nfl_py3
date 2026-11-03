@@ -1,0 +1,117 @@
+{
+  "family": "mod27_fenced_repairs_replay",
+  "signals": {
+    "mod27_pool_offset_2026_w2_8_sides": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Zero sides change; mean absolute probability shift 0.009; no closing ground",
+      "closing_ground": null,
+      "description": "Pool-offset term applied to 2026 Weeks 2-8 served probabilities (103 games): sides changed",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod27_fenced_repairs_replay",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Applying the pool-offset adjustment to this season's Weeks 2-8 changes no pick.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 103,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod27_fenced_repairs_replay/results.json",
+      "standard_error": null
+    },
+    "mod27_pool_offset_two_stage_loso_replay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Simulated offsets, not observed pool lines before 2026; 2026 Weeks 2-8 replay changes 0 sides; unresolved pending observed offsets",
+      "closing_ground": null,
+      "description": "Pool-offset term on stacked simulated offsets -1,-0.5,0.5,1 (5885 rows), LOSO 2020-25, log loss gain over the four-term fit",
+      "effect": 0.002383,
+      "effect_units": "log_loss_improvement",
+      "family": "mod27_fenced_repairs_replay",
+      "interval": [
+        0.000987,
+        0.003793
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If the pool posts a number different from the market, a fitted adjustment improves historical probabilities; no 2026 pick changes.",
+      "probability_positive": 0.99975,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_fenced_repairs_replay/results.json",
+      "standard_error": null
+    },
+    "mod27_thin_book_all_books_median_replay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Changes zero rows in 2020-25 and zero 2026 sides because thin games have no extra eligible books; no closing ground",
+      "closing_ground": null,
+      "description": "Thin-book move repair: games with fewer than 3 leader books use the median move of all weighted books; LOSO 2020-25 versus served",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod27_fenced_repairs_replay",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using all books instead of only the leaders for thin games changes no historical or 2026 pick.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_fenced_repairs_replay/results.json",
+      "standard_error": null
+    },
+    "mod27_thin_book_drop_move_replay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "5 thin games 2020-25, 3 in 2026; no wrong-sign interval and no positive control; opener-graded replay",
+      "closing_ground": null,
+      "description": "Thin-book move repair: games with fewer than 3 leader books lose the move term and its availability flag; LOSO 2020-25 versus served, log loss gain of repair",
+      "effect": 7.276e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod27_fenced_repairs_replay",
+      "interval": [
+        -0.000332,
+        0.000561
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Dropping the line-move read when only two leading books moved changes almost nothing historically; it flips a handful of coin-flip 2026 sides.",
+      "probability_positive": 0.599,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_fenced_repairs_replay/results.json",
+      "standard_error": null
+    }
+  }
+}

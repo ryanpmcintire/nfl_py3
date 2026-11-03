@@ -96,3 +96,31 @@ first official capture; before the inactive capture median 46.1 h (n=10). Caveat
 publication, so leads are lower bounds on lateness. Inactive coverage is Weeks 3-6, 23 games, some teams truncated.
 Still `unresolved_below_power`; no weak-signals record (precision is not accuracy_points). Next: use official Out/Doubtful
 (not inactives) as ground truth, treat IR as a separate class, and only then enter as a fitted LOSO term, never a flip.
+
+## Retrospective Weeks 1-8 of 2026 (2026-11-03, measured)
+
+Enforcement: only `data/processed/injury_revisions_2026.parquet` rows (observed_at = snapshot fetch time) and
+`data/raw/injury_news/<capture>` directories (capture-dir time = first seen) with time <= cutoff; card input
+time = lineage `model_input:player_injuries` effective_timestamp of the last card dir created <= the game's
+deadline min(kickoff, Sun 16:00 ET). Final = latest Out/Doubtful/Questionable per player-week at that deadline,
+Sunday-and-later games only. Script: `scripts/lead64_retro_audit.py`.
+
+| Wk | final n | nflverse Fri20ET match | Sat20ET match | headline match Fri/Sat | reached deadline card | median lag first-seen to card input |
+|---|---|---|---|---|---|---|
+| 1 | 51 | 0 | 49 | 7/9 | 51 | 23.3 h |
+| 2 | 94 | 0 | 91 | 10/13 | 94 | 25.5 h |
+| 3 | 103 | 4 | 103 | 10/17 | 103 | 24.0 h |
+| 4 | 123 | 2 | 123 | 7/22 | 123 | 24.0 h |
+| 5 | 163 | 0 | 163 | 11/16 | 163 | 24.0 h |
+| 6 | 152 | 0 | 147 | 11/24 | 152 | 24.0 h |
+| 7 | 123 | 2 | 117 | 16/20 | 123 | 24.0 h |
+| 8 | 109 | 0 | 109 | 7/16 | 109 | 23.8 h |
+
+Per-game recount (last card before each game's own deadline): 0 missed designations, all 8 weeks. A first
+recount using one global deadline (earliest game) showed 11 misses (Wk6 PHI x4, PIT; Wk7 ATL x2,
+BAL Lamar Jackson, NYG, IND, LV): designations first seen in the Sunday 10:00 UTC snapshot that the Saturday-built
+card for the early (London) game could not carry. Friday-evening match is ~0 because the only daily snapshot is
+10:00 UTC and the nflverse file gets final statuses Saturday morning; there is no Friday-evening capture.
+Headlines (225 parsed, matched on team+name, no roster beyond injury-report names) cover 14-27% of finals.
+No effect unit defined, so no weak-signals record. Retrospective coverage is scorable now; serving the
+headline parser stays unresolved_below_power; a Friday-evening nflverse pull is the open lever.
