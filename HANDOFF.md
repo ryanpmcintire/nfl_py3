@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:46:23.879023+00:00`
+Refreshed at: `2026-11-03T21:46:30.879353+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T21:46:23.879023+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9c2ade441d92` — SIM-18 unit 2: lead-protection tempo trait survives quality adjustment (OC split-half .69); held-out multiplier helps only in 1-8 point leads; no pick term helps (run-share P+ .53, sec/play decisive 55-85); unresolved
+- Baseline commit: `07e559a9adae` — Master lane state
 - Pending change set: 248 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
