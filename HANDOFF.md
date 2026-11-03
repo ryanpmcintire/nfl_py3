@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:57:53.006204+00:00`
+Refreshed at: `2026-11-03T22:58:52.801377+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-11-03T22:57:53.006204+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2ea24e77053f` — Refresh session handoff
-- Pending change set: 257 paths
+- Baseline commit: `59b8acad21ec` — Dashboard round 10: one plain evidence line per arm on the Model page (detail folded), early-vs-late stated in points, row badge says points to cover
+- Pending change set: 256 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/per03-free-source-2026-11-03.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
   - ` M docs/lanes/sim-26-prevent-defense-yardage-shape.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
+  - `M  docs/model.html`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  tests/test_board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T22:57:53.006204+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - ...and 237 more
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - ...and 236 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
