@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:25:35.784760+00:00`
+Refreshed at: `2026-11-03T22:25:41.048424+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-11-03T22:25:35.784760+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `58a854bc3c88` — LEAD-109: the wording read's edge is not shown to concentrate in high-value positions (weighted gain unstable across halves); MOD-47: short-week interaction does not help (P+ .08 / .008 worse), but the opener-graded served probability looks overconfident in all groups (slope .31 [-.10,.73] 2020-25); both unresolved
+- Baseline commit: `67514577f052` — Master lane state
 - Pending change set: 252 paths
+  - `M  HANDOFF.md`
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
   - ` M docs/lanes/sim-23-clock-truncated-drives.md`
