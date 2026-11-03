@@ -36,3 +36,13 @@ Read: calls shift identified for wind (fewer passes, fewer deep, fewer long fiel
 Where: sim10_drive.py Pool.draw (line 1200), the neighbour kernel pick; add observed wind w (mph) per game as a kernel feature or a log-odds shift on pass vs run neighbours: logit shift = beta*(w/10) with LOSO beta on pass rate -0.0091 pp/0.5 ~ about -0.036 logit per 10 mph (convert from -0.91 pp at base pass rate ~0.58: -0.0091/(0.58*0.42)); deep: air_yards>=20 share -0.49 pp per 10 mph on the pass neighbours; 4th-down FG decision (fgdec_fit, line 2405) add wind10 and temp10 terms with kick-band slopes above. Check against outdoor-windy games total points; no compensating constants.
 ## Next
 Engine owner decides; drive-level check of simulated totals in wind > 15 mph. Possible: precipitation (not in data).
+
+## Unit 2 weather join (2026-11-03 16:50, no engine edit)
+Table: artifacts/sim10/real_games.parquet (sim10_drive.py:338 writes, :1613 and :2333 read; 2304 games, 2009-2017, unique game_id, no weather column). New file beside it: artifacts/sim10/real_games_weather.parquet (2304 rows; game_id, roof_state, indoor, outdoor, temp_f, wind_mph [observed], forecast_temp_f, forecast_wind_mph, forecast_precip_prob_pct, fetch_status). Built by scripts/sim15_weather_join.py from the same forecast archive as unit 1 (ruff clean). Existing table untouched.
+Coverage: observed wind/temp 0.715-0.750 of all games per season (rest are domes/closed); outdoors 1686/1686 observed; roof open 43 games have no observed wind (2.5% of 1729 outdoor+open games missing wind; forecast covers them). Forecast wind 0.980-0.992 by season. Precipitation: only forecast probability (outdoor 98.8% non-null); no observed precipitation exists.
+Consistency: all 2304 ids identical to unit 1 values (wind, temp, forecast wind, forecast temp).
+Join key: game_id (e.g. 2009_01_TEN_PIT) = real_games.game_id.
+Engine sites (read, sim10_drive.py): Pool.draw line 1206 (neighbour pick, pass/run log-odds shift); fg decision shift at 1266-1269 (cf_ per regime from fgdec, fgdec_fit line 2435); real_schedules 1613 and cmd_real 2333 are where real games load. Unit 1 lane cited 1200/2405; current lines are above.
+Measured effects the hook would use (per 10 mph wind, unit 1): pass rate -0.91 pp [-1.29,-0.43]; deep share -0.49 pp [-0.90,-0.04] (2009-2017); FG attempts 48-57 yd -6.94 pp [-9.3,-4.8], 38-47 -1.78 pp; temp per 10 F pass +0.36 pp. Observed weather for mechanism, forecast for any pregame term.
+## Next
+Engine owner wires wind_mph per game into the sim; the Tier B chain must finish reading real_games.parquet first.
