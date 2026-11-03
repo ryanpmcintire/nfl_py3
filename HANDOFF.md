@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:19:04.258837+00:00`
+Refreshed at: `2026-11-03T16:20:06.958792+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T16:19:04.258837+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `053a3c2684c9` — Engine queue applied (all default-off, byte-identical); SIM-07 FTN state
-- Pending change set: 271 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `727c7f0314e8` — MOD-10 FTN traits clear the reliability gate; MOD-24 pre-2009 negative; SIM-07 FTN stability; forward-row power audits
+- Pending change set: 251 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/done/lead65-protection-window-split.md`
-  - `M  docs/lanes/done/mod07-prospective-status-audit.md`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/lead59-officials-sweep-2026-11-02.md`
-  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
-  - `M  docs/lanes/mod24-next-2026-11-03.md`
-  - `M  docs/lanes/news-trigger-refresh.md`
-  - `M  docs/lanes/scheduler-batch-2026-11-03.md`
-  - `M  docs/lanes/sim07-power-2026-11-03.md`
-  - `M  docs/lanes/sim09-tier-a-runs-2026-11-03.md`
-  - `M  docs/lanes/sky01-news-availability.md`
-  - `M  docs/lanes/sky04-lead-lag-2026-11-02.md`
+  - ` M docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - ` M docs/lanes/mod24-next-2026-11-03.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/mod10_ftn_player_traits.json`
-  - `A  registry/weak_signals/mod24_pre2009_extension.json`
-  - ...and 251 more
+  - ` M scripts/capture_scheduler.py`
+  - ` M scripts/mod25d_variance.py`
+  - ` M scripts/mod25e_desp.py`
+  - ` M scripts/mod25e_rulestr.py`
+  - ` M scripts/sim08_market_anchored.py`
+  - ` M scripts/sim09_f3.py`
+  - ` M scripts/sim09_personnel.py`
+  - ` M scripts/sim09_u4d.py`
+  - ` M scripts/sim09_urgency.py`
+  - ` M scripts/sim10_drive.py`
+  - ` M src/nfl_ats/dashboard/findings_content.py`
+  - `M  tests/test_officials_wayback_sweep.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

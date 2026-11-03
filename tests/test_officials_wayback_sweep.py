@@ -552,6 +552,8 @@ def test_cli_exposes_fallback_captures_and_retry_unparsed(monkeypatch: pytest.Mo
             "games_retried_unparsed": 0,
             "stopped_early": False,
             "stop_reason": None,
+            "items_remaining": 0,
+            "estimated_hours_left": 0.0,
         }
 
     monkeypatch.setattr(sweep, "run_sweep", _fake_run_sweep)
