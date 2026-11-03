@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:00:14.411254+00:00`
+Refreshed at: `2026-11-03T21:00:22.352600+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T21:00:14.411254+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6f0c2e4e6e37` — LEAD-100 repeat reads (between-read SD 0.052 logit, split-half r 0.24 [-0.39, 0.96], unresolved at n=15); ENG-51 opener-input audit (96 scripts: 67 clean, 6 leaky; LEAD-76 quoted gain does not survive an opener pool)
+- Baseline commit: `2a95118ad609` — Master lane state 16:03
 - Pending change set: 254 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M scripts/forward_terms_week.py`
