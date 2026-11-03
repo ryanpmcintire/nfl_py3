@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:32:55.153669+00:00`
+Refreshed at: `2026-11-03T22:32:58.173207+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:32:55.153669+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ca38d520a9b1` — SIM-24: sim next-drive start field matches real within ~0.5 yd by score sign; explains ~13% of the untruncated lead gap and widens the trail gap; minor
-- Pending change set: 262 paths
+- Baseline commit: `fb0cc15c38cb` — MOD-41 served-scale forward term: base = published card probability (pool_card.csv is the model-only card, not the served one); Week 9 record rewritten before kickoff; forward-only
+- Pending change set: 258 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
-  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
-  - ` M docs/lanes/pool-10-best-pick-placement-on-half-point-sides.md`
+  - `M  docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
+  - `M  docs/lanes/pool-10-best-pick-placement-on-half-point-sides.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/ui-34-half-point-games.md`
-  - `M  scripts/forward_ledger.py`
-  - `M  scripts/forward_terms_week.py`
-  - `A  scripts/mod41_freeze_residual_load_served.py`
+  - `M  docs/lanes/ui-34-half-point-games.md`
+  - `A  registry/weak_signals/pool09_hook_value_slope.json`
+  - `A  registry/weak_signals/pool10_best_pick_hooks.json`
+  - `A  scripts/pool09_hook_value_slope.py`
+  - `A  scripts/pool10_best_pick_hooks.py`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - ...and 242 more
+  - ...and 238 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

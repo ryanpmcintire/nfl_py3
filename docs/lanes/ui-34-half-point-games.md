@@ -14,3 +14,6 @@ First unit for one agent: Add one plain sentence to the settled-week view statin
 
 ## Open
 Rules: Display only measured claims, in the current design system and plain words; no ids, hashes or research jargon in reader text; no side rule. Look count and family declared before any sign is seen.
+
+## Unit 1 done 2026-11-03T17:31
+History week chip now adds one sentence on half-point games (count, crowd share of picks, covered, ours). Code: board_site_content.py _half_point_week_texts + SeasonSoFar.half_point_week_texts; board_terminal.py _week_strip_html. Source: data/splash/field/2026_field_best_picks_w*.parquet + Tuesday market (pool_hook). 44 games over W1-8 matches POOL-08. Built in memory, not published. Next: root publishes; check 390 width.

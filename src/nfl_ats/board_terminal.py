@@ -2547,6 +2547,7 @@ def _season_so_far_challenger_row_html(row: SeasonChallengerRecord) -> str:
 def _week_strip_html(block: SeasonSoFar) -> str:
     tuesday = {item[0]: item[1:] for item in block.tuesday_week_records}
     field_texts = dict(block.field_week_texts)
+    half_point_texts = dict(block.half_point_week_texts)
     chips = []
     changed = False
     for week, wins, losses, pushes in block.week_records:
@@ -2562,9 +2563,13 @@ def _week_strip_html(block: SeasonSoFar) -> str:
             early_html = f'<span class="wk-name">Tuesday card {early_record}</span>'
         field_text = field_texts.get(week)
         field_html = f'<span class="wk-name">{escape(field_text)}</span>' if field_text else ""
+        half_point_text = half_point_texts.get(week)
+        half_point_html = (
+            f'<span class="wk-name">{escape(half_point_text)}</span>' if half_point_text else ""
+        )
         chips.append(
             f'<li class="wk-chip {tone}"><span class="wk-name">Week {week} final</span>'
-            f'<span class="wk-record">{record}</span>{early_html}{field_html}</li>'
+            f'<span class="wk-record">{record}</span>{early_html}{field_html}{half_point_html}</li>'
         )
     note = (
         '<p class="policy-note">Final is the card after any late changes. Tuesday card is '

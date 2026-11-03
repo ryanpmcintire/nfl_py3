@@ -1,0 +1,33 @@
+{
+  "family": "pool10_best_pick_hooks",
+  "signals": {
+    "pool10_best_pick_hook_side_share": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Field Best Pick share on the half-point side minus its regular pick share, W1-8, week-cluster bootstrap",
+      "effect": 2.33,
+      "effect_units": "rate_pp",
+      "family": "pool10_best_pick_hooks",
+      "interval": [
+        -1.04,
+        5.92
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Field puts slightly more of its Best Picks on the half-point side than its ordinary picks; unresolved.",
+      "probability_positive": 0.91,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 121,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks.json",
+      "standard_error": null
+    }
+  }
+}

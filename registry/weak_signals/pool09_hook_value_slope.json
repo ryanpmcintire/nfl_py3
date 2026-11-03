@@ -1,0 +1,33 @@
+{
+  "family": "pool09_hook_value_slope",
+  "signals": {
+    "pool09_hook_value_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Slope of the field's hook-side share residual (pp over POOL-05 proxy) on the served half-point effect on cover chance (pp), 33 hook games Weeks 3-8",
+      "effect": -1.2667,
+      "effect_units": "slope_difference",
+      "family": "pool09_hook_value_slope",
+      "interval": [
+        -5.073,
+        3.063
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The field's extra pick of the half-point side does not visibly grow with the half point's worth; the slope is negative but the interval is wide.",
+      "probability_positive": 0.283,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 33,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool09_hook_value_slope.json",
+      "standard_error": 2.07
+    }
+  }
+}

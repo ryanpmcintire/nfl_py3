@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from nfl_ats.board_content import (
@@ -58,6 +59,7 @@ from nfl_ats.paired_prospective import (
     paired_decision_rows,
     paired_decisions_fingerprint,
 )
+from nfl_ats.pool_hook import POOL_OFFSET, is_whole, tuesday_market_lines
 from nfl_ats.prospective_scoring import (
     CLOSE_GRADE,
     DECISION_GRADE,
@@ -435,6 +437,7 @@ class SeasonSoFar:
     week_records: tuple[tuple[int, int, int, int], ...] = ()
     tuesday_week_records: tuple[tuple[int, int, int, int], ...] = ()
     field_week_texts: tuple[tuple[int, str], ...] = ()
+    half_point_week_texts: tuple[tuple[int, str], ...] = ()
     leader_split_text: str = ""
     leader_split_note: str = ""
     leader_split_games: tuple[tuple[str, str, str, str, str], ...] = ()
@@ -499,6 +502,54 @@ def _field_week_texts(
         beaten = float((points < wins).mean())
         texts.append(
             (week, f"beat {beaten:.0%} of entries; the typical entry won {points.median():g}")
+        )
+    return tuple(texts)
+
+
+def _half_point_week_texts(
+    rows: Sequence[HistoryPickRow], data_root: Path, season: int | None
+) -> tuple[tuple[int, str], ...]:
+    if season is None:
+        return ()
+    paths = sorted((data_root / "splash" / "field").glob(f"{season}_field_best_picks_w*.parquet"))
+    if not paths:
+        return ()
+    try:
+        picks = pd.concat([pd.read_parquet(path) for path in paths], ignore_index=True)
+    except (OSError, ValueError):
+        return ()
+    ours = {row.game_id: row.pick_side for row in rows if row.status == "settled"}
+    texts = []
+    for week, week_picks in picks.groupby("week"):
+        ids = sorted(week_picks["game_id"].unique())
+        market = tuesday_market_lines(data_root, season, int(week), ids)
+        crowd = covered = ours_on = games = 0
+        total = 0
+        for game_id, game in week_picks.groupby("game_id"):
+            home = game[game["home"]]
+            away = game[~game["home"]]
+            line = market.get(str(game_id))
+            if home.empty or away.empty or line is None or not is_whole(line):
+                continue
+            offset = float(-home["line"].iloc[0]) - line
+            if not np.isclose(abs(offset), POOL_OFFSET):
+                continue
+            side = home if offset < 0 else away
+            games += 1
+            crowd += int(side["picks"].iloc[0])
+            total += int(game["picks"].sum())
+            covered += int(bool(side["covered"].iloc[0]))
+            ours_on += int(ours.get(str(game_id)) == ("HOME" if offset < 0 else "AWAY"))
+        if not games or not total:
+            continue
+        noun = "game" if games == 1 else "games"
+        texts.append(
+            (
+                int(week),
+                f"On the {games} {noun} where the pool's half point beat the books, the crowd "
+                f"took that side {crowd / total:.0%} of the time; that side covered "
+                f"{covered} of {games}; we took it on {ours_on}.",
+            )
         )
     return tuple(texts)
 
@@ -696,6 +747,9 @@ def _build_season_so_far(
         week_by_week_text=_week_by_week_text(season_rows),
         week_records=week_records,
         field_week_texts=_field_week_texts(week_records, data_root or _default_data_root(), season),
+        half_point_week_texts=_half_point_week_texts(
+            season_rows, data_root or _default_data_root(), season
+        ),
         leader_split_text=leader_split[0],
         leader_split_note=leader_split[1],
         leader_split_games=leader_split[2],
