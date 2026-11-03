@@ -1048,6 +1048,7 @@ class Engine:
             self.ptab = posterior_table(seg, eb)[0]
         self.sgam = None
         self.trace = None
+        self.tl = None
         if strength is not None:
             self.sgam = np.array([strength["terms"][t]["gamma"] for t in OUT_TARGETS]).T
             self.smbar = {
@@ -1224,11 +1225,17 @@ class Engine:
         w = np.exp(-0.5 * (z - z.min()))
         nz = np.flatnonzero(w > 1e-12)
         w = w[nz]
+        if self.tl is not None and hf < 3:
+            u_ = w / w.sum()
+            mk_ = u_ @ self.out_arr[idx[nz]]
         if self.sit is not None:
             w = w * self.sit.nh_ratio(idx[nz], hf, math.expm1(q[2]), q[1], 1 - hm)
         if self.head is not None and hf < 3:
             hq = [q[0], q[1], q[2], q[3], q[4], q[7], hf - 1.0, hm]
             w = self.head.reweight(idx[nz], w, hq, hf, hm)
+        if self.tl is not None and hf < 3:
+            u_ = w / w.sum()
+            mh_ = u_ @ self.out_arr[idx[nz]]
         if self.models is not None and hf < 3:
             secs = math.expm1(q[2])
             gs = secs + 1800.0 if hf == 1 else secs
@@ -1307,6 +1314,35 @@ class Engine:
                 w = tilt_weights(w, self.out_arr[idx[nz]], np.asarray(tg))
             else:
                 w = tilt_weights(w, np.c_[self.out_arr[idx[nz]], X[nz, 5]], np.r_[tg, mt])
+            if self.tl is not None:
+                o_ = self.out_arr[idx[nz]]
+                lo_, hi_ = o_.min(axis=0), o_.max(axis=0)
+                sp_ = hi_ - lo_
+                tgv_ = np.asarray(tg, dtype=np.float64)
+                u_ = w / w.sum()
+                self.tl.append(
+                    [
+                        hf,
+                        hm,
+                        float(q[1]),
+                        float(secs),
+                        float(q[0]),
+                        len(nz),
+                        *mk_.tolist(),
+                        *mh_.tolist(),
+                        *np.asarray(tg0, dtype=np.float64).tolist(),
+                        *tgv_.tolist(),
+                        *(u_ @ o_).tolist(),
+                        *[
+                            int(
+                                tgv_[k_] < lo_[k_] + 1e-6 * sp_[k_]
+                                or tgv_[k_] > hi_[k_] - 1e-6 * sp_[k_]
+                            )
+                            for k_ in range(3)
+                        ],
+                        float(1.0 / (u_ @ u_)),
+                    ]
+                )
             if self.trace is not None:
                 u = w / w.sum()
                 self.trace.append(
@@ -1479,6 +1515,8 @@ class Engine:
         week = float(min(week, LAST_REG_WEEK))
         if self.il is not None:
             self.il = []
+        if self.tl is not None:
+            self.tl = []
         sc = [0.0, 0.0]
         evs, pls = [], []
         xq = [(lat[0][0] + lat[1][1]) / self.s, (lat[1][0] + lat[0][1]) / self.s]
@@ -1552,6 +1590,7 @@ class Engine:
                 "m120": float(hm[rm[:, 0] >= 120.0].sum()),
                 "last": rm[-2:, :3].tolist(),
                 "dr": self.il,
+                **({"tl": self.tl} if self.tl is not None else {}),
                 "oo": oo,
                 "end": [sc[0], sc[1]],
                 "reg": reg,
@@ -1646,6 +1685,8 @@ def sim_world(task):
     ilines = []
     if ilab:
         eng.il = []
+        if os.environ.get("SIM10_TILT"):
+            eng.tl = []
     if eng.olx is not None:
         eng.orng = np.random.default_rng(
             np.random.SeedSequence(
