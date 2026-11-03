@@ -1,0 +1,425 @@
+{
+  "family": "mkt28_served_base_retest",
+  "signals": {
+    "mkt28_mkt24_slot_term_dLL_vs_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1500; flips 93 slot side 35-58; seasons positive 2/6; game-bootstrap P+ 0.0444; season-block interval; served logit coefficient 0.95 not 0.45; intercept-only control served-vs-intercept dLL 0.0065",
+      "closing_ground": null,
+      "description": "MKT-24 kickoff-slot ridge term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.0011,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.0033,
+        0.00028
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether kickoff slot adds to the true served opener pick probability",
+      "probability_positive": 0.1498,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1500,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt24_slot_residual.py; tests/scratch/mkt28/mkt24_out/report.json",
+      "standard_error": null
+    },
+    "mkt28_mkt25_R_raw_term_dLL_vs_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1325; flips 82 new side 36-46; coef per fold 0.010..0.073; seasons positive 3/6; week-block bootstrap; intercept-only control served-vs-intercept dLL 0.00691; served logit coef 0.85..1.00",
+      "closing_ground": null,
+      "description": "MKT-25 R_raw revision term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00036,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00132,
+        0.00065
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether opener revision size adds to the true served opener pick probability",
+      "probability_positive": 0.254,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_opener_revision.py; tests/scratch/mkt28/mkt25_opener_revision.log",
+      "standard_error": null
+    },
+    "mkt28_mkt25_e_cm_term_dLL_vs_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1325; flips 121 new side 55-66; coef per fold 0.039..0.100; seasons positive 4/6; week-block bootstrap; intercept-only control served-vs-intercept dLL 0.00691; served logit coef 0.85..1.00",
+      "closing_ground": null,
+      "description": "MKT-25 e_cm revision term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00011,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00174,
+        0.0014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether opener revision size adds to the true served opener pick probability",
+      "probability_positive": 0.448,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_opener_revision.py; tests/scratch/mkt28/mkt25_opener_revision.log",
+      "standard_error": null
+    },
+    "mkt28_mkt25_e_full_term_dLL_vs_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1325; flips 123 new side 56-67; coef per fold 0.040..0.098; seasons positive 4/6; week-block bootstrap; intercept-only control served-vs-intercept dLL 0.00691; served logit coef 0.85..1.00",
+      "closing_ground": null,
+      "description": "MKT-25 e_full revision term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00175,
+        0.00156
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether opener revision size adds to the true served opener pick probability",
+      "probability_positive": 0.477,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_opener_revision.py; tests/scratch/mkt28/mkt25_opener_revision.log",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_asym_blowout_term_dLL_vs_served_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; asym_blowout component; flips 75 new side 36-39; seasons positive 2/6; halves -0.00048/-0.00039; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00044,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00103,
+        0.0002
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.086,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_asym_sign_term_dLL_vs_served_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; asym_sign component; flips 100 new side 41-59; seasons positive 3/6; halves 0.00002/-0.00117; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00059,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00189,
+        0.00061
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.176,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_diff_blowout_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "slope(cm_out)-slope(cm_in); n 1415; split-half -0.0058/-0.0389; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.0234,
+      "effect_units": "slope_difference",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.0398,
+        -0.0063
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_diff_sign_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "slope(cm_pos)-slope(cm_neg); n 1415; split-half -0.0262/-0.0114; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.0184,
+      "effect_units": "slope_difference",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.0395,
+        0.003
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.043,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_ecm_w12_term_dLL_vs_served_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e_cm window 12; flips 46 new side 20-26; seasons positive 0/6; halves -0.00145/-0.00008; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00075,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00136,
+        -0.00015
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_ecm_w17_term_dLL_vs_served_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e_cm window 17; flips 94 new side 44-50; seasons positive 3/6; halves -0.00125/0.00024; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00049,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00155,
+        0.00058
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.173,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_ecm_w8_term_dLL_vs_served_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e_cm window 8; flips 41 new side 20-21; seasons positive 2/6; halves -0.00095/-0.00008; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.0005,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00103,
+        2e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.031,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_mkt25u2_posnews_term_dLL_vs_served_true_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e after cm + weighted news; flips 92 new side 42-50; seasons positive 3/6; halves -0.00122/0.00025; week-block bootstrap",
+      "closing_ground": null,
+      "description": "MKT-25 unit 2 cell re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00046,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.0016,
+        0.00054
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt28_sim17_defense_adjustment_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503; flips 171 arm side 92-79; seasons positive 4/6; served-vs-intercept dLL 0.00636",
+      "closing_ground": null,
+      "description": "SIM-17 unit 3 halftime-adjustment defense pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.00061,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00317,
+        0.00193
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether halftime-adjustment history adds to the true served opener pick probability",
+      "probability_positive": 0.3345,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/sim17_unit3_heldout.py; tests/scratch/mkt28/sim17_unit3.json",
+      "standard_error": null
+    },
+    "mkt28_sim17_offense_adjustment_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503; flips 71 arm side 36-35; seasons positive 4/6; served-vs-intercept dLL 0.00636",
+      "closing_ground": null,
+      "description": "SIM-17 unit 3 halftime-adjustment offense pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": 6e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00068,
+        0.00078
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether halftime-adjustment history adds to the true served opener pick probability",
+      "probability_positive": 0.5705,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/sim17_unit3_heldout.py; tests/scratch/mkt28/sim17_unit3.json",
+      "standard_error": null
+    },
+    "mkt28_sim17_total_adjustment_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503; flips 179 arm side 87-92; seasons positive 4/6; served-vs-intercept dLL 0.00636",
+      "closing_ground": null,
+      "description": "SIM-17 unit 3 halftime-adjustment total pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": 0.0003,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.00167,
+        0.00234
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether halftime-adjustment history adds to the true served opener pick probability",
+      "probability_positive": 0.598,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/sim17_unit3_heldout.py; tests/scratch/mkt28/sim17_unit3.json",
+      "standard_error": null
+    }
+  }
+}

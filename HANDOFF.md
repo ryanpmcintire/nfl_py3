@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:41:41.421809+00:00`
+Refreshed at: `2026-11-03T22:41:44.381300+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-11-03T22:41:41.421809+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5f658cbdc6b2` — Refresh session handoff
+- Baseline commit: `1a7ecca01104` — MOD-41 lane: Week 9 decision rests on the pending robustness checks
 - Pending change set: 253 paths
   - ` M config/source_policies.json`
-  - ` M docs/lanes/mkt-28-served-base-retest-of-opener-revision-terms.md`
-  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/mkt-28-served-base-retest-of-opener-revision-terms.md`
   - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
+  - `A  registry/weak_signals/mkt28_served_base_retest.json`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-03T22:41:41.421809+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
