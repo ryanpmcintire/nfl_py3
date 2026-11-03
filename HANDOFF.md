@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:08:43.199395+00:00`
+Refreshed at: `2026-11-03T21:08:49.979168+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T21:08:43.199395+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b21941568e6e` — MKT-23 unit 2: deadline move-direction and one-team terms add nothing on top of the served probability (P+ .08-.16); unresolved
+- Baseline commit: `b6f74a2e9e29` — Master lane state 16:30
 - Pending change set: 251 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/lead-103-read-block-ablation.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M scripts/mod24_more_games.py`
