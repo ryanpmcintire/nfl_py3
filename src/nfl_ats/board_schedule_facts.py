@@ -9,6 +9,7 @@ from nfl_ats.travel_geometry import haversine_mi, load_stadium_coordinate_regist
 
 DAYS_PER_WEEK = 7
 PRIOR_GAME_DAY_NAMES = {"Thursday", "Monday"}
+NEUTRAL_LOCATION = "Neutral"
 
 
 def _previous_game(games: pd.DataFrame, team: str, season: int, week: int) -> pd.Series | None:
@@ -34,11 +35,12 @@ def _team_note(games: pd.DataFrame, team: str, season: int, week: int, rest: obj
 
 
 def _home_stadium(games: pd.DataFrame, team: str, season: int, week: int) -> str | None:
-    home = games[
-        (games["home_team"] == team) & (games["season"] == season) & (games["week"] < week)
-    ].sort_values("week")
+    true_home = games[(games["home_team"] == team) & (games["location"] != NEUTRAL_LOCATION)]
+    home = true_home[(true_home["season"] == season) & (true_home["week"] < week)].sort_values(
+        "week"
+    )
     if not len(home):
-        home = games[(games["home_team"] == team) & (games["season"] == season)].sort_values("week")
+        home = true_home[true_home["season"] == season].sort_values("week")
     return str(home.iloc[-1]["stadium"]) if len(home) else None
 
 
@@ -56,11 +58,20 @@ def build_schedule_facts(
         away_note = _team_note(schedules, str(row.away_team), season, week, row.away_rest)
         home_note = _team_note(schedules, str(row.home_team), season, week, row.home_rest)
         text = f"Rest: {away_note}, {home_note}."
-        origin_name = _home_stadium(schedules, str(row.away_team), season, week)
-        origin = venues.get(origin_name) if origin_name else None
         destination = venues.get(str(row.stadium))
-        if origin is not None and destination is not None:
-            miles = round(haversine_mi(origin, destination), -1)
-            text += f" {row.away_team} travels about {int(miles):,} miles."
+        neutral = str(row.location) == NEUTRAL_LOCATION
+        travellers = (row.away_team, row.home_team) if neutral else (row.away_team,)
+        legs = []
+        for team in travellers:
+            origin_name = _home_stadium(schedules, str(team), season, week)
+            origin = venues.get(origin_name) if origin_name else None
+            if origin is not None and destination is not None:
+                legs.append(
+                    f"{team} about {int(round(haversine_mi(origin, destination), -1)):,} miles"
+                )
+        if neutral and legs:
+            text += f" Played at {row.stadium}, a neutral site: {', '.join(legs)}."
+        elif legs:
+            text += f" {row.away_team} travels {legs[0].split(' ', 1)[1]}."
         out[row.game_id] = text
     return out

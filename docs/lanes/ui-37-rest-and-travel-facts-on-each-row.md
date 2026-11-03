@@ -16,3 +16,4 @@ Original: First unit for one agent: Add a compact chip to each unplayed row from
 
 ## Open
 Rules: fix in place in the current design system; reader text in plain pool words with no ids, hashes, model names or research jargon; every displayed percentage comes from an artifact keyed to the active model; no edge claim; publish-board and rendered-page diff reviewed by the orchestrator. Look count and family declared before any sign is seen. Data: nflverse schedules and venue table (local).
+- 2026-11-03 18:26 ET (root): neutral-site games (e.g. CIN at ATL in Madrid) now name the venue and give both teams' travel; a team's home stadium skips its neutral-site 'home' games.
