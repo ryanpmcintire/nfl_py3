@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:29:43.881107+00:00`
+Refreshed at: `2026-11-03T23:29:56.424583+00:00`
 
 ## Start here
 
@@ -21,20 +21,18 @@ Refreshed at: `2026-11-03T23:29:43.881107+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `283e4194357f` — PER-16 unit 2: coach habit survives position and practice controls (split-half .41) but most unit-1 gain was position mix (coach over position cells +.0014, P+ .76); id-verified rows play 19 pp more than unverified, biasing verified-only studies (incl. LEAD-106); 2026 wording read no longer clearly beats habit+position+practice
-- Pending change set: 258 paths
+- Baseline commit: `1e2ce024e808` — MOD-54 unit 3: inner-LOSO alpha drifts to heavy shrinkage (+0.13); the pre-declared matched penalty holds +0.86 with no single-season driver; decision: no grid extension, forward-log the matched mirrored base model
+- Pending change set: 256 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `M  registry/weak_signals/mod54_mirrored_rows.json`
   - ` M scripts/forward_terms_week.py`
   - ` M scripts/lead106_injury_language.py`
   - ` M scripts/lead99_llm_read.py`
   - ` M scripts/mod24_forward_log.py`
   - ` M scripts/mod25_wfj_forward.py`
   - ` M scripts/mod27_pool_offset_observed.py`
-  - `A  scripts/mod54_unit3_stability.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T23:29:43.881107+00:00`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - ...and 238 more
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - ...and 236 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
