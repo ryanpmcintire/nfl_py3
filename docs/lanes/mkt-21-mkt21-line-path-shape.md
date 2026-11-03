@@ -15,3 +15,8 @@ Research rules: Zero crossing closes nothing; one fitted probability selects the
 
 ## Open
 Capture cadence changed across seasons; only seasons with sub-daily snapshots are usable.
+
+## Update 2026-11-03 (unit 1 done)
+scripts/mkt21_line_path.py, artifacts/mkt21/ (line_path.json, path_features.parquet, record_batch.json). Data: 2023-2025 only (2020-2022 have no per-book snapshots), hourly (SKY-04 cadence), 10-16 books, 798 of 799 non-push games with paths. Window Tuesday noon ET to min(kickoff, Sun 4 PM ET); consensus = per-snapshot median of forward-filled books.
+Family mkt21_line_path_shape, 3 looks, each feature x signed by move direction, one term on out_of_season probability, LOSO. Corr with |net|: reversals 0.14, last-move 0.33, efficiency 0.47. OOS Brier gain -0.00087 / -0.00058 / -0.00050, p+ 0.15 / 0.07 / 0.08; in-sample ~0 to +0.0007 (gap 0.0005-0.0015). Decisive new v base: 14-18, 13-14, 11-12. Fold coefs unstable. Recorded 3 cells, unresolved_below_power.
+Next: re-score on 2026 once hourly captures exist; sub-hourly tape (capture_odds_tape) for reversals.

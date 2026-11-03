@@ -1,0 +1,254 @@
+{
+  "family": "sim14_coach_aggression",
+  "signals": {
+    "sim14_L1_split_half": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coach fourth-down go-over-expected odd/even split-half",
+      "effect": 0.27,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Coach go rate shows positive split-half reliability",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.43,
+      "sample_blocks": 570,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_L2_cross_season": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coach fourth-down go-over-expected season t vs t+1",
+      "effect": 0.458,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        0.373,
+        0.534
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Coach go rate carries across seasons",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 414,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_l3_two_point_split_half": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-point go over expected, coach odd/even game split-half, 2009-2017, >=15 tries per half",
+      "effect": 0.503,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        0.356,
+        0.661
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": 0.503,
+      "sample_blocks": null,
+      "sample_games": 65,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_l4_coach_movers": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Fourth-down go-over-expected, head coach last season at old team vs first at new team, consecutive seasons, >=10 plays",
+      "effect": -0.406,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        -0.855,
+        0.698
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.233,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_l4b_coach_movers_gap3": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coach movers, gap<=3 seasons, >=5 plays",
+      "effect": -0.022,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        -0.467,
+        0.377
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.458,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 25,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_l5_team_across_coach_change": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team last season under old coach vs first under new coach, consecutive, >=10 plays",
+      "effect": 0.105,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        -0.021,
+        0.23
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.951,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 159,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_l5b_team_across_coach_change_gap3": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team across coach change gap<=3, >=5 plays",
+      "effect": 0.11,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        -0.014,
+        0.232
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.955,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 153,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_oc_new_hc_new_oc": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team year-over-year 4th-down residual, new head coach and new OC",
+      "effect": 0.105,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        -0.076,
+        0.289
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.868,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 91,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    },
+    "sim14_oc_same_hc_new_oc": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team year-over-year 4th-down residual, same head coach, new offensive coordinator",
+      "effect": 0.563,
+      "effect_units": "correlation",
+      "family": "sim14_coach_aggression",
+      "interval": [
+        0.419,
+        0.683
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03T23:00:00+00:00",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 106,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/sim14_coach_aggression.py; docs/lanes/sim-14-sim14-coach-aggression.md",
+      "standard_error": null
+    }
+  }
+}

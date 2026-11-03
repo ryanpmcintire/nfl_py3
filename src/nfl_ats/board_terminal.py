@@ -905,7 +905,14 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 pick_cell = pick_text
             pick_cell += _flip_pill_html(game)
             if game.pool_edge_text and not game.final:
-                pick_cell += f'<span class="best-flag">{escape(game.pool_edge_text)}</span>'
+                _edge_size = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt"}.get(
+                    abs(game.pool_edge), f"{abs(game.pool_edge):g} pts"
+                )
+                _edge_word = "better" if game.pool_edge > 0 else "worse"
+                pick_cell += (
+                    f'<span class="best-flag" title="{escape(game.pool_edge_text)}">'
+                    f"{_edge_size} {_edge_word} than Tuesday</span>"
+                )
             if game.qb_note:
                 pick_cell += (
                     f'<span class="best-flag" title="{escape(game.qb_note)}">QB1 out</span>'
@@ -955,7 +962,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="market-now" '
-                f'data-label="{escape(game.market_now_book_label or "Books now")}" '
+                'data-label="Books now" '
                 f'title="{escape(game.market_move_text)}">'
                 f"{_market_now_html(game, market_text, _move_cls)}</td>"
                 f'<td class="prob" data-label="Cover chance" '
@@ -1631,6 +1638,29 @@ def _pool_line_note_html(content: BoardContent) -> str:
     return f'<div class="pool-line-note">{escape(content.pool_line_note)}</div>'
 
 
+def _pool_outlook_section(content: BoardContent) -> str:
+
+    outlook = content.pool_outlook
+    if outlook is None:
+        return ""
+    stale = f'<p class="policy-note">{escape(outlook.stale_text)}</p>' if outlook.stale_text else ""
+    return (
+        '<section aria-labelledby="pool-outlook-h"><div class="section-head">'
+        '<h2 id="pool-outlook-h">Where we stand in the pool</h2>'
+        f'<span class="sub">{escape(outlook.as_of_text)}</span></div>'
+        '<div class="kpi-grid">'
+        '<div class="kpi"><span class="label">Our rank</span>'
+        f'<span class="value">{escape(outlook.rank_text)}</span>'
+        f'<span class="foot">{escape(outlook.points_text)}. {escape(outlook.gap_text)}</span></div>'
+        '<div class="kpi"><span class="label">Chance of finishing first</span>'
+        f'<span class="value">{escape(outlook.chance_text)}</span>'
+        f'<span class="foot">{escape(outlook.range_text)}</span></div>'
+        "</div>"
+        f'<p class="policy-note">{escape(outlook.assumption_text)}</p>'
+        f"{stale}</section>"
+    )
+
+
 def _season_record_strip_html(content: BoardContent) -> str:
 
     record = content.season_record
@@ -1690,6 +1720,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _season_record_strip_html(content)
         + _pool_line_note_html(content)
         + _headline_section(content.headline)
+        + _pool_outlook_section(content)
         + _week_timeline_panel(content)
         + render_week_card(content)
         + _week_changes_section(content)

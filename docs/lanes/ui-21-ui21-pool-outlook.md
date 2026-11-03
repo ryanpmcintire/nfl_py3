@@ -15,3 +15,6 @@ Research rules: Zero crossing closes nothing; one fitted probability selects the
 
 ## Open
 Chance is a model estimate; show a range, never a point as a promise.
+
+## Update 2026-11-03
+Built: PoolOutlook dataclass and _load_pool_outlook in board_content.py, BoardContent.pool_outlook, _pool_outlook_section in board_terminal.py (Home page, after headline). Sources: artifacts/pool_rank_replay/forward_sim_real_rivals_results.json (no model key; panel states the week it reflects and warns when stale), weekly_points_field.json, data/splash/field/2026_weekly_points_w01-08_raw.txt (leader 75 of 241 captured). Board tests 338 passed. Next: root runs publish-board and reviews the rendered diff.

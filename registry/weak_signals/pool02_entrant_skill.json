@@ -1,0 +1,89 @@
+{
+  "family": "pool02_entrant_skill",
+  "signals": {
+    "pool02_oddeven_sb": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Entrant weekly accuracy odd v even weeks Spearman-Brown, 241 entries",
+      "effect": 0.0768,
+      "effect_units": "correlation",
+      "family": "pool02_entrant_skill",
+      "interval": [
+        -0.227,
+        0.299
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Pool entrants show no measurable persistent skill at 8 weeks",
+      "probability_positive": 0.6935,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 241,
+      "sample_games": 125,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/pool-02-pool02-entrant-skill.md",
+      "standard_error": null
+    },
+    "pool02_our_skill_posterior": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Our true skill minus field mean, shrunk with split-half reliability 0.077; P(skill>field median)=0.62",
+      "effect": 0.37,
+      "effect_units": "accuracy_points",
+      "family": "pool02_entrant_skill",
+      "interval": [
+        -1.96,
+        2.7
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Our posterior skill edge over field is small and uncertain",
+      "probability_positive": 0.623,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 125,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/pool-02-pool02-entrant-skill.md",
+      "standard_error": 1.19
+    },
+    "pool02_w14_v_w58_sb": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Entrant accuracy W1-4 v W5-8 Spearman-Brown, 241 entries",
+      "effect": 0.0289,
+      "effect_units": "correlation",
+      "family": "pool02_entrant_skill",
+      "interval": [
+        -0.301,
+        0.269
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Early v late weeks entrant accuracy uncorrelated",
+      "probability_positive": 0.5645,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 241,
+      "sample_games": 125,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/pool-02-pool02-entrant-skill.md",
+      "standard_error": null
+    }
+  }
+}

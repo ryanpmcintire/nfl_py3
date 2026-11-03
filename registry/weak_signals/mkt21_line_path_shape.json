@@ -1,0 +1,89 @@
+{
+  "family": "mkt21_line_path_shape",
+  "signals": {
+    "mkt21_efficiency_oos_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefs [-0.047, 0.117, -0.005]; in-sample p+ 0.536; decisive 11 v base 12 of 23; hourly cadence, one signed shape term",
+      "closing_ground": null,
+      "description": "three declared path features of the consensus median home spread, each signed by net move direction, one fitted term each on the out-of-season probability, leave-one-season-out 2023-2025, graded at the opener, 3 looks",
+      "effect": -0.0005016844212008366,
+      "effect_units": "brier_improvement",
+      "family": "mkt21_line_path_shape",
+      "interval": [
+        -0.0012323652844025482,
+        0.00019165367182676622
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the shape of the line path from Tuesday noon to the pick deadline (reversals, when the last move came, net over total travel) adds to the pick probability.",
+      "probability_positive": 0.079,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt21/line_path.json",
+      "standard_error": null
+    },
+    "mkt21_last_move_fraction_oos_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefs [-0.092, 0.057, -0.001]; in-sample p+ 0.5145; decisive 13 v base 14 of 27; hourly cadence, one signed shape term",
+      "closing_ground": null,
+      "description": "three declared path features of the consensus median home spread, each signed by net move direction, one fitted term each on the out-of-season probability, leave-one-season-out 2023-2025, graded at the opener, 3 looks",
+      "effect": -0.0005841014257858417,
+      "effect_units": "brier_improvement",
+      "family": "mkt21_line_path_shape",
+      "interval": [
+        -0.0013624694586878746,
+        0.00019253877110680953
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the shape of the line path from Tuesday noon to the pick deadline (reversals, when the last move came, net over total travel) adds to the pick probability.",
+      "probability_positive": 0.066,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt21/line_path.json",
+      "standard_error": null
+    },
+    "mkt21_reversals_oos_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefs [-0.052, -0.042, 0.004]; in-sample p+ 0.766; decisive 14 v base 18 of 32; hourly cadence, one signed shape term",
+      "closing_ground": null,
+      "description": "three declared path features of the consensus median home spread, each signed by net move direction, one fitted term each on the out-of-season probability, leave-one-season-out 2023-2025, graded at the opener, 3 looks",
+      "effect": -0.0008699229279950525,
+      "effect_units": "brier_improvement",
+      "family": "mkt21_line_path_shape",
+      "interval": [
+        -0.002510570003006027,
+        0.0007743042947817181
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the shape of the line path from Tuesday noon to the pick deadline (reversals, when the last move came, net over total travel) adds to the pick probability.",
+      "probability_positive": 0.1465,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt21/line_path.json",
+      "standard_error": null
+    }
+  }
+}

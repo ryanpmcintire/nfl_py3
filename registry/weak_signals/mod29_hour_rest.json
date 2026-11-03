@@ -1,0 +1,89 @@
+{
+  "family": "mod29_hour_rest",
+  "signals": {
+    "mod29_both": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-29 hour-level rest term (both) LOSO 2020-25 opener-graded accuracy gain over logit_p base",
+      "effect": -0.865,
+      "effect_units": "accuracy_points",
+      "family": "mod29_hour_rest",
+      "interval": [
+        -2.69,
+        1.137
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.188,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod29/hour_rest.json",
+      "standard_error": null
+    },
+    "mod29_clock_gap": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-29 hour-level rest term (clock_gap) LOSO 2020-25 opener-graded accuracy gain over logit_p base",
+      "effect": -0.599,
+      "effect_units": "accuracy_points",
+      "family": "mod29_hour_rest",
+      "interval": [
+        -2.13,
+        0.996
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.228,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod29/hour_rest.json",
+      "standard_error": null
+    },
+    "mod29_hour_resid": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-29 hour-level rest term (hour_resid) LOSO 2020-25 opener-graded accuracy gain over logit_p base",
+      "effect": -0.865,
+      "effect_units": "accuracy_points",
+      "family": "mod29_hour_rest",
+      "interval": [
+        -2.735,
+        0.928
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.175,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod29/hour_rest.json",
+      "standard_error": null
+    }
+  }
+}

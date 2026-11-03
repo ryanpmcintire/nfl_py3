@@ -100,7 +100,7 @@ $$('.dive-panel').forEach(panel=>{
    const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.classList.add('formation-player',side==='defense'?'defender':'attacker');group.dataset.team=code;group.dataset.position=position;group.dataset.player=name;group.dataset.listed=String(Boolean(player));group.setAttribute('tabindex','0');group.setAttribute('role','button');group.setAttribute('aria-label',code+' '+position+' '+name+', '+prob);group.setAttribute('aria-pressed','false');
    group.innerHTML='<circle cx="'+x+'" cy="'+y+'" r="17"/><text class="position" x="'+x+'" y="'+(y+4)+'"></text><text class="surname" x="'+x+'" y="'+(side==='defense'?y-25:y+32)+'"></text>';
    $('.position',group).textContent=position.replace(/\d+$/,'');
-   const parts=name.split(' ');const surname=player?(parts.length>1?parts.slice(1).join(' '):name):'Not listed';
+   const parts=name.split(' ');const surname=player?(parts.length>1?parts.slice(1).join(' '):name):'';
    const nameLabel=$('.surname',group);nameLabel.textContent=surname;if(surname.length>12){nameLabel.setAttribute('textLength','76');nameLabel.setAttribute('lengthAdjust','spacingAndGlyphs')}
    function activate(){
     $$('.formation-player',field).forEach(n=>{n.classList.remove('active');n.setAttribute('aria-pressed','false')});group.classList.add('active');group.setAttribute('aria-pressed','true');

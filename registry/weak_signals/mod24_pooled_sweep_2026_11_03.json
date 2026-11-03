@@ -1,0 +1,1461 @@
+{
+  "family": "mod24_pooled_sweep_2026_11_03",
+  "signals": {
+    "mod24_pooled_sweep_accalpha_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant accalpha on 14 shared features vs ridge alpha 10, cfb; flips 109-92, wins 2580 of 4702.",
+      "effect": 0.36154827732879624,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.22062470743130466,
+        0.9210701502835333
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.887,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.2897460732423013
+    },
+    "mod24_pooled_sweep_accalpha_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant accalpha on 14 shared features vs ridge alpha 10, cfb; flips 109-92, wins 2580 of 4702.",
+      "effect": 0.0003538857409680856,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0002576426990974333,
+        0.0010443569502459225
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.8375,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0003370683153725758
+    },
+    "mod24_pooled_sweep_accalpha_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant accalpha on 14 shared features vs ridge alpha 10, nfl; flips 62-50, wins 798 of 1503.",
+      "effect": 0.7984031936127745,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.32981530343007914,
+        1.8362165660051761
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9185,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.5423697218808049
+    },
+    "mod24_pooled_sweep_accalpha_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant accalpha on 14 shared features vs ridge alpha 10, nfl; flips 62-50, wins 798 of 1503.",
+      "effect": 7.463122171134683e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.001088225618449387,
+        0.00122893515150633
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.561,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0006006185952179147
+    },
+    "mod24_pooled_sweep_cv_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant cv on 14 shared features vs ridge alpha 10, cfb; flips 99-72, wins 2590 of 4702.",
+      "effect": 0.5742237345810294,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.02001624789202482,
+        1.157585304323395
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9685,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.30481054990773854
+    },
+    "mod24_pooled_sweep_cv_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant cv on 14 shared features vs ridge alpha 10, cfb; flips 99-72, wins 2590 of 4702.",
+      "effect": 0.0003230129244482671,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -7.720684951017971e-05,
+        0.0007594070140663451
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.939,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0002086740130240465
+    },
+    "mod24_pooled_sweep_cv_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant cv on 14 shared features vs ridge alpha 10, nfl; flips 38-24, wins 800 of 1503.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        0.06543650469022688,
+        1.8781557268137112
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9755,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.47991950698641
+    },
+    "mod24_pooled_sweep_cv_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant cv on 14 shared features vs ridge alpha 10, nfl; flips 38-24, wins 800 of 1503.",
+      "effect": 0.00023906741047437024,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0005002523480723709,
+        0.0009692346020970495
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.728,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.000375985109431932
+    },
+    "mod24_pooled_sweep_enet_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant enet on 14 shared features vs ridge alpha 10, cfb; flips 158-126, wins 2595 of 4702.",
+      "effect": 0.680561463207146,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.021581263650750058,
+        1.4094551567305005
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.972,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.3581686338871378
+    },
+    "mod24_pooled_sweep_enet_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant enet on 14 shared features vs ridge alpha 10, cfb; flips 158-126, wins 2595 of 4702.",
+      "effect": 0.0005446501944075664,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0001281424515234892,
+        0.0012615135005638119
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.935,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0003577750175302115
+    },
+    "mod24_pooled_sweep_enet_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant enet on 14 shared features vs ridge alpha 10, nfl; flips 103-82, wins 807 of 1503.",
+      "effect": 1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.3306878306878307,
+        3.0324941160133445
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9295,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.8560568820406189
+    },
+    "mod24_pooled_sweep_enet_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant enet on 14 shared features vs ridge alpha 10, nfl; flips 103-82, wins 807 of 1503.",
+      "effect": 0.0005232471205955396,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0012479377625652746,
+        0.002210192379768392
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.7125,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0008972483332696601
+    },
+    "mod24_pooled_sweep_hgb_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb on 14 shared features vs ridge alpha 10, cfb; flips 462-464, wins 2561 of 4702.",
+      "effect": -0.04253509145044662,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -1.2626364361794402,
+        1.2340204640838166
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.4845,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.6396637756321327
+    },
+    "mod24_pooled_sweep_hgb_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb on 14 shared features vs ridge alpha 10, cfb; flips 462-464, wins 2561 of 4702.",
+      "effect": -0.0012601874225520017,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.004201102364422079,
+        0.0014952962015640679
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.183,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0014584399596796005
+    },
+    "mod24_pooled_sweep_hgb_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb on 14 shared features vs ridge alpha 10, nfl; flips 181-207, wins 760 of 1503.",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -4.438834447772421,
+        0.9266001984122624
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0845,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 1.3394422798939027
+    },
+    "mod24_pooled_sweep_hgb_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb on 14 shared features vs ridge alpha 10, nfl; flips 181-207, wins 760 of 1503.",
+      "effect": -0.009536021658476055,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.015011126893654856,
+        -0.00387929480312073
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0028206164063210707
+    },
+    "mod24_pooled_sweep_hgb_resid_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb_resid on 14 shared features vs ridge alpha 10, cfb; flips 377-361, wins 2579 of 4702.",
+      "effect": 0.340280731603573,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.8343859029694652,
+        1.503629107428103
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.7165,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.583666966367579
+    },
+    "mod24_pooled_sweep_hgb_resid_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb_resid on 14 shared features vs ridge alpha 10, cfb; flips 377-361, wins 2579 of 4702.",
+      "effect": -0.0001914842829297089,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0024855543330332473,
+        0.0019893289650087143
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.4265,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0011463939311450713
+    },
+    "mod24_pooled_sweep_hgb_resid_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb_resid on 14 shared features vs ridge alpha 10, nfl; flips 176-156, wins 806 of 1503.",
+      "effect": 1.3306719893546242,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -1.3230603767986946,
+        3.755868544600939
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.836,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 1.2677479626872397
+    },
+    "mod24_pooled_sweep_hgb_resid_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant hgb_resid on 14 shared features vs ridge alpha 10, nfl; flips 176-156, wins 806 of 1503.",
+      "effect": -0.007332179956052185,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.012422553462708031,
+        -0.00242383970085334
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0025304430721144705
+    },
+    "mod24_pooled_sweep_huber_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant huber on 14 shared features vs ridge alpha 10, cfb; flips 78-76, wins 2565 of 4702.",
+      "effect": 0.04253509145044662,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.4907266038650275,
+        0.5529255532157031
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.5345,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.2715969211873414
+    },
+    "mod24_pooled_sweep_huber_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant huber on 14 shared features vs ridge alpha 10, cfb; flips 78-76, wins 2565 of 4702.",
+      "effect": -1.240570345114279e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.00042013219531773777,
+        0.0003914340987512352
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.4435,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.00020528724875458872
+    },
+    "mod24_pooled_sweep_huber_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant huber on 14 shared features vs ridge alpha 10, nfl; flips 106-96, wins 796 of 1503.",
+      "effect": 0.6653359946773121,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -1.0785166922716023,
+        2.271361208686629
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.768,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.8726431340734628
+    },
+    "mod24_pooled_sweep_huber_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant huber on 14 shared features vs ridge alpha 10, nfl; flips 106-96, wins 796 of 1503.",
+      "effect": -0.0002879377348084403,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0023314506616339977,
+        0.0016957732789176822
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.3805,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0010299069707319117
+    },
+    "mod24_pooled_sweep_ix_a10_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_a10 on 14 shared features vs ridge alpha 10, cfb; flips 392-381, wins 2574 of 4702.",
+      "effect": 0.2339430029774564,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -1.0452404358101797,
+        1.5006656336049287
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.6555,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.6473444195011264
+    },
+    "mod24_pooled_sweep_ix_a10_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_a10 on 14 shared features vs ridge alpha 10, cfb; flips 392-381, wins 2574 of 4702.",
+      "effect": -0.003991696493486808,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0073772186211520235,
+        -0.0005526440267423663
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.012,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0017321671558862752
+    },
+    "mod24_pooled_sweep_ix_a10_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_a10 on 14 shared features vs ridge alpha 10, nfl; flips 179-179, wins 786 of 1503.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -2.5745693812870334,
+        2.5500397172614773
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.473,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 1.283985326174437
+    },
+    "mod24_pooled_sweep_ix_a10_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_a10 on 14 shared features vs ridge alpha 10, nfl; flips 179-179, wins 786 of 1503.",
+      "effect": -0.02153051467392394,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.04057608391957926,
+        -0.00918644185288568
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.008415654816196286
+    },
+    "mod24_pooled_sweep_ix_cv_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_cv on 14 shared features vs ridge alpha 10, cfb; flips 324-323, wins 2564 of 4702.",
+      "effect": 0.02126754572522331,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.970922682785979,
+        1.0337254176421335
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.5252711224290442
+    },
+    "mod24_pooled_sweep_ix_cv_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_cv on 14 shared features vs ridge alpha 10, cfb; flips 324-323, wins 2564 of 4702.",
+      "effect": -0.0015444894998407437,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.004167404821637741,
+        0.0009841545754040995
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.118,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0013122538277337969
+    },
+    "mod24_pooled_sweep_ix_cv_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_cv on 14 shared features vs ridge alpha 10, nfl; flips 153-144, wins 795 of 1503.",
+      "effect": 0.5988023952095808,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -1.9080837620802336,
+        3.0164869622620745
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.658,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 1.2601981771830841
+    },
+    "mod24_pooled_sweep_ix_cv_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ix_cv on 14 shared features vs ridge alpha 10, nfl; flips 153-144, wins 795 of 1503.",
+      "effect": -0.007847086693213623,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.012296796466733362,
+        -0.003287179539978952
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0023078979369087365
+    },
+    "mod24_pooled_sweep_recency_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant recency on 14 shared features vs ridge alpha 10, cfb; flips 210-192, wins 2581 of 4702.",
+      "effect": 0.38281582305401957,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.4083654848188018,
+        1.2016196993267338
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.807,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.41655210402161813
+    },
+    "mod24_pooled_sweep_recency_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant recency on 14 shared features vs ridge alpha 10, cfb; flips 210-192, wins 2581 of 4702.",
+      "effect": -0.0006780889162839835,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0018224206285868154,
+        0.000462712704222831
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.1185,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.000581313499038164
+    },
+    "mod24_pooled_sweep_recency_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant recency on 14 shared features vs ridge alpha 10, nfl; flips 109-102, wins 793 of 1503.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -1.4608719377807917,
+        2.3954495817983257
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.649,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.9888665839896951
+    },
+    "mod24_pooled_sweep_recency_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant recency on 14 shared features vs ridge alpha 10, nfl; flips 109-102, wins 793 of 1503.",
+      "effect": -0.0014360006083942445,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0036205749241623973,
+        0.0006382027686884059
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.095,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0011005503391204859
+    },
+    "mod24_pooled_sweep_slope_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant slope on 14 shared features vs ridge alpha 10, cfb; flips 138-113, wins 2588 of 4702.",
+      "effect": 0.5316886431305827,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.11016603911489739,
+        1.1882492064708854
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9395,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.33361451876912696
+    },
+    "mod24_pooled_sweep_slope_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant slope on 14 shared features vs ridge alpha 10, cfb; flips 138-113, wins 2588 of 4702.",
+      "effect": 0.0003771107323381731,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0002846268591446563,
+        0.0009991910514439589
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.8715,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.00033100197401043647
+    },
+    "mod24_pooled_sweep_slope_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant slope on 14 shared features vs ridge alpha 10, nfl; flips 96-66, wins 816 of 1503.",
+      "effect": 1.996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        0.46757849031396126,
+        3.478319073395029
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9965,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.7690443253471895
+    },
+    "mod24_pooled_sweep_slope_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant slope on 14 shared features vs ridge alpha 10, nfl; flips 96-66, wins 816 of 1503.",
+      "effect": 0.0009404887014330675,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.001164506464266708,
+        0.002973016576503274
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.7985,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0010758919255063626
+    },
+    "mod24_pooled_sweep_ts_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ts on 14 shared features vs ridge alpha 10, cfb; flips 14-17, wins 2560 of 4702.",
+      "effect": -0.06380263717566993,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.2749613354373372,
+        0.14939473285124394
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.253,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.10932745909545372
+    },
+    "mod24_pooled_sweep_ts_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ts on 14 shared features vs ridge alpha 10, cfb; flips 14-17, wins 2560 of 4702.",
+      "effect": -1.6217957112846922e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0001362322305476068,
+        0.00010709316008102156
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.388,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 6.23676428509441e-05
+    },
+    "mod24_pooled_sweep_ts_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ts on 14 shared features vs ridge alpha 10, nfl; flips 6-8, wins 784 of 1503.",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.657505535554316,
+        0.3320108271234
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.255,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.24834857182417383
+    },
+    "mod24_pooled_sweep_ts_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant ts on 14 shared features vs ridge alpha 10, nfl; flips 6-8, wins 784 of 1503.",
+      "effect": -3.307885015855749e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.00017809956214701915,
+        0.00011868424911664138
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.3445,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 7.664134904598001e-05
+    },
+    "mod24_pooled_sweep_window_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant window on 14 shared features vs ridge alpha 10, cfb; flips 271-246, wins 2588 of 4702.",
+      "effect": 0.5316886431305827,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.3280490944983263,
+        1.3837382278035666
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.882,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.4334409622285861
+    },
+    "mod24_pooled_sweep_window_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant window on 14 shared features vs ridge alpha 10, cfb; flips 271-246, wins 2588 of 4702.",
+      "effect": -0.001735179736556401,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.003624812420770554,
+        2.959674811441069e-05
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.027,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0009210474871514635
+    },
+    "mod24_pooled_sweep_window_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant window on 14 shared features vs ridge alpha 10, nfl; flips 167-176, wins 777 of 1503.",
+      "effect": -0.5988023952095808,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -3.024346285434995,
+        1.6557115360107573
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.289,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 1.2216276199253424
+    },
+    "mod24_pooled_sweep_window_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant window on 14 shared features vs ridge alpha 10, nfl; flips 167-176, wins 777 of 1503.",
+      "effect": -0.005840723797284312,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.010835954116150168,
+        -0.001110071707658994
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.007,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.0024926419041066575
+    },
+    "mod24_pooled_sweep_winsor_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant winsor on 14 shared features vs ridge alpha 10, cfb; flips 19-18, wins 2564 of 4702.",
+      "effect": 0.02126754572522331,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.2474903372161869,
+        0.29851064642657016
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.5435,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.13898215006969994
+    },
+    "mod24_pooled_sweep_winsor_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant winsor on 14 shared features vs ridge alpha 10, cfb; flips 19-18, wins 2564 of 4702.",
+      "effect": 0.00011417416761440401,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -2.707111794495587e-05,
+        0.0002577242469148084
+      ],
+      "league": "cfb",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.946,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 7.094972141448134e-05
+    },
+    "mod24_pooled_sweep_winsor_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant winsor on 14 shared features vs ridge alpha 10, nfl; flips 15-10, wins 791 of 1503.",
+      "effect": 0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.32852591811328585,
+        1.003361271171643
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.811,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.33661359530076407
+    },
+    "mod24_pooled_sweep_winsor_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Variant winsor on 14 shared features vs ridge alpha 10, nfl; flips 15-10, wins 791 of 1503.",
+      "effect": -0.0002367114360120096,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_sweep_2026_11_03",
+      "interval": [
+        -0.0007825461467376017,
+        0.0003034272972546657
+      ],
+      "league": "nfl",
+      "notes": "13 learner-side variants x 3 metrics on 14 shared inputs; past-only weekly refits; parameters chosen in-window; CFB opener-matched.",
+      "plain_summary": "A learner-side change on the shared inputs moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.172,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_sweep/*.json",
+      "standard_error": 0.00027049799235776673
+    }
+  }
+}

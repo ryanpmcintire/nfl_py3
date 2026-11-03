@@ -1,0 +1,173 @@
+{
+  "family": "xlg10_pooled_addone_unit2",
+  "signals": {
+    "xlg10u2_fumble_lost_diff_cfb_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Add-one fumble_lost_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 63-64",
+      "effect": -0.0213,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone_unit2",
+      "interval": [
+        -0.4853,
+        0.4338
+      ],
+      "league": "cfb",
+      "notes": "Decisive first: 63-64 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
+      "probability_positive": 0.458,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_*.json",
+      "standard_error": 0.2304
+    },
+    "xlg10u2_fumble_lost_diff_nfl_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Add-one fumble_lost_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 20-31",
+      "effect": -0.7319,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone_unit2",
+      "interval": [
+        -1.5947,
+        0.0666
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: 20-31 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
+      "probability_positive": 0.03,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_*.json",
+      "standard_error": 0.4157
+    },
+    "xlg10u2_int_rate_diff_cfb_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Add-one int_rate_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 0-4",
+      "effect": -0.0851,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone_unit2",
+      "interval": [
+        -0.1732,
+        -0.0207
+      ],
+      "league": "cfb",
+      "notes": "Decisive first: 0-4 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_*.json",
+      "standard_error": 0.052261232824770694
+    },
+    "xlg10u2_int_rate_diff_nfl_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Add-one int_rate_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 10-15",
+      "effect": -0.3327,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone_unit2",
+      "interval": [
+        -0.9309,
+        0.2696
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: 10-15 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
+      "probability_positive": 0.114,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_*.json",
+      "standard_error": 0.31
+    },
+    "xlg10u2_turnover_bundle_cfb_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Add-one turnover_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 64-66",
+      "effect": -0.0425,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone_unit2",
+      "interval": [
+        -0.5014,
+        0.4089
+      ],
+      "league": "cfb",
+      "notes": "Decisive first: 64-66 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
+      "probability_positive": 0.423,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_*.json",
+      "standard_error": 0.2353
+    },
+    "xlg10u2_turnover_bundle_nfl_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Add-one turnover_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 21-37",
+      "effect": -1.0645,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone_unit2",
+      "interval": [
+        -2.1812,
+        -0.0665
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: 21-37 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
+      "probability_positive": 0.018,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_*.json",
+      "standard_error": 0.5344
+    }
+  }
+}

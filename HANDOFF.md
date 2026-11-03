@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T18:03:37.625078+00:00`
+Refreshed at: `2026-11-03T18:22:00.299602+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T18:03:37.625078+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0c3d3b148840` — Wave 3 research: MOD-23 units 14-16, MOD-24 cross-league grading, SKY-03 forward term
-- Pending change set: 289 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
+- Baseline commit: `21d370e0629c` — Week 9 card published with pool-line notes; 15 new backlog rows; wave 3 results
+- Pending change set: 285 paths
+  - ` M config/source_policies.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `A  docs/lanes/mkt-21-mkt21-line-path-shape.md`
-  - `A  docs/lanes/mod-28-mod28-late-compression.md`
-  - `A  docs/lanes/mod-29-mod29-hour-rest.md`
-  - `A  docs/lanes/mod-30-mod30-public-ratings.md`
-  - `A  docs/lanes/mod23-unit17-2026-11-03.md`
-  - `A  docs/lanes/mod23-unit18-2026-11-03.md`
-  - `A  docs/lanes/mod24-more-games-2026-11-03.md`
-  - `A  docs/lanes/mod27-pinned-bundle-2026-11-03.md`
-  - `A  docs/lanes/pool-02-pool02-entrant-skill.md`
-  - `A  docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `A  docs/lanes/sim-13-sim13-defensive-load.md`
-  - ...and 269 more
+  - `M  docs/lanes/mkt-21-mkt21-line-path-shape.md`
+  - ` M docs/lanes/mod-28-mod28-late-compression.md`
+  - `M  docs/lanes/mod-29-mod29-hour-rest.md`
+  - `M  docs/lanes/mod-30-mod30-public-ratings.md`
+  - `A  docs/lanes/mod24-pooled-sweep-2026-11-03.md`
+  - `M  docs/lanes/pool-02-pool02-entrant-skill.md`
+  - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
+  - ` M docs/lanes/sim-13-sim13-defensive-load.md`
+  - `M  docs/lanes/sim-14-sim14-coach-aggression.md`
+  - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
+  - `M  docs/lanes/ui-21-ui21-pool-outlook.md`
+  - `M  docs/lanes/ui20-2026-11-03.md`
+  - `M  docs/lanes/xlg-10-xlg10-pooled-addone.md`
+  - ...and 265 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

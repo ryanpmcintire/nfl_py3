@@ -15,3 +15,7 @@ Research rules: Zero crossing closes nothing; one fitted probability selects the
 
 ## Open
 Likely a tiny effect; its value is as a clean unresolved or refuted record, and as a free feature if it clears.
+
+## Unit 1 (2026-11-03)
+Family mod29_hour_rest, 3 looks declared before outcomes: hour_resid (hours-diff residual on rest_diff, refit per fold), clock_gap (home minus away local-clock gap, venue tz of previous vs current kickoff), both. Script scripts/mod29_hour_rest.py, output artifacts/mod29/hour_rest.json. Base: logit_p of opener cover prob, LOSO 2020-25, paired lead29 parquet. First-game-of-season rows get term 0. Results: see weak-signals registry cells and artifact.
+Results (1503 games, 1415 usable): hours-diff vs rest_diff corr 0.997 (R2 0.994); residual sd 4.5h. OOS accuracy gain vs base (54.7%): hour_resid -0.86pt (P+ 0.175), clock_gap -0.60 (0.228), both -0.86 (0.188); log-loss gain ~0. Three cells recorded unresolved_below_power. Next: residual signal is tiny; no further unit unless pooled with other schedule terms.

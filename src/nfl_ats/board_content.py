@@ -1858,6 +1858,7 @@ class BoardContent:
     calibrated_probability: bool = False
     season_record: SeasonRecordStrip | None = None
     pool_line_note: str = ""
+    pool_outlook: PoolOutlook | None = None
     confidence_legend_text: str = ""
     injury_note: str = "Whether injury reports informed these picks was not recorded."
     injury_coverage_note: str = ""
@@ -2414,6 +2415,87 @@ def _tiebreaker_season_error_text(
         f"Season through Week {max(row.week for row in rows)} ({played} {game_word}): "
         f"our combined-score guess has missed by {ours:.1f} points a game; "
         f"the sportsbook over/under line missed by {theirs:.1f}."
+    )
+
+
+@dataclass(frozen=True)
+class PoolOutlook:
+    rank_text: str
+    points_text: str
+    gap_text: str
+    chance_text: str
+    range_text: str
+    assumption_text: str
+    as_of_text: str
+    stale_text: str = ""
+
+
+def _percent_text(value: float) -> str:
+
+    return f"{value * 100:.1f}%"
+
+
+def _load_pool_outlook(
+    artifacts_root: Path, data_root: Path | None, *, week: float | None
+) -> PoolOutlook | None:
+
+    path = artifacts_root / "pool_rank_replay" / "forward_sim_real_rivals_results.json"
+    field_path = artifacts_root / "pool_rank_replay" / "weekly_points_field.json"
+    raw_path = (data_root or _default_data_root()) / "splash" / "field"
+    raw_files = sorted(raw_path.glob("2026_weekly_points_w01-*_raw.txt"))
+    if not (path.is_file() and field_path.is_file() and raw_files):
+        return None
+    try:
+        result = read_json(path)
+        weeks_played = len(read_json(field_path)["weeks"])
+        start = result["start"]
+        chance = result["p_first_served"]
+        low, high = chance["interval_95"]
+        totals = [
+            sum(int(value) for value in entry.split())
+            for line in raw_files[-1].read_text(encoding="utf-8").splitlines()
+            if not line.startswith("#")
+            for entry in line.split("|")
+            if entry.strip()
+        ]
+        points = int(start["points"])
+        rank = int(start["rank"])
+        entries = int(start["entries"])
+        remaining = int(start["weeks_remaining"])
+        mean = float(chance["mean"])
+    except (KeyError, ValueError, TypeError, OSError):
+        return None
+    if not totals:
+        return None
+    leader = max(totals)
+    gap = leader - points
+    stale = ""
+    if week is not None and int(week) - 1 != weeks_played:
+        stale = (
+            f"This outlook is from after Week {weeks_played} and has not been "
+            "refreshed for later games."
+        )
+    gap_text = (
+        "We lead the entries counted."
+        if gap <= 0
+        else f"{gap} {'point' if gap == 1 else 'points'} behind the leader, who has {leader}."
+    )
+    return PoolOutlook(
+        rank_text=f"{rank} of {entries}",
+        points_text=f"{points} points after Week {weeks_played}",
+        gap_text=gap_text,
+        chance_text=_percent_text(mean),
+        range_text=(
+            f"Roughly {_percent_text(low)} to {_percent_text(high)} once the simulation's "
+            "own sampling noise is accounted for."
+        ),
+        assumption_text=(
+            f"This plays out the remaining {remaining} weeks many times, with every rival "
+            "picking like the real field has so far and our card picking as it has "
+            "against the opening line."
+        ),
+        as_of_text=f"After Week {weeks_played}",
+        stale_text=stale,
     )
 
 
@@ -4067,6 +4149,10 @@ def load_board_content(
         week=_number(artifacts.metadata.get("week")),
     )
 
+    pool_outlook = _load_pool_outlook(
+        artifacts_root, resolved_data_root, week=_number(artifacts.metadata.get("week"))
+    )
+
     waterfall_document = load_waterfall_feed_document(artifacts_root)
     require_active_waterfall_feed(waterfall_document, artifacts.active)
     waterfall_feed = waterfall_games_by_id(waterfall_document)
@@ -4176,6 +4262,7 @@ def load_board_content(
         link_preview=link_preview,
         season_record=season_record,
         pool_line_note=pool_line_note,
+        pool_outlook=pool_outlook,
         refresh_lines=refresh_lines,
     )
 
@@ -4209,6 +4296,7 @@ __all__ = [
     "NumberProvenance",
     "NumberProvenanceError",
     "PolicyNote",
+    "PoolOutlook",
     "ProspectiveScoreboard",
     "RivalRuleRow",
     "RivalRulesPanel",
