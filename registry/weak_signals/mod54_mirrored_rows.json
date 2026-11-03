@@ -224,6 +224,174 @@
       ],
       "source": "artifacts/mod54_unit2/report.json",
       "standard_error": null
+    },
+    "mod54_unit3_mirrored_alpha_loso_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Mirrored rows with ridge alpha chosen leave-one-season-out inside the training seasons, paired vs base ridge alpha 10, 2011-2019; 1142-1089 vs 1142-1089, decisive flips 236-236.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -2.5168822245574325,
+        2.2411474675033616
+      ],
+      "league": "nfl",
+      "notes": "Base model, same inputs, past-only weekly refits, opener input; mirrored rows with a home-view column; alpha grid 5 to 80 in factors of two around the row-doubling match; ten looks in unit 3 (two LOSO-alpha accuracy, four slopes, four homogeneity tests reported in the lane).",
+      "plain_summary": "Letting the training seasons pick the penalty for mirrored home and away rows moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.5058,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod54_unit3/report.json",
+      "standard_error": null
+    },
+    "mod54_unit3_mirrored_alpha_loso_2011_2019_season_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Slope over seasons of the per-season accuracy difference of mirrored_alpha_loso versus base, 2011-2019, accuracy points per season.",
+      "effect": -0.13474853842730222,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -1.04035230260252,
+        1.2706200309326108
+      ],
+      "league": "nfl",
+      "notes": "Base model, same inputs, past-only weekly refits, opener input; mirrored rows with a home-view column; alpha grid 5 to 80 in factors of two around the row-doubling match; ten looks in unit 3 (two LOSO-alpha accuracy, four slopes, four homogeneity tests reported in the lane).",
+      "plain_summary": "How the mirroring gain moves from season to season is unresolved at this number of seasons.",
+      "probability_positive": 0.4081,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod54_unit3/report.json",
+      "standard_error": null
+    },
+    "mod54_unit3_mirrored_alpha_loso_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Mirrored rows with ridge alpha chosen leave-one-season-out inside the training seasons, paired vs base ridge alpha 10, 2020-2025; 804-699 vs 802-701, decisive flips 121-119.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -1.0973936899862826,
+        1.370757180156658
+      ],
+      "league": "nfl",
+      "notes": "Base model, same inputs, past-only weekly refits, opener input; mirrored rows with a home-view column; alpha grid 5 to 80 in factors of two around the row-doubling match; ten looks in unit 3 (two LOSO-alpha accuracy, four slopes, four homogeneity tests reported in the lane).",
+      "plain_summary": "Letting the training seasons pick the penalty for mirrored home and away rows moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.5552,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit3/report.json",
+      "standard_error": null
+    },
+    "mod54_unit3_mirrored_alpha_loso_2020_2025_season_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Slope over seasons of the per-season accuracy difference of mirrored_alpha_loso versus base, 2020-2025, accuracy points per season.",
+      "effect": 0.30727440178941773,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -0.8240149874128582,
+        1.7983439710190003
+      ],
+      "league": "nfl",
+      "notes": "Base model, same inputs, past-only weekly refits, opener input; mirrored rows with a home-view column; alpha grid 5 to 80 in factors of two around the row-doubling match; ten looks in unit 3 (two LOSO-alpha accuracy, four slopes, four homogeneity tests reported in the lane).",
+      "plain_summary": "How the mirroring gain moves from season to season is unresolved at this number of seasons.",
+      "probability_positive": 0.7746,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit3/report.json",
+      "standard_error": null
+    },
+    "mod54_unit3_mirrored_alpha_matched_2011_2019_season_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Slope over seasons of the per-season accuracy difference of mirrored_alpha_matched versus base, 2011-2019, accuracy points per season.",
+      "effect": -0.05270227392915696,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -0.8619274206932119,
+        1.2390958768007776
+      ],
+      "league": "nfl",
+      "notes": "Base model, same inputs, past-only weekly refits, opener input; mirrored rows with a home-view column; alpha grid 5 to 80 in factors of two around the row-doubling match; ten looks in unit 3 (two LOSO-alpha accuracy, four slopes, four homogeneity tests reported in the lane).",
+      "plain_summary": "How the mirroring gain moves from season to season is unresolved at this number of seasons.",
+      "probability_positive": 0.4504,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod54_unit3/report.json",
+      "standard_error": null
+    },
+    "mod54_unit3_mirrored_alpha_matched_2020_2025_season_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Slope over seasons of the per-season accuracy difference of mirrored_alpha_matched versus base, 2020-2025, accuracy points per season.",
+      "effect": 0.1756349704774256,
+      "effect_units": "accuracy_points",
+      "family": "mod54_mirrored_rows",
+      "interval": [
+        -0.9648692818564194,
+        0.8166409861327156
+      ],
+      "league": "nfl",
+      "notes": "Base model, same inputs, past-only weekly refits, opener input; mirrored rows with a home-view column; alpha grid 5 to 80 in factors of two around the row-doubling match; ten looks in unit 3 (two LOSO-alpha accuracy, four slopes, four homogeneity tests reported in the lane).",
+      "plain_summary": "How the mirroring gain moves from season to season is unresolved at this number of seasons.",
+      "probability_positive": 0.66455,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod54_unit3/report.json",
+      "standard_error": null
     }
   }
 }
