@@ -32,7 +32,7 @@ from nfl_ats.four_overlay_composition import (
     SPREAD_GAP_ZONE_FADE,
 )
 from nfl_ats.home_side_location import center_offsets_from_metadata
-from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
+from nfl_ats.key_line_pick_read import KEY_LINE_ATOMS, pick_overrides_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_probability import (
@@ -111,6 +111,7 @@ from nfl_ats.spread_explorer import (
     compute_spread_explorer_params,
     load_feature_table_for_forecast,
     spread_explorer_home_cover_probability,
+    spread_explorer_three_way_probability,
     widget_home_cover_probability,
 )
 from nfl_ats.tiebreaker_history import settled_tiebreakers
@@ -226,6 +227,7 @@ class GameRow:
     qb_practice_flag: tuple[str, str] | None = None
     pool_edge: float | None = None
     pool_hook_effect: float | None = None
+    key_number_note: str = ""
     move_reason: str = ""
     move_reason_evidence: tuple[str, ...] = ()
     forecast_text: str = ""
@@ -2673,6 +2675,34 @@ def _with_move_reasons(
     ]
 
 
+def _key_number_note(params: SpreadExplorerGameParams | None, *, pick_is_home: bool) -> str:
+    if params is None or params.discrete_reader is None:
+        return ""
+    line = params.card_line
+    for atom in KEY_LINE_ATOMS:
+        gap = abs(line) - atom
+        if abs(gap) > 0.5:
+            continue
+        signed = atom if line > 0 else -atom
+        landing = spread_explorer_three_way_probability(params, signed)[1]
+        share = round(landing * 100)
+        if share <= 0:
+            return ""
+        number = f"{atom:g}"
+        if gap == 0:
+            return (
+                f"This line sits on {number}, a common winning margin: about {share}% of games "
+                f"like this land exactly there, and those games push."
+            )
+        pick_line = line if pick_is_home else -line
+        side = "lands on your side" if pick_line * gap > 0 else "lands against you"
+        return (
+            f"This line sits next to {number}, a common winning margin: about {share}% of games "
+            f"like this land exactly on {number}, which {side}."
+        )
+    return ""
+
+
 def _pool_hook_effect(model: Any, row: pd.Series, pick_is_home: bool) -> float | None:
     if not model.has_pool_hook:
         return None
@@ -4283,6 +4313,9 @@ def load_board_content(
                 qb_practice_flag=qb_practice_flags.get(game_id),
                 pool_edge=pool_edge,
                 pool_hook_effect=pool_hook_effect,
+                key_number_note=_key_number_note(
+                    spread_explorer_params.get(game_id), pick_is_home=team == home_team
+                ),
             )
         )
 
