@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:48:11.262354+00:00`
+Refreshed at: `2026-11-03T21:49:04.015232+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T21:48:11.262354+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `822e95071646` — SIM-15 unit 2: per-game weather joined for the simulator's 2,304 real games in a new file (observed wind on all outdoor games, forecast on 98-99%; identical to unit 1); engine sites cited, hook pending
-- Pending change set: 251 paths
+- Baseline commit: `594befa733ee` — POOL-07 standings policy: max-probability card P(first) 7.6%; a small coin-flip tilt adds ~0.5 pp but costs ~0.4 wins and flips sign with the field model; challenger only
+- Pending change set: 268 paths
+  - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/pool-07-standings-variance-policy.md`
-  - `A  scripts/pool07_standings_policy.py`
+  - ` M docs/lanes/backlog-all-2026-11-02.md`
+  - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - `M  docs/lanes/xlg-12-xlg12-cfb-shadow-forward.md`
+  - ` M registry/weak_signals/lead106.json`
+  - ` M scripts/lead106_injury_language.py`
   - ` M scripts/sim10_drive.py`
-  - ` M scripts/xlg12_predict.py`
-  - ` M scripts/xlg12_score.py`
+  - `M  scripts/xlg12_predict.py`
+  - `M  scripts/xlg12_score.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/eng-53-trait-reliability-table.md`
+  - `?? docs/lanes/lead-107-read-dispersion-weight.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 231 more
+  - `?? docs/lanes/mkt-26-move-size-dispersion.md`
+  - `?? docs/lanes/mkt-27-total-level-variance.md`
+  - `?? docs/lanes/mod-45-tempo-pair-spread.md`
+  - ...and 248 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

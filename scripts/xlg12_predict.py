@@ -13,6 +13,7 @@ ART = ROOT / "artifacts" / "xlg12_cfb_forward"
 LINES = ROOT / "data" / "raw" / "cfbd_lines"
 VARIANTS = ("base", "cv", "slope")
 LEDGER = ART / "forward_ledger.jsonl"
+LEDGER_OPEN = ART / "forward_ledger_open.jsonl"
 RETRO = ART / "retro2026_predictions.csv"
 RETRO_OPEN = ART / "retro2026_openinput_predictions.csv"
 
@@ -22,9 +23,10 @@ def phi(z):
 
 
 def use_version(version):
-    global ART_V, LEDGER, RETRO, RETRO_OPEN, TAG
+    global ART_V, LEDGER, LEDGER_OPEN, RETRO, RETRO_OPEN, TAG
     ART_V = ART / version if version != "v1" else ART
     LEDGER = ART_V / "forward_ledger.jsonl"
+    LEDGER_OPEN = ART_V / "forward_ledger_open.jsonl"
     RETRO = ART_V / "retro2026_predictions.csv"
     RETRO_OPEN = ART_V / "retro2026_openinput_predictions.csv"
     TAG = "" if version == "v1" else f"_{version}"
@@ -117,23 +119,24 @@ def build(week, feats, frozen, open_input=False):
     return g.merge(pr, on=["game_id", "provider"], how="inner")
 
 
-def forward(week):
+def forward(week, open_input=False):
+    ledger = LEDGER_OPEN if open_input else LEDGER
     feats = pd.read_parquet(ART / "features_2026.parquet")
     frozen = load_frozen()
     now = datetime.now(UTC)
-    d = build(week, feats, frozen)
+    d = build(week, feats, frozen, open_input)
     d["kickoff"] = pd.to_datetime(d["kickoff"], utc=True)
     d["observed"] = pd.to_datetime(d["observed_at_utc"], utc=True)
     unkicked = d["kickoff"].gt(pd.Timestamp(now)) & d["observed"].lt(d["kickoff"])
     skipped = int((~unkicked).sum())
     d = d.loc[unkicked]
     seen = set()
-    if LEDGER.exists():
-        for ln in LEDGER.read_text().splitlines():
+    if ledger.exists():
+        for ln in ledger.read_text().splitlines():
             r = json.loads(ln)
             seen.add((r["game_id"], r["provider"], r["variant"]))
     written = 0
-    with LEDGER.open("a") as fh:
+    with ledger.open("a") as fh:
         for r in d.itertuples():
             key = (int(r.game_id), r.provider, r.variant)
             if key in seen:
@@ -155,7 +158,7 @@ def forward(week):
                 "proj_home_margin": r.proj_home_margin,
                 "p_home_cover_line": r.p_home_cover_line,
                 "side_line": side(r.p_home_cover_line, r.home_team, r.away_team),
-                "line_basis": "observed_pregame_line",
+                "line_basis": "provider_open_line" if open_input else "observed_pregame_line",
                 "line_observed_at_utc": r.observed_at_utc,
                 "written_at_utc": datetime.now(UTC).isoformat(),
                 "frozen_created_at": frozen[r.variant]["created_at"],
@@ -217,7 +220,7 @@ def main():
     a = ap.parse_args()
     use_version(a.version)
     if a.forward_week is not None:
-        forward(a.forward_week)
+        forward(a.forward_week, a.open_input)
     if a.retro_weeks:
         retro(a.retro_weeks, a.open_input)
     return 0

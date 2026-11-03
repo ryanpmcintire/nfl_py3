@@ -15,7 +15,7 @@ FEATURES = ART / "features_2026.parquet"
 
 
 def ledger_path(version):
-    return (ART if version == "v1" else ART / version) / "forward_ledger.jsonl"
+    return (ART if version == "v1" else ART / version) / "forward_ledger_open.jsonl"
 
 
 def load(version):
