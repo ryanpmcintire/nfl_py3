@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:51:58.115405+00:00`
+Refreshed at: `2026-11-03T22:52:51.274793+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-11-03T22:51:58.115405+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b2766616d74d` — Republish the site with the latest settled results
-- Pending change set: 252 paths
+- Baseline commit: `30958607df08` — LEAD-111: the injury-wording read's edge lives mostly in headlines (removal -.030 log loss, P+ .04), practice wording second, body part near noise; unresolved
+- Pending change set: 249 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/lead-111-phrase-ablation-of-the-injury-read.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/sim-26-prevent-defense-yardage-shape.md`
-  - `A  registry/weak_signals/lead111_phrase_ablation.json`
-  - `A  scripts/lead111_ablation.py`
+  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
   - ` M scripts/sim10_drive.py`
+  - `A  scripts/sim26_unit2_hurryup.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T22:51:58.115405+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 232 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 229 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

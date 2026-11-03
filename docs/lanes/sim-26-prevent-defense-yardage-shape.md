@@ -12,8 +12,14 @@ Unit 1 done Tue, Nov  3, 2026  5:46:33 PM. scripts/sim26_prevent_shape.py -> art
 ## Tried
 Declared before signs: prevent = ypp up, explosive down, TD down late. Refuted as stated for this population (late leading defenses concede more of both).
 
-## Next
-Unit 2: split final-9-min drives by offense hurry-up (pass rate, no-huddle) to separate trailing-offense from defensive shape; check why sim TD rate in that cell is half real (SIM-19 depth/pass terms, end-of-game drives not truncated). Mechanism and entry point: trailing-offense end-of-game risk mixing at drive-draw (SIM-19), not a defensive prevent term.
+## Next (unit 2 done below; remaining)
+Old unit 2 text: split final-9-min drives by offense hurry-up (pass rate, no-huddle) to separate trailing-offense from defensive shape; check why sim TD rate in that cell is half real (SIM-19 depth/pass terms, end-of-game drives not truncated). Mechanism and entry point: trailing-offense end-of-game risk mixing at drive-draw (SIM-19), not a defensive prevent term.
 
 ## Open
 Reliability/ypp not an admissible weak-signals effect unit (no epa_per_play run), so nothing recorded. Opponent offense quality not controlled. Sim yardage not stored.
+
+## Unit 2 result Tue, Nov  3, 2026  5:52 PM, scripts/sim26_unit2_hurryup.py -> artifacts/sim26/unit2_hurryup.json (+unit2_run.log); ruff clean; looks 12 real cells + 9 decomposition cells; not recorded (rates, not admissible unit)
+**measured** Hurry-up = drive no_huddle play share >=.5 OR seconds/play <= 7.0 (cut = best accuracy vs the no-huddle flag, acc .923; pbp row alignment .992). Real final 9 min share: neutral .075; trailing 5-7/8-14/15+ .120/.221/.205 [.096,.145]/[.195,.246]/[.184,.227]. TD rate hurry vs normal: .174/.251/.270 vs .258/.235/.208 (hurry NOT higher at 5-7). Neutral .110 vs .129.
+**measured** TD surge vs neutral (real/sim/kernel-raw): 5-7 .121/.082/.030; 8-14 .111/.086/.048; 15+ .093/.065/.065. Share shift of hurry-up explains -.001 [-.003,.001], -.003 [-.009,.004], -.002 [-.008,.003] of the real surge: ~0. Kernel under-samples hurry share (8-14 -.071 [-.099,-.044]; 15+ -.035) but that costs only +.002/+.001 of TD gap. Truncation of drawn drives: .003-.004 (final 9), up to .008 second half: <=5% of gap.
+**measured** Gap real-sim .039 [0,.074]/.025 [-.006,.057]/.028 [0,.056]. Entry: kernel stage real-kernel .091 [.055,.126]/.063 [.034,.092]/.029 [.005,.057]; downstream stages (outcome-model tilt, SIM-19 terms) add back +.056/+.041/+.004 so sim sits between. So the TD surge is a normal-pace phenomenon the pool kernel under-delivers (sd bandwidth smears -5..-14 states with neutral); hurry-up is not the mechanism. Caveats: kernel replicates SIM-21 base bandwidths (config unverified, no quarter strata); sim hurry class unobservable (no plays logged), so inferred via kernel weights.
+**inferred** Mechanism: sd/clock kernel smoothing in draw() (sim10_drive.py 1206-1228) under-weights the real TD-heavy trailing drives; later offsets partly compensate. Next unit: measure kernel sd-bandwidth response (leave-game-out TD surge as function of sd bandwidth) and whether regime bandwidths (bandwidths_reg.json) change it.
