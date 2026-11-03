@@ -14,3 +14,4 @@ First unit for one agent: Add a short chip when the line is within a point of 3,
 
 ## Open
 Must read the served model's artifact, never a recomputation. Zero crossing closes nothing; one fitted probability selects the side.
+- 2026-11-03 17:20 ET (root): REVERTED. The note read spread-explorer params, which load_board_content leaves empty when the active model uses calibrated mass (board_content.py ~4107: spread_explorer_params = {} if calibrated_mass), so it rendered on no game (measured: all 15 Week 9 notes empty; publish 'unchanged'). Next unit: find where the calibrated-mass lattice's per-game margin mass is stored for the active model (or computed in the served path) and read P(margin = key) from it; if it is not stored, the producer must store it keyed to the active model first.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:16:42.975364+00:00`
+Refreshed at: `2026-11-03T22:20:38.355567+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-11-03T22:16:42.975364+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `efbe189f4397` — Refresh session handoff
-- Pending change set: 263 paths
+- Baseline commit: `9d28953563be` — Revert "UI-32: game detail says when the line sits on or next to 3 or 7 and how often games land exactly there (served discrete reader), and whether that landing helps or hurts the pick"
+- Pending change set: 262 paths
   - ` M config/source_policies.json`
+  - ` M docs/lanes/eng-54-outcome-label-default-audit.md`
+  - ` M docs/lanes/eng-55-pool-line-inference-audit.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/ui-32-key-number-chip.md`
-  - `M  docs/lanes/xlg-11-xlg11-cfb-prior-center.md`
-  - `M  docs/lanes/xlg-13-xlg13-screen-transfer.md`
-  - `M  registry/weak_signals/xlg11_cfb_centered_ridge.json`
+  - `M  docs/lanes/ui-32-key-number-chip.md`
   - ` M scripts/eng53_reliability.py`
   - ` M scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_drive.py`
@@ -38,12 +37,13 @@ Refreshed at: `2026-11-03T22:16:42.975364+00:00`
   - ` M scripts/sim18_unit2_multiplier.py`
   - ` M scripts/sim19_trailing_risk.py`
   - ` M scripts/xlg15_cfb_trait_reliability.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 243 more
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - ...and 242 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
