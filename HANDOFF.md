@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:43:36.155385+00:00`
+Refreshed at: `2026-11-03T19:49:44.831582+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:43:36.155385+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8514907cca8b` — ENG-49 matched forward-candidate ledger (scripts/forward_ledger.py); MOD-35 Week 9 forward record written before kickoff
-- Pending change set: 253 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
+- Baseline commit: `d63a0a8a2232` — PER-11 arrival ramp-up (no effect; unresolved); refresh session handoff
+- Pending change set: 263 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/per-11-per11-acquired-player-ramp.md`
+  - ` M docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
+  - ` M docs/lanes/mod-36-mod36-add-one-noise-null.md`
+  - ` M docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
+  - ` M docs/lanes/per-12-per12-qb-return-from-absence.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - `M  docs/lanes/ui-26-ui26-copy-pick-sheet.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/per11_arrival_rampup.json`
-  - `A  scripts/per11_arrival_rampup.py`
   - ` M scripts/sim10_situational.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 233 more
+  - ...and 243 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `5d851f9536dff5ac`
+- Model ID: `efbf163b09e987a0`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261103T173420Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **unavailable in local artifacts**
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,153 / 2,196 (52.50%)**
-- Linked forecast: **2026 Week 9**, created `2026-11-03T17:30:56.901169+00:00`
+- Linked forecast: **2026 Week 9**, created `2026-11-03T19:49:41.290178+00:00`
 
 The 52.50% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `5d851f9536dff5ac`, published `2026-11-03T17:35:53.369229+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `5d851f9536dff5ac`, published `2026-11-03T17:35:53.369229+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
 
 ## Local reproducibility inventory
 

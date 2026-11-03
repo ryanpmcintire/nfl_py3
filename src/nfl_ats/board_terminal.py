@@ -204,6 +204,61 @@ _SORT_SCRIPT = """
 </script>
 """
 
+_COPY_SCRIPT = """
+<script>
+(function () {
+  var button = document.querySelector('[data-copy-sheet]');
+  if (!button) return;
+  var section = button.closest('section');
+  var rows = Array.prototype.slice.call(section.querySelectorAll('table.board tr.game'));
+  var status = section.querySelector('[data-copy-status]');
+  var block = section.querySelector('[data-copy-text]');
+  function pickText(row) {
+    var cell = row.querySelector('td.pick');
+    return Array.prototype.filter.call(cell.childNodes, function (n) { return n.nodeType === 3; })
+      .map(function (n) { return n.textContent; }).join('').trim();
+  }
+  function sheet() {
+    var lines = [button.dataset.title];
+    rows.forEach(function (row) {
+      var text = pickText(row);
+      var link = row.querySelector('td.matchup a');
+      var home = link.querySelector('b').textContent.trim();
+      var away = link.firstChild.textContent.replace(/ at\\s*$/, '').trim();
+      var team = text.split(' ')[0];
+      var other = team === home ? 'vs ' + away : 'at ' + home;
+      var best = row.classList.contains('is-best') ? ' - BEST PICK' : '';
+      lines.push(text + ' (' + other + ')' + best);
+    });
+    if (button.dataset.tiebreak) lines.push('', button.dataset.tiebreak);
+    return lines.join('
+');
+  }
+  function fallback(text) {
+    block.textContent = text;
+    block.hidden = false;
+    var range = document.createRange();
+    range.selectNodeContents(block);
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    status.textContent = 'Press and hold to copy the selected text';
+  }
+  button.addEventListener('click', function () {
+    var text = sheet();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        block.hidden = true;
+        status.textContent = 'Copied';
+      }, function () { fallback(text); });
+    } else {
+      fallback(text);
+    }
+  });
+})();
+</script>
+"""
+
 _LINEUP_SCRIPT = """
 <script>
 (function () {
@@ -595,6 +650,26 @@ def _board_sort_toggle_html() -> str:
         '<button type="button" class="sort-btn" data-sort="confidence" '
         'aria-pressed="false">Confidence</button>'
         "</div>"
+    )
+
+
+def _copy_sheet_html(content: BoardContent) -> str:
+
+    view = content.tiebreaker
+    tiebreak = ""
+    if view.recorded and view.guess_home is not None and view.guess_away is not None:
+        tiebreak = (
+            f"Tiebreaker ({view.matchup_text}): {view.away_team} {view.guess_away} - "
+            f"{view.home_team} {view.guess_home}, total {view.guess_home + view.guess_away}"
+        )
+    return (
+        '<div role="group" aria-label="Copy the picks" style="margin-bottom:12px;">'
+        '<button type="button" class="sort-btn" data-copy-sheet '
+        f'data-title="{escape(content.week_label)} picks" '
+        f'data-tiebreak="{escape(tiebreak)}">Copy picks as text</button>'
+        '<span class="micro" data-copy-status role="status"></span></div>'
+        '<pre class="policy-note" data-copy-text hidden '
+        'style="white-space:pre-wrap;user-select:all;"></pre>'
     )
 
 
@@ -1079,6 +1154,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         "&middot; click a row to inspect</span>"
         "</div>"
         f"{_board_sort_toggle_html()}"
+        f"{'' if archived else _copy_sheet_html(content)}"
         f"{column_guide}"
         f"{market_status}"
         f'<div class="board-scroll">{table}</div>'
@@ -1787,6 +1863,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         link_preview=content.link_preview,
         extra_script=_DIVE_SCRIPT
         + _SORT_SCRIPT
+        + _COPY_SCRIPT
         + _LINEUP_SCRIPT
         + _TICKER_SCRIPT
         + _LOCK_COUNTDOWN_SCRIPT

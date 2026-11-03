@@ -14,3 +14,6 @@ First unit: Add a copy button on the Board that places a plain-text sheet on the
 
 ## Open
 Data: Board pick data already on the card. Zero crossing closes nothing; record unresolved results with a closing ground.
+
+## Root 2026-11-03 14:50
+- Published: "Copy picks as text" button under the card toggle (board_terminal.py _copy_sheet_html/_COPY_SCRIPT), reads the page's own table rows plus the tiebreaker panel view; selectable fallback block; skipped on archived weeks. Week 9 copied text verified (15 picks in kickoff order, DEN -2.5 marked BEST PICK, BUF 24 - MIN 21 total 45). Board tests 338 passed.
