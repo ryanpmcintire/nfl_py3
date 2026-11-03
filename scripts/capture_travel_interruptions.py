@@ -18,7 +18,7 @@ GAMES = ROOT / "data" / "processed" / "game_features.parquet"
 FAA = "https://nasstatus.faa.gov/api/airport-status-information"
 UA = "nfl-ats-research/0.1 (public unauthenticated read-only, rate limited)"
 DAYS_PER_SCHEDULE_WEEK = 7
-SCHEMA_VERSION = "travel-interruptions-v1-2026-11-02"
+SCHEMA_VERSION = "travel-interruptions-v2-2026-11-03"
 
 AIRPORT = {
     "ARI": "PHX",
@@ -55,13 +55,30 @@ AIRPORT = {
     "WAS": "IAD",
 }
 
-TRAVEL_CONTEXT = re.compile(
-    r"\b(flight|flights|plane|charter|landed|landing|airport|tarmac|bus|travel|traveling|"
-    r"arrive|arrived|arrival|arrives|touched down|hotel)\b",
+NFL_NICKNAMES = (
+    "Cardinals|Falcons|Ravens|Bills|Panthers|Bears|Bengals|Browns|Cowboys|Broncos|Lions|Packers|"
+    "Texans|Colts|Jaguars|Chiefs|Raiders|Chargers|Rams|Dolphins|Vikings|Patriots|Saints|Giants|"
+    "Jets|Eagles|Steelers|49ers|Seahawks|Buccaneers|Bucs|Titans|Commanders"
+)
+TEAM_CONTEXT = re.compile(
+    r"#\w+|\b(?:" + NFL_NICKNAMES + r")\b|"
+    r"\bthe (?:[A-Z][\w.'\u2019-]*\s){0,2}[A-Z][\w.'\u2019-]*s\b"
+)
+TRAVEL_NOUN = re.compile(
+    r"\b(flights?|plane|planes|charter|airport|tarmac|takeoff|departure|leaving|departing|"
+    r"(?<!struggle )bus|"
+    r"travel (?:issues|woes|delays|difficulties|problems))\b",
     re.I,
 )
+NOT_A_REPORT = re.compile(
+    r"[?]$|"
+    r"^[^\u201c\u201d\"]*\b(?:I|I'm|I\u2019m|I\u2019ve|I've|my|me|we|us|our)\b|"
+    r"\b(?:because of|due to)\b[^.]*\btravel\b",
+    re.I,
+)
+SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+")
 INTERRUPTION_RULES = (
-    ("flight_cancelled", re.compile(r"\b(cancel(?:led|ed|ation)?)\b", re.I)),
+    ("flight_cancelled", re.compile(r"\b(cancel(?:led|ed|ation|lation))\b", re.I)),
     (
         "diverted_or_rerouted",
         re.compile(r"\b(divert(?:ed|ing)?|re-?rout(?:ed|ing|e)|alternate airport)\b", re.I),
@@ -70,15 +87,31 @@ INTERRUPTION_RULES = (
     (
         "weather_disruption",
         re.compile(
-            r"\b(snow|storm|fog|ice|icy|blizzard|hurricane|tornado|thunderstorm|weather)\b", re.I
+            r"\b(?:[Ss]now|[Ss]torm|[Ff]og|icy|ice|[Bb]lizzard|[Hh]urricane|[Tt]ornado|"
+            r"[Tt]hunderstorm|[Ww]eather)\b"
         ),
     ),
     (
         "delayed_or_late_arrival",
         re.compile(
-            r"\b(delay(?:ed|s)?|late|stuck|stranded|hours late|behind schedule|got in at)\b", re.I
+            r"\b(delay(?!\s+of\s+game)(?:ed|s)?|hours late|behind schedule|"
+            r"(?:stuck|stranded)\s+(?:at|in|on|due|for|because|waiting|overnight))\b",
+            re.I,
         ),
     ),
+    (
+        "flight_problem",
+        re.compile(
+            r"\bflight (?:issues|problems|trouble)\b|"
+            r"\bawaiting the arrival of (?:a|the) (?:second|replacement|new) plane\b",
+            re.I,
+        ),
+    ),
+)
+SMALL_HOURS_ARRIVAL = re.compile(
+    r"\b(?:arrived|landed|got in)\b.*\b(?:hotel|airport)\b.*\b(?:12|[1-5])(?::\d\d)?\s?a\.?m\b"
+    r"|\b(?:arrived|landed|got in)\b.*\b(?:12|[1-5])(?::\d\d)?\s?a\.?m\b.*\b(?:hotel|airport)\b",
+    re.I,
 )
 ARRIVAL_ONLY = re.compile(r"\b(landed|arrived|arrives|touched down|arrival)\b", re.I)
 FAA_RULES = (
@@ -88,12 +121,25 @@ FAA_RULES = (
 
 
 def classify_post(text):
-    if not TRAVEL_CONTEXT.search(text):
-        return None
-    for name, rx in INTERRUPTION_RULES:
-        if rx.search(text):
-            return name
-    if ARRIVAL_ONLY.search(text):
+    sentences = SENTENCE_BREAK.split(text)
+    arrival = False
+    for i, sent in enumerate(sentences):
+        window = " ".join(sentences[max(0, i - 1) : i + 1])
+
+        if TEAM_CONTEXT.search(window) is None:
+            continue
+        if NOT_A_REPORT.search(sent.strip()):
+            continue
+        travel = TRAVEL_NOUN.search(sent) is not None
+        if travel:
+            for name, rx in INTERRUPTION_RULES:
+                if rx.search(sent):
+                    return name
+        if SMALL_HOURS_ARRIVAL.search(sent):
+            return "late_hour_arrival"
+        if travel and ARRIVAL_ONLY.search(sent):
+            arrival = True
+    if arrival:
         return "arrival_reported_no_interruption_term"
     return None
 
@@ -142,7 +188,7 @@ def seen_keys(out_root):
 
 def beat_rows(now, games, seen):
     handles = pd.read_csv(HANDLES, usecols=["team", "handle"])
-    team_of = dict(zip(handles.handle, handles.team))
+    team_of = dict(zip(handles.handle, handles.team, strict=True))
     since = now - timedelta(days=DAYS_PER_SCHEDULE_WEEK)
     rows, scanned, done = [], 0, set()
     for stamp in sorted(BEAT.iterdir()) if BEAT.exists() else []:
@@ -267,7 +313,10 @@ def main():
             "bluesky_beat": "data/raw/beat_reporters (public unauthenticated)",
             "faa_nas": FAA,
         },
-        "silence_policy": "no row means missing, not on-time; faa_no_advisory_control rows are the only explicit controls",
+        "silence_policy": (
+            "no row means missing, not on-time; "
+            "faa_no_advisory_control rows are the only explicit controls"
+        ),
     }
     (d / "manifest.json").write_text(
         json.dumps(manifest, indent=1, sort_keys=True), encoding="utf-8"

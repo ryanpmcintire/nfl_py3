@@ -24,6 +24,27 @@ MOS_API = "https://mesonet.agron.iastate.edu/api/1/mos.json"
 PRODUCTS = ("GFS", "MEX")
 WINDOW = timedelta(minutes=90)
 MAX_VALID_GAP = timedelta(hours=6)
+REQUEST_TIMEOUT_SECONDS = 15
+READ_ATTEMPTS = 3
+BACKOFF_SECONDS = tuple(REQUEST_TIMEOUT_SECONDS * 2**n for n in range(READ_ATTEMPTS - 1))
+
+
+def read_with_retry(request: urllib.request.Request) -> tuple[bytes, datetime, list[str]]:
+    attempts: list[str] = []
+    for attempt in range(READ_ATTEMPTS):
+        attempts.append(datetime.now(UTC).isoformat())
+        try:
+            with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+                body = response.read()
+                return body, datetime.now(UTC), attempts
+        except urllib.error.HTTPError as exc:
+            if exc.code < 500 or attempt == READ_ATTEMPTS - 1:
+                raise
+        except OSError:
+            if attempt == READ_ATTEMPTS - 1:
+                raise
+        time.sleep(BACKOFF_SECONDS[attempt])
+    raise RuntimeError("unreachable")
 
 
 def utc(value: Any) -> datetime:
@@ -109,9 +130,7 @@ def fetch_forecast(
         started = datetime.now(UTC)
         request = urllib.request.Request(url, headers={"User-Agent": "nfl-ats-paired-wind/1.0"})
         try:
-            with urllib.request.urlopen(request, timeout=15) as response:
-                body = response.read()
-                received = datetime.now(UTC)
+            body, received, attempt_times = read_with_retry(request)
         except urllib.error.HTTPError as exc:
             if exc.code == 404:
                 time.sleep(0.3)
@@ -123,6 +142,7 @@ def fetch_forecast(
             "station": station,
             "requested_runtime_utc": runtime.isoformat(),
             "request_started_at_utc": started.isoformat(),
+            "read_attempts_utc": attempt_times,
             "captured_at_utc": received.isoformat(),
             "sha256": hashlib.sha256(body).hexdigest(),
             "raw_file": f"receipt_{len(receipts):03d}.json",
