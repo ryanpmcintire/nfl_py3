@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:15:46.537215+00:00`
+Refreshed at: `2026-11-03T23:17:44.049048+00:00`
 
 ## Start here
 
@@ -21,12 +21,14 @@ Refreshed at: `2026-11-03T23:15:46.537215+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `864204f499b4` — Republish the site with the latest settled results
-- Pending change set: 252 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `eab33ea8623c` — Refresh session handoff
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `A  registry/weak_signals/mod54_mirrored_rows.json`
   - ` M scripts/mod53_penalty_grid.py`
+  - `A  scripts/mod54_mirrored_rows.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T23:15:46.537215+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 232 more
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
