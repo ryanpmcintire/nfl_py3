@@ -1,0 +1,145 @@
+{
+  "family": "xlg14_family_u2",
+  "signals": {
+    "xlg14_u2_bye_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared 5-candidate family before outcomes; promotion screen only (sign in >=10/13 folds and log-loss P+ >= .75); no positive control and no admissible closing ground; CFB-only, opener input, season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "XLG-14 unit 2 declared candidate bye added to the CFB opener-input logit, LOSO 2012-25 ex 2020, log loss gain; decisive 162-174 of 336.",
+      "effect": -9.976841599346198e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_family_u2",
+      "interval": [
+        -0.00021475553082516696,
+        6.3031638773192105e-06
+      ],
+      "league": "cfb",
+      "notes": "Zero survivors, so no NFL confirmation run.",
+      "plain_summary": "Tests whether a college team coming off a bye is mispriced by the opener.",
+      "probability_positive": 0.036,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/family_cfb.json",
+      "standard_error": 5.639356040370358e-05
+    },
+    "xlg14_u2_early_carryover_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared 5-candidate family before outcomes; promotion screen only (sign in >=10/13 folds and log-loss P+ >= .75); no positive control and no admissible closing ground; CFB-only, opener input, season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "XLG-14 unit 2 declared candidate early_carryover added to the CFB opener-input logit, LOSO 2012-25 ex 2020, log loss gain; decisive 70-65 of 135.",
+      "effect": -7.916962945264672e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_family_u2",
+      "interval": [
+        -0.0001504283500203346,
+        -1.9410852425591487e-05
+      ],
+      "league": "cfb",
+      "notes": "Zero survivors, so no NFL confirmation run.",
+      "plain_summary": "Tests whether early-season prior-year strength is mispriced by the college opener.",
+      "probability_positive": 0.001,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/family_cfb.json",
+      "standard_error": 3.342344518271571e-05
+    },
+    "xlg14_u2_prior_ats_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared 5-candidate family before outcomes; promotion screen only (sign in >=10/13 folds and log-loss P+ >= .75); no positive control and no admissible closing ground; CFB-only, opener input, season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "XLG-14 unit 2 declared candidate prior_ats added to the CFB opener-input logit, LOSO 2012-25 ex 2020, log loss gain; decisive 116-115 of 231.",
+      "effect": -6.673782285615548e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_family_u2",
+      "interval": [
+        -0.00011494833478378763,
+        -1.6472624613361773e-05
+      ],
+      "league": "cfb",
+      "notes": "Zero survivors, so no NFL confirmation run.",
+      "plain_summary": "Tests whether last week's cover margin is over-weighted by the college opener.",
+      "probability_positive": 0.005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/family_cfb.json",
+      "standard_error": 2.512181625458164e-05
+    },
+    "xlg14_u2_road_trip_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared 5-candidate family before outcomes; promotion screen only (sign in >=10/13 folds and log-loss P+ >= .75); no positive control and no admissible closing ground; CFB-only, opener input, season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "XLG-14 unit 2 declared candidate road_trip added to the CFB opener-input logit, LOSO 2012-25 ex 2020, log loss gain; decisive 287-290 of 577.",
+      "effect": -0.00015136879387145363,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_family_u2",
+      "interval": [
+        -0.0002653283104499443,
+        -3.0404567901129445e-05
+      ],
+      "league": "cfb",
+      "notes": "Zero survivors, so no NFL confirmation run.",
+      "plain_summary": "Tests whether consecutive road games are mispriced by the college opener.",
+      "probability_positive": 0.007,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/family_cfb.json",
+      "standard_error": 5.993062739975412e-05
+    },
+    "xlg14_u2_short_week_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared 5-candidate family before outcomes; promotion screen only (sign in >=10/13 folds and log-loss P+ >= .75); no positive control and no admissible closing ground; CFB-only, opener input, season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "XLG-14 unit 2 declared candidate short_week added to the CFB opener-input logit, LOSO 2012-25 ex 2020, log loss gain; decisive 256-253 of 509.",
+      "effect": -7.320944263300433e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_family_u2",
+      "interval": [
+        -0.0003100753141124929,
+        0.00017717472395446793
+      ],
+      "league": "cfb",
+      "notes": "Zero survivors, so no NFL confirmation run.",
+      "plain_summary": "Tests whether a short week between college games is mispriced by the opener.",
+      "probability_positive": 0.292,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg14/family_cfb.json",
+      "standard_error": 0.00012430076315440665
+    }
+  }
+}

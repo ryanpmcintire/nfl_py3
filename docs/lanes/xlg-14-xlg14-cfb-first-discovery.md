@@ -35,3 +35,30 @@ artifacts/xlg14/mod41_cfb.json; 6 cells recorded (xlg14_mod41_cfb_u1, unresolved
 - resid (primary): coef +.0013 (NFL -.044), positive in 11/13 folds; ll gain -.00013 [-.00025,-.00001] p+ .014; decisive 202-191 of 393; gap .00014. Opposite sign, near-zero magnitude. Total: coef -.0018, ll -.00011 p+ .09, 258-256. Own coef -.0072 ll +.00015 p+ .74; opp ll +.00024 p+ .79; joint +.00021 p+ .72; placebo +.00008 p+ .61.
 - Not recorded as wrong_sign_resolved: CFB-only, not commensurable (tempo, 12-game seasons, base ~coin flip), magnitude 1/30 of NFL. NFL signal neither strengthened nor refuted.
 Next: CFB EPA-based load or per-play fatigue analog; then XLG-14 family declaration.
+
+## Unit 2 DECLARATION: family screen (written 2026-11-03 16:59 local BEFORE any outcome computed)
+Script scripts/xlg14_family_screen.py; CFB arm uses the unit 1 harness (base logit_p from LOSO ridge on opener, close columns dropped; LOSO logistic [logit_p] vs [logit_p, term]; season-week block bootstrap 1000; 13 folds). All features come from the game table alone (gameday, home/away team, neutral flag, result, spread_open), so they exist in both leagues. Prior = the team's previous game in the same season; missing prior or a first game gives 0. Game term s = home value minus away value. Neutral-site games count as not-away. Rest = days since own previous game. WINDOW=3 inherited from unit 1 (no new constant).
+Candidates (5 looks, sign hypothesis = expected coef sign of s on home cover):
+1. short_week: 1[rest < 7] home minus away (7 = one calendar week, the schedule modal). Hypothesis negative (less recovery hurts the short side). Base carries rest_diff linearly; this is the threshold nonlinearity.
+2. bye: 1[rest >= 13] home minus away (13 = a skipped week). Hypothesis positive (extra prep and recovery).
+3. prior_ats: sign(prior-game margin minus that game's opener, team perspective) home minus away; prior game needs its own opener. Hypothesis negative (market over-weights last result; reversion). Sign used, so no cap constant.
+4. early_carryover: (home prior-season mean margin minus away prior-season mean margin) times 1[both teams have played fewer than WINDOW games this season]. Hypothesis positive (early lines under-use prior-season strength).
+5. road_trip: 1[away team previous game was away] minus 1[home team previous game was away]. Hypothesis positive (consecutive road games fatigue/travel on the visitor).
+Not carried (no free data in both leagues): kickoff temperature (CFB table has none), turnover-luck and special-teams luck (would need NFL pbp rebuild; deferred to a later unit, not dropped for sign).
+Promotion screen (never a closure): carry to NFL if coef has hypothesised sign in >= 10 of 13 LOSO folds (75%, ceil) AND out-of-sample log-loss gain P+ >= 0.75, and the CFB coefficient sign equals the hypothesis. If more than 2 pass, carry the 2 with highest P+. Decisive record (pick changed) reported first. Failing the screen does not close a candidate; it just is not spent on NFL.
+NFL confirmation (survivors only, one cell each): 2020-25 opener grade, per_game.parquet from artifacts/opener_evaluation/20260929T192743Z, base = served logit of home_cover_probability_at_open, LOSO logistic add-one, intercept-only control, same bootstrap. Prior ATS uses per_game openers within season.
+Recording: log_loss_improvement, family xlg14_family_u2, league cfb or nfl, unresolved_below_power unless a closing ground is met. Total looks: 5 CFB + k NFL.
+
+## Unit 2 status 2026-11-03 17:05
+Declaration above written first. scripts/xlg14_family_screen.py written (ruff clean). CFB screen launched once in background (task bz9x5zdx7, output C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3\352ecbdc-246f-44c0-9f81-c287a6ef4436\tasks\bz9x5zdx7.output); writes artifacts/xlg14/family_cfb.json. Not read; nothing recorded; no NFL run. Next: read artifact, apply declared screen (>=10/13 folds hypothesis sign and P+ >=0.75, max 2), freeze survivors here, run `scripts/xlg14_family_screen.py nfl <survivors>`, record cells (family xlg14_family_u2).
+
+## Unit 2 RESULT 2026-11-03 17:15
+artifacts/xlg14/family_cfb.json, 8925 games. Per candidate: decisive (term-base correct of changed), ll gain [CI] P+, coef, folds with hypothesis sign.
+- short_week 256-253 of 509; -.00007 [-.00031,.00018] P+ .29; coef -.060; 13/13 sign
+- bye 162-174 of 336; -.00010 [-.00021,.00001] P+ .04; +.017; 13/13
+- prior_ats 116-115 of 231; -.00007 [-.00011,-.00002] P+ .005; 8/13
+- early_carryover 70-65 of 135; -.00008 [-.00015,-.00002] P+ .001; 4/13
+- road_trip 287-290 of 577; -.00015 [-.00027,-.00003] P+ .007; 2/13
+Screen (P+ >= .75): zero survivors, so no NFL confirmation run (5 looks total). Not a closure. Fold sign for short_week and bye is 13/13 but ll gain is negative (sign without out-of-sample gain). Not yet recorded via weak-signals record (5 CFB cells, unresolved_below_power, family xlg14_family_u2).
+Next: record the 5 cells; then a family with data needing a rebuild (turnover/ST luck from pbp in both leagues).
+- 2026-11-03 17:04 ET (root): 5 CFB cells recorded (family xlg14_family_u2, unresolved_below_power) from artifacts/xlg14/family_cfb_batch.json.
