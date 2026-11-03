@@ -29,3 +29,18 @@ strength tilt (DR targets) re-fit on the head, and a gate rerun of the 14 sim10 
 ## Open
 Kernel clock-feasibility mask has no head analogue; held-out has only 2 seasons so the primary
 interval is a game-cluster bootstrap, the season-block interval comes from 8-season LOSO.
+
+## Step 2 (build, 2026-11-02)
+`scripts/sim10_drive.py sim --head 1` (default 0, env SIM10_HEAD): Head class (head_codes/fit_head/Head.reweight) fits the
+step-1 selected MLP (artifacts/sim06/results.json head_selected) on the engine's own segments (2009-17, ok rows, half<3),
+cached in OUT/head_mlp.npz. Engine.draw reweights the kernel weights after the clock-feasibility mask (the `early` z=inf
+line) so class mass equals the head's masked/renormalised class probabilities; then the unchanged SIM-11 DR/strength/joint
+tilts run on those weights. OT drives stay on the kernel.
+
+## Next (step 2 done, smoke only)
+Smoke 1x1 seed 5 realsched (artifacts/sim10/h0orig_s5, h0new_s5 identical games.parquet = default unchanged; h1_s5 = head): head
+run 41 s v 29 s; v default: margin_sd 15.71 v 14.83, pts_game 47.8 v 44.2, strength 44.6 v 31.9, R2 .069 v .021, q4 -.084 v -.033 (256 games, noise; sanity only).
+Full one-seed screen (not run), workers 3:
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 python scripts/sim10_drive.py sim --seed 11 --workers 3 --realsched 1 --head 1 --label head
+Compare gates v artifacts/sim10/rshc_s11 / current default same seed (--head 0 --label headctl).
+Open: mass_10/mass_14 identical across default and head smoke runs (check gate_stats).

@@ -395,6 +395,110 @@ def outcome_classes(seg):
     return np.unique(cls, return_inverse=True)[1]
 
 
+HEAD_SPEC_PATH = REPO / "artifacts" / "sim06" / "results.json"
+
+
+def head_codes(seg, fit):
+    po, pd_ = segment_points(seg)
+    cp = np.select([pd_ > 0, po == 0, po == 3, po == 6, po == 7, po == 8], [5, 0, 1, 2, 3, 4], 6)
+    nyl = seg["nyl"].to_numpy()
+    open_ = (cp == 0) & (seg["he"].to_numpy() == 0)
+    t1, t2 = np.quantile(nyl[open_ & fit], [1 / 3, 2 / 3])
+    cp = np.where(open_, 7 + (nyl > t1) + (nyl > t2), cp)
+    el = seg["el"].to_numpy()
+    qs = np.quantile(el[fit], np.linspace(0.1, 0.9, 9))
+    code = cp * 10 + np.searchsorted(qs, el)
+    u = np.unique(code[fit])
+    idx = np.searchsorted(u, code)
+    hit = (idx < len(u)) & (u[np.minimum(idx, len(u) - 1)] == code)
+    return np.where(hit, idx, -1), len(u)
+
+
+def head_features(seg):
+    return np.c_[
+        seg["yl"],
+        seg["sd"],
+        np.log1p(seg["secs"].clip(lower=0.0)),
+        seg["too"],
+        seg["tod"],
+        seg["week"],
+        seg["half"] - 1.0,
+        seg["home"],
+    ].astype(np.float64)
+
+
+def head_path():
+    return OUT / "head_mlp.npz"
+
+
+def fit_head(seg):
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    spec = json.loads(HEAD_SPEC_PATH.read_text())["head_selected"]
+    fit = (seg["bad"].to_numpy() == 0) & (seg["half"].to_numpy() < 3)
+    cls, k = head_codes(seg, fit)
+    F = head_features(seg)
+    m = make_pipeline(
+        StandardScaler(),
+        MLPClassifier(
+            hidden_layer_sizes=tuple(spec["hidden"]),
+            alpha=spec["alpha"],
+            early_stopping=True,
+            random_state=0,
+            max_iter=spec["max_iter"],
+        ),
+    ).fit(F[fit], cls[fit])
+    sc, net = m[0], m[1]
+    arrs = {"n": np.array(len(seg)), "k": np.array(k), "classes": net.classes_, "mean": sc.mean_, "scale": sc.scale_}
+    for i, (w_, b_) in enumerate(zip(net.coefs_, net.intercepts_, strict=True)):
+        arrs[f"w{i}"] = w_
+        arrs[f"b{i}"] = b_
+    tmp = head_path().with_name(f"head_mlp.{os.getpid()}.tmp.npz")
+    np.savez(tmp, **arrs)
+    os.replace(tmp, head_path())
+
+
+class Head:
+    def __init__(self, seg):
+        if not head_path().exists() or int(np.load(head_path())["n"]) != len(seg):
+            fit_head(seg)
+        z = np.load(head_path())
+        self.k = int(z["k"])
+        self.classes = z["classes"]
+        self.mean, self.scale = z["mean"], z["scale"]
+        nl = len([n for n in z.files if n.startswith("w")])
+        self.layers = [(z[f"w{i}"], z[f"b{i}"]) for i in range(nl)]
+        fit = (seg["bad"].to_numpy() == 0) & (seg["half"].to_numpy() < 3)
+        self.cls = head_codes(seg, fit)[0]
+
+    def proba(self, f):
+        a = (np.asarray(f, dtype=np.float64) - self.mean) / self.scale
+        for i, (w_, b_) in enumerate(self.layers):
+            a = a @ w_ + b_
+            if i < len(self.layers) - 1:
+                a = np.maximum(a, 0.0)
+        a = np.exp(a - a.max())
+        p = np.zeros(self.k)
+        p[self.classes] = a / a.sum()
+        return p
+
+    def reweight(self, rows, w, f):
+        cl = self.cls[rows]
+        ok = cl >= 0
+        mass = np.bincount(cl[ok], weights=w[ok], minlength=self.k)
+        if mass.sum() <= 0:
+            return w
+        mass = mass / mass.sum()
+        pm = self.proba(f) * (mass > 0)
+        if pm.sum() <= 0:
+            return w
+        pm = pm / pm.sum()
+        ratio = np.where(mass > 0, pm / np.where(mass > 0, mass, 1.0), 0.0)
+        return np.where(ok, w * ratio[np.maximum(cl, 0)], w)
+
+
 L0 = math.log1p(3600.0)
 
 
@@ -919,6 +1023,7 @@ class Engine:
         self.h_reg = None if not h_reg else [pad_h(h_reg[str(r)]["h"]) for r in range(5)]
         self.h = pad_h(h)
         self.h_ot = pad_h(h if h_ot is None else h_ot)
+        self.head = Head(seg) if os.environ.get("SIM10_HEAD") == "1" else None
         self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
         self.mucurve = os.environ.get("SIM10_MUCURVE") == "1" and self.ptab is not None
         self.joint = None
@@ -1006,6 +1111,8 @@ class Engine:
         w = np.exp(-0.5 * (z - z.min()))
         nz = np.flatnonzero(w > 1e-12)
         w = w[nz]
+        if self.head is not None and hf < 3:
+            w = self.head.reweight(idx[nz], w, [q[0], q[1], q[2], q[3], q[4], q[7], hf - 1.0, hm])
         if self.models is not None and hf < 3:
             secs = math.expm1(q[2])
             gs = secs + 1800.0 if hf == 1 else secs
@@ -2193,6 +2300,9 @@ def cmd_sim(a):
     os.environ["SIM10_ST"] = a.st
     os.environ["SIM10_MUCURVE"] = str(int(a.mucurve))
     os.environ["SIM10_JOINT"] = str(int(a.joint))
+    os.environ["SIM10_HEAD"] = str(int(a.head))
+    if a.head:
+        Head(with_mu(pd.read_parquet(OUT / "segments.parquet")))
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2307,6 +2417,7 @@ def main():
     s.add_argument("--drmu", type=int, default=0)
     s.add_argument("--mucurve", type=int, default=0)
     s.add_argument("--joint", type=int, default=1)
+    s.add_argument("--head", type=int, default=0)
     s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--form", type=int, default=0)
