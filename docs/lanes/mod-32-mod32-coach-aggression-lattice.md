@@ -15,3 +15,6 @@ Rules: Zero crossing closes nothing; one fitted probability selects the side; we
 
 ## Open
 Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
+
+## Unit 1 result (2026-11-03, family mod32_coach_aggression_shape, 5 looks, 4 recorded unresolved_below_power)
+Script scripts/mod32_coach_aggression_shape.py. As-of spell index, LOSO k about 95 plays (method of moments). 3824 games 2010-25: variance coef +0.04 z (P+ 0.61, held-out worse); key-number mass coef -0.009 (P(neg) 0.59, 14 of 16 folds negative, held-out gain slightly negative). Cover 2020-25 (1503 no-push): shape arm acc .5296 LL .6982 Brier .25231 vs base .5309/.6983/.25237; vs intercept control gain -0.0011 (P+ .26); decisive flips 1 right 3 wrong; c per fold -0.10..-0.24. Next: discrete-lattice shape (not logit scaling) with opener-era margins only if a bigger sample exists.

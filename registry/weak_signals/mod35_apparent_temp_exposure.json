@@ -1,0 +1,198 @@
+{
+  "family": "mod35_apparent_temp_exposure",
+  "signals": {
+    "mod35_exposure_gap_dome_placebo": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "same fit on dome and closed-roof games given the outdoor forecast; log loss worsens, accuracy +1.56 points probability_positive 0.789; not a positive control, no closing ground",
+      "closing_ground": null,
+      "description": "LOSO 2011-25 logistic on logit(opener-graded base probability) plus |visitor outdoor-home recorded wind-chill normal minus forecast wind chill|, outdoor games with a visitor normal; 3 declared looks (primary, dome placebo, within-week permutation); heat index not built (no humidity in any local source)",
+      "effect": -0.0011763,
+      "effect_units": "log_loss_improvement",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": [
+        -0.0032512,
+        0.0007992
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.1674,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 776,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/results.json",
+      "standard_error": null
+    },
+    "mod35_exposure_gap_primary_loso": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week-block bootstrap 5000 draws, 90% interval; accuracy +2.38 points, probability_positive 0.957; coefficient positive in 15/15 folds; resolved neither wrong sign nor zero reliability",
+      "closing_ground": null,
+      "description": "LOSO 2011-25 logistic on logit(opener-graded base probability) plus |visitor outdoor-home recorded wind-chill normal minus forecast wind chill|, outdoor games with a visitor normal; 3 declared looks (primary, dome placebo, within-week permutation); heat index not built (no humidity in any local source)",
+      "effect": 0.0010414,
+      "effect_units": "log_loss_improvement",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": [
+        -0.0009634,
+        0.0030228
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.8052,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 1985,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/results.json",
+      "standard_error": null
+    },
+    "mod35_exposure_gap_within_week_permutation": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "within-week shuffle of the term, 200 permutations: p(log loss gain >= observed)=0.01, p(accuracy gain >= observed)=0.035",
+      "closing_ground": null,
+      "description": "LOSO 2011-25 logistic on logit(opener-graded base probability) plus |visitor outdoor-home recorded wind-chill normal minus forecast wind chill|, outdoor games with a visitor normal; 3 declared looks (primary, dome placebo, within-week permutation); heat index not built (no humidity in any local source)",
+      "effect": 0.0010149,
+      "effect_units": "log_loss_improvement",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 1985,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/results.json",
+      "standard_error": null
+    },
+    "mod35_u2_controls_recal_base_acc": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Unit 2 confound controls (home climate normal, week, week x home normal, cold-visitor flag >=25F) added in the same LOSO fit; 9 looks in family mod35_apparent_temp_exposure unit 2; outdoor games with home and visitor normals",
+      "effect": 0.7214497447147842,
+      "effect_units": "accuracy_points",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": [
+        -1.570431050707738,
+        3.0237131019351793
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.6938,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1778,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/unit2.json",
+      "standard_error": null
+    },
+    "mod35_u2_controls_recal_base_ll": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Unit 2 confound controls (home climate normal, week, week x home normal, cold-visitor flag >=25F) added in the same LOSO fit; 9 looks in family mod35_apparent_temp_exposure unit 2; outdoor games with home and visitor normals",
+      "effect": 0.0014639951736763813,
+      "effect_units": "log_loss_improvement",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": [
+        -0.0012728778021102417,
+        0.004155239512163522
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.8074,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1778,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/unit2.json",
+      "standard_error": null
+    },
+    "mod35_u2_controls_served_offset_acc": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Unit 2 confound controls (home climate normal, week, week x home normal, cold-visitor flag >=25F) added in the same LOSO fit; 9 looks in family mod35_apparent_temp_exposure unit 2; outdoor games with home and visitor normals",
+      "effect": 0.1715154157961873,
+      "effect_units": "accuracy_points",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": [
+        -1.0674157303370786,
+        1.4301870942675265
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.5742,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1778,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/unit2.json",
+      "standard_error": null
+    },
+    "mod35_u2_controls_served_offset_ll": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Unit 2 confound controls (home climate normal, week, week x home normal, cold-visitor flag >=25F) added in the same LOSO fit; 9 looks in family mod35_apparent_temp_exposure unit 2; outdoor games with home and visitor normals",
+      "effect": 0.0018217327756484352,
+      "effect_units": "log_loss_improvement",
+      "family": "mod35_apparent_temp_exposure",
+      "interval": [
+        -0.0011946110077690386,
+        0.00487329086811857
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a visiting team whose home climate differs more from the forecast wind chill at the game site covers less often than the opening line implies.",
+      "probability_positive": 0.843,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1778,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod35/unit2.json",
+      "standard_error": null
+    }
+  }
+}

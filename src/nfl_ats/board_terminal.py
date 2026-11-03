@@ -890,7 +890,10 @@ def _market_now_html(game: GameRow, market_text: str, move_cls: str) -> str:
             f'<span class="market-move{move_cls}">{escape(game.market_move_label)}</span>'
         )
     sub = f'<span class="mn-sub">{"".join(details)}</span>' if details else ""
-    return main + sub
+    reason = (
+        f'<span class="game-sub">{escape(game.move_reason)}</span>' if game.move_reason else ""
+    )
+    return main + sub + reason
 
 
 def _board_section(content: BoardContent, *, archived: bool = False) -> str:

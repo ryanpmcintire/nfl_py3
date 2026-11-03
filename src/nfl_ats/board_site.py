@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -45,6 +46,13 @@ def build_site(
         generated_at=generated,
         archived_boards=archives,
     )
+    reasons = {
+        game.game_id: {"sentence": game.move_reason, "evidence": list(game.move_reason_evidence)}
+        for game in content.board.games
+        if game.move_reason
+    }
+    if reasons:
+        enhanced["move_reasons.json"] = json.dumps(reasons, indent=2) + "\n"
     return enhanced
 
 

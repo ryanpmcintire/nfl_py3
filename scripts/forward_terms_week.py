@@ -24,7 +24,10 @@ MOS_ROOT = ROOT / "data" / "raw" / "forecast_archive" / "mos_bulletins" / "MEX"
 STATION_MAP = ROOT / "registry" / "reference" / "stadium_station_map.csv"
 MARKET_ROOT = ROOT / "data" / "market" / "raw"
 SHARP_CUTOFF_ET = (12, 30)
-TERMS = ("sky03", "sky03_separated", "sky04", "env02", "sky01", "sky01snap", "surface")
+TERMS = (
+    *("sky03", "sky03_separated", "sky04", "env02", "sky01", "sky01snap", "surface"),
+    "mod35_cold_exposure",
+)
 
 
 def sha_file(path):
@@ -755,6 +758,96 @@ def surface_week(week, games, now):
     return x, fr, ts
 
 
+def mod35_frozen():
+    path = OUT / "mod35_cold_exposure" / "frozen_coefficients.json"
+    body = json.loads(path.read_text())
+    assert body["no_2026_outcomes"] is True
+    keys = ("raw_coefficients_per_unit", "b_logit_per_point", "intercept")
+    assert body["coefficient_hash"] == sha_obj({k: body[k] for k in keys})
+    return body
+
+
+def mod35_week(week, games, now):
+    import mod35_apparent_temp as m35
+    from ingest_forecast_archive import KNOTS_TO_MPH, nearest_row
+
+    from nfl_ats.snapshots import latest_snapshot, load_snapshot
+
+    fr = mod35_frozen()
+    assert sha_file(m35.FC) == fr["recorded_weather_sha256"]
+    fc = pd.read_parquet(m35.FC)
+    rec = fc.loc[
+        (fc.fetch_status == "ok")
+        & fc.roof.isin(m35.OUTDOOR)
+        & fc.actual_temp_f.notna()
+        & fc.actual_wind_mph.notna()
+    ].copy()
+    rec["home"] = rec.game_id.str.split("_").str[3]
+    rec["app"] = m35.apparent(rec.actual_temp_f.to_numpy(), rec.actual_wind_mph.to_numpy())
+    assert int(rec.season.max()) < SEASON
+    k = fr["normal_half_width_weeks_for_2026"]
+    snap = latest_snapshot(ROOT / "data" / "raw")
+    schedules, _ = load_snapshot(snap)
+    roof = schedules[(schedules.season == SEASON) & (schedules.week == week)].set_index("game_id")[
+        "roof"
+    ]
+    smap = pd.read_csv(STATION_MAP)
+    smap = smap[smap.mappable.astype(str).str.lower() == "true"]
+    st = {str(r.teams): r.icao_station for r in smap.itertuples()}
+    x = {}
+    ts = {
+        "schedule_snapshot": snap.snapshot_id,
+        "forecast_source": "data/raw/forecast_archive/mos_bulletins/MEX, latest bulletin cached at or before the run time; history was built from GFS MOS",  # noqa: E501
+        "per_game": {},
+        "not_outdoor": [],
+        "missing": [],
+    }
+    for r in games.itertuples():
+        if roof.get(r.game_id) not in m35.OUTDOOR:
+            ts["not_outdoor"].append({"game_id": r.game_id, "roof": roof.get(r.game_id)})
+            continue
+        station = st.get(r.home_team)
+        files = sorted(glob.glob(str(MOS_ROOT / str(station) / "*.json"))) if station else []
+        usable = []
+        for f in files:
+            b = json.loads(Path(f).read_text())
+            cached = pd.Timestamp(b["cached_at_utc"])
+            if cached <= now and cached <= r.kickoff_utc:
+                usable.append((f, b))
+        if not usable:
+            ts["missing"].append({"game_id": r.game_id, "station": station})
+            continue
+        f, b = usable[-1]
+        rows = [dict(z, ftime_utc=z["ftime"].replace(" ", "T")) for z in b["data"]]
+        row = nearest_row(rows, r.kickoff_utc)
+        if row is None or row.get("tmp") is None or row.get("wsp") is None:
+            ts["missing"].append({"game_id": r.game_id, "reason": "no temp or wind in bulletin"})
+            continue
+        wind = float(row["wsp"]) * KNOTS_TO_MPH
+        fc_at = float(m35.apparent([float(row["tmp"])], [wind])[0])
+        nrm_a = m35.normals(rec, [(r.away_team, SEASON, week)], k)[0]
+        nrm_h = m35.normals(rec, [(r.home_team, SEASON, week)], k)[0]
+        if np.isnan(nrm_a) or np.isnan(nrm_h):
+            ts["missing"].append({"game_id": r.game_id, "reason": "no outdoor-home normal"})
+            continue
+        gap = float(nrm_a - fc_at)
+        x[r.game_id] = max(-gap, 0.0)
+        ts["per_game"][r.game_id] = {
+            "bulletin_file": str(Path(f).relative_to(ROOT)),
+            "bulletin_sha256": sha_file(f),
+            "bulletin_cached_at_utc": b["cached_at_utc"],
+            "forecast_valid_utc": row["ftime_utc"],
+            "forecast_temp_f": float(row["tmp"]),
+            "forecast_wind_mph": wind,
+            "forecast_apparent_f": fc_at,
+            "visitor_normal_f": float(nrm_a),
+            "home_normal_f": float(nrm_h),
+            "gap": gap,
+            "cold_flag": float(gap >= fr["cold_flag_gap_threshold_f"]),
+        }
+    return pd.Series(x, dtype=float), fr, ts
+
+
 def combine(term, games, x, fr):
     out = []
     if term == "env02":
@@ -836,6 +929,8 @@ def main():
                 x, fr, ts = env02_week(week, games, now)
             elif term == "surface":
                 x, fr, ts = surface_week(week, games, now)
+            elif term == "mod35_cold_exposure":
+                x, fr, ts = mod35_week(week, games, now)
             else:
                 x, fr, ts = sky01_week(week, games, now, term)
         except SystemExit:

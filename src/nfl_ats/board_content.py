@@ -219,6 +219,8 @@ class GameRow:
     qb_note: str | None = None
     qb_practice_flag: tuple[str, str] | None = None
     pool_edge: float | None = None
+    move_reason: str = ""
+    move_reason_evidence: tuple[str, ...] = ()
 
     @property
     def pool_edge_text(self) -> str:
@@ -2568,6 +2570,45 @@ def _build_pool_line_note(
     )
 
 
+def _with_move_reasons(
+    games: list[GameRow], data_root: Path | None, season: float | None, week: float | None
+) -> list[GameRow]:
+    from dataclasses import replace
+
+    from nfl_ats.board_move_reason import build_move_reasons
+
+    if data_root is None or season is None or week is None:
+        return games
+    moves = {
+        game.game_id: (game.home, game.away, game.pick_team, game.market_now)
+        for game in games
+        if not game.final and game.market_now is not None
+    }
+    if not moves:
+        return games
+    first_gameday = min(game.gameday for game in games)
+    try:
+        reasons = build_move_reasons(
+            Path(data_root),
+            season=int(season),
+            week=int(week),
+            moves=moves,
+            first_gameday=first_gameday,
+        )
+    except Exception:
+        return games
+    return [
+        replace(
+            game,
+            move_reason=reasons[game.game_id].sentence,
+            move_reason_evidence=reasons[game.game_id].evidence,
+        )
+        if game.game_id in reasons
+        else game
+        for game in games
+    ]
+
+
 def _tuesday_market_by_game(
     data_root: Path | None, *, season: float | None, week: float | None, ordered: pd.DataFrame
 ) -> dict[str, float]:
@@ -4155,6 +4196,8 @@ def load_board_content(
                 pool_edge=pool_edge,
             )
         )
+
+    games = _with_move_reasons(games, resolved_data_root, season_number, week_number)
 
     if require_fresh_arrest_overlay and published_rows:
         record_published_picks(artifacts_root, published_rows, published_at=generated)

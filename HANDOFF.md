@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:05:18.092786+00:00`
+Refreshed at: `2026-11-03T19:27:04.090370+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:05:18.092786+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eef1d7437fcd` — Dashboard round 3: plain model name, real footer date, UI-23 swing lines; pooled-screen leak correction
-- Pending change set: 268 paths
+- Baseline commit: `35f7f070adfa` — Luck band on Home (UI-24); pooled harness now uses the opener as model input
+- Pending change set: 270 paths
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/mod-38-mod38-kicker-wind.md`
-  - `M  docs/lanes/mod24-more-games-2026-11-03.md`
-  - `M  docs/lanes/pool-04-pool04-field-simulator-calibration.md`
+  - `M  docs/lanes/mod-32-mod32-coach-aggression-lattice.md`
+  - ` M docs/lanes/mod-34-mod34-orthogonal-add-one.md`
+  - `M  docs/lanes/mod-35-mod35-apparent-temperature.md`
+  - `M  docs/lanes/mod-37-mod37-stadium-false-start.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
-  - `M  docs/lanes/ui-24-ui24-luck-band.md`
-  - `M  registry/weak_signals/mod24_pooled_era_check.json`
-  - `A  registry/weak_signals/mod38_kicker_wind.json`
-  - `A  registry/weak_signals/pool04_field_calibration.json`
-  - `M  registry/weak_signals/xlg10_pooled_addone.json`
-  - `M  registry/weak_signals/xlg11_cfb_centered_ridge.json`
-  - `M  scripts/mod24_more_games.py`
-  - `M  scripts/mod24_pooled_levers.py`
-  - `A  scripts/mod38_kicker_wind.py`
-  - `A  scripts/pool04_field_ppc.py`
-  - ...and 248 more
+  - `M  docs/lanes/ui-22-ui22-why-line-moved.md`
+  - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/mod32_coach_aggression_shape.json`
+  - `A  registry/weak_signals/mod35_apparent_temp_exposure.json`
+  - `A  registry/weak_signals/mod37_venue_false_start.json`
+  - `M  scripts/forward_terms_week.py`
+  - `A  scripts/mod32_coach_aggression_shape.py`
+  - `A  scripts/mod35_apparent_temp.py`
+  - `A  scripts/mod35_freeze_cold_exposure.py`
+  - `A  scripts/mod35_unit2_controls.py`
+  - `A  scripts/mod37_false_start.py`
+  - ...and 250 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

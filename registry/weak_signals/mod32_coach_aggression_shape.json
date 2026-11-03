@@ -1,0 +1,117 @@
+{
+  "family": "mod32_coach_aggression_shape",
+  "signals": {
+    "mod32_cover_shape_vs_base": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Opener-graded cover logit scaled by (1+c*z), LOSO 2020-25, vs served base; per-game log loss gain",
+      "effect": 0.000104,
+      "effect_units": "log_loss_improvement",
+      "family": "mod32_coach_aggression_shape",
+      "interval": [
+        -0.001794,
+        0.002047
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "No measurable cover gain; 0 pick flips of note (1 right, 3 wrong).",
+      "probability_positive": 0.584,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.47,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod32_coach_aggression_shape.py",
+      "standard_error": null
+    },
+    "mod32_cover_shape_vs_intercept": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same shape arm vs intercept-only control",
+      "effect": -0.00113,
+      "effect_units": "log_loss_improvement",
+      "family": "mod32_coach_aggression_shape",
+      "interval": [
+        -0.00433,
+        0.001995
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Does not beat intercept-only control.",
+      "probability_positive": 0.255,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.47,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod32_coach_aggression_shape.py",
+      "standard_error": null
+    },
+    "mod32_key_number_mass": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same index on P(final margin is 3 or 7), logistic controlling |spread|; LOSO",
+      "effect": -0.0087,
+      "effect_units": "logit_coefficient",
+      "family": "mod32_coach_aggression_shape",
+      "interval": [
+        -0.0855,
+        0.0714
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sign as hypothesised (less mass at 3 and 7) in 14 of 16 folds, size tiny.",
+      "probability_positive": 0.41,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.47,
+      "sample_blocks": null,
+      "sample_games": 3824,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/mod32_coach_aggression_shape.py",
+      "standard_error": null
+    },
+    "mod32_variance_abs_error": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "As-of coach-spell aggression pairing (z) on |margin - closing line|, controlling |spread|; LOSO 2010-25",
+      "effect": 0.0414,
+      "effect_units": "logit_coefficient",
+      "family": "mod32_coach_aggression_shape",
+      "interval": [
+        -0.22,
+        0.3223
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Aggressive pairings show slightly more error around the line; held-out fit not improved.",
+      "probability_positive": 0.612,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.47,
+      "sample_blocks": null,
+      "sample_games": 3824,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/mod32_coach_aggression_shape.py",
+      "standard_error": null
+    }
+  }
+}

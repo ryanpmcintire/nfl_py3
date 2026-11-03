@@ -1,0 +1,86 @@
+{
+  "family": "mod37_venue_false_start",
+  "signals": {
+    "mod37_premium_opener_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "One LOSO logistic term on as-of premium over served opener probability; log loss gain vs intercept-only control",
+      "effect": 6.4e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mod37_venue_false_start",
+      "interval": [
+        -1.67e-05,
+        3.11e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Premium adds nothing to opener-graded probability beyond a recalibration intercept",
+      "probability_positive": 0.666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod37/step3.json",
+      "standard_error": 1.28e-05
+    },
+    "mod37_premium_to_visitor_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "As-of venue premium coefficient on visitor offensive EPA per play beyond as-of strength and roof, LOSO",
+      "effect": -0.0036,
+      "effect_units": "epa_per_play",
+      "family": "mod37_venue_false_start",
+      "interval": [
+        -0.0757,
+        0.0545
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Premium does not measurably cut visitor EPA per play; coefficient near zero, 12 of 14 folds negative",
+      "probability_positive": 0.444,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3919,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod37/step3.json",
+      "standard_error": 0.0333
+    },
+    "mod37_venue_premium_split_half": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Venue visiting false-start excess over team and crew expectation, odd/even season split-half",
+      "effect": 0.2875,
+      "effect_units": "correlation",
+      "family": "mod37_venue_false_start",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Family mod37_venue_false_start, 4 cells total (reliability, epa, prob; plus nocrew r 0.325 p 0.014 and random-split r 0.21 as sensitivity, 48 venues). Roof recorded: closed +0.13, open +0.19, dome -0.01, outdoors -0.02; dome-only odd/even r -0.11, outdoors-only 0.38.",
+      "plain_summary": "Venue false-start premium is mildly reliable across odd and even seasons (r 0.29, permutation p 0.025)",
+      "probability_positive": 0.975,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.2875,
+      "sample_blocks": null,
+      "sample_games": 4431,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod37/step12.json",
+      "standard_error": null
+    }
+  }
+}
