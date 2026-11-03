@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:52:51.274793+00:00`
+Refreshed at: `2026-11-03T22:53:04.374732+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-03T22:52:51.274793+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `30958607df08` — LEAD-111: the injury-wording read's edge lives mostly in headlines (removal -.030 log loss, P+ .04), practice wording second, body part near noise; unresolved
+- Baseline commit: `f4c78aa67d95` — SIM-26 unit 2: hurry-up explains ~0 of the late TD-surge gap; the drive-draw kernel smears trailing states toward neutral and under-draws TD-heavy drives (kernel stage misses by .09/.06/.03), later stages partly compensate
 - Pending change set: 249 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim26_unit2_hurryup.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
