@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:17:44.049048+00:00`
+Refreshed at: `2026-11-03T23:18:31.249088+00:00`
 
 ## Start here
 
@@ -21,20 +21,20 @@ Refreshed at: `2026-11-03T23:17:44.049048+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eab33ea8623c` — Refresh session handoff
+- Baseline commit: `d3d75c6f69fb` — MOD-54: base ridge is not antisymmetric; mirrored home/away training rows leave accuracy flat (2020-25 +0.20, P+ .61) and improve log loss (.6944 v .6969); unresolved
 - Pending change set: 254 paths
   - ` M config/source_policies.json`
+  - `A  docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
-  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `A  registry/weak_signals/mod54_mirrored_rows.json`
+  - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `A  registry/weak_signals/mod10_graph_rating_base_input.json`
+  - `A  scripts/mod10_graph_rating.py`
   - ` M scripts/mod53_penalty_grid.py`
-  - `A  scripts/mod54_mirrored_rows.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/mod-10-graph-rating-base-input.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`

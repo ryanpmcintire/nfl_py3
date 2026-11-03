@@ -1,0 +1,117 @@
+{
+  "family": "mod10_graph_rating_base_input",
+  "signals": {
+    "mod10_unit1_graph_epa_proxy_base_model_add_one_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Base model add-one: ridge Massey graph rating on EPA/play margins (decay and ridge chosen inner out-of-season), model-alone opener test 2014-19 SBR open, paired vs base; flips W-L 29-19; log loss gain 0.00042 brier gain 0.00021",
+      "effect": 0.6724949562878278,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_rating_base_input",
+      "interval": [
+        -0.06684491978609626,
+        1.4814814814814814
+      ],
+      "league": "nfl",
+      "notes": "Base model add-one; 2 kinds x 2 eras = 4 looks, grid 5 decay x 5 ridge selected inside each fold on prior seasons.",
+      "plain_summary": "Adds a team-strength rating built from prior game results to the base picks and asks whether picks against the opener improve.",
+      "probability_positive": 0.94345,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1487,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/mod10/unit1/proxy_epa_report.json",
+      "standard_error": null
+    },
+    "mod10_unit1_graph_epa_true_base_model_add_one_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Base model add-one: ridge Massey graph rating on EPA/play margins (decay and ridge chosen inner out-of-season), model-alone opener test 2020-25 Tuesday open, paired vs base; flips W-L 27-24; log loss gain 0.00054 brier gain 0.00027",
+      "effect": 0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_rating_base_input",
+      "interval": [
+        -0.6105834464043419,
+        1.1386470194239786
+      ],
+      "league": "nfl",
+      "notes": "Base model add-one; 2 kinds x 2 eras = 4 looks, grid 5 decay x 5 ridge selected inside each fold on prior seasons.",
+      "plain_summary": "Adds a team-strength rating built from prior game results to the base picks and asks whether picks against the opener improve.",
+      "probability_positive": 0.60125,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod10/unit1/true_epa_report.json",
+      "standard_error": null
+    },
+    "mod10_unit1_graph_margin_proxy_base_model_add_one_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Base model add-one: ridge Massey graph rating on game margins (decay and ridge chosen inner out-of-season), model-alone opener test 2014-19 SBR open, paired vs base; flips W-L 8-8; log loss gain -0.00015 brier gain -0.00007",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_rating_base_input",
+      "interval": [
+        -0.59721300597213,
+        0.5434782608695652
+      ],
+      "league": "nfl",
+      "notes": "Base model add-one; 2 kinds x 2 eras = 4 looks, grid 5 decay x 5 ridge selected inside each fold on prior seasons.",
+      "plain_summary": "Adds a team-strength rating built from prior game results to the base picks and asks whether picks against the opener improve.",
+      "probability_positive": 0.4599,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1487,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/mod10/unit1/proxy_margin_report.json",
+      "standard_error": null
+    },
+    "mod10_unit1_graph_margin_true_base_model_add_one_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Base model add-one: ridge Massey graph rating on game margins (decay and ridge chosen inner out-of-season), model-alone opener test 2020-25 Tuesday open, paired vs base; flips W-L 2-4; log loss gain 0.00002 brier gain 0.00001",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_rating_base_input",
+      "interval": [
+        -0.27739251040221913,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Base model add-one; 2 kinds x 2 eras = 4 looks, grid 5 decay x 5 ridge selected inside each fold on prior seasons.",
+      "plain_summary": "Adds a team-strength rating built from prior game results to the base picks and asks whether picks against the opener improve.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod10/unit1/true_margin_report.json",
+      "standard_error": null
+    }
+  }
+}
