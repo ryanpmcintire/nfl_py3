@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:50:12.550936+00:00`
+Refreshed at: `2026-11-03T19:56:07.039472+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:50:12.550936+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dbace82d4a57` — UI-26: one-tap 'Copy picks as text' sheet on Home (15 picks, Best Pick marked, tiebreaker), with a selectable fallback
-- Pending change set: 260 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `dfd148c02b1c` — MOD-39 playoff leverage, PER-12 QB return, MOD-36 add-one noise floor: all unresolved; refresh handoff
+- Pending change set: 265 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/eng-48-eng48-anytime-valid-monitor.md`
+  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
-  - `M  docs/lanes/mod-36-mod36-add-one-noise-null.md`
-  - `M  docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
-  - `M  docs/lanes/per-12-per12-qb-return-from-absence.md`
+  - `M  docs/lanes/mod-40-mod40-nextgen-process-gap.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/mod36_noise_floor.json`
-  - `A  registry/weak_signals/mod39_playoff_leverage.json`
-  - `A  registry/weak_signals/per12_qb_return.json`
-  - `A  scripts/mod36_analyze.py`
-  - `A  scripts/mod36_noise_floor.py`
-  - `A  scripts/mod39_leverage.py`
-  - `A  scripts/per12_qb_return.py`
+  - `A  registry/weak_signals/mod40_ngs_process_gap.json`
+  - `A  scripts/forward_monitor.py`
+  - `A  scripts/mod40_ngs_fit.py`
+  - `A  scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_situational.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - ...and 240 more
+  - ...and 245 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -54,7 +54,7 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `efbf163b09e987a0`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **unavailable in local artifacts**
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261103T195331Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,153 / 2,196 (52.50%)**
 - Linked forecast: **2026 Week 9**, created `2026-11-03T19:49:41.290178+00:00`
@@ -63,7 +63,7 @@ The 52.50% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `5d851f9536dff5ac`, published `2026-11-03T17:35:53.369229+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `efbf163b09e987a0`, published `2026-11-03T19:55:24.785244+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

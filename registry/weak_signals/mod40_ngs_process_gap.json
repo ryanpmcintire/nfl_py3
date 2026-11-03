@@ -1,0 +1,117 @@
+{
+  "family": "mod40_ngs_process_gap",
+  "signals": {
+    "mod40_both_gaps_added_to_served_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control.",
+      "closing_ground": null,
+      "description": "Passing and rushing gaps as two terms added to the served opener probability, leave-one-season-out, paired log loss vs served alone.",
+      "effect": -6e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod40_ngs_process_gap",
+      "interval": [
+        -0.00217,
+        0.00208
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Checks both tracking gaps together.",
+      "probability_positive": 0.473,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-40-mod40-nextgen-process-gap.md",
+      "standard_error": null
+    },
+    "mod40_cpoe_gap_added_to_served_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control.",
+      "closing_ground": null,
+      "description": "Passing completion gap (expected minus actual completion, pre-game same-season shrunk, home minus away) added to the served opener probability, leave-one-season-out logistic, paired log loss vs served alone.",
+      "effect": 4e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod40_ngs_process_gap",
+      "interval": [
+        -0.002,
+        0.00203
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Checks whether teams whose completions lag expectation bounce back.",
+      "probability_positive": 0.499,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-40-mod40-nextgen-process-gap.md",
+      "standard_error": null
+    },
+    "mod40_ryoe_gap_added_to_served_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control.",
+      "closing_ground": null,
+      "description": "Rushing gap (expected minus actual rush yards per carry) added to the served opener probability, leave-one-season-out, paired log loss vs served alone.",
+      "effect": -2e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod40_ngs_process_gap",
+      "interval": [
+        -0.00084,
+        0.00085
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Checks whether teams whose rushing lags expectation bounce back.",
+      "probability_positive": 0.496,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-40-mod40-nextgen-process-gap.md",
+      "standard_error": null
+    },
+    "mod40_summed_gap_added_to_served_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control.",
+      "closing_ground": null,
+      "description": "Standardised sum of the two gaps as one term added to the served opener probability, leave-one-season-out, paired log loss vs served alone.",
+      "effect": 0.00024,
+      "effect_units": "log_loss_improvement",
+      "family": "mod40_ngs_process_gap",
+      "interval": [
+        -0.0017,
+        0.00215
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Checks one combined tracking gap.",
+      "probability_positive": 0.59,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-40-mod40-nextgen-process-gap.md",
+      "standard_error": null
+    }
+  }
+}
