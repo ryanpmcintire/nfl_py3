@@ -19,8 +19,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Nov 05 | JAX at BAL | JAX -9.5         | 51.1%          |
-| Sun, Nov 08 | ARI at SEA | SEA -10.5        | 50.8%          |
+| Thu, Nov 05 | JAX at BAL | JAX -9.5         | 51.6%          |
+| Sun, Nov 08 | ARI at SEA | SEA -10.5        | 50.5%          |
 | Sun, Nov 08 | CIN at ATL | CIN -2.5         | 55.5%          |
 | Sun, Nov 08 | CLE at NO  | NO -2.5          | 52.6%          |
 | Sun, Nov 08 | DAL at IND | DAL -5.5         | 50.9%          |
@@ -46,7 +46,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`efbf163b09e987a0`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`bed5753054e47966`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.50%** (1,153 of 2,196 non-push games), week-blocked 95% interval [50.34%, 54.61%].
