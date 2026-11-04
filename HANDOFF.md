@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:32:46.484696+00:00`
+Refreshed at: `2026-11-04T14:09:19.846929+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T23:32:46.484696+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `064a87a69bd9` — ENG-58 unit 3: daily schedule-only snapshots (data/raw_schedules) feed the live kickoff guard; jobs schedule_snapshot_* (09:00 Mon-Sat, 08:00 Sun). MOD-54 forward log of the mirrored-row base model (Week 9 written; job mod54_forward_tue after the lock)
-- Pending change set: 251 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `8117de4b3187` — Refresh session handoff
+- Pending change set: 266 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
+  - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
+  - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
+  - `M  docs/model.html`
+  - ` M registry/weak_signals/lead106.json`
+  - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
+  - ` M registry/weak_signals/per16_team_designation_habit.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 231 more
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 246 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
