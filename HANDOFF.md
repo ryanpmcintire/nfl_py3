@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-07T17:25:15.772047+00:00`
+Refreshed at: `2026-11-07T17:30:20.796422+00:00`
 
 ## Start here
 
@@ -21,12 +21,9 @@ Refreshed at: `2026-11-07T17:25:15.772047+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `23d2bc878503` — Republish the site with the latest settled results
-- Pending change set: 302 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
+- Baseline commit: `27da452f5c00` — Republish the site with the latest settled results
+- Pending change set: 298 paths
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
@@ -35,7 +32,6 @@ Refreshed at: `2026-11-07T17:25:15.772047+00:00`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-11-07T17:25:15.772047+00:00`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 282 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 278 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
