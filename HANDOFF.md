@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-08T22:27:34.087070+00:00`
+Refreshed at: `2026-11-08T22:33:04.180786+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-08T22:27:34.087070+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `314eadd6fa93` — Grade the served Best Pick everywhere and explain what moved it
-- Pending change set: 321 paths
+- Baseline commit: `7ed896ab4265` — Record the Sunday Best Pick rule and leader-book depth measurements
+- Pending change set: 318 paths
   - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/best-pick-chain-audit-2026-11-08.md`
+  - `A  docs/lanes/eng-62-leader-book-quote-capture.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod-56-leader-book-depth-in-move-term.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `A  docs/lanes/pol-13-sunday-renomination-rule.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `A  registry/weak_signals/mod56_leader_depth.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  registry/weak_signals/pol13_sunday_renomination_rule.json`
+  - `M  scripts/capture_scheduler.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 301 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - ...and 298 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
