@@ -1,0 +1,173 @@
+{
+  "family": "pol13_sunday_renomination_rule",
+  "signals": {
+    "pol13_wb_vs_hold_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution and no positive control at this size",
+      "closing_ground": null,
+      "description": "re-nominate over all playable games (current) vs hold Tuesday star, out of season 2023-2025",
+      "effect": 12.963,
+      "effect_units": "accuracy_points",
+      "family": "pol13_sunday_renomination_rule",
+      "interval": [
+        -1.852,
+        27.778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sunday star rule vs holding Tuesday star, weekly accuracy points",
+      "probability_positive": 0.9471,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/pol13/pol13.py",
+      "standard_error": 7.951
+    },
+    "pol13_wb_vs_hold_2026_forward": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution and no positive control at this size",
+      "closing_ground": null,
+      "description": "re-nominate over all playable games (current) vs hold, 2026 W1-W9 forward reconstruction from ledger (in-sample discovery season)",
+      "effect": -11.111,
+      "effect_units": "accuracy_points",
+      "family": "pol13_sunday_renomination_rule",
+      "interval": [
+        -44.444,
+        22.222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sunday star rule vs holding Tuesday star, weekly accuracy points",
+      "probability_positive": 0.2901,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 9,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/pol13/pol13.py",
+      "standard_error": 20.031
+    },
+    "pol13_wc_vs_hold_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution and no positive control at this size",
+      "closing_ground": null,
+      "description": "re-nominate within spread<=6.5 screen vs hold Tuesday star, out of season 2023-2025",
+      "effect": 9.259,
+      "effect_units": "accuracy_points",
+      "family": "pol13_sunday_renomination_rule",
+      "interval": [
+        -5.556,
+        24.074
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sunday star rule vs holding Tuesday star, weekly accuracy points",
+      "probability_positive": 0.8861,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/pol13/pol13.py",
+      "standard_error": 7.601
+    },
+    "pol13_wc_vs_hold_2026_forward": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution and no positive control at this size",
+      "closing_ground": null,
+      "description": "re-nominate within spread<=6.5 screen vs hold, 2026 W1-W9 forward reconstruction from ledger (in-sample discovery season)",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "pol13_sunday_renomination_rule",
+      "interval": [
+        -33.333,
+        33.333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sunday star rule vs holding Tuesday star, weekly accuracy points",
+      "probability_positive": 0.5014,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 9,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/pol13/pol13.py",
+      "standard_error": 16.667
+    },
+    "pol13_wd_vs_hold_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution and no positive control at this size",
+      "closing_ground": null,
+      "description": "re-nominate only if gain exceeds held star calibration SE vs hold Tuesday star, out of season 2023-2025",
+      "effect": 7.407,
+      "effect_units": "accuracy_points",
+      "family": "pol13_sunday_renomination_rule",
+      "interval": [
+        -5.556,
+        20.37
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sunday star rule vs holding Tuesday star, weekly accuracy points",
+      "probability_positive": 0.8585,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/pol13/pol13.py",
+      "standard_error": 6.92
+    },
+    "pol13_wd_vs_hold_2026_forward": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution and no positive control at this size",
+      "closing_ground": null,
+      "description": "re-nominate only if gain exceeds held star calibration SE vs hold, 2026 W1-W9 forward reconstruction from ledger (in-sample discovery season)",
+      "effect": -11.111,
+      "effect_units": "accuracy_points",
+      "family": "pol13_sunday_renomination_rule",
+      "interval": [
+        -44.444,
+        22.222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sunday star rule vs holding Tuesday star, weekly accuracy points",
+      "probability_positive": 0.2841,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 9,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/pol13/pol13.py",
+      "standard_error": 20.031
+    }
+  }
+}

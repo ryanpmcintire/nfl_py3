@@ -26,10 +26,14 @@ Measured 2026-11-08 22:13Z, scratch script `bp_audit.py` (session scratchpad; re
 ## Tried
 - Grading `market_spread` as pick-side was wrong: it is home-favoured-positive; fixed in the script.
 
+- Published and pushed 314eadd6 (card table unchanged; history stars served picks; NO explanation names the move term).
+- POL-13 (root verified tests/scratch/pol13/weekly.csv): out of season 2023-25 the current Sunday re-check 34/54 vs hold 27/54, P+ 0.951, decisive 13-6. Decision: keep it.
+- MOD-56: 2026 serves the move term with 0-2 leader books where training had 3; precision weight is a dead heat. Capture gap -> ENG-62.
+
 ## Next
-1. Republish (publish-predictions, no recording) running; diff the card table, review rendered diff, commit, push.
-2. In flight: MOD-56 leader-book depth in the move term (lane mod-56-leader-book-depth-in-move-term.md); POL-13 Sunday re-nomination rule, four predeclared star rules out of season (lane pol-13-sunday-renomination-rule.md).
-3. card-ledger-check compares sides only; extend it to the star (ENG row).
+1. In flight: ENG-62 leader-book quote capture (lane eng-62-leader-book-quote-capture.md).
+2. card-ledger-check compares sides only; extend it to the star (ENG-61 open item).
+3. POL-13 open: add the cross-book dispersion screen to arm (c).
 
 ## Open
 - Which star the owner actually entered in Splash for Weeks 2, 3, 6, 8, 9 is not recorded anywhere.

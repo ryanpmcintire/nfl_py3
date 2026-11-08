@@ -1,0 +1,33 @@
+{
+  "family": "mod56_leader_depth",
+  "signals": {
+    "mod56_leader_book_depth_precision_weight": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval 95% [-1.65e-4,+1.88e-4], p_pos 0.5565; weight 0.977-0.980 at k=2; fit population has exactly 3 leader books in all 799 games so depth is not identified from real variation",
+      "closing_ground": null,
+      "description": "Move term scaled by measured reliability of k-book mean (tau2/(tau2+sigma_b2/k)); k=2 simulated from 3-book fit population, LOSO 2023-25",
+      "effect": 1.29e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod56_leader_depth",
+      "interval": [
+        -0.000165,
+        0.000188
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5565,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod56_fit.py",
+      "standard_error": null
+    }
+  }
+}

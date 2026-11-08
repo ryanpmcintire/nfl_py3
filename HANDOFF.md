@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-08T22:26:04.669714+00:00`
+Refreshed at: `2026-11-08T22:27:34.087070+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-08T22:26:04.669714+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1f782010a85e` — Lift the permanent ESPN PickCenter block
-- Pending change set: 337 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
+- Baseline commit: `314eadd6fa93` — Grade the served Best Pick everywhere and explain what moved it
+- Pending change set: 321 paths
   - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/lanes/best-pick-chain-audit-2026-11-08.md`
+  - `M  docs/lanes/best-pick-chain-audit-2026-11-08.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `A  docs/lanes/explanation-counted-terms.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod-55-move-anchor-at-pool-line.md`
+  - `A  docs/lanes/mod-56-leader-book-depth-in-move-term.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - `A  docs/lanes/pol-13-sunday-renomination-rule.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
   - ` M registry/weak_signals/lead106.json`
-  - ...and 317 more
+  - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
+  - `A  registry/weak_signals/mod56_leader_depth.json`
+  - ` M registry/weak_signals/per16_team_designation_habit.json`
+  - `A  registry/weak_signals/pol13_sunday_renomination_rule.json`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - ...and 301 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
