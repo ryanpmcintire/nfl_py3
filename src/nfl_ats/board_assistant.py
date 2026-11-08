@@ -148,9 +148,11 @@ GLOSSARY: tuple[GlossaryEntry, ...] = (
     ),
     GlossaryEntry(
         "Best Pick",
-        "The pool scores one Best Pick per week. This board nominates "
-        "it by cover chance among low-disagreement games "
-        "with a spread of six and a half or less.",
+        "The pool scores one Best Pick per week. On Tuesday this board "
+        "stars the pick with the highest cover chance among low-disagreement "
+        "games with a spread of six and a half or less. On Sunday morning it "
+        "re-checks every game still to be played and moves the star to any "
+        "pick that now has a higher cover chance, whatever its spread.",
     ),
     GlossaryEntry(
         "confidence",

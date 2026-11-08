@@ -678,6 +678,7 @@ def publish_active_predictions(
             refresh_changes_by_game=refresh_changes_by_game,
             waterfall_by_game=load_waterfall_feed(artifacts_root),
             key_line_games=key_line_touched_games(metadata),
+            pick_probability=pick_probability,
         )
         atomic_json(explanations_to_dict(explanations), forecast_dir / "explanations.json")
         if include_pick_explanation_lines:

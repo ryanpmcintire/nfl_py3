@@ -24,7 +24,7 @@ def test_caveat_never_states_the_planning_estimate_as_measured() -> None:
     )
     assert "Planning estimate" in blob
     assert "selection-inflated" in blob
-    assert "reused data" in blob
+    assert "games already used to build the rules" in blob
     assert "erased by sportsbook vig alone" in blob
     assert "not proof of a stable, profitable edge" not in blob
     for phrase in BANNED_BOILERPLATE:

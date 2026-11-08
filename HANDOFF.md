@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-08T12:32:54.067268+00:00`
+Refreshed at: `2026-11-08T22:26:04.669714+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-08T12:32:54.067268+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7ce08069211b` — Republish the site with the latest settled results
-- Pending change set: 309 paths
+- Baseline commit: `1f782010a85e` — Lift the permanent ESPN PickCenter block
+- Pending change set: 337 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/best-pick-chain-audit-2026-11-08.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `A  docs/lanes/explanation-counted-terms.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
+  - `A  docs/lanes/mod-55-move-anchor-at-pool-line.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
-  - `A  docs/lanes/week9-sunday-refresh-2026-11-08.md`
+  - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `M  docs/model.html`
   - ` M registry/weak_signals/lead106.json`
-  - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `M  scripts/capture_espn_pickcenter.py`
-  - `M  scripts/capture_scheduler.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 289 more
+  - ...and 317 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `64755e0fe05fec95`
+- Model ID: `3f85b4ef51411125`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261108T115017Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261108T144451Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,153 / 2,196 (52.50%)**
-- Linked forecast: **2026 Week 9**, created `2026-11-08T12:09:45.446461+00:00`
+- Linked forecast: **2026 Week 9**, created `2026-11-08T17:10:30.935361+00:00`
 
 The 52.50% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `64755e0fe05fec95`, published `2026-11-08T12:18:58.929984+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `3f85b4ef51411125`, published `2026-11-08T22:23:06.894460+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

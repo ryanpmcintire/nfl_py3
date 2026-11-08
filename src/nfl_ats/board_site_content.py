@@ -1573,6 +1573,7 @@ def _history_pick_rows(
     plays_by_season: dict[int, pd.DataFrame] = {}
     settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
     frozen = frozen_picks(artifacts_root, now=now or datetime.now(UTC), include_open=True)
+    served_stars = _served_stars_by_week(artifacts_root, settled)
     rows: list[HistoryPickRow] = []
     for _, row in settled.iterrows():
         status = str(row.get(f"status_at_{DECISION_GRADE}") or "pending")
@@ -1594,6 +1595,15 @@ def _history_pick_rows(
         swing = ""
         if data_root is not None and status == "settled" and correct is False:
             swing = _history_swing_text(outcomes, row, data_root, plays_by_season)
+        star_key = (
+            int(season_value) if season_value is not None else -1,
+            int(week_value) if week_value is not None else -1,
+        )
+        best_pick = (
+            str(row.get("game_id")) == served_stars[star_key]
+            if star_key in served_stars
+            else bool(row.get("is_best_pick", False))
+        )
         rows.append(
             HistoryPickRow(
                 game_id=str(row.get("game_id")),
@@ -1609,7 +1619,7 @@ def _history_pick_rows(
                     else _history_forecast_probability(artifacts_root, row.to_dict())
                 ),
                 model_id=(str(row.get("model_id")) if row.get("model_id") is not None else None),
-                best_pick=bool(row.get("is_best_pick", False)),
+                best_pick=best_pick,
                 status=status,
                 correct=correct,
                 score_text=(
@@ -1624,6 +1634,28 @@ def _history_pick_rows(
             )
         )
     return tuple(rows)
+
+
+def _served_stars_by_week(
+    artifacts_root: Path, settled: pd.DataFrame
+) -> dict[tuple[int, int], str]:
+    from nfl_ats.pick_refresh import served_best_pick
+
+    if settled.empty or not {"season", "week"}.issubset(settled.columns):
+        return {}
+    weeks = (
+        settled[["season", "week"]]
+        .apply(pd.to_numeric, errors="coerce")
+        .dropna()
+        .astype(int)
+        .drop_duplicates()
+    )
+    stars: dict[tuple[int, int], str] = {}
+    for season, week in weeks.itertuples(index=False):
+        served = served_best_pick(artifacts_root, season=int(season), week=int(week))
+        if served:
+            stars[(int(season), int(week))] = served
+    return stars
 
 
 def _history_swing_text(

@@ -1,0 +1,33 @@
+{
+  "family": "mod55_move_anchor",
+  "signals": {
+    "mod55_move_anchor_tuesday_noon_vs_wednesday": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Line-move term anchored at the Tuesday-noon pool-line capture versus the current Wednesday-onward diff anchor, leave-one-season-out stack refit on 2023-2025",
+      "effect": -1.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod55_move_anchor",
+      "interval": [
+        -0.00258585,
+        0.00251953
+      ],
+      "league": "nfl",
+      "notes": "2 arms, 3 held-out seasons with differing moves; Tuesday arm brier -0.000055 (p+ 0.469), accuracy -0.25 pts (p+ 0.394); decisive games 50, current 26 vs tuesday 24; weekly top pick 32-54 vs 33-54; pre-2023 hourly quotes absent so 2020-22 move unavailable in both arms",
+      "plain_summary": null,
+      "probability_positive": 0.4971,
+      "recorded_at": "2026-11-08",
+      "reliability": null,
+      "sample_blocks": 27,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod55_fit.py; docs/lanes/mod-55-move-anchor-at-pool-line.md",
+      "standard_error": 0.0013
+    }
+  }
+}

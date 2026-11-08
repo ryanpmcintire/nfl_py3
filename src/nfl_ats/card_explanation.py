@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from math import isfinite
 from typing import Any
 
+import pandas as pd
+
 from nfl_ats.coach_fade_overlay import OverlayFlip
 from nfl_ats.displayed_confidence import displayed_pick_probability, displayed_strength_word
 from nfl_ats.division_revenge_tilt_overlay import TiltFlip as DivisionRevengeFlip
@@ -27,6 +29,14 @@ from nfl_ats.four_overlay_composition import (
 from nfl_ats.key_line_pick_read import is_half_point_line
 from nfl_ats.lineage import FIELD_MARKET_LINE, CardLineage
 from nfl_ats.market_decomposition import GameExplanation, explain_game_structured
+from nfl_ats.pick_probability import (
+    FLAG_SUM_COLUMN,
+    HOOK_COLUMN,
+    MARKET_LINE_PROBABILITY_COLUMN,
+    MOVE_AVAILABLE_COLUMN,
+    MOVE_COLUMN,
+    PickProbabilityModel,
+)
 from nfl_ats.player_arrests_back_side_overlay import ArrestFlip
 from nfl_ats.source_freshness_policy import SourcePolicyReport
 from nfl_ats.spread_gap_zone_fade_overlay import TiltFlip as SpreadGapFlip
@@ -620,6 +630,84 @@ def _situational_adjustment_sentence(overlays: OverlaysComponent, carries_pick_t
     return "No situational adjustment fired."
 
 
+def _term_effect_points(
+    model: PickProbabilityModel, row: Mapping[str, Any], pick_is_home: bool, term: str
+) -> float | None:
+    base_value = _finite_float(row.get(MARKET_LINE_PROBABILITY_COLUMN))
+    if base_value is None:
+        return None
+    values = {
+        "flags": _finite_float(row.get(FLAG_SUM_COLUMN)) or 0.0,
+        "move": _finite_float(row.get(MOVE_COLUMN)) or 0.0,
+        "available": _finite_float(row.get(MOVE_AVAILABLE_COLUMN)) or 0.0,
+        "hook": (_finite_float(row.get(HOOK_COLUMN)) or 0.0) if model.has_pool_hook else None,
+    }
+
+    def home(overrides: Mapping[str, float]) -> float:
+        merged = {**values, **overrides}
+        hook = merged["hook"]
+        return float(
+            model.home_probability(
+                pd.Series([base_value], dtype=float),
+                pd.Series([merged["flags"]], dtype=float),
+                pd.Series([merged["move"]], dtype=float),
+                pd.Series([merged["available"]], dtype=float),
+                None if hook is None else pd.Series([hook], dtype=float),
+            ).iloc[0]
+        )
+
+    removed = {"flags": {"flags": 0.0}, "move": {"move": 0.0, "available": 0.0}}.get(
+        term, {"hook": 0.0}
+    )
+    if term == "hook" and values["hook"] is None:
+        return None
+    difference = home({}) - home(removed)
+    return difference * (1.0 if pick_is_home else -1.0) * 100.0
+
+
+def served_terms_sentence(
+    model: PickProbabilityModel, row: Mapping[str, Any], pick_side: str, pick_is_home: bool
+) -> str:
+    phrases: list[str] = []
+    opposed: list[str] = []
+    for term, toward, against in (
+        (
+            "move",
+            f"the betting line has moved toward {pick_side} since midweek",
+            "the betting line has moved the other way since midweek",
+        ),
+        (
+            "hook",
+            "the half point on the number leans toward the pick",
+            "the half point on the number leans the other way",
+        ),
+        (
+            "flags",
+            "the matchup situation favours the pick",
+            "the matchup situation cuts against the pick",
+        ),
+    ):
+        points = _term_effect_points(model, row, pick_is_home, term)
+        if points is None:
+            continue
+        shown = round(abs(points))
+        if shown < 1:
+            continue
+        unit = "point" if shown == 1 else "points"
+        clause = f"{toward if points > 0 else against}, worth about {shown} {unit} of cover chance"
+        (phrases if points > 0 else opposed).append(clause)
+    if not phrases and not opposed:
+        return "The chance to cover rests on the model's own read of the game."
+    sentence = ""
+    if phrases:
+        sentence = f"Pushing the cover chance up: {'; '.join(phrases)}."
+    if opposed:
+        sentence = (sentence + " " if sentence else "") + (
+            f"Pulling it down: {'; '.join(opposed)}."
+        )
+    return sentence
+
+
 _FRESHNESS_NEUTRAL_STATES = frozenset({"not_configured", "not_due"})
 
 
@@ -677,8 +765,11 @@ def render_pick_text(
     game_explanation: GameExplanation | None,
     push_probability: float | None = None,
     key_line_read: bool = False,
+    served_terms: str | None = None,
 ) -> str:
 
+    if served_terms is not None:
+        overlays = OverlaysComponent(firings=(), provenance=overlays.provenance)
     sentences = [
         _lead_sentence(market_line, model_probability, matchup),
         (
@@ -691,11 +782,15 @@ def render_pick_text(
             )
         ),
         _what_tips_it_sentence(game_explanation, model_probability.pick_side, overlays),
-        _situational_adjustment_sentence(
-            overlays,
-            model_probability.pick_side
-            if _leans_against_pick(game_explanation, model_probability.pick_side)
-            else "",
+        (
+            served_terms
+            if served_terms is not None
+            else _situational_adjustment_sentence(
+                overlays,
+                model_probability.pick_side
+                if _leans_against_pick(game_explanation, model_probability.pick_side)
+                else "",
+            )
         ),
         _freshness_clause(freshness),
         _REFRESH_SHORT_CLAUSES.get(refresh.status, ""),
@@ -802,6 +897,7 @@ def explain_pick(
     refresh_changes: RefreshChangeInput | Mapping[str, Any] | None = None,
     waterfall_entry: Mapping[str, Any] | None = None,
     key_line_read: bool = False,
+    pick_probability: PickProbabilityModel | None = None,
 ) -> PickExplanation:
 
     game_id = str(row.get("game_id") or "")
@@ -858,6 +954,11 @@ def explain_pick(
         family_contributions_from_waterfall_entry(waterfall_entry),
     )
 
+    served_terms = (
+        served_terms_sentence(pick_probability, row, pick_team or "", pick_is_home)
+        if pick_probability is not None and pick_team is not None
+        else None
+    )
     text = render_pick_text(
         matchup,
         market_line,
@@ -868,6 +969,7 @@ def explain_pick(
         game_explanation,
         _finite_float(row.get("push_probability")),
         key_line_read=bool(key_line_read),
+        served_terms=served_terms,
     )
     check_language(text)
 
@@ -892,6 +994,7 @@ def explain_card(
     refresh_changes_by_game: Mapping[str, RefreshChangeInput | Mapping[str, Any]] | None = None,
     waterfall_by_game: Mapping[str, Mapping[str, Any]] | None = None,
     key_line_games: Iterable[str] | None = None,
+    pick_probability: PickProbabilityModel | None = None,
 ) -> list[PickExplanation]:
 
     overlays_map = overlays_by_game or {}
@@ -910,6 +1013,7 @@ def explain_card(
                 refresh_changes=refresh_map.get(game_id),
                 waterfall_entry=waterfall_map.get(game_id),
                 key_line_read=game_id in key_line_set,
+                pick_probability=pick_probability,
             )
         )
     return explanations
