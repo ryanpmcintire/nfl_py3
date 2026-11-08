@@ -23,7 +23,7 @@ from nfl_ats.source_policy import require_acquisition, require_private_raw_desti
 REPO = Path(__file__).resolve().parents[1]
 SOURCE = "espn_scoreboard_pickcenter"
 ROOT = REPO / "data" / "market" / "raw"
-BLOCKED = REPO / "data" / "market" / "espn_pickcenter_blocked.json"
+LAST_REFUSAL = REPO / "data" / "market" / "espn_pickcenter_last_refusal.json"
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl"
 USER_AGENT = "nfl-ats-research/0.2 (research; github.com/ryanpmcintire/nfl_py3)"
 
@@ -38,12 +38,12 @@ def _fetch(url: str, *, prior_at: float | None) -> tuple[dict[str, Any], float]:
             payload = json.loads(response.read())
     except urllib.error.HTTPError as error:
         if error.code in (403, 429) or error.code >= 500:
-            BLOCKED.parent.mkdir(parents=True, exist_ok=True)
-            BLOCKED.write_text(
+            LAST_REFUSAL.parent.mkdir(parents=True, exist_ok=True)
+            LAST_REFUSAL.write_text(
                 json.dumps(
                     {
                         "source": SOURCE,
-                        "blocked_at_utc": datetime.now(UTC).isoformat(),
+                        "refused_at_utc": datetime.now(UTC).isoformat(),
                         "http_status": error.code,
                         "url": url,
                     },
@@ -148,12 +148,6 @@ def _rows(
 def capture(features_path: Path) -> dict[str, Any]:
     require_acquisition(SOURCE)
     require_private_raw_destination(SOURCE, ROOT)
-    if BLOCKED.exists():
-        return {
-            "captured": False,
-            "source": SOURCE,
-            "blocked": json.loads(BLOCKED.read_text(encoding="utf-8")),
-        }
     features = pd.read_parquet(features_path)
     observed = datetime.now(UTC)
     future = features.loc[pd.to_datetime(features["kickoff"], utc=True).gt(observed)]

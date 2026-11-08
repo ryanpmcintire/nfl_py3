@@ -1230,11 +1230,11 @@ SCHEDULE: tuple[Job, ...] = (
             at,
             30,
             ESPN_ODDS_CAPTURE,
-            False,
+            True,
             "Single-book DraftKings pregame spreads and totals from ESPN pickcenter. "
-            "Disabled after the first live scoreboard request returned HTTP 403; "
-            "the source policy requires stopping, and a private block marker "
-            "prevents further network requests until access is reviewed.",
+            "A 403, 429 or 5xx stops that run only and records the refusal; one 403 on "
+            "2026-09-20 had become a permanent block until 2026-11-08, when a retry "
+            "captured all 14 Week 9 games.",
             season_guarded=False,
             dedupe_dir="data/market/raw",
             dedupe_minutes=15,
