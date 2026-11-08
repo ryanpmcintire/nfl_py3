@@ -31,7 +31,7 @@ Measured 2026-11-08 22:13Z, scratch script `bp_audit.py` (session scratchpad; re
 - MOD-56: 2026 serves the move term with 0-2 leader books where training had 3; precision weight is a dead heat. Capture gap -> ENG-62.
 
 ## Next
-1. In flight: ENG-62 leader-book quote capture (lane eng-62-leader-book-quote-capture.md).
+1. ENG-62 committed 6b776751 (Monday private-odds job). Daemon pid 5428 still runs 11-04 code (no Monday job, no ESPN jobs) until the owner restarts it; Tuesday 11-10 check: williamhill_us present Mon/Tue, leader_books 3 at serve time.
 2. card-ledger-check compares sides only; extend it to the star (ENG-61 open item).
 3. POL-13 open: add the cross-book dispersion screen to arm (c).
 

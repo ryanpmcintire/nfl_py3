@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-08T22:33:04.180786+00:00`
+Refreshed at: `2026-11-08T22:33:23.334926+00:00`
 
 ## Start here
 
@@ -21,11 +21,10 @@ Refreshed at: `2026-11-08T22:33:04.180786+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7ed896ab4265` — Record the Sunday Best Pick rule and leader-book depth measurements
-- Pending change set: 318 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `6b776751f7f8` — Capture leader-book odds on Monday as well
+- Pending change set: 316 paths
   - ` M config/source_policies.json`
-  - `A  docs/lanes/eng-62-leader-book-quote-capture.md`
+  - `M  docs/lanes/best-pick-chain-audit-2026-11-08.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
@@ -36,14 +35,15 @@ Refreshed at: `2026-11-08T22:33:04.180786+00:00`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `M  scripts/capture_scheduler.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 298 more
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - ...and 296 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
