@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 9
 
-Published from the synchronized weak stack model, 2026-11-09 17:26 UTC.
+Published from the synchronized weak stack model, 2026-11-10 19:47 UTC.
 
-<!-- publication: model_id=3f85b4ef51411125 published_at_utc=2026-11-09T17:26:21.218863+00:00 -->
+<!-- publication: model_id=3f85b4ef51411125 published_at_utc=2026-11-10T19:47:58.012818+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -30,9 +30,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 08 | TB at CHI  | CHI -6.5         | 52.2%          |
 | Mon, Nov 09 | BUF at MIN | MIN +3.5         | 54.4%          |
 
-**Tiebreaker (last game, BUF at MIN):** MIN 20 - BUF 23, total 43 (market total 43.5) -- consistent with the MIN +3.5 pick.
+**Tiebreaker (last game, BUF at MIN):** MIN 21 - BUF 24, total 45 (market total 45.5) -- consistent with the MIN +3.5 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Partial lists: inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 52% and 51%. These broad groups do not establish a large advantage for the single highest estimate.
 
