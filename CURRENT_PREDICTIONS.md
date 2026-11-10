@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 9
 
-Published from the synchronized weak stack model, 2026-11-08 22:23 UTC.
+Published from the synchronized weak stack model, 2026-11-09 17:26 UTC.
 
-<!-- publication: model_id=3f85b4ef51411125 published_at_utc=2026-11-08T22:23:06.894460+00:00 -->
+<!-- publication: model_id=3f85b4ef51411125 published_at_utc=2026-11-09T17:26:21.218863+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,16 +15,16 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 05 | JAX at BAL | JAX -9.5         | 51.7%          |
-| Sun, Nov 08 | ARI at SEA | ARI +10.5        | 61.3%          |
+| Sun, Nov 08 | ARI at SEA | ARI +10.5        | 62.3%          |
 | Sun, Nov 08 | CIN at ATL | CIN -2.5         | 56.4%          |
-| Sun, Nov 08 | CLE at NO  | ★ NO -2.5        | 67.1%          |
-| Sun, Nov 08 | DAL at IND | IND +5.5         | 61.1%          |
+| Sun, Nov 08 | CLE at NO  | ★ NO -2.5        | 64.7%          |
+| Sun, Nov 08 | DAL at IND | IND +5.5         | 52.5%          |
 | Sun, Nov 08 | DEN at CAR | DEN -2.5         | 58.0%          |
 | Sun, Nov 08 | DET at MIA | MIA +6.5         | 50.9%          |
 | Sun, Nov 08 | GB at NE   | NE -2.5          | 55.3%          |
 | Sun, Nov 08 | HOU at LAC | HOU -4.5         | 54.3%          |
 | Sun, Nov 08 | LA at WAS  | WAS +5.5         | 60.6%          |
-| Sun, Nov 08 | LV at SF   | LV +9.5          | 52.8%          |
+| Sun, Nov 08 | LV at SF   | LV +9.5          | 50.0%          |
 | Sun, Nov 08 | NYG at PHI | PHI +3.5         | 51.9%          |
 | Sun, Nov 08 | NYJ at KC  | NYJ +9.5         | 58.9%          |
 | Sun, Nov 08 | TB at CHI  | CHI -6.5         | 52.2%          |
@@ -32,7 +32,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, BUF at MIN):** MIN 20 - BUF 23, total 43 (market total 43.5) -- consistent with the MIN +3.5 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Partial lists: inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Partial lists: inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 52% and 51%. These broad groups do not establish a large advantage for the single highest estimate.
 
@@ -43,8 +43,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| ARI at SEA | SEA             | ARI        | 61.3%          |
-| DAL at IND | DAL             | IND        | 61.1%          |
+| ARI at SEA | SEA             | ARI        | 62.3%          |
+| DAL at IND | DAL             | IND        | 52.5%          |
 | DET at MIA | DET             | MIA        | 50.9%          |
-| LV at SF   | SF              | LV         | 52.8%          |
+| LV at SF   | SF              | LV         | 50.0%          |
 <!-- LATE_WEEK_REFRESH:END -->
