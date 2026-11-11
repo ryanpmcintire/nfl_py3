@@ -345,3 +345,54 @@ this is a re-run of the same cells under the repaired engine and anchor
    SIM-11 14 gates pass, planted control re-run. Unresolved results are recorded
    with `weak-signals record`; zero crossing closes nothing and no pick is
    changed by the simulator alone.
+
+### Amendment 5 (before any look under it), 2026-11-11
+
+Declared before the tilt is applied to any draw. Seen already: the 2026-11-11
+inversion diagnosis (`docs/lanes/sim-finish-forecaster-inversion.md`,
+`scripts/sim08_inversion_diagnosis.py`) shifted each game's saved draws onto the
+opener (a diagnostic shift, not a definition) and graded the shifted read
+(about 70 looks counted in that lane; cover-logit coefficient +0.448, log loss
+.7631 v served .7638 v market histogram .7613). The tilt grade below uses the
+same saved draws and nearly the same quantity, so it is a second look at it
+and is counted as such. Mechanism for the inversion, measured there: the Amendment 3 one-shot
+inverse left the simulated mean margin off the line (leftover sd 1.90 points
+against a Monte Carlo standard error of 0.64), and the leftover carries the
+inverted cover logit.
+
+1. Conditioning, defined. The simulated margin distribution for a game has mean
+   equal to the opener line (and, where Amendment 4 conditions the total, the
+   total target). It is achieved by Amendment 4's iterated anchor followed by an
+   exponential tilt of the final draws to the exact mean margin
+   (`sim04_loso.tilt_to_mean`: weights proportional to exp(theta x margin), theta
+   by bisection so the weighted mean equals the line). The tilt is applied
+   identically to every game, keeps every simulated margin on its integer
+   lattice, and has no scale, offset or weight chosen from an outcome. The total
+   channel is left at Amendment 4's anchor and its stop rule; the weighted mean
+   total error is reported, not tilted.
+2. Effective sample. Reported per game as 1 / sum(w^2) for normalised weights.
+   Floor: the smallest effective sample at which the Monte Carlo standard error of
+   the cover probability, sqrt(0.25 / n_eff), stays at or under the 0.026 that
+   Amendment 1 item 4 states for the declared N = 372 (n_eff >= 0.25 / 0.026^2 =
+   369.8). Games below the floor are flagged and counted; a flag excludes no game
+   from any grade. The floor sits just under N, so a tilt that moves the mean
+   at all flags the game; the count and the n_eff distribution are the
+   information, and the weight-free (unweighted) draws are saved beside the
+   weights.
+3. Cells graded on the 2026-11-03 saved draws (`artifacts/sim08_market_anchored/main`,
+   372 draws, Amendment 3 engine without Amendment 4's terminal transitions, so
+   not the final run's shape): L1 to L5 as in section 6 (blend v served-only
+   recalibration is L4), S (12), P on the push-outcome games (1), push pricing on
+   whole-number lines (1), B (4), K at 3, 7, 10, 14, 17 (5), and K at 3 by the five
+   opener-spread bands of `scripts/sim30_margin_mass.py` (5). 33 cells, family
+   `sim08_market_anchored`, names prefixed `A5_`. Descriptive, not counted: fold
+   coefficients, reliability, effective sample distribution, decisive-game
+   record against the served side. T and O are not graded (the tilt does not
+   condition the total and is not a response to overtime). The spread-only arm
+   A1 is not re-run. Week-block bootstrap, `probability_positive` throughout.
+4. Implementation: `scripts/sim08_market_anchored.py`, flag `--amend5 1`
+   (environment `SIM08_AMEND5=1`), default off reproduces Amendments 3 and 4
+   byte for byte. The run saves the tilt weights and the unweighted draws.
+   The Amendment 4 decision rule (section 5 there) applies to the tilted run;
+   the simulated side stays a challenger and is served only if it beats the
+   discrete read on the opener grade through the played card.

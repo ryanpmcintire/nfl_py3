@@ -177,6 +177,18 @@ def amend4():
     return os.environ.get("SIM08_AMEND4") == "1"
 
 
+def amend5():
+    return os.environ.get("SIM08_AMEND5") == "1"
+
+
+def tilt_draw_weights(margins, target):
+    values, inverse, counts = np.unique(margins, return_inverse=True, return_counts=True)
+    per_value = base.tilt_to_mean(values.astype(float), counts.astype(float), float(target))
+    w = per_value[inverse] / counts[inverse]
+    w = w / w.sum()
+    return w * len(margins), 1.0 / float((w**2).sum())
+
+
 ITER_CAP = 4
 
 
@@ -229,6 +241,9 @@ def anchored_draws(eng, row, fit, n_draws, seed, spread_only=False):
     out = np.empty((n_draws, 3))
     for k in range(n_draws):
         out[k] = play(eng, rng, xd, xe, row["season"], row["week"])
+    if amend5():
+        w, _ = tilt_draw_weights(out[:, 0], row["line"])
+        out = np.column_stack([out, w])
     return xd, xe, out
 
 
@@ -300,7 +315,7 @@ def cmd_target(a):
         rows.append(
             {
                 "held_out": s,
-                "n": int(len(te)),
+                "n": len(te),
                 "form": tf["form"],
                 "fit_slope": tf["slope"],
                 "target_slope_on_opener": slope_tgt,
@@ -442,6 +457,16 @@ def cmd_smoke(a):
                 "ot_rate": float(out[:, 2].mean()),
                 "sim_home_cover": float((out[:, 0] > r["line"]).mean()),
                 "sim_home_loss": float((out[:, 0] < r["line"]).mean()),
+                **(
+                    {
+                        "tilt_ess": float(n_eff(out[None, :, 3])[0]),
+                        "tilt_mean_margin_err": float(
+                            (out[:, 3] * out[:, 0]).sum() / out[:, 3].sum() - r["line"]
+                        ),
+                    }
+                    if amend5()
+                    else {}
+                ),
             }
         )
     t_sim = time.time() - t2
@@ -651,7 +676,6 @@ def cmd_control(a):
         w = planted_weight(recal_logit[nonpush], y[nonpush], delta)
         plant = w * (2.0 * y - 1.0)
         blend = 1.0 / (1.0 + np.exp(-(recal_logit + plant)))
-        coefs = []
         ll_c = base.three_way_score(*three_way(blend, push), outcome)[0]
         d = ll_base - ll_c
         bs = np.bincount(inv, weights=d, minlength=nb)
@@ -673,7 +697,7 @@ def cmd_control(a):
                 "detected": bool(det >= 0.80),
             }
         )
-        brief = {k: v for k, v in results[-1].items()}
+        brief = dict(results[-1])
         print(json.dumps(brief), flush=True)
     Path(a.out).write_text(json.dumps(results, indent=1))
 
@@ -696,16 +720,24 @@ def design_task(task):
     return design_run(_ENG, pool, DESIGN_CHUNK, seed, X_DIFF_BOX, X_ENV_BOX)
 
 
+def n_eff(weights):
+    p = weights / weights.sum(1, keepdims=True)
+    return 1.0 / (p.astype(float) ** 2).sum(1)
+
+
 def game_task(task):
     row, fit, n_draws, seed, spread_only = task
     xd, xe, out = anchored_draws(_ENG, row, fit, n_draws, seed, spread_only)
-    return xd, xe, out[:, 0].astype(np.int16), out[:, 1].astype(np.int16), out[:, 2] > 0.5
+    base_out = xd, xe, out[:, 0].astype(np.int16), out[:, 1].astype(np.int16), out[:, 2] > 0.5
+    if amend5():
+        return (*base_out, out[:, 3])
+    return base_out
 
 
 def cmd_fold(a):
     import multiprocessing as mp
 
-    assert HELD == a.held_out, (HELD, a.held_out)
+    assert a.held_out == HELD, (HELD, a.held_out)
     assert_fold_state()
     out_dir = RUN_ROOT / a.run
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -761,8 +793,13 @@ def cmd_fold(a):
                 print(
                     f"fold {HELD} {a.arm} game {k}/{len(tasks)} {time.time() - t0:.0f}s", flush=True
                 )
+    tilt_extra = {}
+    if amend5():
+        wts = np.stack([r[5] for r in res])
+        tilt_extra = {"weights": wts, "ess": n_eff(wts)}
     np.savez(
         npz,
+        **tilt_extra,
         game_id=test["game_id"].to_numpy().astype(str),
         line=test["line"].to_numpy(),
         total=test["total"].to_numpy(),
@@ -858,6 +895,7 @@ def main():
     for name in ("fold", "full"):
         f = sub.add_parser(name)
         f.add_argument("--amend4", type=int, default=0)
+        f.add_argument("--amend5", type=int, default=0)
         f.add_argument("--run", default="main")
         f.add_argument("--workers", type=int, default=4)
         f.add_argument("--draws", type=int, default=372)
@@ -869,6 +907,8 @@ def main():
     a = ap.parse_args()
     if getattr(a, "amend4", 0):
         os.environ["SIM08_AMEND4"] = "1"
+    if getattr(a, "amend5", 0):
+        os.environ["SIM08_AMEND5"] = "1"
     SCRATCH.mkdir(parents=True, exist_ok=True)
     if a.cmd == "control" and a.noisy:
         cmd_control_noisy(a)

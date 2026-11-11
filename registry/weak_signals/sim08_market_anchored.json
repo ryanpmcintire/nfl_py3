@@ -1,6 +1,930 @@
 {
   "family": "sim08_market_anchored",
   "signals": {
+    "sim08_a5_b_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell B_10plus, block bootstrap",
+      "effect": -0.001261,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.005843,
+        0.003767
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.3265,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.002509
+    },
+    "sim08_a5_b_3.5to6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell B_3.5to6.5, block bootstrap",
+      "effect": 4.2e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.003219,
+        0.002994
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.507,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 554,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.001586
+    },
+    "sim08_a5_b_7to9.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell B_7to9.5, block bootstrap",
+      "effect": -0.003721,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.009187,
+        0.001849
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.1035,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.002789
+    },
+    "sim08_a5_b_le3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell B_le3, block bootstrap",
+      "effect": 0.001742,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000875,
+        0.004349
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.898,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 573,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.001332
+    },
+    "sim08_a5_k10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K10, block bootstrap",
+      "effect": 0.203826,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.678434,
+        1.086198
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.682,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.449508
+    },
+    "sim08_a5_k14": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K14, block bootstrap",
+      "effect": 0.515969,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.259864,
+        1.20776
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9195,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.370169
+    },
+    "sim08_a5_k17": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K17, block bootstrap",
+      "effect": -0.402315,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.209146,
+        0.418292
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.172,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.411544
+    },
+    "sim08_a5_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K3, block bootstrap",
+      "effect": -1.221775,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.649439,
+        0.133183
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.043,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.708232
+    },
+    "sim08_a5_k3_band_0_2.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K3_band_0_2.5, block bootstrap",
+      "effect": -0.416526,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.475416,
+        2.333023
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.3955,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 371,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 1.48126
+    },
+    "sim08_a5_k3_band_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K3_band_10plus, block bootstrap",
+      "effect": -2.012174,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -6.156188,
+        1.824791
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.1625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 2.082595
+    },
+    "sim08_a5_k3_band_3_3.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K3_band_3_3.5, block bootstrap",
+      "effect": -3.475838,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -6.919421,
+        -0.590394
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0065,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 366,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 1.602058
+    },
+    "sim08_a5_k3_band_4_6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K3_band_4_6.5, block bootstrap",
+      "effect": -0.634744,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.13187,
+        1.973305
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.32,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 1.335375
+    },
+    "sim08_a5_k3_band_7_9.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K3_band_7_9.5, block bootstrap",
+      "effect": 0.162529,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.412279,
+        3.564466
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.571,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 1.797008
+    },
+    "sim08_a5_k7": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell K7, block bootstrap",
+      "effect": 0.110643,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.97109,
+        1.135935
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.574,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.547207
+    },
+    "sim08_a5_l1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell L1, block bootstrap",
+      "effect": -0.002365,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.010145,
+        0.005178
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.2805,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.003882
+    },
+    "sim08_a5_l2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell L2, block bootstrap",
+      "effect": -0.001991,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00957,
+        0.006152
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.3045,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.004104
+    },
+    "sim08_a5_l3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell L3, block bootstrap",
+      "effect": -0.004817,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.007232,
+        -0.002233
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.001285
+    },
+    "sim08_a5_l4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell L4, block bootstrap",
+      "effect": -5.4e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00175,
+        0.00168
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.475,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.000894
+    },
+    "sim08_a5_l5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell L5, block bootstrap",
+      "effect": 0.004601,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000538,
+        0.009938
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9595,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.002668
+    },
+    "sim08_a5_p": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell P, block bootstrap",
+      "effect": -0.129284,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.238217,
+        -0.020648
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0105,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 34,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.055347
+    },
+    "sim08_a5_s_l1_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L1_2020, block bootstrap",
+      "effect": 0.012757,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.009689,
+        0.036039
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.8585,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.011912
+    },
+    "sim08_a5_s_l1_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L1_2021, block bootstrap",
+      "effect": -0.009541,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.04121,
+        0.022298
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.2675,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 239,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.016166
+    },
+    "sim08_a5_s_l1_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L1_2022, block bootstrap",
+      "effect": -0.00434,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.01924,
+        0.010777
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.2625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 255,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.007583
+    },
+    "sim08_a5_s_l1_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L1_2023, block bootstrap",
+      "effect": -0.002819,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.010778,
+        0.005815
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.2525,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.004315
+    },
+    "sim08_a5_s_l1_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L1_2024, block bootstrap",
+      "effect": -0.001021,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.016658,
+        0.014862
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.427,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.007989
+    },
+    "sim08_a5_s_l1_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L1_2025, block bootstrap",
+      "effect": -0.007719,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.025802,
+        0.012578
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.2,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.009459
+    },
+    "sim08_a5_s_l4_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L4_2020, block bootstrap",
+      "effect": -0.003746,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.008417,
+        0.000574
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.043,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.002297
+    },
+    "sim08_a5_s_l4_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L4_2021, block bootstrap",
+      "effect": 0.002107,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0014,
+        0.005748
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.8835,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 239,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.00183
+    },
+    "sim08_a5_s_l4_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L4_2022, block bootstrap",
+      "effect": -0.002743,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.009489,
+        0.004133
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.209,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 255,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.003423
+    },
+    "sim08_a5_s_l4_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L4_2023, block bootstrap",
+      "effect": 0.001929,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        0.000433,
+        0.003464
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.993,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.000776
+    },
+    "sim08_a5_s_l4_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L4_2024, block bootstrap",
+      "effect": -0.000216,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.004274,
+        0.003975
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.479,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.002078
+    },
+    "sim08_a5_s_l4_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell S_L4_2025, block bootstrap",
+      "effect": 0.00183,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00259,
+        0.005841
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.782,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.002177
+    },
+    "sim08_a5_whole_push_mass": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; second look at saved 2026-11-03 draws under Amendment 5",
+      "closing_ground": null,
+      "description": "Amendment 5 tilted simulator, cell whole_push_mass, block bootstrap",
+      "effect": -0.455282,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.166595,
+        1.195916
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt of saved draws to the opener line; 2026-11-03 engine without Amendment 4 terminal transitions. Log-loss cells: positive means tilted simulator better. Key-number cells: simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.304,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment5/grade.json",
+      "standard_error": 0.863266
+    },
     "sim08_inv_centred_gain_over_raw_l1": {
       "category": "modeling",
       "classification": "unresolved_below_power",

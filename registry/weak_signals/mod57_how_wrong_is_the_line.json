@@ -2128,6 +2128,454 @@
       ],
       "source": "artifacts/mod57_p2r/results.json",
       "standard_error": null
+    },
+    "mod57_p2s_A0_hindsight_gap_weeks_1_4_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A0 hindsight gap weeks 1 4 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.03990709479968685,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.16058758255924188,
+        0.2390819135627389
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.66425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A0_hindsight_gap_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A0 hindsight gap weeks 1 6 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.09142748752997788,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.04540919902890519,
+        0.2243658347898965
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.89775,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A0_real_residual_weeks_1_4_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A0 real residual weeks 1 4 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.1362599753451791,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.3828871390865353,
+        0.07262404875042935
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.1045,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A0_real_residual_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A0 real residual weeks 1 6 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.11369640389743427,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.31687467627361043,
+        0.05657133444326463
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.102,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A1_hindsight_gap_weeks_1_4_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A1 hindsight gap weeks 1 4 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.013774537722131792,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.09763209107182569,
+        0.11152512513868318
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.611,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A1_hindsight_gap_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A1 hindsight gap weeks 1 6 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.001720675708353007,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.09470451730119722,
+        0.09133487890262898
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.50625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A1_real_residual_weeks_1_4_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A1 real residual weeks 1 4 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.08265249666364347,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.04783242689873399,
+        0.19434493856760465
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.90225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_A1_real_residual_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of A1 real residual weeks 1 6 on the market offseason quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.03191412119826962,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0771598216842303,
+        0.1427034034012558
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.73575,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A0_weeks_1_4_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A0_weeks_1_4_close, decisive games, season-block bootstrap",
+      "effect": 1.6788321167883202,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -4.202898550724638,
+        6.686046511627907
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.72125,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A0_weeks_1_4_open_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A0_weeks_1_4_open, decisive games, season-block bootstrap",
+      "effect": 2.2222222222222254,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -4.2699724517906334,
+        8.823529411764707
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.7125,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A0_weeks_1_6_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A0_weeks_1_6_close, decisive games, season-block bootstrap",
+      "effect": 2.1521521521521536,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.368240091486352,
+        5.5
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.88875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A0_weeks_1_6_open_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A0_weeks_1_6_open, decisive games, season-block bootstrap",
+      "effect": 1.526717557251911,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.6901669758812616,
+        5.597014925373134
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.7435,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A1_weeks_1_4_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A1_weeks_1_4_close, decisive games, season-block bootstrap",
+      "effect": 1.0948905109489093,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.8732204502935852,
+        4.319497208265341
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.735,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A1_weeks_1_4_open_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A1_weeks_1_4_open, decisive games, season-block bootstrap",
+      "effect": 0.974930362116988,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.5714285714285716,
+        5.706521739130435
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.63675,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A1_weeks_1_6_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A1_weeks_1_6_close, decisive games, season-block bootstrap",
+      "effect": 0.2004008016032066,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.060405248801915,
+        2.1913444028278106
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.58475,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
+    },
+    "mod57_p2s_walkforward_A1_weeks_1_6_open_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, A1_weeks_1_6_open, decisive games, season-block bootstrap",
+      "effect": 1.6252390057361343,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.0894362983392527,
+        3.930530164533821
+      ],
+      "league": "nfl",
+      "notes": "Market offseason re-rating and prior-season surprise against early-season results and the hindsight gap (leak, outcome only); walk-forward sign for picks.",
+      "plain_summary": "Whether the line's offseason re-rating of a team is too big or too small.",
+      "probability_positive": 0.87675,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2s/results.json",
+      "standard_error": null
     }
   }
 }
