@@ -1,6 +1,510 @@
 {
   "family": "mod57_quiet_game_slopes",
   "signals": {
+    "mod57_p2t_arm_b_both_by_phase_2020_25_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_b_both_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.6734405777885819,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -3.0001001335113484,
+        1.7031012665021874
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2751,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_b_both_by_phase_2020_25_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_b_both_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.0019248635789534032,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0046540361146371455,
+        0.0004886759306989775
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0607,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_b_both_by_phase_2020_25_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_b_both_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.004350297929223606,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.010209166778060899,
+        0.0007475488706440069
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0484,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_b_both_by_phase_2026_wk1_9_forward_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_b_both_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -5.838308052595818,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -12.318840579710145,
+        1.4598540145985401
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0429,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_b_both_by_phase_2026_wk1_9_forward_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_b_both_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.004003050187814992,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.011436952460330106,
+        0.0035841721491061264
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1488,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_b_both_by_phase_2026_wk1_9_forward_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_b_both_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.008325643486297671,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.023649019309418182,
+        0.00733090087524587
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1469,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_m4_model_slope_by_phase_2020_25_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_m4_model_slope_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.7241137434423676,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -2.7553895732791465,
+        1.3253810470510272
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2298,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_m4_model_slope_by_phase_2020_25_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_m4_model_slope_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": 0.00016506052498115753,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0014394431415845645,
+        0.0017694118678940453
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5833,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_m4_model_slope_by_phase_2020_25_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_m4_model_slope_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": 0.0003578702478717798,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0029319712313387717,
+        0.0036407292753900234
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_m4_model_slope_by_phase_2026_wk1_9_forward_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_m4_model_slope_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -6.652588784357944,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -12.592592592592593,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0187,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_m4_model_slope_by_phase_2026_wk1_9_forward_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_m4_model_slope_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.0004281374500084709,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.006084419304372539,
+        0.00593062292168832
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.427,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_m4_model_slope_by_phase_2026_wk1_9_forward_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_m4_model_slope_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.0009094338406944658,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.012427580716101285,
+        0.012118302338247516
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.4235,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_v4_move_slope_by_phase_2020_25_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_v4_move_slope_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.46269251937661904,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -1.6711509398529858,
+        0.733822548365577
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.208,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_v4_move_slope_by_phase_2020_25_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_v4_move_slope_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.0019875499026452254,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.004036279491260348,
+        -0.0003453172894688631
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0073,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_v4_move_slope_by_phase_2020_25_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_v4_move_slope_by_phase versus the four-term served probability, 2020_25_all_games, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.0044463467081354265,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.008874380490650358,
+        -0.0008949611075543423
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0044,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_v4_move_slope_by_phase_2026_wk1_9_forward_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_v4_move_slope_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -5.852810572155083,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -10.220856590811506,
+        -2.158273381294964
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_v4_move_slope_by_phase_2026_wk1_9_forward_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_v4_move_slope_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.0038787108719011967,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.008854274534395341,
+        -0.00043377032247130486
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0052,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
+    "mod57_p2t_arm_v4_move_slope_by_phase_2026_wk1_9_forward_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-T: arm_v4_move_slope_by_phase versus the four-term served probability, 2026_wk1_9_forward, week-block bootstrap; improvement positive; phase boundaries chosen after descriptive reads of the same games.",
+      "effect": -0.007968314983101467,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.01829932607997544,
+        -0.0006558857363421381
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0098,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2t/results.json",
+      "standard_error": null
+    },
     "mod57_u4_arm_a_move_slope_by_size_all_games_accuracy_points": {
       "category": "market",
       "classification": "unresolved_below_power",

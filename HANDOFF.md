@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T15:58:32.627008+00:00`
+Refreshed at: `2026-11-11T16:11:41.498200+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T15:58:32.627008+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f5be4149fbcf` — Close the late-game shape rows with no hook warranted
-- Pending change set: 348 paths
+- Baseline commit: `4a5025a6326f` — Record where the served picks win by week and the Amendment 5 grade
+- Pending change set: 355 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p2s-offseason-adjustment.md`
+  - `A  docs/lanes/mod57-p2t-model-weight-by-phase.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - `M  docs/lanes/sim-22-plays-per-drive-logging-in-the-resampler.md`
+  - `M  docs/lanes/sim-25-pool-stratum-by-score-sign-and-clock.md`
+  - `M  docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
+  - `M  docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
   - `M  docs/lanes/sim-finish-2026-11-11.md`
-  - `A  docs/lanes/sim-finish-amendment5.md`
+  - `A  docs/lanes/sim-finish-amendment6.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - `M  docs/sim08_market_anchored_declaration.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `M  registry/weak_signals/mod57_how_wrong_is_the_line.json`
-  - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `M  registry/weak_signals/sim08_market_anchored.json`
-  - `A  scripts/mod57_p2s_offseason_adjustment.py`
-  - `A  scripts/sim08_amendment5_grade.py`
-  - ...and 328 more
+  - ...and 335 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1,0 +1,33 @@
+{
+  "family": "sim29_lineup",
+  "signals": {
+    "sim29_read_vs_ladder_team_missing_count": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Expected missing starters per team-week from the wording read versus the designation ladder, mean absolute error against realised missing, 2026 Weeks 2-8",
+      "effect": 0.0383,
+      "effect_units": "mae_improvement",
+      "family": "sim29_lineup",
+      "interval": [
+        0.0115,
+        0.0667
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The wording read predicts a team's missing starters with 0.038 less absolute error than the designation ladder over 151 team-weeks; counts only, no player value weighting",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 151,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/sim29/lineup_expectation.json",
+      "standard_error": null
+    }
+  }
+}

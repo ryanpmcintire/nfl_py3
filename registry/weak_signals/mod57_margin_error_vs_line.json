@@ -8,14 +8,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: elastic net on all features, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean absolute error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.002135275724495799,
-      "effect_units": "margin_abs_error_points_better_than_line",
+      "effect_units": "mae_improvement",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.0095907096019702,
         0.004900119637010013
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_abs_error_points_better_than_line', which the registry does not accept; retagged mae_improvement.",
       "plain_summary": null,
       "probability_positive": 0.2925,
       "recorded_at": "2026-11-11",
@@ -36,14 +36,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: elastic net on all features, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; realised residual regressed on predicted residual; 1 honest, 0 noise",
       "effect": 0.6941414834006391,
-      "effect_units": "residual_calibration_slope",
+      "effect_units": "slope_difference",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.05550023703113187,
         2.0118840995045026
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'residual_calibration_slope', which the registry does not accept; retagged slope_difference.",
       "plain_summary": null,
       "probability_positive": 0.964,
       "recorded_at": "2026-11-11",
@@ -64,14 +64,15 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: elastic net on all features, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean squared error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": 0.0478019752496921,
-      "effect_units": "margin_squared_error_points_better_than_line",
+      "effect_units": "ats_points",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.18277433273914706,
         0.2386506913160832
       ],
+      "invalidated_reason": "Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.",
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_squared_error_points_better_than_line', which the registry does not accept; retagged ats_points.\n[2026-11-11T16:08:56.911330+00:00] invalidated: Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.. Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.677,
       "recorded_at": "2026-11-11",
@@ -83,7 +84,9 @@
         2025
       ],
       "source": "artifacts/mod57_p2n/results.json",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "mod57_p2n_G_abs_error_gain_2015_2025": {
       "category": "modeling",
@@ -92,14 +95,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: gradient boosting on all features, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean absolute error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.0686296827795205,
-      "effect_units": "margin_abs_error_points_better_than_line",
+      "effect_units": "mae_improvement",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.10674002981905595,
         -0.033162179718747416
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_abs_error_points_better_than_line', which the registry does not accept; retagged mae_improvement.",
       "plain_summary": null,
       "probability_positive": 0.0,
       "recorded_at": "2026-11-11",
@@ -120,14 +123,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: gradient boosting on all features, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; realised residual regressed on predicted residual; 1 honest, 0 noise",
       "effect": -0.09920590486440939,
-      "effect_units": "residual_calibration_slope",
+      "effect_units": "slope_difference",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.7453514570424863,
         0.19095586656476196
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'residual_calibration_slope', which the registry does not accept; retagged slope_difference.",
       "plain_summary": null,
       "probability_positive": 0.29,
       "recorded_at": "2026-11-11",
@@ -148,14 +151,15 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: gradient boosting on all features, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean squared error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -1.500412376079737,
-      "effect_units": "margin_squared_error_points_better_than_line",
+      "effect_units": "ats_points",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -2.46246456258374,
         -0.5412812246951878
       ],
+      "invalidated_reason": "Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.",
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_squared_error_points_better_than_line', which the registry does not accept; retagged ats_points.\n[2026-11-11T16:09:10.149106+00:00] invalidated: Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.. Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.0,
       "recorded_at": "2026-11-11",
@@ -167,7 +171,9 @@
         2025
       ],
       "source": "artifacts/mod57_p2n/results.json",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "mod57_p2n_H_abs_error_gain_2015_2025": {
       "category": "modeling",
@@ -176,14 +182,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: gradient boosting on the 88 inputs, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean absolute error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.024435759392927144,
-      "effect_units": "margin_abs_error_points_better_than_line",
+      "effect_units": "mae_improvement",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.04163031235916986,
         -0.0042581054741716836
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_abs_error_points_better_than_line', which the registry does not accept; retagged mae_improvement.",
       "plain_summary": null,
       "probability_positive": 0.0085,
       "recorded_at": "2026-11-11",
@@ -204,14 +210,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: gradient boosting on the 88 inputs, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; realised residual regressed on predicted residual; 1 honest, 0 noise",
       "effect": 0.2173846583027253,
-      "effect_units": "residual_calibration_slope",
+      "effect_units": "slope_difference",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.30495128793461906,
         0.6482050985896642
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'residual_calibration_slope', which the registry does not accept; retagged slope_difference.",
       "plain_summary": null,
       "probability_positive": 0.8265,
       "recorded_at": "2026-11-11",
@@ -232,14 +238,15 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: gradient boosting on the 88 inputs, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean squared error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.3498078905930216,
-      "effect_units": "margin_squared_error_points_better_than_line",
+      "effect_units": "ats_points",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.8407690104397222,
         0.12097830700462467
       ],
+      "invalidated_reason": "Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.",
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_squared_error_points_better_than_line', which the registry does not accept; retagged ats_points.\n[2026-11-11T16:09:16.599063+00:00] invalidated: Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.. Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.0715,
       "recorded_at": "2026-11-11",
@@ -251,7 +258,9 @@
         2025
       ],
       "source": "artifacts/mod57_p2n/results.json",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "mod57_p2n_R_abs_error_gain_2015_2025": {
       "category": "modeling",
@@ -260,14 +269,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: served ridge, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean absolute error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.19067031963812411,
-      "effect_units": "margin_abs_error_points_better_than_line",
+      "effect_units": "mae_improvement",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.29035243021351126,
         -0.11015856096266922
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_abs_error_points_better_than_line', which the registry does not accept; retagged mae_improvement.",
       "plain_summary": null,
       "probability_positive": 0.0,
       "recorded_at": "2026-11-11",
@@ -288,14 +297,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: served ridge, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; realised residual regressed on predicted residual; 1 honest, 0 noise",
       "effect": 0.04558353291493724,
-      "effect_units": "residual_calibration_slope",
+      "effect_units": "slope_difference",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.08577420284111491,
         0.2174079282074814
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'residual_calibration_slope', which the registry does not accept; retagged slope_difference.",
       "plain_summary": null,
       "probability_positive": 0.7235,
       "recorded_at": "2026-11-11",
@@ -316,14 +325,15 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: served ridge, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean squared error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -5.534263798350511,
-      "effect_units": "margin_squared_error_points_better_than_line",
+      "effect_units": "ats_points",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -8.604481111917735,
         -2.976672466414368
       ],
+      "invalidated_reason": "Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.",
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_squared_error_points_better_than_line', which the registry does not accept; retagged ats_points.\n[2026-11-11T16:09:34.786249+00:00] invalidated: Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.. Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.0,
       "recorded_at": "2026-11-11",
@@ -335,7 +345,9 @@
         2025
       ],
       "source": "artifacts/mod57_p2n/results.json",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "mod57_p2n_S_abs_error_gain_2015_2025": {
       "category": "modeling",
@@ -344,14 +356,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: shrunk served ridge, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean absolute error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.007038966114181584,
-      "effect_units": "margin_abs_error_points_better_than_line",
+      "effect_units": "mae_improvement",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.015621878465828088,
         -0.00017492121871715027
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_abs_error_points_better_than_line', which the registry does not accept; retagged mae_improvement.",
       "plain_summary": null,
       "probability_positive": 0.024,
       "recorded_at": "2026-11-11",
@@ -372,14 +384,14 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: shrunk served ridge, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; realised residual regressed on predicted residual; 1 honest, 0 noise",
       "effect": 0.4208050737581786,
-      "effect_units": "residual_calibration_slope",
+      "effect_units": "slope_difference",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.8715840341033971,
         2.0731724716923514
       ],
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'residual_calibration_slope', which the registry does not accept; retagged slope_difference.",
       "plain_summary": null,
       "probability_positive": 0.6855,
       "recorded_at": "2026-11-11",
@@ -400,14 +412,15 @@
       "closing_ground": null,
       "description": "MOD-57 P2-N: shrunk served ridge, walk-forward, test seasons 2015-2025, target residual = margin minus closing line, season-block bootstrap; mean squared error of the line minus that of line plus predicted residual; positive is better than the line",
       "effect": -0.02419222862061862,
-      "effect_units": "margin_squared_error_points_better_than_line",
+      "effect_units": "ats_points",
       "family": "mod57_margin_error_vs_line",
       "interval": [
         -0.3924244990895089,
         0.4234650749618915
       ],
+      "invalidated_reason": "Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.",
       "league": "nfl",
-      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.",
+      "notes": "15 primary looks: 5 arms x absolute error, squared error, calibration slope. Predicted residual targets the closing line.\nUnit corrected 2026-11-11: first recorded as 'margin_squared_error_points_better_than_line', which the registry does not accept; retagged ats_points.\n[2026-11-11T16:09:46.108448+00:00] invalidated: Recorded 2026-11-11 in a unit the registry cannot represent (margin_squared_error_points_better_than_line); excluded from pooling. The value and interval stand in the unit's lane under docs/lanes (mod57-p2n, mod57-p2o or mod57-p2p); the paired absolute-error and slope cells carry the result.. Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.428,
       "recorded_at": "2026-11-11",
@@ -419,7 +432,9 @@
         2025
       ],
       "source": "artifacts/mod57_p2n/results.json",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     }
   }
 }

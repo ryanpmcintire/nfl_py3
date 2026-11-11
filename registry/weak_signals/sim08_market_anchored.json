@@ -925,6 +925,706 @@
       "source": "artifacts/sim08_amendment5/grade.json",
       "standard_error": 0.863266
     },
+    "sim08_a6_h1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H1",
+      "effect": -0.012978,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.022411,
+        -0.003206
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.004892
+    },
+    "sim08_a6_h2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H2",
+      "effect": -0.01293,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.022411,
+        -0.003215
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.004865
+    },
+    "sim08_a6_h3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H3",
+      "effect": 4.538578,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        1.371874,
+        7.769444
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.637146
+    },
+    "sim08_a6_h4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H4",
+      "effect": 4.387292,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        1.035046,
+        7.641518
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9955,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.668598
+    },
+    "sim08_a6_h5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H5",
+      "effect": 0.000477,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000192,
+        0.001187
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.921,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.000355
+    },
+    "sim08_a6_k10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K10",
+      "effect": 0.191099,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.691612,
+        1.003206
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.674,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.431794
+    },
+    "sim08_a6_k14": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K14",
+      "effect": 0.537795,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.264855,
+        1.296634
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.91,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.403744
+    },
+    "sim08_a6_k17": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K17",
+      "effect": -0.369821,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.200294,
+        0.404011
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.1755,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.406434
+    },
+    "sim08_a6_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3",
+      "effect": -1.320581,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.77225,
+        0.068581
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.03,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.712942
+    },
+    "sim08_a6_k3_band_0_2.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_0_2.5",
+      "effect": -0.475247,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.575041,
+        2.169731
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.3765,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 371,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.459418
+    },
+    "sim08_a6_k3_band_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_10plus",
+      "effect": -2.184009,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -6.345211,
+        1.644905
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.1405,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 2.078569
+    },
+    "sim08_a6_k3_band_3_3.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_3_3.5",
+      "effect": -3.497456,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -6.816758,
+        -0.493778
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 366,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.64085
+    },
+    "sim08_a6_k3_band_4_6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_4_6.5",
+      "effect": -0.718066,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.547022,
+        1.682984
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.265,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.335418
+    },
+    "sim08_a6_k3_band_7_9.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_7_9.5",
+      "effect": -0.090797,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.679416,
+        3.094544
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.5065,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.728475
+    },
+    "sim08_a6_k7": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7",
+      "effect": 0.06671,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.024075,
+        1.198229
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.538,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.580872
+    },
+    "sim08_a6_k7_band_0_2.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_0_2.5",
+      "effect": -0.258361,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.608334,
+        2.069956
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.4415,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 371,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.224133
+    },
+    "sim08_a6_k7_band_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_10plus",
+      "effect": 1.112944,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.82454,
+        3.644355
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.7705,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.444703
+    },
+    "sim08_a6_k7_band_3_3.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_3_3.5",
+      "effect": -0.277649,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.581794,
+        1.962894
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.4335,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 366,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.163197
+    },
+    "sim08_a6_k7_band_4_6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_4_6.5",
+      "effect": -0.042852,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.353316,
+        2.136009
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.507,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.154491
+    },
+    "sim08_a6_k7_band_7_9.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_7_9.5",
+      "effect": 0.400141,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.292329,
+        3.098382
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.634,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 1.403632
+    },
+    "sim08_a6_t1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell T1",
+      "effect": 0.000865,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.006671,
+        0.008292
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.601,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.003812
+    },
+    "sim08_a6_w1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W1",
+      "effect": 0.0014,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.008585,
+        0.011903
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.606,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.005179
+    },
+    "sim08_a6_w2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W2",
+      "effect": 0.027415,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.006513,
+        0.076766
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.886,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.022498
+    },
+    "sim08_a6_w3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W3",
+      "effect": -0.000464,
+      "effect_units": "brier_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00115,
+        0.000178
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0785,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.000337
+    },
+    "sim08_a6_w4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; third conditioning examined on the saved 2026-11-03 draws under Amendment 6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W4",
+      "effect": -2.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000884,
+        0.000782
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without Amendment 4 terminal transitions. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.4955,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/grade.json",
+      "standard_error": 0.000422
+    },
     "sim08_inv_centred_gain_over_raw_l1": {
       "category": "modeling",
       "classification": "unresolved_below_power",

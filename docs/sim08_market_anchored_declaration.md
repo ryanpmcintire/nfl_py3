@@ -396,3 +396,78 @@ inverted cover logit.
    The Amendment 4 decision rule (section 5 there) applies to the tilted run;
    the simulated side stays a challenger and is served only if it beats the
    discrete read on the opener grade through the played card.
+
+### Amendment 6 (before any look under it), 2026-11-11
+
+Declared at 2026-11-11 10:59:10, before the balance-point tilt is applied to any draw. Seen
+already, on the same saved draws: the diagnostic shift (about 70 looks), the
+Amendment 5 mean tilt (33 cells; cover-logit coefficient -0.498, negative in all
+six folds, -0.99 on half-point lines), and this amendment's descriptive check of
+real games (`artifacts/sim08_amendment6/step1.json`, closing lines 2009 to 2025,
+no simulated draw involved). That check: favourite margin minus line is above
+zero on 3.5 (+0.99), 4.5 (+1.49) and 7.0 (+1.86) and below zero on 2.5 (-1.62)
+while the favourite's share of decisive games is 0.470 to 0.521 on every line
+of 1 to 7.5 (every one of those intervals contains 0.5; lowest 0.443 on 5.5);
+push share is 0.090 at 3, 0.060 at 7, 0.085 at 10. This is the
+third conditioning examined on these draws, so the looks below are counted as a
+third family on the same data.
+
+1. Mechanism and definition. A point spread is the market's balance point, the
+   number at which each side covers about half the time among decided games, not
+   the mean of the margin. Margins sit on a lattice with atoms at 3, 7, 10, 14
+   and 17, so balance point and mean differ, most on half-point lines next to an
+   atom; forcing the simulated mean onto the line (Amendment 5) therefore asks
+   the simulator to say the favourite covers less than half the time on a 3.5
+   that the market chose because it balances. Conditioning is defined as: the
+   simulated distribution's cover share among non-push outcomes at the opening
+   line equals one half. It is achieved by an exponential tilt of the saved
+   draws, weights proportional to exp(theta x (margin - line)), theta by
+   bisection per game so the weighted cover share among non-push draws is one
+   half. The tilt is one definition applied to every game; it keeps every
+   simulated margin on its integer lattice and uses no outcome.
+2. Why one half and not a price-implied value. The archive's opener prices are
+   near even: the no-vig home-cover probability at the pool line has a standard
+   deviation of 0.029 logit across 1,465 priced games (LEAD-98,
+   `docs/lanes/lead98-price-skew.md`, measured 2026-10-16), and its fitted use
+   as a term was unresolved. A price-implied target would add a second quantity
+   the archive cannot support at that precision.
+3. Effective sample. Reported per game as 1 / sum(w^2) for normalised weights,
+   against the Amendment 5 floor 369.8; the count below the floor and the
+   distribution are reported, no game is excluded from any grade.
+4. What is not graded. Cover at the opener is one half by construction and is
+   not a cell. The simulator's product under this conditioning is the shape
+   around the line: the push mass at whole-number lines and the mass a half point
+   crosses. Cells (25 as run: W1 to W4, T1, H1 to H5, K five, K by band ten; family `sim08_market_anchored`, names prefixed `A6_`):
+   a. Push pricing on whole-number opener lines having a leave-one-season-out
+      empirical push-table value (`pool_hook.push_mass_table` built from the
+      other seasons of the opener evaluation frame): W1 three-way log loss
+      served minus simulated (cover and loss each (1 - push)/2, push from the
+      simulation); W2 three-way log loss of the empirical table with the same
+      balanced split minus simulated; W3 push-outcome squared error, served
+      minus simulated; W4 same, table minus simulated. T1 is W1's quantity on
+      all 1,537 games (pushes kept).
+   b. Served hook rows (`artifacts/pick_probability/20261111T011859Z/hook_rows.parquet`,
+      whole-number lines moved a half point each way, weight 0.5 per row, 1,322
+      rows): the simulated probability of the home side covering the half-point
+      pool line, (weighted draws with margin above the pool line + 0.5)/(N + 1).
+      H1 log loss of the served two-stage probability
+      (`two_stage_out_of_season_home_probability`) minus simulated; H2 the same
+      against the empirical crossed-mass read, sigmoid(stage-one out-of-season
+      logit + `pool_hook`) with coefficient fixed at 1; H3 and H4 accuracy
+      (percentage points) of served and of the empirical read minus simulated;
+      H5 log loss of stage one plus empirical hook minus stage one plus the
+      simulated hook (same stage-one logit, only the push mass differs). The
+      decisive-game record (rows where the simulated side differs from the
+      served side) is reported before these cells.
+   c. Key-number mass after this conditioning: K at 3, 7, 10, 14, 17 (5) and K at
+      3 and at 7 by the five spread bands of Amendment 5 (10), simulated minus
+      real.
+   Descriptive, not counted: effective sample distribution, reliability of the
+   simulated push mass, per-season H1, push shares printed before use.
+5. Implementation: `scripts/sim08_amendment6_grade.py` on the saved
+   `artifacts/sim08_market_anchored/main` draws (Amendment 3 engine, without
+   Amendment 4 terminal transitions); outputs `artifacts/sim08_amendment6/`.
+   Week-block bootstrap and `probability_positive`. The simulated side stays a
+   challenger and is served only if it beats the discrete read on the opener
+   grade through the played card (AGENTS.md, Margins are multimodal). Cells are
+   recorded `unresolved_below_power` unless an admissible closing ground applies.
