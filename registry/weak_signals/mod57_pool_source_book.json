@@ -708,6 +708,426 @@
       ],
       "source": "tests/scratch/mod57/u1c_run.out",
       "standard_error": null
+    },
+    "mod57_u8_2026_d26_i_pool_fd_tuesday_line": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Descriptive 2026 weeks 3-9: better-number side cover rate minus 50 where pool differs from leaders anchor, group d26 i pool = FD Tuesday line; no fit",
+      "effect": 11.538461538461542,
+      "effect_units": "rate_pp",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -2.9815178157746702,
+        24.695347101303334
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.9508146757797541,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 52,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_2026_d26_ii_half_point_off_fd_whole_number": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Descriptive 2026 weeks 3-9: better-number side cover rate minus 50 where pool differs from leaders anchor, group d26 ii half point off FD whole number; no fit",
+      "effect": -3.3333333333333326,
+      "effect_units": "rate_pp",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -28.733327048069214,
+        23.413865272260338
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.4018096923828125,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_2026_d26_iii_other": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Descriptive 2026 weeks 3-9: better-number side cover rate minus 50 where pool differs from leaders anchor, group d26 iii other; no fit",
+      "effect": 16.666666666666664,
+      "effect_units": "rate_pp",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -20.070494379145963,
+        42.514536858030816
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.828125,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_leaders_anchor_2020_22_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = leaders_anchor, 2020-22, pushes kept, week-block bootstrap",
+      "effect": -1.3513513513513513,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -3.543721173202864,
+        0.8425607325958558
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.10325,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 629,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_leaders_anchor_2020_22_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = leaders_anchor, 2020-22, pushes kept, week-block bootstrap",
+      "effect": -6.972913593884733e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0009614913663273204,
+        0.0008032562465948485
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.43825,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 629,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_leaders_anchor_2020_22_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = leaders_anchor, 2020-22, pushes kept, week-block bootstrap",
+      "effect": -0.00013150226679625106,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0019344844916602973,
+        0.0016174182965239456
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.442,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 629,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_leaders_anchor_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = leaders_anchor, 2023-25, pushes kept, week-block bootstrap",
+      "effect": -0.06157635467980296,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -1.4058679706601467,
+        1.3028105440539242
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.44775,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_leaders_anchor_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = leaders_anchor, 2023-25, pushes kept, week-block bootstrap",
+      "effect": -7.072935581671459e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0007762636886031006,
+        0.0006186203719232761
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.421,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_leaders_anchor_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = leaders_anchor, 2023-25, pushes kept, week-block bootstrap",
+      "effect": -0.00014878644474122218,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0015952528719865961,
+        0.0012549729716127937
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.41875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_source_anchor_2020_22_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = source_anchor, 2020-22, pushes kept, week-block bootstrap",
+      "effect": -0.9538950715421303,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -2.4143302180685358,
+        0.46728971962616817
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.0915,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 629,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_source_anchor_2020_22_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = source_anchor, 2020-22, pushes kept, week-block bootstrap",
+      "effect": 0.0004598332683655594,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        8.272040320448313e-05,
+        0.0008502611759699819
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.9935,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 629,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_source_anchor_2020_22_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = source_anchor, 2020-22, pushes kept, week-block bootstrap",
+      "effect": 0.000921836861050542,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        0.00016826049002248338,
+        0.0016957441850850665
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.9945,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 629,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_source_anchor_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = source_anchor, 2023-25, pushes kept, week-block bootstrap",
+      "effect": 0.24630541871921183,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.8761225654875612,
+        1.4425256952841605
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.64175,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_source_anchor_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = source_anchor, 2023-25, pushes kept, week-block bootstrap",
+      "effect": 9.068199769711147e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.00014872120493485147,
+        0.00035031851526455185
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.74275,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
+    },
+    "mod57_u8_source_anchor_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool rebuilt from FanDuel, anchor = source_anchor, 2023-25, pushes kept, week-block bootstrap",
+      "effect": 0.00015957843640110003,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0003201943700091334,
+        0.0006856758129050745
+      ],
+      "league": "nfl",
+      "notes": "Pool rebuilt from FanDuel; leaders-book and FanDuel-source anchors compared with the all-books median reference measured in u1c.",
+      "plain_summary": null,
+      "probability_positive": 0.7115,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u8_run.out",
+      "standard_error": null
     }
   }
 }

@@ -25,16 +25,30 @@ Owner 2026-11-11: reach 60% pick accuracy without overfitting. Yardstick: every 
 5. Slopes on 2026: lane mod57-u5-slopes-on-2026.md. Both arms frozen on 2020-25 and scored once on the 2026 Week 1-9 replay, which neither has seen.
    DONE (measured, unit 5; tests/scratch/mod57/u5/results.json; 6 cells unresolved): current structure 85-51; move-slope split 81-55 (-2.93 pts [-8.9, +3.0], P+ .15; changed picks 10-14, half-point moves 6-9); model-slope split 82-54 (changed 0-3; log loss gain +.0017, P+ .78). The 2020-25 quiet-game gain did not repeat. Not served; no further arm.
 
+6. FanDuel noon capture: lane mod57-u6-fanduel-noon-capture.md. Free FanDuel spreads into the raw captures so Tuesday 11-17 noon separates FanDuel from DraftKings as the pool's source. DONE and reverted: FanDuel and DraftKings were already inside every saved Odds Gap payload; keeping them in the quote table would change the served pool-line anchor's book set untested, so the edit was undone and no job added.
+7. Pool source from saved payloads: lane mod57-u7-pool-source-from-payloads.md. Parse the 46 saved response.json files (all books, since 2026-09-20) and match each book's Tuesday-noon line to the pool for Weeks 3-10.
+   DONE (measured, unit 7; tests/scratch/mod57/u7_an.out): the pool's line is FanDuel's. Exact match on 101 common games FanDuel 77, DraftKings 60, cross-book median 58; where the two differ (29 games) the pool equals FanDuel 22, DraftKings 5; Weeks 9-10, the only scans within minutes of noon, FanDuel 12 of 12 (Week 10 14 of 14), DraftKings 9 of 12. A FanDuel whole number is always moved a half point (19 games: underdog 12, favourite 7; no rule). The FanDuel history (two-stage 55.2% v stage 1 55.3% with an all-books anchor) is therefore the applicable regrade.
+8. FanDuel-anchored term: lane mod57-u8-fanduel-anchored-term.md. With the pool rebuilt from FanDuel, which reference line gives the pool-line term value: the three leader books (the live definition) or FanDuel's own line (term only where the pool moved off a whole number). Plus a 2026 three-way split of the offset games.
+   DONE (measured, unit 8; tests/scratch/mod57/u8_run.out; 15 cells unresolved): pool rebuilt from FanDuel, 2023-25, two-stage v stage 1 55.30%: leaders anchor (the live definition) 55.23% (-0.06 pts [-1.41, +1.30], P+ .45; coefficients .42-1.08); FanDuel's own line as anchor 55.54% (+0.25 [-0.88, +1.44], P+ .64; log loss P+ .71; coefficients .79-.98; nonzero on 20% of games); all-books median 55.17%. 2020-22 all arms negative on accuracy. 2026 Weeks 3-9, 76 games where the pool differs from the leaders anchor: pool equals FanDuel's line 52 games, better-number side 32-20; half point off a FanDuel whole number 15 games, 7-8; other 9 games, 6-3. History gives the served pool-line term no resolved value at FanDuel lines; 2026 has favoured it. No anchor beats another. Served term unchanged; the Weeks 10-18 cohort decides.
+
+## Bottom line (2026-11-11)
+- Every-game held-out level at the real pool process (FanDuel's Tuesday line): about 55.3%. 60% needs the quiet games (59% of the slate, 50.4%) near 58%; eight units moved nothing servable there.
+- 60% exists held out on games that move a full point or more after Tuesday (62.7%, 41% of games) and on the most confident tenth of picks (62.7%).
+
 ## Committed
 - 0fe26b88 (pushed 2026-11-11): scheduler captures, MOD-57 row, lanes, units 1-3 registry cells, handoff current.
+- 2573dc24 (pushed 2026-11-11): holiday and Christmas slots, units 4-5 lanes, script and registry cells.
 
 ## Tried
+- Do not relaunch MOD-39 playoff leverage: its ROADMAP row says unmeasured but docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md holds a 2026-11-03 result (accuracy +0.68 pts, P+ .74; log loss P+ .18). Read the lane of any backlog row before starting it.
 - Read 2026-11-11 (done/market-move-decomposition.md): the historical move term covers 2023-25 only (799 games), three leader books, Wednesday to min(kickoff, Sunday 12:45 PM ET); 2020-22 have no move input.
 - Prior work not to repeat: MOD-23/24 base-model units (team data is priced), MOD-26 hook, MOD-27 units, MOD-55 move anchor, MOD-56 book depth, LEAD-74 price change at a fixed spread, LEAD-98 Tuesday price skew, ml_spread_divergence_on_production, fix-picks u5 single lattice term, synthetic stacked offsets (mod27-u6).
 
 ## Next
-- Capture FanDuel and DraftKings within minutes of Tuesday noon in Week 11 to separate the pool's source (FanDuel has no 2026 quotes after Week 2).
-- Why the offset term loses in 2020-22 on both arms (pre-noon snapshot, no move input) is unexplained; measure before any refit of the 0.805 coefficient.
+- Thursday 11-12 after 19:20 ET: grep data/scheduler_log.txt for `OK odds_private_thu_1900` then `refresh_thu_inactives_primetime` (first live run of the new slots). Sunday 11-15: same for odds_private_sun_0815, _sun_1445, _sun_1520 and refresh_last_call_sun_1535.
+- Tuesday 11-17 after the 12:10 capture: rerun tests/scratch/mod57/u7_an2.py on the noon scan to confirm FanDuel's exact rate, and note which games the pool moved off a whole number.
+- Weekly through Week 18: split the card's offset games into pool equals FanDuel, half point off a FanDuel whole number, other (unit 8's 2026 table), no refit.
+- Why the offset term loses in 2020-22 on every arm (pre-noon snapshot, no move input) is unexplained; measure before any refit of the 0.805 coefficient.
 - Small-move games after five units: juice +0.84 pts (P+ .73), move-slope split +2.73 on 2020-25 but 10-14 on 2026 changed picks. Nothing served. The next unit there needs information the three leader books and the model do not hold; price and slope reshaping are used up.
 - Holiday and Christmas-week slots are covered (mod57-u2 lane); nothing further to schedule.
 - Thursday before 20:15 ET: Week 10 refresh check (fix-picks-2026-11-10.md, Next 1).

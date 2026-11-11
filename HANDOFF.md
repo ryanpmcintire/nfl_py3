@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T13:58:01.056311+00:00`
+Refreshed at: `2026-11-11T14:13:40.845357+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-11-11T13:58:01.056311+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0fe26b886508` — Capture odds before each pick deadline and open the 60 percent lane
+- Baseline commit: `2573dc24eafd` — Cover the holiday kickoff slots and record the quiet-game slope tests
 - Pending change set: 341 paths
   - `M  HANDOFF.md`
   - `M  README.md`
@@ -30,19 +30,19 @@ Refreshed at: `2026-11-11T13:58:01.056311+00:00`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
-  - `M  docs/lanes/mod57-u2-deadline-staleness.md`
-  - `A  docs/lanes/mod57-u4-quiet-game-slopes.md`
-  - `A  docs/lanes/mod57-u5-slopes-on-2026.md`
+  - `A  docs/lanes/mod57-u6-fanduel-noon-capture.md`
+  - `A  docs/lanes/mod57-u7-pool-source-from-payloads.md`
+  - `A  docs/lanes/mod57-u8-fanduel-anchored-term.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `A  registry/weak_signals/mod57_quiet_game_slopes.json`
+  - `M  registry/weak_signals/mod57_pool_source_book.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/mod57_u4_quiet_game_slopes.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - ...and 321 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
