@@ -79,6 +79,34 @@
       "source": "docs/lanes/fix-picks-2026-11-10.md",
       "standard_error": null
     },
+    "fixpicks_offset_term_no_conversion_vs_conversion_loso_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Out of season the two forms are level; the 2026 replay gain (P+ .99 on nine weeks) is not repeated at that size; kept as served because it is not worse and is the simpler form; not closed",
+      "closing_ground": null,
+      "description": "Pool-line offset term added to the model's stated probability at the pool line (served since 2026-11-10) versus the previous at-market conversion, both with the served coefficient 0.805, leave-one-season-out on 1,322 stacked whole-number rows at simulated pool lines; effect is log loss gain of no conversion over the conversion",
+      "effect": 0.00017,
+      "effect_units": "log_loss_improvement",
+      "family": "fix_picks_2026_11_10",
+      "interval": [
+        -0.00031,
+        0.00068
+      ],
+      "league": "nfl",
+      "notes": "embedded share of the crossed mass in the stated probability .53 (slope .470, season-block 95% .407-.534; .57 at lines of 3 or less, about .22 beyond); differing sides at fixed coefficient 58, no-conversion 27-31; refitted coefficients exact .805, stated .643 (fold sd .063), conversion .978; every arm within .0003 log loss; exact at-market recomputation does not beat the stated form (P+ .915 for stated)",
+      "plain_summary": null,
+      "probability_positive": 0.76,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/fix-picks-u8-embedded-share-oos.md",
+      "standard_error": null
+    },
     "fixpicks_offset_term_without_at_market_conversion_2026_w1_w9": {
       "category": "market",
       "classification": "unresolved_below_power",
