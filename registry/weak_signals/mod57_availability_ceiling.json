@@ -1008,6 +1008,1266 @@
       ],
       "source": "artifacts/mod57_p2l/results.json",
       "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 8.250166333998669,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        5.102433700668054,
+        11.439848845636194
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.023308035118763393,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.016331725949952716,
+        0.03071534373843781
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.04838660907950535,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.032452633256600937,
+        0.06402075066521369
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 8.116385911179174,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        3.101771611233314,
+        13.117351851851852
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.026786401084329132,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.01689181702864876,
+        0.03657150678780147
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.05686042747014712,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.035730403382343574,
+        0.07896373364654861
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 8.24372759856631,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        4.668223845855424,
+        11.948955916473318
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.020876185217927643,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.010468088913931155,
+        0.03047777667557567
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_A_knowable_together_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus A_knowable_together minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0428513674623413,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.020238970128977785,
+        0.06444923440696247
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.5294770270009321,
+        1.8856491996262426
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.864,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.0006496601569760307,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.00017012405445083,
+        0.0011389277805659414
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.0012847418978473033,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.00028879837364173484,
+        0.0023408171243578173
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.99475,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.6125574272588056,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.4970620976936682,
+        2.669394223616549
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.6995,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0007824273307187446,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -8.003628718198645e-05,
+        0.00162865371622435
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.96275,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0015522579924069583,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.00020711866973676266,
+        0.0033644746806395557
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.95625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.8363201911589008,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.5952736106375724,
+        2.294755358112963
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.85875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0005298937601400531,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.00018980267980449282,
+        0.001291555961937175
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.92075,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_actives_alone_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_actives_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0010440533699138867,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.0004049503150498969,
+        0.0025342159845789312
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.91725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.0839909349064107,
+        2.37792515826257
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.7545,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.002252539961491538,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0007578971593031384,
+        0.0037731832142402755
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.004627305080316196,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0015332373668691666,
+        0.007814237613298336
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.9188361408882083,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.574803149606299,
+        3.443581673495591
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.734,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0028935145267099003,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0004152933218329675,
+        0.005345463449081754
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.9905,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0058898255884329695,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0008470164651145979,
+        0.01077964384734987
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.9905,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.35842293906810035,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.6510409697131898,
+        2.4126458736176106
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.61025,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0016827062120605208,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        7.598511874154e-05,
+        0.003354093133234066
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.97975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_qb_alone_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_qb_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0035028827491221325,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0001317223926818894,
+        0.00675611326500643
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.97825,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 7.584830339321358,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        4.45775116433799,
+        10.565344803369538
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.020875510349899522,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.01386273478997618,
+        0.02794402206336391
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.042940371795885085,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.026935045393012523,
+        0.0590933282276904
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 6.431852986217458,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        1.447114122645432,
+        11.287822452433458
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.99425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.023446674689358953,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.013978343855377669,
+        0.03305931088009191
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.04918385021662012,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.028438220518174358,
+        0.0701840603638999
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 8.363201911589007,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        4.679906280933678,
+        12.103407755581669
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.019281192452679213,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.009429565212591326,
+        0.02916832448461331
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_B_unit_ratings_alone_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus B_unit_ratings_alone minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.03944951986295749,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.01667248232246642,
+        0.06121259456985659
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 0.99975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 15.90153027278776,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        13.201287128712872,
+        18.691068205146355
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.05450231082833031,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.04777267080022924,
+        0.0613874059081662
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.11925995977772501,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.105169103159062,
+        0.13434868933768762
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 14.241960183767228,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        9.559402357884908,
+        18.553497846763946
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.052869579848722335,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.04318096738004967,
+        0.06209130145570334
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.1142442006450353,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.09082186891237293,
+        0.13642578123215857
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 16.845878136200717,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        12.975025736379669,
+        20.653471872851643
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.055093696273528274,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.045432733329115606,
+        0.06539133211055978
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2m_P_turnover_margin_power_check_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus P_turnover_margin_power_check minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.12185221094827489,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.09942453109275018,
+        0.14360146142515265
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: knowable-information ceiling (true actives, QB, full-season unit rates) and realised turnover margin power check. Unit-rate arm includes each game's own result in its season mean, so it is inflated by self-inclusion.",
+      "plain_summary": "Gives the model information nobody can know before kickoff, to show the most knowable information could add and that the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
     }
   }
 }
