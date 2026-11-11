@@ -1,0 +1,117 @@
+{
+  "family": "mod57_signals_on_quiet_games",
+  "signals": {
+    "mod57_quiet_f_diff_pbp_drives": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval from week-block bootstrap, no wrong-sign resolution, no positive control.",
+      "closing_ground": null,
+      "description": "f_diff_pbp_drives: quiet slope 0.275 (p_pos 0.733), moved slope -1.491 (p_pos 0.002), diff z 2.63, perm p of max 0.412",
+      "effect": 0.2754967045351764,
+      "effect_units": "slope_difference",
+      "family": "mod57_signals_on_quiet_games",
+      "interval": [
+        -0.5930781747245282,
+        1.127215426806426
+      ],
+      "league": "nfl",
+      "notes": "Quiet = abs open move <=0.5, moved >=1.0, 2020-25; margin_vs_open slope per SD of signal; 2000 week-block bootstraps.",
+      "plain_summary": "Tests whether this signal predicts the margin against the opener on games where the line did not move.",
+      "probability_positive": 0.733,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2f/results.csv",
+      "standard_error": null
+    },
+    "mod57_quiet_leader_median_net": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval from week-block bootstrap, no wrong-sign resolution, no positive control.",
+      "closing_ground": null,
+      "description": "leader_median_net: quiet slope -2.105 (p_pos 0.080), moved slope 2.151 (p_pos 1.000), diff z -2.98, perm p of max 0.171",
+      "effect": -2.1045950335540065,
+      "effect_units": "slope_difference",
+      "family": "mod57_signals_on_quiet_games",
+      "interval": [
+        -4.860754378855055,
+        0.8000972947901744
+      ],
+      "league": "nfl",
+      "notes": "Quiet = abs open move <=0.5, moved >=1.0, 2020-25; margin_vs_open slope per SD of signal; 2000 week-block bootstraps.",
+      "plain_summary": "Tests whether this signal predicts the margin against the opener on games where the line did not move.",
+      "probability_positive": 0.0795,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 472,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2f/results.csv",
+      "standard_error": null
+    },
+    "mod57_quiet_served_minus_model_logit": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval from week-block bootstrap, no wrong-sign resolution, no positive control.",
+      "closing_ground": null,
+      "description": "served_minus_model_logit: quiet slope -0.609 (p_pos 0.097), moved slope 1.350 (p_pos 0.998), diff z -2.85, perm p of max 0.250",
+      "effect": -0.6086322729330161,
+      "effect_units": "slope_difference",
+      "family": "mod57_signals_on_quiet_games",
+      "interval": [
+        -1.4317828912250856,
+        0.3064210596997142
+      ],
+      "league": "nfl",
+      "notes": "Quiet = abs open move <=0.5, moved >=1.0, 2020-25; margin_vs_open slope per SD of signal; 2000 week-block bootstraps.",
+      "plain_summary": "Tests whether this signal predicts the margin against the opener on games where the line did not move.",
+      "probability_positive": 0.097,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2f/results.csv",
+      "standard_error": null
+    },
+    "mod57_quiet_vs_moved_family_summary": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval from week-block bootstrap, no wrong-sign resolution, no positive control.",
+      "closing_ground": null,
+      "description": "Family of 94 signals, quiet-minus-moved slope difference vs within-season label-permutation null; real count beyond 2 SE 8, null expected 4.4; null 95th pct of max |z| 3.39; real max 2.98",
+      "effect": 2.981666937049277,
+      "effect_units": "slope_difference",
+      "family": "mod57_signals_on_quiet_games",
+      "interval": [
+        -2.981666937049277,
+        2.981666937049277
+      ],
+      "league": "nfl",
+      "notes": "Quiet = abs open move <=0.5, moved >=1.0, 2020-25; margin_vs_open slope per SD of signal; 2000 week-block bootstraps.",
+      "plain_summary": "Checks whether any built signal predicts the margin against the opener differently when the line did not move.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1490,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2f/results.csv",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,257 @@
+{
+  "family": "mod57_uncorrected_error_model",
+  "signals": {
+    "mod57_p2c_Q_vs_model_alone_all_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Quiet-trained ridge (training rows whose close is within a half point of the opener) minus model alone, held out at the Tuesday opener, all_games, week-block bootstrap",
+      "effect": -2.7944111776447107,
+      "effect_units": "accuracy_points",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -5.208472593582888,
+        -0.34259034261700705
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_Q_vs_model_alone_all_games_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Quiet-trained ridge (training rows whose close is within a half point of the opener) minus model alone, held out at the Tuesday opener, all_games, week-block bootstrap",
+      "effect": -0.007432275808865085,
+      "effect_units": "brier_improvement",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -0.01107695416306834,
+        -0.0037510900070329262
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_Q_vs_model_alone_all_games_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Quiet-trained ridge (training rows whose close is within a half point of the opener) minus model alone, held out at the Tuesday opener, all_games, week-block bootstrap",
+      "effect": -0.015878593260866537,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -0.023700873514334284,
+        -0.008146844029208405
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_Q_vs_model_alone_quiet_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Quiet-trained ridge (training rows whose close is within a half point of the opener) minus model alone, held out at the Tuesday opener, quiet, week-block bootstrap",
+      "effect": -1.7921146953405016,
+      "effect_units": "accuracy_points",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -4.929683395196691,
+        1.562547006618532
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.1425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_Q_vs_model_alone_quiet_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Quiet-trained ridge (training rows whose close is within a half point of the opener) minus model alone, held out at the Tuesday opener, quiet, week-block bootstrap",
+      "effect": -0.007651994896824436,
+      "effect_units": "brier_improvement",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -0.012899264374528251,
+        -0.0024175617573070486
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.00225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_Q_vs_model_alone_quiet_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Quiet-trained ridge (training rows whose close is within a half point of the opener) minus model alone, held out at the Tuesday opener, quiet, week-block bootstrap",
+      "effect": -0.016466911089982085,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -0.027756597446304966,
+        -0.005525881588678769
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.001,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_four_term_Q_vs_served_all_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Four-term leave-one-season-out with the quiet-trained model logit minus the served four-term, all games, week-block bootstrap",
+      "effect": -1.1976047904191618,
+      "effect_units": "accuracy_points",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -3.0061629282661704,
+        0.598404255319149
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.08225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_four_term_Q_vs_served_all_games_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Four-term leave-one-season-out with the quiet-trained model logit minus the served four-term, all games, week-block bootstrap",
+      "effect": -0.000407892239595977,
+      "effect_units": "brier_improvement",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -0.0013604593081247439,
+        0.000533655222480853
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.1985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    },
+    "mod57_p2c_four_term_Q_vs_served_all_games_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Four-term leave-one-season-out with the quiet-trained model logit minus the served four-term, all games, week-block bootstrap",
+      "effect": -0.0007846572001856708,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_uncorrected_error_model",
+      "interval": [
+        -0.0026077770857043645,
+        0.0011548394592519563
+      ],
+      "league": "nfl",
+      "notes": "Quiet-trained base (Arm Q); Arm K equals the served model by construction and was not scored.",
+      "plain_summary": null,
+      "probability_positive": 0.211,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2c/results.json",
+      "standard_error": null
+    }
+  }
+}

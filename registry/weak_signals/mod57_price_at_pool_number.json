@@ -1,0 +1,201 @@
+{
+  "family": "mod57_price_at_pool_number",
+  "signals": {
+    "mod57_p2e_arm_b_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E: logit mean of market price at the pool number and current versus current, 2026 Weeks 3-9, 104 games.",
+      "effect": -0.0126,
+      "effect_units": "accuracy_points",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -3.9215,
+        3.7736
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.4025,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    },
+    "mod57_p2e_arm_b_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E: arm B Brier versus current, improvement positive.",
+      "effect": -0.0006,
+      "effect_units": "brier_improvement",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -0.002948,
+        0.00166
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3133,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    },
+    "mod57_p2e_arm_b_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E: arm B log loss versus current, improvement positive.",
+      "effect": -0.0012,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -0.005937,
+        0.003301
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3108,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    },
+    "mod57_p2e_arm_m_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E: market no-vig cover price at the pool's exact number (median across books quoting it) replacing the current probability where it exists, versus current, 2026 Weeks 3-9, 104 games, week-block bootstrap, no fitted parameter.",
+      "effect": -1.9496,
+      "effect_units": "accuracy_points",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -11.3235,
+        7.5472
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.309,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    },
+    "mod57_p2e_arm_m_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E: arm M Brier versus current, improvement positive.",
+      "effect": -0.0014,
+      "effect_units": "brier_improvement",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -0.005977,
+        0.003106
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2754,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    },
+    "mod57_p2e_arm_m_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E: arm M log loss versus current, improvement positive.",
+      "effect": -0.0028,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -0.01201,
+        0.006183
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.271,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    },
+    "mod57_p2e_tuesday_lean": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-E descriptive: side the price at the pool's number leans to at the scan nearest Tuesday noon covered 42 of 83 (50.6 percent, difference from 50 percent shown, normal-approximation interval), 2026 Weeks 3-9.",
+      "effect": 0.6,
+      "effect_units": "accuracy_points",
+      "family": "mod57_price_at_pool_number",
+      "interval": [
+        -10.2,
+        11.4
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.54,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 83,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2e/run.out",
+      "standard_error": null
+    }
+  }
+}
