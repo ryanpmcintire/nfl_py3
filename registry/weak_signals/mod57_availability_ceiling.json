@@ -1,0 +1,1013 @@
+{
+  "family": "mod57_availability_ceiling",
+  "signals": {
+    "mod57_p2l_ALL_three_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 2.19560878243513,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.06662225183211193,
+        4.307573890426221
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.97725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.0030338171788336235,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0004076883107902494,
+        0.00563857988683227
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.9885,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.0058516290862155205,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0004568648083409962,
+        0.011426299647935493
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.9835,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 1.0719754977029097,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -2.727272727272727,
+        4.926222228969161
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.701,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0018426964781453397,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.002696495450327888,
+        0.006207045519443638
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.79675,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.003119016338195951,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.006824013722154703,
+        0.012702003605927352
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.7275,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 3.225806451612903,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.4918850650138658,
+        5.972024818972247
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.98925,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.004145773777977734,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0008324704225662793,
+        0.007355807168921709
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.99075,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_ALL_three_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_three oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.008373912413657807,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0016674317750791177,
+        0.01529044350469176
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.991,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.4074886463057595,
+        1.8679119412941962
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.87575,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.0006496601569760307,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0001606075396590117,
+        0.0011546118664429888
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.0012847418978473033,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.00026948669153285305,
+        0.002293367186413821
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.99375,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.6125574272588056,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.5016145663736025,
+        2.723177053027658
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.69975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0007824273307187446,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -5.985110419445096e-05,
+        0.0016347005007158874
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.96725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0015522579924069583,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.0001913540602547367,
+        0.003399050874761203
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.95975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.8363201911589008,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.5995203836930456,
+        2.292025305411331
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.85175,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0005298937601400531,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.00020978251514192108,
+        0.0012519621537806574
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.91625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O1_actives_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O1_actives oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0010440533699138867,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.000496697144507382,
+        0.0025735530307678094
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.90175,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.8254425735220756,
+        0.7432683867900378
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.1995,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": -0.000488582577881058,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.001361342947430079,
+        0.0004007328278198585
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.14325,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": -0.000997274334793135,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.0028809367606968113,
+        0.0008571545469548502
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.14975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": -2.4502297090352223,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -4.851520302588782,
+        -0.15383435582822083
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.01575,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": -0.000995290636849764,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.002398508061271798,
+        0.00043944323607629884
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.08025,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": -0.002077669405703277,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.0048238797745585316,
+        0.0006396990341814152
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.06425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.955794504181601,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.7256464599899553,
+        2.6285888482429893
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.844,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": -4.053609379991296e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.0012932614149548038,
+        0.0012080697691780886
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.4705,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O2_snap_share_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_snap_share oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": -4.588575245711393e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.0026478812114764045,
+        0.0025634903219865952
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.477,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.0839909349064107,
+        2.37792515826257
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.7545,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_all_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.002252539961491538,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0007578971593031384,
+        0.0037731832142402755
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 0.004627305080316196,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0015332373668691666,
+        0.007814237613298336
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.9188361408882083,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.666856925418569,
+        3.5616531165311667
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.7445,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_moved_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0028935145267099003,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0004305849090979322,
+        0.005426760623786014
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.9885,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_moved_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 0.0058898255884329695,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.0008978522161022123,
+        0.011085504601143313
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.9895,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.35842293906810035,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -1.7503428336186873,
+        2.4419386478649003
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.62225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_quiet_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0016827062120605208,
+      "effect_units": "brier_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        8.106474673471048e-05,
+        0.00343484339123099
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.98075,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    },
+    "mod57_p2l_O3_qb_dropbacks_quiet_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak positive control; probability_positive reported, no refuted mechanism and no closing ground; O2 sign is opposite to O1 and O3 and is confounded by garbage-time substitution.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O3_qb_dropbacks oracle minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 0.0035028827491221325,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.00010730142916543142,
+        0.006952055803490668
+      ],
+      "league": "nfl",
+      "notes": "positive control, deliberate leak, not servable: oracle inputs use each game's own realised availability",
+      "plain_summary": "Gives the model the true list of who played, which is impossible before kickoff, to see the most availability could add.",
+      "probability_positive": 0.97725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2l/results.json",
+      "standard_error": null
+    }
+  }
+}
