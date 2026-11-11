@@ -1,5 +1,11 @@
 # MOD-57 - 60% against the pool line, held out
 
+## RESUME HERE (written 2026-11-11 after a session crash; clock read 11:26 ET)
+State: everything is committed and pushed (d48fd3f3); no MOD-57 unit is running. Nothing served changed today except fresher odds before pick deadlines (scheduler).
+Where the number stands (measured today, details below): held-out every-game 55.2% at the Tuesday line and about 55.3% at the pool's real line process (the pool copies FanDuel's Tuesday-noon line); by season phase the served probability is 45.5% in Week 1, 59.4% in weeks 2-6, 55.5% in weeks 7-12, 52.8% in weeks 13-18. The line sits about 4.5 points from hindsight team strength and hindsight beats it about 56%, but nothing in the 295 built pregame columns sees that gap, and five model classes do not beat the closing line's margin error. Owner corrections recorded below: do not re-measure the limit, do not treat market efficiency as a default assumption.
+Leads alive: (1) early-season overreaction term T (weeks 2-6 surprise to date, faded): same sign in all six folds, 475-350 against the close 2015-25, 54-23 v 50-27 on 2026 Weeks 2-6; held as the candidate fifth term for 2027, refit after the season. (2) deadline spread juice on quiet games (+0.84 pts, P+ .73).
+Next: (a) scheduler checks: Thursday 11-12 after 19:20 ET grep data/scheduler_log.txt for `OK odds_private_thu_1900` then `refresh_thu_inactives_primetime`; Sunday 11-15 for odds_private_sun_0815, _sun_1445, _sun_1520 and refresh_last_call_sun_1535. (b) Tuesday 11-17 after the 12:10 capture rerun tests/scratch/mod57/u7_an2.py to confirm FanDuel's match rate at noon. (c) Week 10 Thursday refresh check from fix-picks-2026-11-10.md. (d) The next base-model unit needs inputs not in the feature tables (early-season information on how a team has changed); every reshaping of existing terms was tried today and is listed below, do not repeat.
+
 ## Goal
 Owner 2026-11-11: reach 60% pick accuracy without overfitting. Yardstick: every game, graded at the pool's Tuesday line, picks taken at each game's deadline. A number counts only if every parameter was chosen out of season (2020-25 leave-one-season-out) and it repeats on the enrolled 2026 forward cohort (validation v9, Weeks 10-18). Done = the served probability's held-out all-games record reaches 60%, or every unit is recorded with what it moved.
 

@@ -1,5 +1,14 @@
 # SIM-31 - finish the simulator
 
+## RESUME HERE (written 2026-11-11 after a session crash; clock read 11:26 ET)
+State: every result through 11:20 ET is committed and pushed (d48fd3f3). The engine files are UNPATCHED and clean. No simulation is running: the heavy-queue runner had only launched the identity run at 11:19; the crash stopped it and its processes (PIDs 884, 5676) were killed by PID. The capture scheduler is alive (pid 9364, started 08:57, code and schedule current).
+Next, in order, one heavy job at a time (scripts and the combined patch are in tests/scratch/sim_finish_queue/, which is gitignored and exists only on this machine; plan and rule in sim-finish-patch-queue.md):
+1. Rerun `tests\scratch\sim_finish_queue\identity.ps1` (about 7 minutes; delete the half-written idbase and idpatch folders there first). Apply the combined patch with apply.ps1 only if it prints EQUAL for games and plays; then commit the engine.
+2. Tier B arms, about 24 minutes each, scripts tierb_<arm>.ps1: to3, to4, coach, htadj, leadclock, poolstratum, wind; then drplays (SIM-22) and personnel (SIM-07, after checking real_games.parquet covers 2022-25). Baseline default seeds 13/14/13. Rule: count not lower on any seed, no passing gate lost, named gate toward real beyond 2x default seed SD. Record each verdict in its lane and ROADMAP row.
+3. Forecaster: one-core smoke then the 12-to-30-hour run with `--amend4 1 --amend6 1` and SIM10_TERMINAL=1 (exact lines in sim-finish-amendment6.md Next), on whatever the default engine is then; evaluate with scripts/sim08_amendment6_grade.py --run and scripts/sim30_margin_mass.py.
+4. Then: SIM-29 once forward weeks exist (about Week 12); close lanes to done/; write the one-page summary of what the engine is and what each mechanism did.
+Rows still open after today: SIM-07, SIM-08, SIM-14, SIM-15, SIM-17, SIM-18, SIM-20, SIM-22, SIM-25, SIM-28, SIM-29, SIM-30 (all waiting on steps 1 to 3). Open finding: the truncation fix raises scoring by 0.6 points a game, so the default's scoring match rests partly on that truncation; the offsetting excess is not located.
+
 ## Goal
 Owner 2026-11-11: get the simulator finished once and for all, in parallel with MOD-57. Finish line, all four:
 1. The default engine passes 14 of 14 realism gates on the six-seed mean, real schedules.

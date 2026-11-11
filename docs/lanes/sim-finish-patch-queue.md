@@ -30,3 +30,4 @@ Total about 7 + 48 + 120 + 20 + 40 = about 235 min (about 4 h). Rule for gate ar
 
 ## Runner log
 - 2026-11-11 11:20 step 1 preconditions measured: no sim python, free RAM 38.8 GB, engine files clean. Identity launched in background (calls so far 4/48).
+- 2026-11-11 11:26 (orchestrator, after a session crash): the runner stopped with the identity run in flight; its processes (python 884 and 5676; uv 25460 already gone) were killed by PID. Nothing is applied; the engine files are clean. The idbase and idpatch folders under tests/scratch/sim_finish_queue/ are half-written: delete them and rerun identity.ps1 from the start. No arm has run.
