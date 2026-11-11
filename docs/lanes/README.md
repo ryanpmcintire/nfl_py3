@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [mod57-sixty-percent](mod57-sixty-percent.md) - START HERE 2026-11-11: owner goal 60% held out at the pool line; measured 55.2% held out (57.1% at simulated pool lines), small-move games are the limit; units mod57-u1 pool source book, -u2 deadline staleness, -u3 deadline fair line.
 - [fix-picks-2026-11-10](fix-picks-2026-11-10.md) - START HERE 2026-11-10: season audit (card 70-66, current structure replays 80-56), pool-line offset term had gone silent on a single-book anchor and is fixed, Week 10 locked and refreshed (HOU, DAL, NYG flipped), at-market conversion removed, validation v9 enrolled; silent-term alarm jobs live; unit lanes fix-picks-u1..u8 and eng-served-terms-liveness-check.
 - [backlog-all-2026-11-02](backlog-all-2026-11-02.md) - 2026-11-02: owner asked to finish all 57 open rows; triage in backlog-triage-g1..g6-2026-11-02.md; wave 1 running (reconcile, SIM-11 ST latent, LEAD-28/PER-07, SKY-01, LEAD-76, LEAD-89).
 - [week9-lock-2026-11-03](week9-lock-2026-11-03.md) - START HERE 2026-11-03: Tuesday board read (Chrome), weekly_lock with the pool hook term live, post-lock checks, tell the owner Week 9 and Week 8 final.

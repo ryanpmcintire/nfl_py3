@@ -152,6 +152,8 @@ PRIVATE_SUNDAY_ODDS_CAPTURE = [
     str(REPO / "scripts" / "capture_private_sunday_odds.py"),
 ]
 
+DEADLINE_ODDS_CAPTURE = [*PRIVATE_SUNDAY_ODDS_CAPTURE, "--max-age-minutes", "1"]
+
 ODDS_TAPE_CAPTURE = [
     str(UV),
     "run",
@@ -1534,6 +1536,33 @@ SCHEDULE: tuple[Job, ...] = (
             ("odds_private_sat", "sat", "10:00"),
         )
     ),
+    *(
+        Job(
+            name,
+            day,
+            at,
+            30,
+            DEADLINE_ODDS_CAPTURE,
+            True,
+            "Leader spread capture just before a pick-deadline refresh, so the move term "
+            "reads a quote from the hour before the deadline as its training feature does. "
+            "Before 2026-11-11 the Thursday primetime pass read Wednesday 18:00 quotes and "
+            "the Sunday 16:00 lock read the 12:10 capture. No age guard: each run fetches.",
+            season_guarded=False,
+            added_on="2026-11-11",
+        )
+        for name, day, at in (
+            ("odds_private_thu_1140", "thu", "11:40"),
+            ("odds_private_thu_1450", "thu", "14:50"),
+            ("odds_private_thu_1900", "thu", "19:00"),
+            ("odds_private_fri_1315", "fri", "13:15"),
+            ("odds_private_sat_1535", "sat", "15:35"),
+            ("odds_private_sat_1900", "sat", "19:00"),
+            ("odds_private_sun_0815", "sun", "08:15"),
+            ("odds_private_sun_1445", "sun", "14:45"),
+            ("odds_private_sun_1520", "sun", "15:20"),
+        )
+    ),
     Job(
         "injuries_wed",
         "wed",
@@ -1663,6 +1692,7 @@ SCHEDULE: tuple[Job, ...] = (
             ("sat", "12:15", 40, "2026-09-10"),
             ("sun", "08:30", 45, "2026-09-10"),
             ("sun", "12:45", 10, "2026-09-13"),
+            ("sun", "15:35", 20, "2026-11-11"),
         )
     ),
     Job(

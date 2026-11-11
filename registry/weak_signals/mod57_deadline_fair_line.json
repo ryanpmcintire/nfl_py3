@@ -1,0 +1,341 @@
+{
+  "family": "mod57_deadline_fair_line",
+  "signals": {
+    "mod57_deadline_juice_all_accuracy_points_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -0.6048648552903505,
+      "effect_units": "accuracy_points",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -2.3179191956429195,
+        1.0695366015059107
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.2277,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_juice_all_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -5.022368844770534e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.001284611865803193,
+        0.0010999875436851782
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.4756,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_juice_all_log_loss_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -9.812389738806781e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.0025936527875320024,
+        0.002227149521382905
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.4776,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_juice_smallmove_accuracy_points_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": 0.8438949684357407,
+      "effect_units": "accuracy_points",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -1.6707443103310455,
+        3.3415034615088475
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.7285,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_juice_smallmove_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": 0.0006856187910824529,
+      "effect_units": "brier_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.0011007104343916682,
+        0.002450255854366878
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.7747,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_juice_smallmove_log_loss_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": 0.0013930214955281222,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.002230523995602161,
+        0.0049563207844997145
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.7755,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_ml_divergence_all_accuracy_points_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -0.26928046271911144,
+      "effect_units": "accuracy_points",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -1.3414041294748356,
+        0.7868981541241769
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.2927,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_ml_divergence_all_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -0.0005538005966652685,
+      "effect_units": "brier_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.0011493270552787838,
+        2.9626415488773436e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.0311,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_ml_divergence_all_log_loss_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -0.00111210098732004,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.0023274229710901436,
+        8.29835321659688e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.0333,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_ml_divergence_smallmove_accuracy_points_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": 0.468449211359711,
+      "effect_units": "accuracy_points",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.9828615001028794,
+        1.9680660016333644
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.7025,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_ml_divergence_smallmove_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -0.00018842563546548073,
+      "effect_units": "brier_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.0009118044603190785,
+        0.0005328698865225105
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.3072,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    },
+    "mod57_deadline_ml_divergence_smallmove_log_loss_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U3: deadline term added singly to served four terms, leave-one-season-out, versus four-term; improvement positive.",
+      "effect": -0.0003876092898921967,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_deadline_fair_line",
+      "interval": [
+        -0.0018542527568150729,
+        0.0010674300759016672
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We checked whether the price juice and the moneyline at the pick deadline tell us more than the half-point line move. In this window the answer was not distinguishable from chance.",
+      "probability_positive": 0.3054,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u3/results.json",
+      "standard_error": null
+    }
+  }
+}

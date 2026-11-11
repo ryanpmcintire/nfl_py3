@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T02:14:58.578471+00:00`
+Refreshed at: `2026-11-11T13:47:16.623156+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T02:14:58.578471+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4b49d409ba39` — Check that served probability terms are live for the week
-- Pending change set: 338 paths
+- Baseline commit: `463c436efd0c` — Record the out-of-season check of the offset term form
+- Pending change set: 346 paths
   - `M  HANDOFF.md`
-  - ` M README.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - `M  docs/lanes/README.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/fix-picks-2026-11-10.md`
-  - `A  docs/lanes/fix-picks-u8-embedded-share-oos.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
+  - `A  docs/lanes/mod57-sixty-percent.md`
+  - `A  docs/lanes/mod57-u1-pool-source-book.md`
+  - `A  docs/lanes/mod57-u1b-real-offset-regrade.md`
+  - `A  docs/lanes/mod57-u1c-regrade-with-pushes.md`
+  - `A  docs/lanes/mod57-u2-deadline-staleness.md`
+  - `A  docs/lanes/mod57-u3-deadline-fair-line.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/fix_picks_2026_11_10.json`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 318 more
+  - ...and 326 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1,0 +1,713 @@
+{
+  "family": "mod57_pool_source_book",
+  "signals": {
+    "mod57_u1b_real_offset_dk_2020_22_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2020-22, week-block bootstrap",
+      "effect": -1.1695906432748537,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -2.5037689210916105,
+        0.07453812661141503
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:30.257541+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_dk_2020_22_accuracy_points'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.03425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_dk_2020_22_accuracy_points"
+    },
+    "mod57_u1b_real_offset_dk_2020_22_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2020-22, week-block bootstrap",
+      "effect": -0.00012689956399148736,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0005532192282812469,
+        0.0003377075476203232
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:37.663994+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_dk_2020_22_brier_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.2855,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_dk_2020_22_brier_improvement"
+    },
+    "mod57_u1b_real_offset_dk_2020_22_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2020-22, week-block bootstrap",
+      "effect": -0.00025024073441251864,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0011117043235580933,
+        0.0006871582908403299
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:34.176859+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_dk_2020_22_log_loss_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.28725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_dk_2020_22_log_loss_improvement"
+    },
+    "mod57_u1b_real_offset_dk_2023_25_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2023-25, week-block bootstrap",
+      "effect": 0.3132832080200501,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.43916059280089276,
+        1.0638297872340425
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:18.999629+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_dk_2023_25_accuracy_points'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.76225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_dk_2023_25_accuracy_points"
+    },
+    "mod57_u1b_real_offset_dk_2023_25_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2023-25, week-block bootstrap",
+      "effect": 0.00014159734112222759,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -8.8896407541794e-05,
+        0.00036603812878305855
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:26.466291+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_dk_2023_25_brier_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.8835,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_dk_2023_25_brier_improvement"
+    },
+    "mod57_u1b_real_offset_dk_2023_25_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2023-25, week-block bootstrap",
+      "effect": 0.00028483902032910597,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.00018079571826620309,
+        0.0007406346871909963
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:22.871605+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_dk_2023_25_log_loss_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.882,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_dk_2023_25_log_loss_improvement"
+    },
+    "mod57_u1b_real_offset_fd_2020_22_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2020-22, week-block bootstrap",
+      "effect": -0.08156606851549755,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.7512520868113522,
+        0.6451612903225806
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:07.357861+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_fd_2020_22_accuracy_points'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.38175,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_fd_2020_22_accuracy_points"
+    },
+    "mod57_u1b_real_offset_fd_2020_22_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2020-22, week-block bootstrap",
+      "effect": 5.48539554399515e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.00015871045778999653,
+        0.0002573900899694356
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:15.065219+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_fd_2020_22_brier_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.69425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_fd_2020_22_brier_improvement"
+    },
+    "mod57_u1b_real_offset_fd_2020_22_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2020-22, week-block bootstrap",
+      "effect": 0.00010915496705975728,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.00032031148727406793,
+        0.0005171447009263638
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:11.255756+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_fd_2020_22_log_loss_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.6935,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_fd_2020_22_log_loss_improvement"
+    },
+    "mod57_u1b_real_offset_fd_2023_25_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2023-25, week-block bootstrap",
+      "effect": -0.12578616352201258,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.9987515605493134,
+        0.7519032839312837
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:44:57.040750+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_fd_2023_25_accuracy_points'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.3625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_fd_2023_25_accuracy_points"
+    },
+    "mod57_u1b_real_offset_fd_2023_25_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2023-25, week-block bootstrap",
+      "effect": -9.13219883300958e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0003210390638679214,
+        0.0001529229897187098
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:03.939557+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_fd_2023_25_brier_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.2265,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_fd_2023_25_brier_improvement"
+    },
+    "mod57_u1b_real_offset_fd_2023_25_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2023-25, week-block bootstrap",
+      "effect": -0.00019456014185017777,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.000671252283085502,
+        0.00030456082851308095
+      ],
+      "invalidated_reason": "built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on",
+      "league": "nfl",
+      "notes": "[2026-11-11T13:45:00.475316+00:00] invalidated: built on per_game.parquet with the 34 Tuesday-opener pushes dropped, which removed the whole-number landing games the half-point pool line value depends on. Superseded by: 'mod57_u1c_real_offset_fd_2023_25_log_loss_improvement'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.21725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1b_run.out",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "mod57_u1c_real_offset_fd_2023_25_log_loss_improvement"
+    },
+    "mod57_u1c_real_offset_dk_2020_22_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2020-22, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -2.353780313837375,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -4.244686980220838,
+        -0.5633802816901409
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.00425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_dk_2020_22_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2020-22, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -0.00015943524222641257,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0012912282586895177,
+        0.0010752020459771773
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.38875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_dk_2020_22_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2020-22, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -0.0003132327444180185,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0026089960193543846,
+        0.0021846845904993184
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.39075,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_dk_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2023-25, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": 2.024539877300614,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        0.8523369425185048,
+        3.2279680665795167
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.99975,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_dk_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2023-25, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": 0.0007072167669114868,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -7.128804669915339e-05,
+        0.001454367417197761
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.96175,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_dk_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from DK source book, 2023-25, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": 0.0014068609208064355,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.00018378636385647294,
+        0.0029187736427091853
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.9575,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_fd_2020_22_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2020-22, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -1.3513513513513513,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -2.9273311651186584,
+        0.15748652475222935
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.03475,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_fd_2020_22_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2020-22, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": 8.175485983979124e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0004484906422675371,
+        0.0006287154490257885
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.61375,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_fd_2020_22_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2020-22, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": 0.00016644256717524242,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0009031639295757736,
+        0.0012634446800581206
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.61575,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_fd_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2023-25, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -0.12315270935960591,
+      "effect_units": "accuracy_points",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -1.3481220190779015,
+        1.1111454470539763
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.397,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_fd_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2023-25, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -0.00015177861353649159,
+      "effect_units": "brier_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0007086520748988965,
+        0.00038102615016858055
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.30275,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    },
+    "mod57_u1c_real_offset_fd_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage minus stage-1 held-out, pool lines rebuilt from FD source book, 2023-25, population including pushes at the Tuesday opener, week-block bootstrap",
+      "effect": -0.00030551423502841785,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_pool_source_book",
+      "interval": [
+        -0.0014430470429904491,
+        0.0007873846049902292
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the mod57_u1b_real_offset_* cell of the same source, population and unit, which was built on a population with pushes dropped.",
+      "plain_summary": null,
+      "probability_positive": 0.305,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u1c_run.out",
+      "standard_error": null
+    }
+  }
+}
