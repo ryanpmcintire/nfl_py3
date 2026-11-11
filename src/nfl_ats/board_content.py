@@ -117,7 +117,8 @@ from nfl_ats.tiebreaker_history import settled_tiebreakers
 
 _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
 
-POOL_EDGE_SHORT = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt"}
+POOL_EDGE_SHORT = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt", 1.0: "1 pt"}
+POOL_EDGE_LONG = {0.5: "Half a point", 1.0: "A full point"}
 EXPLANATION_NOT_RECORDED_TEXT = "Explanation not recorded for this forecast."
 
 _WEEK_LABELS = {
@@ -235,7 +236,7 @@ class GameRow:
     def pool_edge_text(self) -> str:
         if self.pool_edge is None or self.pool_edge == 0:
             return ""
-        size = "Half a point" if abs(self.pool_edge) == 0.5 else f"{abs(self.pool_edge):g} points"
+        size = POOL_EDGE_LONG.get(abs(self.pool_edge), f"{abs(self.pool_edge):g} points")
         return f"{size} {'better' if self.pool_edge > 0 else 'worse'} than Tuesday's books"
 
     @property
@@ -258,7 +259,8 @@ class GameRow:
     def pool_line_note(self) -> str:
         if not self.pool_edge_text:
             return ""
-        note = f"The pool's line is {self.pool_edge_text.replace('Half', 'half', 1)} for this pick."
+        edge = self.pool_edge_text
+        note = f"The pool's line is {edge[:1].lower()}{edge[1:]} for this pick."
         if self.pool_effect_text:
             note = (
                 f"{note} That changes its cover chance by {self.pool_effect_text} "

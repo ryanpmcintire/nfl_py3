@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.forecast_cold_visitor_tilt_overlay import tuesday_noon_et_cutoff_utc
-from nfl_ats.market_data import load_quote_history
+from nfl_ats.market_data import POOL_TIMEZONE, load_quote_history
 from nfl_ats.splash_lines import load_splash_capture
 
 HOOK_COLUMN = "pool_hook"
@@ -98,6 +98,7 @@ def tuesday_market_lines(
     quotes = quotes.loc[observed.ge(opened) & observed.lt(commence)]
     if quotes.empty:
         return {}
+    observed = pd.to_datetime(quotes["observed_at_utc"], utc=True)
     snapshots = (
         quotes.groupby(["nflverse_game_id", "observed_at_utc"])["home_spread_line"]
         .median()
@@ -105,7 +106,31 @@ def tuesday_market_lines(
         .sort_values("observed_at_utc")
     )
     first = snapshots.groupby("nflverse_game_id").first()["home_spread_line"]
-    return {str(game): float(value) for game, value in first.items()}
+    lines = {str(game): float(value) for game, value in first.items()}
+    wednesday = (opened.tz_convert(POOL_TIMEZONE).normalize() + pd.Timedelta(days=1)).tz_convert(
+        "UTC"
+    )
+    tuesday = quotes.loc[observed.lt(wednesday)].sort_values("observed_at_utc")
+    if not tuesday.empty:
+        latest = tuesday.groupby(["nflverse_game_id", "bookmaker_key"])["home_spread_line"].last()
+        settled = latest.groupby(level="nflverse_game_id").median()
+        lines.update({str(game): float(value) for game, value in settled.items()})
+    return lines
+
+
+def crossed_push_mass(anchor: float, pool: float, push_table: Mapping[float, float]) -> float:
+    if not np.isfinite(anchor) or not np.isfinite(pool) or anchor == pool:
+        return 0.0
+    above = pool > anchor
+    low, high = (anchor, pool) if above else (pool, anchor)
+    total = 0.0
+    for number in range(int(np.floor(low)), int(np.ceil(high)) + 1):
+        if (above and number >= pool) or (not above and number <= pool):
+            continue
+        distance = (number - anchor) if above else (anchor - number)
+        weight = float(np.clip(1.0 + distance / POOL_OFFSET, 0.0, 2.0))
+        total += weight * float(push_table.get(float(number), 0.0))
+    return float(min(total, 1.0 - PROBABILITY_EPSILON))
 
 
 def served_hook_frame(
@@ -134,14 +159,13 @@ def served_hook_frame(
             game = str(frame.loc[index, "game_id"])
             anchor = market.get(game)
             pool = float(frame.loc[index, "spread_line"])
-            if anchor is None or not is_whole(anchor):
+            if anchor is None:
                 continue
-            offset = pool - anchor
-            mass = push_table.get(float(anchor))
-            if mass is None or not np.isclose(abs(offset), POOL_OFFSET):
+            mass = crossed_push_mass(float(anchor), pool, push_table)
+            if mass <= 0.0:
                 continue
-            result.loc[index, HOOK_DIRECTION_COLUMN] = float(np.sign(offset))
-            result.loc[index, HOOK_PUSH_MASS_COLUMN] = float(mass)
+            result.loc[index, HOOK_DIRECTION_COLUMN] = float(np.sign(pool - anchor))
+            result.loc[index, HOOK_PUSH_MASS_COLUMN] = mass
     result[HOOK_COLUMN] = hook_value(
         result[HOOK_DIRECTION_COLUMN].to_numpy(dtype=float),
         result[HOOK_PUSH_MASS_COLUMN].to_numpy(dtype=float),

@@ -1,0 +1,164 @@
+{
+  "family": "fix_picks_2026_11_10",
+  "signals": {
+    "fixpicks_lv_generalized_crossing_vs_move_hook_loso_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; recorded as measured for the Week 10 serving decision, which kept the served structure.",
+      "closing_ground": null,
+      "description": "One term for the whole gap between the deadline sharp-book line and the simulated pool line (push mass crossed, lattice form) replacing the served Wednesday-on move plus half-point hook; leave-one-season-out 2020-2025 at simulated pool lines; effect is log loss gain of the new arm over the served structure",
+      "effect": -0.0003,
+      "effect_units": "log_loss_improvement",
+      "family": "fix_picks_2026_11_10",
+      "interval": [
+        -0.00436,
+        0.00364
+      ],
+      "league": "nfl",
+      "notes": "2023-25 -0.0031 P+ .16; 2020-22 +0.0028 P+ .88; differing 247 games 124-123; stage-2 coefficient .82 folds .75-1.02; 2026 forward 77-59 same as served replay; source tests/scratch/fixpicks/u5_loso.out",
+      "plain_summary": null,
+      "probability_positive": 0.444,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/fix-picks-2026-11-10.md",
+      "standard_error": null
+    },
+    "fixpicks_move_tuesday_anchor_replay_2026_w1_w9": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; recorded as measured for the Week 10 serving decision, which kept the served structure.",
+      "closing_ground": null,
+      "description": "Served stack replayed on 2026 Weeks 1-9 with the move term re-anchored at each book's first Tuesday-noon quote instead of its last pre-Wednesday quote; effect is accuracy points of the re-anchored arm minus the served structure",
+      "effect": -3.68,
+      "effect_units": "accuracy_points",
+      "family": "fix_picks_2026_11_10",
+      "interval": null,
+      "league": "nfl",
+      "notes": "75-61 v 80-56 flag-free replay; differing 9 games 2-7 (exact two-sided p .18, one-sided share used for probability_positive); MOD-55 found a dead heat on 2023-25; source tests/scratch/fixpicks/root_m3.py",
+      "plain_summary": null,
+      "probability_positive": 0.09,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/fix-picks-2026-11-10.md",
+      "standard_error": null
+    },
+    "fixpicks_offset_any_size_replay_2026_w1_w9": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; recorded as measured for the Week 10 serving decision, which kept the served structure.",
+      "closing_ground": null,
+      "description": "Served stack replayed on 2026 Weeks 1-9 with the pool-line offset term extended from exact half points to any offset size (push mass crossed, first Tuesday snapshot anchor); effect is accuracy points over the served structure",
+      "effect": 0.74,
+      "effect_units": "accuracy_points",
+      "family": "fix_picks_2026_11_10",
+      "interval": null,
+      "league": "nfl",
+      "notes": "81-55 v 80-56; differing 3 games 2-1 (probability_positive stored at 0.5: three games cannot rank the arms); full-point offsets with a clean Tuesday multi-book anchor 5-2; history cannot test it because simulated pool lines sit within half a point; source tests/scratch/fixpicks/root_m2.py",
+      "plain_summary": null,
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/fix-picks-2026-11-10.md",
+      "standard_error": null
+    },
+    "fixpicks_pmkt_lattice_vs_served_card_2026_w3_w9": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; recorded as measured for the Week 10 serving decision, which kept the served structure.",
+      "closing_ground": null,
+      "description": "Unfitted lattice cover probability at the pool line centred on the deadline sharp-book median versus the served card probability, 2026 Weeks 3-9 forward; effect is log loss gain over the served feed",
+      "effect": 0.0154,
+      "effect_units": "log_loss_improvement",
+      "family": "fix_picks_2026_11_10",
+      "interval": [
+        0.0004,
+        0.0314
+      ],
+      "league": "nfl",
+      "notes": "accuracy 55-49 v 47-57; differing 34 games 21-13; lattice side at zero gap 15-23; the served feed in those weeks carried flags since dropped and no hook, so the comparison is against the old configuration; source docs/lanes/fix-picks-u2-line-value.md",
+      "plain_summary": null,
+      "probability_positive": 0.978,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/fix-picks-2026-11-10.md",
+      "standard_error": null
+    },
+    "fixpicks_stack_inseason_refit_vs_frozen_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; recorded as measured for the Week 10 serving decision, which kept the served structure.",
+      "closing_ground": null,
+      "description": "Expanding-window weekly refit of the served stack including the current season's finished games versus the frozen out-of-season fit, 2023-2025; effect is log loss gain of the in-season refit",
+      "effect": -0.0059,
+      "effect_units": "log_loss_improvement",
+      "family": "fix_picks_2026_11_10",
+      "interval": [
+        -0.0162,
+        0.004
+      ],
+      "league": "nfl",
+      "notes": "differing 93 games 39-54; 2026 Weeks 2-9 identical on all but 3 sides (P+ .48); model coefficient stays .31-.37 with 2026 added; source docs/lanes/fix-picks-u3-base-2026.md",
+      "plain_summary": null,
+      "probability_positive": 0.12,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lanes/fix-picks-2026-11-10.md",
+      "standard_error": null
+    },
+    "fixpicks_ticket_share_forward_term_2026_w3_w9": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; recorded as measured for the Week 10 serving decision, which kept the served structure.",
+      "closing_ground": null,
+      "description": "Sportsbook ticket share as a forward-chained fitted term on the served logit, fit on earlier 2026 weeks and scored on Weeks 3-9; effect is log loss gain over the served card",
+      "effect": -0.0118,
+      "effect_units": "log_loss_improvement",
+      "family": "fix_picks_2026_11_10",
+      "interval": null,
+      "league": "nfl",
+      "notes": "coefficient -1.3 to -3.0 (fade); differing 33 games 21-12; ticket side at 70 percent or more 10-21; the capture is 0.6-3.7 hours before kickoff, not a Tuesday input; history coefficient sign unstable; source docs/lanes/fix-picks-u4-crowd.md",
+      "plain_summary": null,
+      "probability_positive": 0.38,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/fix-picks-2026-11-10.md",
+      "standard_error": null
+    }
+  }
+}

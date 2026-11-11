@@ -1,0 +1,22 @@
+# fix-picks-u3-base-2026
+
+## Goal
+Why did the 2026 base model and served stack lose W3-W9, and does in-season stack refitting or the home shift fix it. Measurement only; parent lane fix-picks-2026-11-10.md. Scratch: tests/scratch/fixpicks/u3_*.py (pop.parquet, u3_G2.parquet, u3_main.out, u3_t5.csv).
+
+## State (all measured 2026-11-10 unless marked)
+- Fit scope (read): fit_pick_probability trains on opener-evaluation per_game.parquet (artifacts/opener_evaluation/20261108T144451Z, seasons 2020-25, n 1503) with FIT_RIDGE 1e-3, one full fit, LOSO and chronological folds scored. No 2026 game enters the stack. Base ridge (read outcomes.py:479-480) trains on every regular-season game with gameday before the target week's first game, so finished 2026 games DO enter the base ridge (expanding). Opener evaluation holds 2020-25 only, so a 2011-2025 opener-graded history does not exist; windows below are 2020-25.
+- Window outlier (n=104 games, 2026 W3-9 at pool line): raw model log loss .7024, acc 51.0%; served feed prob ll .6996, acc 49.0% (51-53). Rolling 104-game windows 2020-25 (n 1400): raw ll mean .6964 sd .011, 34% of windows as bad or worse, acc 31% as bad or worse; served LOSO ll mean .6883 sd .009, 10% as bad or worse, acc 13%; 7-week in-season windows: raw 29%/22%, served 8%/11%. Raw model stretch is ordinary; served stack's is a roughly 1-in-10 tail.
+- Expanding vs frozen-chronological stack, held-out 2023-25 (n 799, differing 93): expanding is worse, ll improvement -.0059 (95% -.0162..+.0040, P(pos) .12), differing sides expanding right 39, frozen right 54. Per season P(pos): 2023 .20, 2024 .006, 2025 .03. Coefficients drift little (model .31-.42, flag .23-.31, move .15-.53 early 2023 when move history absent).
+- 2026 forward (W2-9, retro inputs): expanding vs frozen identical (3 differing games, 1-2, ll diff -.00007, P(pos) .48). Expanding coefs with 2026 W2..w-1 added: model .308, .361, .369, .374, .352, .357, .372, .355 (w=2..9); 2026-only fit (n 104 at W9): model 1.58, flag 1.04, move .14, intercept -.68; W2-9 n 119: model 1.01, flag 1.01, move .02, intercept -.63. So 2026 data does not say the model term is zero; it says the move term is near zero and the home side lost.
+- Caution (inferred): retro frozen stack on 2026 W3-9 scores 59-45, ll .6883, versus feed-served 51-53, because my flag column uses today's counted flags (division, protection) whose post-discovery records include 2026 games, plus final move inputs. Not a served-path result; do not read as a gain.
+- Home direction (W2-9, n 119): home cover rate at pool line .429 (W3-9 .423). Served home picks 29-33, away picks 35-22; W3-9 home 23-32, away 28-21. Model (shifted base) home 30-34, away 34-21. Shift (served, itself forward-chained from games before each week) +.34 W1, .36-.38 W2-6, .45 W7, .43 W8; prior seasons -1.49, -1.73, -.92, -.06, +.46, +.39 (mod27-u1). Same sign as a forward estimate by construction. Shift flipped 4 of 103 W2-8 base sides, all toward home, shifted right 1, unshifted right 3 (57 vs 58 base-level wins out of 103: 56-47 vs 58-45). Stack intercept -.0196 changes 6 of 119 sides (retro stack).
+- Feature groups W3-9 (n 104, served 51-53; ridge refit per week with production code, imperfect reproduction: pred sign agrees with shifted raw side 79%). Group alone pointed to winner: player_injuries 64-40, context 60-44, market 58-46, experience 58-46, defense 55-49; offense 46-58, results 49-55, player_continuity 49-55, player_qb 49-55, elo 51-53. Mean contribution toward served side, wins v losses: defense +.17/+.06, player_continuity +.39/+.20, context +.08/-.05, offense -.10/+.04, results -.06/+.07 (largest |c| 1.75). 13 group looks, no multiplicity correction; none is a decisive-game finding.
+
+## Tried
+Expanding refit at pool-line grade; 2026-only refit; rolling-window percentiles; per-group decomposition. Not tried: W1 (no discrete feed value), W9 flip analysis for shift (no ns value), moving the shift into a fitted stack term.
+
+## Next
+Orchestrator: weak-signals record (syntax per `nfl-ats weak-signals record --help`, all unresolved_below_power, no closing ground): stack_inseason_refit_vs_frozen_2023_25 (-.0059 ll, P+ .12, 93 differing 39-54); stack_inseason_refit_2026 (P+ .48); raw_base_2026_w3_9_window_percentile (34th) and served_w3_9_window_percentile (10th); home_cover_rate_2026 .429 with home/away pick records; feature_group_alone_2026_w3_9 (13 looks).
+
+## Open
+Why the feed-served stack (51-53) trails the retro stack (59-45): need the served flag/move inputs per feed, not today's.
