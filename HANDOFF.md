@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T17:39:29.759041+00:00`
+Refreshed at: `2026-11-11T17:41:26.763519+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T17:39:29.759041+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4c66f4fa8989` — Republish the site with the latest settled results
-- Pending change set: 344 paths
-  - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
+- Baseline commit: `a55ca9dc7c74` — Close the timeout-bandwidth row: neither arm adopted
+- Pending change set: 340 paths
   - ` M config/source_policies.json`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `M  docs/lanes/sim-finish-2026-11-11.md`
-  - `M  docs/lanes/sim-finish-patch-queue.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - ` M tiebreaker.json`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - ...and 324 more
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - ...and 320 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
