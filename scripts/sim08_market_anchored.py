@@ -25,6 +25,7 @@ if HELD:
 
 import sim04_loso as base  # noqa: E402
 import sim10_drive as sd  # noqa: E402
+from sim08_balance import balance_weights  # noqa: E402
 
 KEY_NUMBERS = (3, 7, 10, 14, 17)
 SCRATCH = REPO / "tests" / "scratch" / "sim08_anchor"
@@ -181,6 +182,21 @@ def amend5():
     return os.environ.get("SIM08_AMEND5") == "1"
 
 
+def amend6():
+    return os.environ.get("SIM08_AMEND6") == "1"
+
+
+def conditioned():
+    return amend5() or amend6()
+
+
+def balance_draw_weights(margins, target):
+    w, ess, _, _ = balance_weights(
+        np.asarray(margins, dtype=float)[None, :], np.array([float(target)])
+    )
+    return w[0], float(ess[0])
+
+
 def tilt_draw_weights(margins, target):
     values, inverse, counts = np.unique(margins, return_inverse=True, return_counts=True)
     per_value = base.tilt_to_mean(values.astype(float), counts.astype(float), float(target))
@@ -243,6 +259,9 @@ def anchored_draws(eng, row, fit, n_draws, seed, spread_only=False):
         out[k] = play(eng, rng, xd, xe, row["season"], row["week"])
     if amend5():
         w, _ = tilt_draw_weights(out[:, 0], row["line"])
+        out = np.column_stack([out, w])
+    elif amend6():
+        w, _ = balance_draw_weights(out[:, 0], row["line"])
         out = np.column_stack([out, w])
     return xd, xe, out
 
@@ -465,6 +484,18 @@ def cmd_smoke(a):
                         ),
                     }
                     if amend5()
+                    else {}
+                ),
+                **(
+                    {
+                        "balance_ess": float(n_eff(out[None, :, 3])[0]),
+                        "balance_share_err": float(
+                            (out[:, 3] * (out[:, 0] > r["line"])).sum()
+                            / (out[:, 3] * (out[:, 0] != r["line"])).sum()
+                            - 0.5
+                        ),
+                    }
+                    if amend6()
                     else {}
                 ),
             }
@@ -729,7 +760,7 @@ def game_task(task):
     row, fit, n_draws, seed, spread_only = task
     xd, xe, out = anchored_draws(_ENG, row, fit, n_draws, seed, spread_only)
     base_out = xd, xe, out[:, 0].astype(np.int16), out[:, 1].astype(np.int16), out[:, 2] > 0.5
-    if amend5():
+    if conditioned():
         return (*base_out, out[:, 3])
     return base_out
 
@@ -794,7 +825,7 @@ def cmd_fold(a):
                     f"fold {HELD} {a.arm} game {k}/{len(tasks)} {time.time() - t0:.0f}s", flush=True
                 )
     tilt_extra = {}
-    if amend5():
+    if conditioned():
         wts = np.stack([r[5] for r in res])
         tilt_extra = {"weights": wts, "ess": n_eff(wts)}
     np.savez(
@@ -896,6 +927,7 @@ def main():
         f = sub.add_parser(name)
         f.add_argument("--amend4", type=int, default=0)
         f.add_argument("--amend5", type=int, default=0)
+        f.add_argument("--amend6", type=int, default=0)
         f.add_argument("--run", default="main")
         f.add_argument("--workers", type=int, default=4)
         f.add_argument("--draws", type=int, default=372)
@@ -909,6 +941,13 @@ def main():
         os.environ["SIM08_AMEND4"] = "1"
     if getattr(a, "amend5", 0):
         os.environ["SIM08_AMEND5"] = "1"
+    if getattr(a, "amend6", 0):
+        os.environ["SIM08_AMEND6"] = "1"
+    if amend5() and amend6():
+        ap.error(
+            "Amendments 5 and 6 are alternative conditionings of the same draws: "
+            "pass --amend5 or --amend6, not both (SIM08_AMEND5 and SIM08_AMEND6 likewise)"
+        )
     SCRATCH.mkdir(parents=True, exist_ok=True)
     if a.cmd == "control" and a.noisy:
         cmd_control_noisy(a)

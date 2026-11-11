@@ -16,6 +16,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 import sim04_loso as base  # noqa: E402
 import sim08_evaluate as ev  # noqa: E402
+from sim08_balance import balance_weights  # noqa: E402
 
 SEED = 20261111
 KEYS = (3, 7, 10, 14, 17)
@@ -78,28 +79,12 @@ def stage_one():
     }
 
 
-def balance_weights(margins, line):
-    diff = margins - line[:, None]
-    cov = diff > base.ATOM_TOLERANCE
-    los = diff < -base.ATOM_TOLERANCE
-    lo = np.full(len(margins), -2.0)
-    hi = np.full(len(margins), 2.0)
-    for _ in range(80):
-        theta = (lo + hi) / 2.0
-        z = theta[:, None] * diff
-        w = np.exp(z - z.max(1, keepdims=True))
-        decided = (w * (cov | los)).sum(1)
-        share = (w * cov).sum(1) / np.clip(decided, 1e-300, None)
-        below = share < 0.5
-        lo = np.where(below, theta, lo)
-        hi = np.where(below, hi, theta)
-    theta = (lo + hi) / 2.0
-    z = theta[:, None] * diff
-    w = np.exp(z - z.max(1, keepdims=True))
-    w = w / w.sum(1, keepdims=True)
-    ess = 1.0 / (w**2).sum(1)
-    share = (w * cov).sum(1) / np.clip((w * (cov | los)).sum(1), 1e-300, None)
-    return w * margins.shape[1], ess, share, theta
+def saved_weights(run):
+    parts = []
+    for s_ in base.GRADED_SEASONS:
+        z = np.load(ev.RUN_ROOT / run / f"primary_{s_}.npz")
+        parts.append(z["weights"].astype(float))
+    return np.concatenate(parts)
 
 
 def wcounts(margins, w, line):
@@ -118,7 +103,7 @@ def row_loss(p, y):
     return -np.log(q)
 
 
-def stage_two():
+def stage_two(run):
     from nfl_ats import pool_hook as ph
     from nfl_ats.schedule_flag_features import default_opener_lines
 
@@ -135,17 +120,25 @@ def stage_two():
     inv, nb = ev.blocks_of(frame)
     rng = np.random.default_rng(SEED)
     cov_s, push_s, loss_s = base.baseline_three_way(frame)
-    S = ev.load_arm("main", "primary", frame)
+    S = ev.load_arm(run, "primary", frame)
     M = S["margins"]
     n = S["draws"]
-    w, ess, share, theta = balance_weights(M, line)
-    np.savez_compressed(
-        OUT / "balance_weights.npz",
-        game_id=frame["game_id"].to_numpy().astype(str),
-        weights=w.astype(np.float32),
-        ess=ess,
-        theta=theta,
-    )
+    out_dir = OUT if run == "main" else OUT / run
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if run == "main":
+        w, ess, share, theta = balance_weights(M, line)
+        np.savez_compressed(
+            out_dir / "balance_weights.npz",
+            game_id=frame["game_id"].to_numpy().astype(str),
+            weights=w.astype(np.float32),
+            ess=ess,
+            theta=theta,
+        )
+    else:
+        w = saved_weights(run)
+        w_check, ess, share, theta = balance_weights(M, line)
+        assert np.allclose(w, w_check), "saved weights differ from the shared solver"
+    prefix = "sim08_a6" if run == "main" else f"sim08_a6_{run}"
     cc, pp, ll = wcounts(M, w, line)
     sim3 = ((cc + 0.5) / (n + 1.5), (pp + 0.5) / (n + 1.5), (ll + 0.5) / (n + 1.5))
     push_sim = sim3[1]
@@ -309,7 +302,7 @@ def stage_two():
             }
     res["cells"] = cells
     res["n_cells_recorded"] = len(cells)
-    (OUT / "grade.json").write_text(json.dumps(res, indent=1))
+    (out_dir / "grade.json").write_text(json.dumps(res, indent=1))
     units = {}
     for name in cells:
         if "_K" in name or name in ("A6_H3", "A6_H4"):
@@ -322,7 +315,7 @@ def stage_two():
     for name, v in cells.items():
         batch_cells.append(
             {
-                "name": f"sim08_a6_{name[3:].lower()}",
+                "name": f"{prefix}_{name[3:].lower()}",
                 "description": f"Amendment 6 balance-point tilted simulator, cell {name[3:]}",
                 "effect": round(v["effect"], 6),
                 "effect_units": units[name],
@@ -336,7 +329,7 @@ def stage_two():
         )
     batch = {
         "family": "sim08_market_anchored",
-        "source": "artifacts/sim08_amendment6/grade.json",
+        "source": f"artifacts/sim08_amendment6/{'' if run == 'main' else run + '/'}grade.json",
         "classification": "unresolved_below_power",
         "classification_evidence": (
             "No admissible closing ground; zero crossing closes nothing; third conditioning "
@@ -353,16 +346,17 @@ def stage_two():
         ),
         "cells": batch_cells,
     }
-    (OUT / "record_batch.json").write_text(json.dumps(batch, indent=1))
+    (out_dir / "record_batch.json").write_text(json.dumps(batch, indent=1))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", type=int, default=1)
+    ap.add_argument("--run", default="main")
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     if a.stage == 2:
-        stage_two()
+        stage_two(a.run)
     if a.stage == 1:
         res = stage_one()
         (OUT / "step1.json").write_text(json.dumps(res, indent=1))
