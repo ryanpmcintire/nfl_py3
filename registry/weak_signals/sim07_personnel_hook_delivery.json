@@ -1,0 +1,61 @@
+{
+  "family": "sim07_personnel_hook_delivery",
+  "signals": {
+    "sim07_hook_on_slope_minus_expected": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "on slope 0.764, placebo off slope -0.122 [-0.683, 0.402]; probability slope above 0 is 0.996",
+      "closing_ground": null,
+      "description": "Slope of simulated team score on the table-implied points shift (7 x 11 x td_shift + 3 x 11 x fg_shift), effect is slope minus the expected slope 1.0; hook on vs off, seeds 11-13, 2022-2025 real schedules, game-cluster bootstrap 2000 draws; expected slope 1.0 is inferred from the lane, the 11 drives per team-game is taken from it",
+      "effect": -0.2363,
+      "effect_units": "slope_difference",
+      "family": "sim07_personnel_hook_delivery",
+      "interval": [
+        -0.7863,
+        0.295
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the simulator's personnel matchup hook moves simulated team scores by the amount its table implies.",
+      "probability_positive": 0.1985,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 52176,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/sim07/personnel_arm/personnel_arm_read.json",
+      "standard_error": null
+    },
+    "sim07_hook_paired_slope_minus_expected": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "paired on-minus-off slope 0.886; 94 percent of games differ so pairing does not cancel draws",
+      "closing_ground": null,
+      "description": "Slope of simulated team score on the table-implied points shift (7 x 11 x td_shift + 3 x 11 x fg_shift), effect is slope minus the expected slope 1.0; hook on vs off, seeds 11-13, 2022-2025 real schedules, game-cluster bootstrap 2000 draws; expected slope 1.0 is inferred from the lane, the 11 drives per team-game is taken from it",
+      "effect": -0.1141,
+      "effect_units": "slope_difference",
+      "family": "sim07_personnel_hook_delivery",
+      "interval": [
+        -0.7691,
+        0.5589
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the simulator's personnel matchup hook moves simulated team scores by the amount its table implies.",
+      "probability_positive": 0.3755,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 52176,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/sim07/personnel_arm/personnel_arm_read.json",
+      "standard_error": null
+    }
+  }
+}
