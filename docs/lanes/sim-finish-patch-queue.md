@@ -1,0 +1,32 @@
+# SIM-31 heavy queue: combined hook patch and run scripts
+
+## Goal
+One combined engine patch for every hook prepared 2026-11-11, verified to apply, plus exact run scripts, ready to start when the running three-seed simulation ends. Nothing applied, no simulation run by this unit (stamped 2026-11-11 11:17 ET).
+
+## State
+- Folder: tests/scratch/sim_finish_queue/. Patch: sim-finish-combined.patch (LF, 521 lines, scripts/sim10_drive.py plus new scripts/sim10_personnel.py). `git -C repo apply --check` passes on the real tree (measured 11:16).
+- Order of application: SIM-14+18 combined, SIM-17/20 halftime, SIM-15 wind, SIM-25 pool, SIM-22 drplays, SIM-07 personnel. All six patches in; none left out. Copies: sim10_drive.orig.py (HEAD, hash 1288c995), sim10_drive.patched.py, sim10_personnel.py.
+- Conflicts hand-resolved (text only): SIM-22 hunk 4 (reset of the drive-play list) and SIM-07 hunks 1-5 failed on context because wind, halftime and coach lines sit between; each was placed at the same logical site: dpl reset after `self.il = []`; personnel init after the Situational block; personnel tg_shift after the situational tg_shift and BEFORE the wind scale (order sit, personnel, wind); set_game after sit.reset; SystemExit check after perm; pkey after the halftime h2s line. Two over-100-column lines (SIM-22 list, personnel TABLE) were wrapped only.
+- Changed-not-added lines (6): pat_points signature (default arg), xq[pos]+ol_shift -> xs (same expression, ol_shift called once as before; h2s None adds nothing), trunc line (ej = self.el[j], oc None so identical), the pat_points call (extra arg), float(min(ej,secs)), secs -= ej. Off path computes same values and no extra draws (the flagged latent streams spawn separate Generators only when flag on).
+- Verification: py_compile OK on both files; ruff clean on the patched files (orig also clean); introduced findings: 0 after wrapping.
+- Scripts (absolute paths, OMP_NUM_THREADS=1, no cd, logs to artifacts\): apply.ps1, identity.ps1 (builds scratch trees idbase from HEAD copy and idpatch from patched copy with junctions to artifacts, data, src; seed 5, 1 world, 3 seasons, workers 1; SHA256 of games and plays; writes EQUAL or DIFFERENT to artifacts\sim_finish_identity.txt; unlinks junctions with Directory.Delete), tierb_coach/leadclock/htadj/wind/poolstratum/to3/to4.ps1 (seeds 11-13, workers 11, realsched 1, then tierb_cmp via tierb_cmp_run.py, which chdirs), tierb_personnel.ps1 (SIM10_SEASONS=2022-2025, labels pers_off and pers_on, seeds 11-13), drplays.ps1 (SIM10_INSTR=drplays SIM10_DRPLAYS=1, seed 11). All parse clean; none run.
+- Default comparators (measured, gates.json, sim inside real interval, 14 rows): dflt_s11 13 (fails ot_share), dflt_s12 14, dflt_s13 13 (fails r2_w10_18). trunc_bw_s11 13 (ot_share), trunc_bw_s12 13 (pts_game).
+
+## Tried
+- git apply of each patch to a LF copy outside the repo; SIM-22 and SIM-07 failed, resolved by hand as above.
+
+## Next
+Run order (one heavy job at a time, background call, wait for notification; about 8 min a seed, 24 min an arm plus under 1 min compare):
+1. identity.ps1 (~7 min). If EQUAL then apply.ps1 (seconds); if DIFFERENT, do not apply, find the differing hunk.
+2. tierb_to3, tierb_to4 (48 min; no hook, current engine; gate rule q4_slope, pts_game; SIM-28 and SIM-27).
+3. tierb_coach (24; named gate margin_sd), tierb_htadj (24; strength_re_var, guard q4_slope), tierb_leadclock (24; q4_slope), tierb_poolstratum (24; q4_slope, mass_14, pts_game), tierb_wind (24; long-field-goal read plus count; no gate named).
+4. drplays.ps1 (~20), then tierb_personnel.ps1 (6 seeds, about 30-48; adjudicated by the per-game regression in sim07-power lane, not by gates).
+Total about 7 + 48 + 120 + 20 + 40 = about 235 min (about 4 h). Rule for gate arms: gate count not lower on any seed than dflt_s11-13 (13/14/13), no passing gate lost, named gate moves toward real beyond 2x the default seed SD; tierb_cmp prints all of it. Arms share q4_slope but run alone, so each is compared to dflt only; stacking is untested. Owed: weak-signals record for leadclock.
+
+## Open
+- Whether real_games.parquet covers 2022-2025 for the personnel arm (not checked).
+- Where SIM10_INSTR writes its drive-play file (sim10_drive.py ~line 1795); read it before analysing drplays.
+- Wind and personnel arms have no gate-count named gate; adopt rules as in their lanes.
+
+## Runner log
+- 2026-11-11 11:20 step 1 preconditions measured: no sim python, free RAM 38.8 GB, engine files clean. Identity launched in background (calls so far 4/48).
