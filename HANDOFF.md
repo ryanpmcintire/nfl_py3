@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T15:43:34.889679+00:00`
+Refreshed at: `2026-11-11T15:46:20.972377+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T15:43:34.889679+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4dbbcfe55501` — Inventory every simulator row and record the finished verdicts
-- Pending change set: 357 paths
+- Baseline commit: `b2c819b6cae7` — Record the early-season overreaction lead and two simulator rows
+- Pending change set: 354 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p2q-market-reaction-speed.md`
-  - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `M  docs/lanes/sim-12-sim12-ingame-exits.md`
-  - ` M docs/lanes/sim-14-sim14-coach-aggression.md`
-  - ` M docs/lanes/sim-18-lead-protection.md`
+  - `M  docs/lanes/sim-14-sim14-coach-aggression.md`
+  - `M  docs/lanes/sim-17-halftime-adjustment.md`
+  - `M  docs/lanes/sim-18-lead-protection.md`
+  - `M  docs/lanes/sim-20-coordinator-halftime-hook.md`
   - ` M docs/lanes/sim-25-pool-stratum-by-score-sign-and-clock.md`
   - ` M docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
-  - `M  docs/lanes/sim-30-simulated-margin-distribution-challenger.md`
   - `M  docs/lanes/sim-finish-2026-11-11.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `M  registry/weak_signals/mod57_how_wrong_is_the_line.json`
-  - ...and 337 more
+  - ` M registry/weak_signals/per16_team_designation_habit.json`
+  - `A  registry/weak_signals/sim17_halftime_h2_epa_response.json`
+  - `A  scripts/sim14_hook_fit.py`
+  - ...and 334 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1,0 +1,61 @@
+{
+  "family": "sim17_halftime_h2_epa_response",
+  "signals": {
+    "sim17_h2_dc_defense_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval excludes zero but effect is a sd of about 0.02 EPA per play; no wrong-sign resolution, no positive control; hook not adopted",
+      "closing_ground": null,
+      "description": "Defensive coordinator spell second-half minus first-half EPA allowed per play, held-out response applied to the prior-seasons estimate",
+      "effect": 0.0137,
+      "effect_units": "epa_per_play",
+      "family": "sim17_halftime_h2_epa_response",
+      "interval": [
+        0.00279,
+        0.02372
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Coordinator second-half shift in expected points per play carries out of season and is small.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-11-11",
+      "reliability": 0.13,
+      "sample_blocks": null,
+      "sample_games": 4609,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/sim17/halftime_fit.json",
+      "standard_error": null
+    },
+    "sim17_h2_oc_offense_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval excludes zero but effect is a sd of about 0.02 EPA per play; no wrong-sign resolution, no positive control; hook not adopted",
+      "closing_ground": null,
+      "description": "Offensive coordinator spell second-half minus first-half EPA per play, held-out response applied to the prior-seasons estimate",
+      "effect": 0.01978,
+      "effect_units": "epa_per_play",
+      "family": "sim17_halftime_h2_epa_response",
+      "interval": [
+        0.00866,
+        0.0301
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Coordinator second-half shift in expected points per play carries out of season and is small.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": 0.209,
+      "sample_blocks": null,
+      "sample_games": 4100,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/sim17/halftime_fit.json",
+      "standard_error": null
+    }
+  }
+}
