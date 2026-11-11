@@ -224,6 +224,454 @@
       ],
       "source": "artifacts/mod57_p2h/results.json",
       "standard_error": null
+    },
+    "mod57_p2k_k1_added_term_all_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k1; four terms plus standardised r minus four terms",
+      "effect": -0.1981849161137602,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -1.6194331983805668,
+        1.2129584527611217
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3747,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_added_term_all_games_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k1; four terms plus standardised r minus four terms",
+      "effect": -4.3946511819854266e-06,
+      "effect_units": "brier_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.0006376321702453343,
+        0.0006196059887661912
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.4981,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_added_term_all_games_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k1; four terms plus standardised r minus four terms",
+      "effect": 2.0883749511656397e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.001261557355328136,
+        0.0012831500926682247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5152,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_added_term_quiet_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k1; four terms plus standardised r minus four terms",
+      "effect": 1.0678575857096526,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.9569664498753688,
+        3.091620212853627
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8348,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_added_term_quiet_games_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k1; four terms plus standardised r minus four terms",
+      "effect": 0.00015671631685459028,
+      "effect_units": "brier_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.0007684672186572036,
+        0.0010589876945589465
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6325,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_added_term_quiet_games_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k1; four terms plus standardised r minus four terms",
+      "effect": 0.0003115916339202058,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.001556385626719536,
+        0.00213420711831917
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.63,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_standalone_all_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k1; standalone sign(margin_hat - opener) minus served model",
+      "effect": -4.3069854304924515,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -7.853818469979545,
+        -0.9234372530184947
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0071,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k1_standalone_quiet_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k1; standalone sign(margin_hat - opener) minus served model",
+      "effect": -4.412012426581173,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -9.091177734794757,
+        0.35505064330687075
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.032,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_added_term_all_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k2; four terms plus standardised r minus four terms",
+      "effect": -1.1372805715192855,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -2.2819175069074777,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0195,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_added_term_all_games_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k2; four terms plus standardised r minus four terms",
+      "effect": -0.00025582864264125487,
+      "effect_units": "brier_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.0006544249341648996,
+        0.00014382256540712964
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1015,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_added_term_all_games_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k2; four terms plus standardised r minus four terms",
+      "effect": -0.0005053989485092916,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.0013145041590013889,
+        0.00030529019315823604
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1065,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_added_term_quiet_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k2; four terms plus standardised r minus four terms",
+      "effect": -0.3555033494643362,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -1.9139328997507377,
+        1.2151037832628235
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2965,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_added_term_quiet_games_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k2; four terms plus standardised r minus four terms",
+      "effect": -0.0001470390931960636,
+      "effect_units": "brier_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.000708177716034492,
+        0.0004061778208795833
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3091,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_added_term_quiet_games_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k2; four terms plus standardised r minus four terms",
+      "effect": -0.0003007833493431003,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -0.0014335238597176774,
+        0.000816141754924974
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3066,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_standalone_all_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 all_games, decisive opener games, week-block bootstrap, lineup play model k2; standalone sign(margin_hat - opener) minus served model",
+      "effect": -4.711662984754916,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -7.697625041173273,
+        -1.7402654094639431
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0012,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
+    },
+    "mod57_p2k_k2_standalone_quiet_games_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2020-25 quiet_games, decisive opener games, week-block bootstrap, lineup play model k2; standalone sign(margin_hat - opener) minus served model",
+      "effect": -2.6321758507430792,
+      "effect_units": "accuracy_points",
+      "family": "mod57_play_level_matchup_model",
+      "interval": [
+        -6.904982363315697,
+        1.579779745028831
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1043,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2k/results.json",
+      "standard_error": null
     }
   }
 }

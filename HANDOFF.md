@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T14:48:40.229895+00:00`
+Refreshed at: `2026-11-11T14:51:29.705989+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-11T14:48:40.229895+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `629eb6aad33c` — Record the first base-model rebuild units and the quiet-game signal scan
-- Pending change set: 344 paths
+- Baseline commit: `e5b702e27fa7` — Record the all-books deadline move against the leader move
+- Pending change set: 342 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p2j-confirmed-moves.md`
+  - `A  docs/lanes/mod57-p2k-play-model-with-lineups.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
@@ -37,13 +37,13 @@ Refreshed at: `2026-11-11T14:48:40.229895+00:00`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `A  registry/weak_signals/mod57_confirmed_moves.json`
+  - `M  registry/weak_signals/mod57_play_level_matchup_model.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  scripts/mod57_p2j_confirmed_moves.py`
-  - `A  scripts/mod57_p2j_consensus.py`
+  - `A  scripts/mod57_p2k_play_model_with_lineups.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - ...and 324 more
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - ...and 322 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
