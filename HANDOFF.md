@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T20:19:41.305600+00:00`
+Refreshed at: `2026-11-11T20:25:17.853425+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-11T20:19:41.305600+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `633ab925fa0b` — Commit research records left uncommitted since 2026-11-03
+- Baseline commit: `2fc043828dcc` — Note that the card-explanation defect was already fixed; clear a lint finding
 - Pending change set: 329 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/week9-sunday-refresh-2026-11-08.md`
+  - `M  docs/lanes/lead99-llm-read.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  scripts/mod10_unit2_replace.py`
+  - `M  scripts/capture_scheduler.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`

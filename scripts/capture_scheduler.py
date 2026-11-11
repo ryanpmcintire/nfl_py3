@@ -540,7 +540,7 @@ SCHEDULE: tuple[Job, ...] = (
             f"lead99_llm_read_{view}_{day}_{at.replace(':', '')}",
             day,
             at,
-            30,
+            grace,
             [
                 str(UV),
                 "run",
@@ -554,15 +554,20 @@ SCHEDULE: tuple[Job, ...] = (
             True,
             "LEAD-99 forward log: a blind sharp-style LLM read of every game against the pool "
             "line, frozen prompt and model, recorded before each game's deadline. The Tuesday "
-            "view follows the lock; deadline views follow each inactives drop.",
+            "view follows the lock; deadline views follow each inactives drop. The Tuesday "
+            "view requires weekly_lock and keeps its window open until 23:30 ET: on "
+            "2026-10-27 and 2026-11-10 the board was read after 13:30, the 30-minute window "
+            "found no captured week, and that week's Tuesday view was lost. A manual "
+            "--run-job weekly_lock the same day satisfies the requirement.",
             added_on="2026-10-20",
+            requires=requires,
         )
-        for view, day, at in (
-            ("tuesday", "tue", "13:30"),
-            ("deadline", "thu", "18:00"),
-            ("deadline", "sun", "08:40"),
-            ("deadline", "sun", "11:40"),
-            ("deadline", "sun", "14:45"),
+        for view, day, at, grace, requires in (
+            ("tuesday", "tue", "13:30", 600, ("weekly_lock",)),
+            ("deadline", "thu", "18:00", 30, ()),
+            ("deadline", "sun", "08:40", 30, ()),
+            ("deadline", "sun", "11:40", 30, ()),
+            ("deadline", "sun", "14:45", 30, ()),
         )
     ),
     *(
