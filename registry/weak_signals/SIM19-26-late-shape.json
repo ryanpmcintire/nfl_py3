@@ -1,0 +1,1685 @@
+{
+  "family": "SIM19-26-late-shape",
+  "signals": {
+    "SIM19-26-late-kernel-final9-off_trail_15p-elapsed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -0.9251161806398045,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -3.7428383628951796,
+        2.65757012337713
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.282,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_15p-expl_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -0.9425132733608121,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.5550156303292821,
+        -0.2803184597918218
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_15p-int_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -0.03299408019120098,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.363807999655798,
+        0.3288545154059306
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.436,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_15p-sack_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.48604499532564904,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.012536217369151868,
+        0.9462537087131785
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.976,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_15p-score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -2.665218040965839,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -4.692345035711687,
+        -0.49877098414633936
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_15p-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 2.999803722117705,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.895371407340804,
+        5.159272955263729
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_15p-turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.6448119443748734,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.382716089100976,
+        2.526600784141976
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.75,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 869,
+      "sample_games": 869,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-elapsed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 3.5917441268335466,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.3399471996054546,
+        9.023247418130453
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.924,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-expl_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 2.3197509834014767,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        1.2960557137556226,
+        3.1991902973431805
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-int_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.4650851620226593,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.010433268949495873,
+        0.9983798713704637
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.972,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-sack_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.5167669657050823,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.10157066333385045,
+        1.2416724910648367
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.938,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 3.135479766804977,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.3832768740976174,
+        5.969155710307309
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.984,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 9.016901645078079,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        6.294725785901546,
+        11.900333329011364
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_5_7-turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 7.3728154470486835,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        3.9979218651532764,
+        10.39358142855025
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 568,
+      "sample_games": 568,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-elapsed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -11.845235996779365,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -14.973902722931054,
+        -8.418744863375462
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-expl_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 2.137975387339465,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        1.461435104858733,
+        2.8995324543623497
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-int_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.8558547009909708,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.4134698731520867,
+        1.2773583577636256
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-sack_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 1.2751045054586554,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.7434946941261307,
+        1.8270879806404368
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 6.5613386972639995,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        3.9910804106399307,
+        9.571841531516574
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 6.417501457805128,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        4.274189902643101,
+        8.923204851954578
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-final9-off_trail_8_14-turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 8.235123610714082,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        5.611963541299735,
+        10.564263496839956
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 843,
+      "sample_games": 843,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-elapsed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -11.654732963656215,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -16.437002205095073,
+        -6.809430421430406
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-expl_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -0.15034597756793805,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.6823903793401914,
+        0.41756340111788204
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.35,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-int_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.3254865841373581,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.04973048951075439,
+        0.6048855810465261
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-sack_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 1.111907395469932,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.6809740705613108,
+        1.5816740206681974
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -4.093833511756895,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -6.149844639967177,
+        -2.2583263166633634
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.7024605724033683,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.1219141132194872,
+        2.4428900722561933
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.76,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_15p-turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 2.6357600694397494,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.8197105892335587,
+        4.41354730220567
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.996,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 834,
+      "sample_games": 834,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-elapsed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -0.2564034529328296,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -6.748640965923842,
+        6.43410578918391
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.45,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-expl_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.41278976097312986,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.3485186932397043,
+        1.234469473788814
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.866,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-int_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.11314070035179769,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.20945063331856392,
+        0.44364521693429426
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.764,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-sack_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -0.18604917547839842,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.7059441448849213,
+        0.3612970158968305
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.268,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.8506349766412513,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.9877488008828519,
+        3.8580494081634247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.706,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.6060755772307219,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -2.0967890070122777,
+        3.1771215958895054
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.658,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_5_7-turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.5182269930966515,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.605940356305069,
+        2.6650265924391965
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.694,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 667,
+      "sample_games": 667,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-elapsed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": -4.010169619826371,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -8.87774626442147,
+        0.7022736711702257
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.05,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-expl_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.657323353984407,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.040791007138901575,
+        1.269585885356206
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.98,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-int_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.16131160767103303,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.10195485742147219,
+        0.4515057163774111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.9,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-sack_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 0.38061303896372367,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.0051946707953205475,
+        0.8509775425239727
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.972,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 2.8906568660523324,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.5387585313309908,
+        5.283183430594512
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 1.8932460586504636,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.2951544018942874,
+        3.854179505502927
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.952,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-kernel-min9_24-off_trail_8_14-turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real held-out drive minus kernel-drawn drive, leave-game-out, offense-side state.",
+      "effect": 1.1463620938089196,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.6160409134698851,
+        3.1555343876098463
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.904,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1044,
+      "sample_games": 1044,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_15p-ds": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -0.08565960215896391,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.9564379981743633,
+        0.7429002173813365
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.424,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1371,
+      "sample_games": 1371,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_15p-el": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.18210670751710412,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -2.621162804401993,
+        3.641964407659608
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.546,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1371,
+      "sample_games": 1371,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_15p-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.860918364065086,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.1160751027378515,
+        2.8961756766405142
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.798,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1371,
+      "sample_games": 1371,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_5_7-ds": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.8944376778793953,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.35691147361740877,
+        2.345069201983952
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.908,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 717,
+      "sample_games": 717,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_5_7-el": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.3671157072781559,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -4.541340560844442,
+        5.700720920476807
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.578,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 717,
+      "sample_games": 717,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_5_7-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 2.9777002023113868,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.32301975085627493,
+        5.815890419378408
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.988,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 717,
+      "sample_games": 717,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_8_14-ds": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.7814514721968078,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.3737727671975127,
+        1.8105173717516316
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.914,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1172,
+      "sample_games": 1172,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_8_14-el": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -8.804630853383733,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -11.985217664123077,
+        -5.424228492004258
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1172,
+      "sample_games": 1172,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-final9-off_trail_8_14-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 2.018466285336023,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.16301600781487174,
+        4.530978203936925
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.962,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1172,
+      "sample_games": 1172,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_15p-ds": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.9375228262329752,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        0.11067189974514159,
+        1.813357241550589
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.986,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1824,
+      "sample_games": 1824,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_15p-el": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -2.4018351989502023,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -7.152341074177436,
+        2.5364207080102057
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.144,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1824,
+      "sample_games": 1824,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_15p-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -0.056855214012133844,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.8685047839853142,
+        1.7546786988862078
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.484,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1824,
+      "sample_games": 1824,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_5_7-ds": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.12924783727763248,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -0.8435578870025446,
+        1.2436905249344596
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.596,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 958,
+      "sample_games": 958,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_5_7-el": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -1.5407291137589223,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -8.017756243435606,
+        4.747915868451636
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.316,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 958,
+      "sample_games": 958,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_5_7-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -0.9541446366621625,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -3.5181691046857115,
+        1.5391800118117056
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.23,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 958,
+      "sample_games": 958,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_8_14-ds": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": -0.3632534983178842,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.0561147550791614,
+        0.3904683642654775
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.17,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1672,
+      "sample_games": 1672,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_8_14-el": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 1.0056785429028514,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -3.8773400215404243,
+        5.550293252232766
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.638,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1672,
+      "sample_games": 1672,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    },
+    "SIM19-26-late-modeltarget-min9_24-off_trail_8_14-td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control; simulator residual, not an effect on picks.",
+      "closing_ground": null,
+      "description": "Real outcome minus out-of-fold outcome-model mean (tilt target), game-cluster interval.",
+      "effect": 0.5917626382615977,
+      "effect_units": "rate_pp",
+      "family": "SIM19-26-late-shape",
+      "interval": [
+        -1.540315863422326,
+        2.509964061268445
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares real late-game drives for trailing offenses with what the simulator's drive draw produces for the same game states.",
+      "probability_positive": 0.722,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 1672,
+      "sample_games": 1672,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim26/late_shape.json",
+      "standard_error": null
+    }
+  }
+}

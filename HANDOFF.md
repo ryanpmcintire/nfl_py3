@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T15:54:05.319559+00:00`
+Refreshed at: `2026-11-11T15:55:52.765244+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T15:54:05.319559+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4b66af3b7364` — Find the forecaster's wrong-way cause and grade the overreaction term
-- Pending change set: 347 paths
+- Baseline commit: `be4a31240683` — Prepare the wind field-goal hook for the simulator
+- Pending change set: 350 paths
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `M  docs/lanes/sim-15-sim15-weather-calls.md`
+  - `M  docs/lanes/sim-19-trailing-risk.md`
+  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
   - `M  docs/lanes/sim-finish-2026-11-11.md`
-  - `A  docs/lanes/sim-finish-s2-trunc-bw.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/sim08_market_anchored_declaration.md`
+  - `A  registry/weak_signals/SIM19-26-late-shape.json`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
   - ` M registry/weak_signals/sim08_market_anchored.json`
   - ` M scripts/sim08_market_anchored.py`
-  - `A  scripts/sim15_wind_table.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - ...and 327 more
+  - `A  scripts/sim19_sim26_late_shape.py`
+  - ...and 330 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
