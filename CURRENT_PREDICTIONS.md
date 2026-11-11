@@ -14,20 +14,20 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Nov 12 | WAS at NYG | NYG -1.5         | 50.6%          |
-| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 52.3%          |
+| Thu, Nov 12 | WAS at NYG | NYG -1.5         | 52.4%          |
+| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 52.0%          |
 | Sun, Nov 15 | CAR at NO  | CAR +1.5         | 51.0%          |
-| Sun, Nov 15 | HOU at CLE | HOU -4.5         | 50.9%          |
+| Sun, Nov 15 | HOU at CLE | HOU -4.5         | 51.7%          |
 | Sun, Nov 15 | JAX at TEN | TEN +10.5        | 53.3%          |
-| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 51.5%          |
+| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 52.3%          |
 | Sun, Nov 15 | LA at ARI  | LA -9.5          | 54.9%          |
 | Sun, Nov 15 | MIA at IND | IND -2.5         | 51.1%          |
-| Sun, Nov 15 | MIN at GB  | GB -4.5          | 55.4%          |
-| Sun, Nov 15 | NE at DET  | NE +2.5          | 51.3%          |
+| Sun, Nov 15 | MIN at GB  | GB -4.5          | 56.2%          |
+| Sun, Nov 15 | NE at DET  | NE +2.5          | 50.4%          |
 | Sun, Nov 15 | PIT at CIN | ★ CIN -3.5       | 55.0%          |
-| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 51.8%          |
-| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 50.1%          |
-| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 51.4%          |
+| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 52.5%          |
+| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 50.5%          |
+| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 52.1%          |
 
 **Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
 
@@ -42,7 +42,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| HOU at CLE | CLE             | HOU        | 50.9%          |
-| SF at DAL  | SF              | DAL        | 50.1%          |
-| WAS at NYG | WAS             | NYG        | 50.6%          |
+| HOU at CLE | CLE             | HOU        | 51.7%          |
+| SF at DAL  | SF              | DAL        | 50.5%          |
+| WAS at NYG | WAS             | NYG        | 52.4%          |
 <!-- LATE_WEEK_REFRESH:END -->

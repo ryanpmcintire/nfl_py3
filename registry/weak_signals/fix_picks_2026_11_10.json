@@ -79,6 +79,34 @@
       "source": "docs/lanes/fix-picks-2026-11-10.md",
       "standard_error": null
     },
+    "fixpicks_offset_term_without_at_market_conversion_2026_w1_w9": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward replay on one season with coefficients fitted on 2020-25; served from Week 10 on the measured mechanism (exact at-market recomputation on 80 offset games embeds about a third of the mass, U7), not closed",
+      "closing_ground": null,
+      "description": "Served stack replayed on 2026 Weeks 1-9 with the pool-line offset term added to the model's stated probability, without the at-market conversion that assumed the stated probability embeds the whole crossed push mass; effect is log loss gain over the conversion as served",
+      "effect": 0.0028,
+      "effect_units": "log_loss_improvement",
+      "family": "fix_picks_2026_11_10",
+      "interval": [
+        0.0003,
+        0.0053
+      ],
+      "league": "nfl",
+      "notes": "85-51 v 81-55; differing 6 games 5-1, all within one point of even; offset games 44-27 v 40-31; exact at-market arm 85-51 log loss .6788 (U7, docs/lanes/fix-picks-u7-at-market-exact.md); out-of-season fit of the embedded share still owed",
+      "plain_summary": null,
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/fixpicks/root_m5.py",
+      "standard_error": null
+    },
     "fixpicks_pmkt_lattice_vs_served_card_2026_w3_w9": {
       "category": "market",
       "classification": "unresolved_below_power",

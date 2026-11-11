@@ -516,7 +516,7 @@ def register(
         "enroll", help="freeze the declared future cohort and model", parents=[study_choice]
     )
     study_enroll.add_argument(
-        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026_v8.json")
+        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026_v9.json")
     )
     study_enroll.set_defaults(handler=_cmd_independent_validation)
     study_capture = study_actions.add_parser(

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T01:55:03.183721+00:00`
+Refreshed at: `2026-11-11T02:09:06.730338+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-11-11T01:55:03.183721+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6d52db8eb7ba` — Republish the site with the latest settled results
-- Pending change set: 354 paths
+- Baseline commit: `940c8140bc57` — Anchor the pool-line offset term on a multi-book Tuesday line
+- Pending change set: 348 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
@@ -32,18 +32,18 @@ Refreshed at: `2026-11-11T01:55:03.183721+00:00`
   - `M  docs/index.html`
   - `M  docs/lanes/README.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `A  docs/lanes/fix-picks-2026-11-10.md`
-  - `A  docs/lanes/fix-picks-u1-layer-table.md`
-  - `A  docs/lanes/fix-picks-u2-line-value.md`
-  - `A  docs/lanes/fix-picks-u3-base-2026.md`
-  - `A  docs/lanes/fix-picks-u4-crowd.md`
-  - `A  docs/lanes/fix-picks-u5-lv-loso.md`
-  - `A  docs/lanes/fix-picks-u6-input-freshness.md`
+  - `M  docs/lanes/fix-picks-2026-11-10.md`
+  - `A  docs/lanes/fix-picks-u7-at-market-exact.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
-  - ...and 334 more
+  - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
+  - ` M docs/lead64_freshness_audit.md`
+  - `M  docs/model.html`
+  - `A  registry/studies/combined_vs_raw_2026_v9.json`
+  - `M  registry/weak_signals/fix_picks_2026_11_10.json`
+  - ...and 328 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

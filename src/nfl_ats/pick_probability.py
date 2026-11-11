@@ -32,11 +32,7 @@ from nfl_ats.four_overlay_composition import (
 )
 from nfl_ats.mass_preserving_lattice import BASE_PROBABILITY_POLICY
 from nfl_ats.player_arrests_back_side_overlay import _broad_side_flags
-from nfl_ats.pool_hook import (
-    HOOK_COLUMN,
-    HOOK_DIRECTION_COLUMN,
-    HOOK_PUSH_MASS_COLUMN,
-)
+from nfl_ats.pool_hook import HOOK_COLUMN
 from nfl_ats.tank_zone_fade_tilt_overlay import OVERLAY_WEEK_MAX as TANK_ZONE_WEEK_MAX
 from nfl_ats.tank_zone_fade_tilt_overlay import OVERLAY_WEEK_MIN as TANK_ZONE_WEEK_MIN
 from nfl_ats.tank_zone_fade_tilt_overlay import tank_zone_flag_by_game
@@ -881,28 +877,10 @@ def calibrated_pick_probability(
         resolved_hook["game_id"] = resolved_hook["game_id"].astype(str)
         applied = (
             joined[["game_id"]]
-            .merge(
-                resolved_hook[
-                    ["game_id", HOOK_COLUMN, HOOK_DIRECTION_COLUMN, HOOK_PUSH_MASS_COLUMN]
-                ],
-                on="game_id",
-                how="left",
-            )
+            .merge(resolved_hook[["game_id", HOOK_COLUMN]], on="game_id", how="left")
             .fillna(0.0)
         )
         joined[HOOK_COLUMN] = applied[HOOK_COLUMN].to_numpy(dtype=float)
-        direction = applied[HOOK_DIRECTION_COLUMN].to_numpy(dtype=float)
-        atom = applied[HOOK_PUSH_MASS_COLUMN].to_numpy(dtype=float)
-        stated = model_home.to_numpy(dtype=float)
-        at_market = np.where(
-            direction > 0,
-            stated / (1.0 - atom),
-            np.where(direction < 0, (stated - atom) / (1.0 - atom), stated),
-        )
-        base_home = pd.Series(
-            np.clip(at_market, PROBABILITY_EPSILON, 1.0 - PROBABILITY_EPSILON),
-            index=model_home.index,
-        )
     home_probability = model.home_probability(
         base_home,
         joined[FLAG_SUM_COLUMN],
