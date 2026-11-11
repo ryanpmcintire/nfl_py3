@@ -346,6 +346,37 @@ this is a re-run of the same cells under the repaired engine and anchor
    with `weak-signals record`; zero crossing closes nothing and no pick is
    changed by the simulator alone.
 
+### Amendment 4a (before any look under the full Amendment 4 run), 2026-11-11
+
+Declared after the first full run stopped on its first fold and before any game
+of it was simulated or scored. Amendment 4 item 2 fits the total target on
+completed seasons below the held-out season. Tuesday-opener totals exist only
+for 2020-2025 (measured 2026-11-11 through `default_opener_lines`: 0 games in
+each of 2009-2019; 228, 252, 268, 284, 285, 285 in 2020-2025), so that rule has
+no training data for held-out 2020 and a single season for 2021, where the
+leave-one-training-season-out choice of form cannot be made. Two of six folds
+could not run as written.
+
+Replacement for item 2 only: for held-out season s the three candidate forms are
+fitted and the form chosen on the other five graded seasons (leave-one-season-out,
+the fitting plan of section 7 and the rule the `target` command already
+implements); the held-out season never enters its own fit or selection. The
+walk-forward restriction of Amendment 3 exists because the drive library replays
+real drives; a two-parameter map from opener total to expected realised total
+carries no game content, so that reason does not apply here. For held-out 2025
+the training seasons are the same under both rules, so the 2026-11-03 and
+2026-11-11 smokes stand. Alternative considered and not taken: keep the opener
+total as the target in 2020 and 2021 and condition only 2022-2025, which would
+mix two anchors inside the pooled cells that Amendment 4 item 5 judges.
+
+Cheap check, run before the simulation (`sim08_market_anchored.py target`,
+2026-11-11): chosen form and fitted slope by held-out season: 2020 linear 0.833,
+2021 linear 0.943, 2022 linear 0.886, 2023 identity (linear slope 0.915 not
+chosen), 2024 identity (0.886), 2025 identity (0.854). The form changes between
+folds; that is reported, not smoothed. Code: `cmd_fold` in
+`scripts/sim08_market_anchored.py`, training seasons `q != HELD`. Nothing else in
+Amendments 4 to 6 changes.
+
 ### Amendment 5 (before any look under it), 2026-11-11
 
 Declared before the tilt is applied to any draw. Seen already: the 2026-11-11

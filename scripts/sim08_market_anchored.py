@@ -779,7 +779,7 @@ def cmd_fold(a):
     test["total_target"] = test["total"]
     if amend4():
         rf = realised_total_frame()
-        tf = total_target_fit(rf, [q for q in rf["season"].unique() if q < HELD])
+        tf = total_target_fit(rf, [q for q in rf["season"].unique() if q != HELD])
         test["total_target"] = apply_target(tf, test["total"].to_numpy())
         (out_dir / f"total_target_{HELD}.json").write_text(json.dumps(tf, indent=1))
     pool_ctx = list(zip(test["season"], test["week"], strict=True))
