@@ -1552,10 +1552,13 @@ SCHEDULE: tuple[Job, ...] = (
             added_on="2026-11-11",
         )
         for name, day, at in (
+            ("odds_private_wed_1900", "wed", "19:00"),
             ("odds_private_thu_1140", "thu", "11:40"),
             ("odds_private_thu_1450", "thu", "14:50"),
             ("odds_private_thu_1900", "thu", "19:00"),
             ("odds_private_fri_1315", "fri", "13:15"),
+            ("odds_private_fri_1500", "fri", "15:00"),
+            ("odds_private_fri_1845", "fri", "18:45"),
             ("odds_private_sat_1535", "sat", "15:35"),
             ("odds_private_sat_1900", "sat", "19:00"),
             ("odds_private_sun_0815", "sun", "08:15"),
@@ -1693,6 +1696,9 @@ SCHEDULE: tuple[Job, ...] = (
             ("sun", "08:30", 45, "2026-09-10"),
             ("sun", "12:45", 10, "2026-09-13"),
             ("sun", "15:35", 20, "2026-11-11"),
+            ("fri", "12:40", 15, "2026-11-11"),
+            ("fri", "15:15", 60, "2026-11-11"),
+            ("fri", "19:00", 60, "2026-11-11"),
         )
     ),
     Job(

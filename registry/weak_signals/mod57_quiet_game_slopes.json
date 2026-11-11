@@ -1,0 +1,509 @@
+{
+  "family": "mod57_quiet_game_slopes",
+  "signals": {
+    "mod57_u4_arm_a_move_slope_by_size_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_a_move_slope_by_size versus served four-term, leave-one-season-out 2020-25, all_games, week-block bootstrap; improvement positive.",
+      "effect": 0.8697579203530753,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.8701764161202451,
+        2.600086782376501
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8269,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_a_move_slope_by_size_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_a_move_slope_by_size versus served four-term, leave-one-season-out 2020-25, all_games, week-block bootstrap; improvement positive.",
+      "effect": -0.0003076207647105652,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0012602335906472869,
+        0.0006039000876149551
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2609,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_a_move_slope_by_size_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_a_move_slope_by_size versus served four-term, leave-one-season-out 2020-25, all_games, week-block bootstrap; improvement positive.",
+      "effect": -0.000681693414539626,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0026278264390402458,
+        0.0011696926961230574
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2412,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_a_move_slope_by_size_quiet_open_move_half_point_or_less_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_a_move_slope_by_size versus served four-term, leave-one-season-out 2020-25, quiet_open_move_half_point_or_less, week-block bootstrap; improvement positive.",
+      "effect": 2.7293317094017544,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        0.12515253441802254,
+        5.29482551143201
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9793,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_a_move_slope_by_size_quiet_open_move_half_point_or_less_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_a_move_slope_by_size versus served four-term, leave-one-season-out 2020-25, quiet_open_move_half_point_or_less, week-block bootstrap; improvement positive.",
+      "effect": 0.0005746343641832207,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0008662325722001285,
+        0.0019885065535191547
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.785,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_a_move_slope_by_size_quiet_open_move_half_point_or_less_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_a_move_slope_by_size versus served four-term, leave-one-season-out 2020-25, quiet_open_move_half_point_or_less, week-block bootstrap; improvement positive.",
+      "effect": 0.0011540023865350434,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0017563101595367001,
+        0.004013402607467226
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7833,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_m_model_slope_by_state_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_m_model_slope_by_state versus served four-term, leave-one-season-out 2020-25, all_games, week-block bootstrap; improvement positive.",
+      "effect": 0.3260662425315351,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.8016032064128257,
+        1.474555554956189
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6867,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_m_model_slope_by_state_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_m_model_slope_by_state versus served four-term, leave-one-season-out 2020-25, all_games, week-block bootstrap; improvement positive.",
+      "effect": -0.0004354730322486766,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0012802250011627204,
+        0.00041020083803421396
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1576,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_m_model_slope_by_state_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_m_model_slope_by_state versus served four-term, leave-one-season-out 2020-25, all_games, week-block bootstrap; improvement positive.",
+      "effect": -0.0008444032282308744,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0025879274143779008,
+        0.00091450357619174
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1749,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_m_model_slope_by_state_quiet_open_move_half_point_or_less_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_m_model_slope_by_state versus served four-term, leave-one-season-out 2020-25, quiet_open_move_half_point_or_less, week-block bootstrap; improvement positive.",
+      "effect": 1.6772714512122537,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        0.11805680132053406,
+        3.229665071770335
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9775,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_m_model_slope_by_state_quiet_open_move_half_point_or_less_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_m_model_slope_by_state versus served four-term, leave-one-season-out 2020-25, quiet_open_move_half_point_or_less, week-block bootstrap; improvement positive.",
+      "effect": -0.0009759380607648887,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0017669551413717383,
+        -0.00018977614042871605
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0071,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u4_arm_m_model_slope_by_state_quiet_open_move_half_point_or_less_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U4: arm_m_model_slope_by_state versus served four-term, leave-one-season-out 2020-25, quiet_open_move_half_point_or_less, week-block bootstrap; improvement positive.",
+      "effect": -0.0019742273671178013,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0035810312451572523,
+        -0.000372841321693876
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0071,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/u4/results.json",
+      "standard_error": null
+    },
+    "mod57_u5_arm_a_2026_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U5: arm_a versus current structure, coefficients frozen 2020-25, 2026 Weeks 1-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": -2.9257957083025947,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -8.88888888888889,
+        3.0303030303030303
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.152,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u5/results.json",
+      "standard_error": null
+    },
+    "mod57_u5_arm_a_2026_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U5: arm_a versus current structure, coefficients frozen 2020-25, 2026 Weeks 1-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": -0.0009590889121057829,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.003617725959813321,
+        0.0016577590200978038
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.241,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u5/results.json",
+      "standard_error": null
+    },
+    "mod57_u5_arm_a_2026_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U5: arm_a versus current structure, coefficients frozen 2020-25, 2026 Weeks 1-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": -0.0018913763888688273,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.00718185963739499,
+        0.0033182582826822514
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2448,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u5/results.json",
+      "standard_error": null
+    },
+    "mod57_u5_arm_m_2026_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U5: arm_m versus current structure, coefficients frozen 2020-25, 2026 Weeks 1-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": -2.1820782748218566,
+      "effect_units": "accuracy_points",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -4.444444444444445,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u5/results.json",
+      "standard_error": null
+    },
+    "mod57_u5_arm_m_2026_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U5: arm_m versus current structure, coefficients frozen 2020-25, 2026 Weeks 1-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": 0.0008117280892844937,
+      "effect_units": "brier_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0013910585939080917,
+        0.002885379384814818
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7662,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u5/results.json",
+      "standard_error": null
+    },
+    "mod57_u5_arm_m_2026_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 U5: arm_m versus current structure, coefficients frozen 2020-25, 2026 Weeks 1-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": 0.0017174310709098806,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_quiet_game_slopes",
+      "interval": [
+        -0.0027389076497288207,
+        0.005949229732374862
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7753,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/u5/results.json",
+      "standard_error": null
+    }
+  }
+}

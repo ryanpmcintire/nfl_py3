@@ -20,6 +20,14 @@ Owner 2026-11-11: reach 60% pick accuracy without overfitting. Yardstick: every 
 
    DONE (measured, unit 3; scripts/mod57_u3_deadline_fair_line.py, 12 cells recorded unresolved, family mod57_deadline_fair_line): on the 837 small-move games the four-term is 430-407, plus juice 437-400 (+0.84 pts [-1.67, +3.34], P+ .73; coefficient positive in 6 of 6 folds), plus moneyline divergence 434-403 (P+ .70); on all 1,503 games both are level or worse (juice 820-683 v 829-674, P+ .23). Model alone is 441-396 on the small-move games. Not served. Live captures hold three books and no moneylines.
 
+4. Quiet-game slopes: lane mod57-u4-quiet-game-slopes.md. Two declared arms through the stack: the move term's slope split by move size (a half-point shift in a three-book median as quantization noise), and the model term's slope split by quiet versus moved games.
+   DONE (measured, unit 4; scripts/mod57_u4_quiet_game_slopes.py, 12 cells unresolved, family mod57_quiet_game_slopes): move-slope split 842-661 v four-term 829-674 (+0.87 pts [-0.87, +2.60], P+ .83; log loss P+ .24; changed picks 80-67); on the 837 quiet games 453-384 v 430-407 (+2.73 [+0.13, +5.29], P+ .98; changed 65-42). Small-move slope -0.06 (2 of 6 folds positive), large-move slope 0.23 (6 of 6). Model-slope split 834-669 (P+ .69), log loss worse. Not served.
+5. Slopes on 2026: lane mod57-u5-slopes-on-2026.md. Both arms frozen on 2020-25 and scored once on the 2026 Week 1-9 replay, which neither has seen.
+   DONE (measured, unit 5; tests/scratch/mod57/u5/results.json; 6 cells unresolved): current structure 85-51; move-slope split 81-55 (-2.93 pts [-8.9, +3.0], P+ .15; changed picks 10-14, half-point moves 6-9); model-slope split 82-54 (changed 0-3; log loss gain +.0017, P+ .78). The 2020-25 quiet-game gain did not repeat. Not served; no further arm.
+
+## Committed
+- 0fe26b88 (pushed 2026-11-11): scheduler captures, MOD-57 row, lanes, units 1-3 registry cells, handoff current.
+
 ## Tried
 - Read 2026-11-11 (done/market-move-decomposition.md): the historical move term covers 2023-25 only (799 games), three leader books, Wednesday to min(kickoff, Sunday 12:45 PM ET); 2020-22 have no move input.
 - Prior work not to repeat: MOD-23/24 base-model units (team data is priced), MOD-26 hook, MOD-27 units, MOD-55 move anchor, MOD-56 book depth, LEAD-74 price change at a fixed spread, LEAD-98 Tuesday price skew, ml_spread_divergence_on_production, fix-picks u5 single lattice term, synthetic stacked offsets (mod27-u6).
@@ -27,8 +35,8 @@ Owner 2026-11-11: reach 60% pick accuracy without overfitting. Yardstick: every 
 ## Next
 - Capture FanDuel and DraftKings within minutes of Tuesday noon in Week 11 to separate the pool's source (FanDuel has no 2026 quotes after Week 2).
 - Why the offset term loses in 2020-22 on both arms (pre-noon snapshot, no move input) is unexplained; measure before any refit of the 0.805 coefficient.
-- Refill with the next unit that attacks the small-move games (model alone 441-396 there, four-term 430-407, juice +0.84 pts P+ .73).
-- Add the Christmas-week Friday capture and refresh pairs before 2026-12-25 (mod57-u2 lane).
+- Small-move games after five units: juice +0.84 pts (P+ .73), move-slope split +2.73 on 2020-25 but 10-14 on 2026 changed picks. Nothing served. The next unit there needs information the three leader books and the model do not hold; price and slope reshaping are used up.
+- Holiday and Christmas-week slots are covered (mod57-u2 lane); nothing further to schedule.
 - Thursday before 20:15 ET: Week 10 refresh check (fix-picks-2026-11-10.md, Next 1).
 
 ## Open
