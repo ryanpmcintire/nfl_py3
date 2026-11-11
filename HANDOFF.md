@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T15:10:58.068054+00:00`
+Refreshed at: `2026-11-11T15:15:55.964544+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-11-11T15:10:58.068054+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `edbc0d7323b9` — Record the availability ceiling measured with a deliberate leak
+- Baseline commit: `03b1b8d424b3` — Record the combined leak test and why its headline is not a ceiling
 - Pending change set: 342 paths
   - `M  HANDOFF.md`
   - `M  README.md`
@@ -29,7 +29,7 @@ Refreshed at: `2026-11-11T15:10:58.068054+00:00`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p2m-knowable-ceiling.md`
+  - `A  docs/lanes/mod57-p2n-margin-error-vs-line.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
@@ -37,9 +37,9 @@ Refreshed at: `2026-11-11T15:10:58.068054+00:00`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `M  registry/weak_signals/mod57_availability_ceiling.json`
+  - `A  registry/weak_signals/mod57_margin_error_vs_line.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  scripts/mod57_p2m_knowable_ceiling.py`
+  - `A  scripts/mod57_p2n_margin_error_vs_line.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
