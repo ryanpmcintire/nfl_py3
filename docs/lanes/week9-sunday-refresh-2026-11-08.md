@@ -20,3 +20,5 @@ Owner asked (Sun 06:30 ET) for fresh lineups, spreads and injuries, a board upda
 
 ## Open
 - Status shows many Sunday 11-01 and Tuesday 11-03 jobs as MISSED/NEVER RUN although the daemon was up for parts of that span; not investigated.
+
+- Checked 2026-11-11 15:19 ET: item 4 (card explanation naming a flag the served probability does not count) was fixed the same day in commit 314eadd6: render_pick_text now replaces the overlay sentence with the served-terms sentence whenever a pick probability model is present (read, src/nfl_ats/card_explanation.py:771-794), and no file published in the last two days contains the old phrase (measured). Nothing owed.

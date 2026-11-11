@@ -133,7 +133,7 @@ def main():
     cols = tuple(c for c in FULL if c not in removed) + tuple(added)
     parts, folds = [], {}
     for s in seasons:
-        (ti, li), mse = choose(games, diff, hfa, y, s)
+        (ti, li), _mse = choose(games, diff, hfa, y, s)
         f = features.copy()
         for name, a in (("mod10_rh", rh), ("mod10_ra", ra), ("mod10_diff", diff)):
             v = pd.Series(a[ti, li], index=key).reindex(features["game_id"]).to_numpy()
