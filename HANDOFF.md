@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T14:42:07.200229+00:00`
+Refreshed at: `2026-11-11T14:48:40.229895+00:00`
 
 ## Start here
 
@@ -21,20 +21,15 @@ Refreshed at: `2026-11-11T14:42:07.200229+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d444ee6794a7` — Record that the pool line is FanDuel's and what that does to the pool-line term
-- Pending change set: 351 paths
+- Baseline commit: `629eb6aad33c` — Record the first base-model rebuild units and the quiet-game signal scan
+- Pending change set: 344 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p2a-outside-leads.md`
-  - `A  docs/lanes/mod57-p2c-uncorrected-error-model.md`
-  - `A  docs/lanes/mod57-p2e-price-at-pool-number.md`
-  - `A  docs/lanes/mod57-p2f-signals-on-quiet-games.md`
-  - `A  docs/lanes/mod57-p2g-data-versus-inputs.md`
-  - `A  docs/lanes/mod57-p2h-play-level-matchup-model.md`
+  - `A  docs/lanes/mod57-p2j-confirmed-moves.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
@@ -42,8 +37,13 @@ Refreshed at: `2026-11-11T14:42:07.200229+00:00`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `A  registry/weak_signals/mod57_play_level_matchup_model.json`
-  - ...and 331 more
+  - `A  registry/weak_signals/mod57_confirmed_moves.json`
+  - ` M registry/weak_signals/per16_team_designation_habit.json`
+  - `A  scripts/mod57_p2j_confirmed_moves.py`
+  - `A  scripts/mod57_p2j_consensus.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - ...and 324 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

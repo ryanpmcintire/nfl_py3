@@ -1,0 +1,341 @@
+{
+  "family": "mod57_confirmed_moves",
+  "signals": {
+    "mod57_p2j_arm_j1_both_2020_25_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j1_both versus the current served structure, leave-one-season-out 2020-25, week-block bootstrap; improvement positive.",
+      "effect": -0.6134302448851114,
+      "effect_units": "accuracy_points",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -2.2758078529792307,
+        1.0060530971061263
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2209,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2j/results_history.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j1_both_2020_25_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j1_both versus the current served structure, leave-one-season-out 2020-25, week-block bootstrap; improvement positive.",
+      "effect": 0.0006935546505149621,
+      "effect_units": "brier_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0008500303174265498,
+        0.0021989355950782653
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8139,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2j/results_history.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j1_both_2020_25_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j1_both versus the current served structure, leave-one-season-out 2020-25, week-block bootstrap; improvement positive.",
+      "effect": 0.0014454052970451574,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0017467079409241638,
+        0.004566336974937824
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8156,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2j/results_history.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j1_both_2026_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j1_both versus the current served structure, coefficients frozen 2020-25, 2026 Weeks 3-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": -2.915671504220551,
+      "effect_units": "accuracy_points",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -5.882352941176471,
+        -0.9174311926605505
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2j/results_2026.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j1_both_2026_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j1_both versus the current served structure, coefficients frozen 2020-25, 2026 Weeks 3-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": 0.0005967106282809857,
+      "effect_units": "brier_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0016810181982787097,
+        0.0030081650033547997
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6771,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2j/results_2026.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j1_both_2026_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j1_both versus the current served structure, coefficients frozen 2020-25, 2026 Weeks 3-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": 0.0012573829226375426,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0034204704777298957,
+        0.006240139095522489
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6804,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2j/results_2026.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j2_replace_2020_25_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j2_replace versus the current served structure, leave-one-season-out 2020-25, week-block bootstrap; improvement positive.",
+      "effect": 0.9226855359480404,
+      "effect_units": "accuracy_points",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -1.0645553101519996,
+        2.868579052701801
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8137,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2j/results_history.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j2_replace_2020_25_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j2_replace versus the current served structure, leave-one-season-out 2020-25, week-block bootstrap; improvement positive.",
+      "effect": 0.0003755850946236941,
+      "effect_units": "brier_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0018553402600953893,
+        0.0024822682513845986
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6362,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2j/results_history.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j2_replace_2020_25_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j2_replace versus the current served structure, leave-one-season-out 2020-25, week-block bootstrap; improvement positive.",
+      "effect": 0.0007928334205606364,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0038752461178963313,
+        0.00517430154081869
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6373,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p2j/results_history.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j2_replace_2026_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j2_replace versus the current served structure, coefficients frozen 2020-25, 2026 Weeks 3-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": -3.864177049350026,
+      "effect_units": "accuracy_points",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -6.0,
+        -1.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2j/results_2026.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j2_replace_2026_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j2_replace versus the current served structure, coefficients frozen 2020-25, 2026 Weeks 3-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": 0.0015800024947299272,
+      "effect_units": "brier_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.0022731687992650807,
+        0.006130936160732465
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7509,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2j/results_2026.json",
+      "standard_error": null
+    },
+    "mod57_p2j_arm_j2_replace_2026_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-57 P2-J: arm_j2_replace versus the current served structure, coefficients frozen 2020-25, 2026 Weeks 3-9 at the pool line, week-block bootstrap; improvement positive.",
+      "effect": 0.0031114899738976377,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_confirmed_moves",
+      "interval": [
+        -0.004664571123847194,
+        0.0123728873909105
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7454,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/mod57/p2j/results_2026.json",
+      "standard_error": null
+    }
+  }
+}
