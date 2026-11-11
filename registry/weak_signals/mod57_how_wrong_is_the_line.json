@@ -336,6 +336,342 @@
       ],
       "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
       "standard_error": null
+    },
+    "mod57_p2p_EL_close_pick_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model EL pick accuracy vs close line, decisive games",
+      "effect": -0.2834868887313935,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.18662459376357,
+        1.534181352829267
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.3805,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_EL_label_variance_share": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model EL, hindsight-gap label, walk-forward: label_variance_share",
+      "effect": 0.1037636431895399,
+      "effect_units": "variance_share",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.05938402248041727,
+        0.14461727460234677
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_EL_mae_diff_line_minus_model": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model EL, hindsight-gap label, walk-forward: mae_diff_line_minus_model",
+      "effect": -0.021726493647593458,
+      "effect_units": "margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.036486541484256674,
+        -0.006835365610993237
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_EL_mse_diff_line_minus_model": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model EL, hindsight-gap label, walk-forward: mse_diff_line_minus_model",
+      "effect": -0.20462202919442524,
+      "effect_units": "squared_margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.8407957555279307,
+        0.41227093890660255
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.245,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_EL_open_pick_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model EL pick accuracy vs open line, decisive games",
+      "effect": -0.7651363938789069,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.675247291766464,
+        1.2771392081736943
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.25,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_EL_result_calibration_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model EL, hindsight-gap label, walk-forward: result_calibration_slope",
+      "effect": 0.29368682186995443,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.3089920417698184,
+        0.8986129242186967
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.823,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_GL_close_pick_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model GL pick accuracy vs close line, decisive games",
+      "effect": 0.38979447200566675,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.831018173877652,
+        2.672979175774204
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.62625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_GL_label_variance_share": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model GL, hindsight-gap label, walk-forward: label_variance_share",
+      "effect": 0.07378132207144283,
+      "effect_units": "variance_share",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.03651833875233293,
+        0.10947701634971727
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_GL_mae_diff_line_minus_model": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model GL, hindsight-gap label, walk-forward: mae_diff_line_minus_model",
+      "effect": -0.026677994209733966,
+      "effect_units": "margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.047790442676992305,
+        -0.005946511303661037
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.006,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_GL_mse_diff_line_minus_model": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model GL, hindsight-gap label, walk-forward: mse_diff_line_minus_model",
+      "effect": -0.002040270138055884,
+      "effect_units": "squared_margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.4982297000707908,
+        0.5997586624163121
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.456,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_GL_open_pick_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model GL pick accuracy vs open line, decisive games",
+      "effect": 0.03326679973386648,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.38735709482179,
+        2.8792134831460703
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.49225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
+    },
+    "mod57_p2p_GL_result_calibration_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Model GL, hindsight-gap label, walk-forward: result_calibration_slope",
+      "effect": 0.4975613510449216,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.13593068227496047,
+        1.0072326558504705
+      ],
+      "league": "nfl",
+      "notes": "Two models trained on the hindsight gap (own-game-removed season rating margin minus close line) from earlier completed seasons only, tested walk-forward 2015-25. Season-block bootstrap.",
+      "plain_summary": "Tests how much of the line's hindsight error can be forecast before kickoff.",
+      "probability_positive": 0.942,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2p/results.json",
+      "standard_error": null
     }
   }
 }
