@@ -1,0 +1,173 @@
+{
+  "family": "mod57_offset_term_era_placebo",
+  "signals": {
+    "mod57_p3b_a_pre_noon_snapshot_line_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo on 2023-25: DraftKings-built pool-line offset term, two-stage minus stage-1 held-out, inputs degraded to match 2020-22 (a_pre_noon_snapshot_line); pushes kept, leave-one-season-out, week-block bootstrap",
+      "effect": 1.3664596273291925,
+      "effect_units": "accuracy_points",
+      "family": "mod57_offset_term_era_placebo",
+      "interval": [
+        -0.311332503113325,
+        2.941176470588235
+      ],
+      "league": "nfl",
+      "notes": "Era placebo for the 2020-22 loss of the pool-line offset term: arms A pre-noon snapshot line, B stage 1 without move input, C both.",
+      "plain_summary": null,
+      "probability_positive": 0.9435,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p3b/run.out",
+      "standard_error": null
+    },
+    "mod57_p3b_a_pre_noon_snapshot_line_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo on 2023-25: DraftKings-built pool-line offset term, two-stage minus stage-1 held-out, inputs degraded to match 2020-22 (a_pre_noon_snapshot_line); pushes kept, leave-one-season-out, week-block bootstrap",
+      "effect": 0.0021117562600234657,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_offset_term_era_placebo",
+      "interval": [
+        0.000295015002055052,
+        0.003959073651865265
+      ],
+      "league": "nfl",
+      "notes": "Era placebo for the 2020-22 loss of the pool-line offset term: arms A pre-noon snapshot line, B stage 1 without move input, C both.",
+      "plain_summary": null,
+      "probability_positive": 0.98725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p3b/run.out",
+      "standard_error": null
+    },
+    "mod57_p3b_b_no_move_input_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo on 2023-25: DraftKings-built pool-line offset term, two-stage minus stage-1 held-out, inputs degraded to match 2020-22 (b_no_move_input); pushes kept, leave-one-season-out, week-block bootstrap",
+      "effect": 0.5521472392638037,
+      "effect_units": "accuracy_points",
+      "family": "mod57_offset_term_era_placebo",
+      "interval": [
+        -1.10984406856222,
+        2.3428589913382356
+      ],
+      "league": "nfl",
+      "notes": "Era placebo for the 2020-22 loss of the pool-line offset term: arms A pre-noon snapshot line, B stage 1 without move input, C both.",
+      "plain_summary": null,
+      "probability_positive": 0.72325,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 815,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p3b/run.out",
+      "standard_error": null
+    },
+    "mod57_p3b_b_no_move_input_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo on 2023-25: DraftKings-built pool-line offset term, two-stage minus stage-1 held-out, inputs degraded to match 2020-22 (b_no_move_input); pushes kept, leave-one-season-out, week-block bootstrap",
+      "effect": 0.001303978687614368,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_offset_term_era_placebo",
+      "interval": [
+        -0.00022386260279923272,
+        0.002819590652883537
+      ],
+      "league": "nfl",
+      "notes": "Era placebo for the 2020-22 loss of the pool-line offset term: arms A pre-noon snapshot line, B stage 1 without move input, C both.",
+      "plain_summary": null,
+      "probability_positive": 0.94925,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 815,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p3b/run.out",
+      "standard_error": null
+    },
+    "mod57_p3b_c_both_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo on 2023-25: DraftKings-built pool-line offset term, two-stage minus stage-1 held-out, inputs degraded to match 2020-22 (c_both); pushes kept, leave-one-season-out, week-block bootstrap",
+      "effect": 0.12422360248447205,
+      "effect_units": "accuracy_points",
+      "family": "mod57_offset_term_era_placebo",
+      "interval": [
+        -1.7990633139651373,
+        1.9512425508386066
+      ],
+      "league": "nfl",
+      "notes": "Era placebo for the 2020-22 loss of the pool-line offset term: arms A pre-noon snapshot line, B stage 1 without move input, C both.",
+      "plain_summary": null,
+      "probability_positive": 0.558,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p3b/run.out",
+      "standard_error": null
+    },
+    "mod57_p3b_c_both_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo on 2023-25: DraftKings-built pool-line offset term, two-stage minus stage-1 held-out, inputs degraded to match 2020-22 (c_both); pushes kept, leave-one-season-out, week-block bootstrap",
+      "effect": 0.0019584698614396392,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_offset_term_era_placebo",
+      "interval": [
+        5.53415569616714e-05,
+        0.003820885946081016
+      ],
+      "league": "nfl",
+      "notes": "Era placebo for the 2020-22 loss of the pool-line offset term: arms A pre-noon snapshot line, B stage 1 without move input, C both.",
+      "plain_summary": null,
+      "probability_positive": 0.97875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/mod57/p3b/run.out",
+      "standard_error": null
+    }
+  }
+}

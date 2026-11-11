@@ -24,8 +24,8 @@ Run order (one heavy job at a time, background call, wait for notification; abou
 Total about 7 + 48 + 120 + 20 + 40 = about 235 min (about 4 h). Rule for gate arms: gate count not lower on any seed than dflt_s11-13 (13/14/13), no passing gate lost, named gate moves toward real beyond 2x the default seed SD; tierb_cmp prints all of it. Arms share q4_slope but run alone, so each is compared to dflt only; stacking is untested. Owed: weak-signals record for leadclock.
 
 ## Open
-- Whether real_games.parquet covers 2022-2025 for the personnel arm (not checked).
-- Where SIM10_INSTR writes its drive-play file (sim10_drive.py ~line 1795); read it before analysing drplays.
+- RESOLVED 12:06 (measured): artifacts\sim10\real_games.parquet covers 2009-2017 only, so tierb_personnel.ps1 as first written would have died on a missing season (sim10_drive.py:1942 indexes the real schedule by SIM10_SEASONS). The only complete build with 2022-25 games is artifacts\sim10_wf\T2026 (2009-2025). The script now sets SIM10_OUT to that folder and passes `--latent artifacts\sim10\latent_fit_2009_25.json` (the default latent, absent from T2026). The arm therefore compares off against on inside a 2009-2025 drive library, not the default 2009-2017 one; outputs land in artifacts\sim10_wf\T2026\pers_off_s11 etc. One-core smoke (label pers_smoke, seed 5, 1 world, 4 seasons) launched 12:06 to prove the folder runs on the patched engine.
+- RESOLVED (read, sim10_drive.py:2009-2013): SIM10_INSTR writes JSON lines to artifacts\sim10\instrument\<label>\, one line per game, with the drive-play list under key `dp` when SIM10_DRPLAYS is set.
 - Wind and personnel arms have no gate-count named gate; adopt rules as in their lanes.
 
 ## Runner log

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T17:01:32.865605+00:00`
+Refreshed at: `2026-11-11T17:06:55.206950+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T17:01:32.865605+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ff703a0c339c` — Write resume notes after the session crash
-- Pending change set: 337 paths
+- Baseline commit: `6e86ae8f2313` — Apply the combined simulator hook patch behind flags
+- Pending change set: 341 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p3a-team-change-inventory.md`
+  - `A  docs/lanes/mod57-p3b-offset-term-era-placebo.md`
+  - `A  docs/lanes/mod57-p3f-draft-class-features.md`
+  - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - `M  docs/lanes/sim-finish-patch-queue.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
+  - `A  registry/weak_signals/mod57_offset_term_era_placebo.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `M  scripts/sim10_drive.py`
-  - `A  scripts/sim10_personnel.py`
+  - `A  scripts/mod57_p3f_draft_class_features.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 317 more
+  - ...and 321 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
