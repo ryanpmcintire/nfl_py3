@@ -15,6 +15,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 PBP_DIR = REPO / "data" / "pbp" / "raw" / "20260925T202544Z"
 OUT = Path(os.environ.get("SIM10_OUT", str(REPO / "artifacts" / "sim10")))
+WIND_DIR = REPO / "artifacts" / "sim15"
 SEASON_WINDOW = [int(v) for v in os.environ.get("SIM10_SEASONS", "2009-2017").split("-")]
 SEASONS = tuple(range(SEASON_WINDOW[0], SEASON_WINDOW[-1] + 1))
 COLS = [
@@ -701,6 +702,10 @@ def phase_of_state(half, secs):
     return base + (0 if secs > Q4_SECS else (1 if secs > TWO_MIN else 2))
 
 
+def sign_class(s):
+    return np.select([s >= 8, s >= 1, s == 0, s >= -7], [0, 1, 2, 3], 4)
+
+
 def regime(half, secs):
     if half == 1:
         return 0 if secs > TWO_MIN else 1
@@ -947,6 +952,35 @@ def design(seg):
     ].astype(np.float64)
 
 
+def coach_latents(rng, n_seasons, n_teams, cj):
+    sd4 = cj["fourth_down"]["trait_sd_logit"]
+    sd2 = cj["two_point"]["trait_sd_logit"]
+    rho = cj["two_point"]["corr_with_fourth_down_offset"]
+    hz = cj["coach_change_hazard"]["value"]
+    out = np.zeros((n_seasons, n_teams, 2))
+    for t in range(n_teams):
+        cur = None
+        for s in range(n_seasons):
+            if cur is None or rng.random() < hz:
+                z = rng.standard_normal(2)
+                cur = (sd4 * z[0], sd2 * (rho * z[0] + math.sqrt(1.0 - rho * rho) * z[1]))
+            out[s, t] = cur
+    return out
+
+
+def lead_clock_latents(rng, n_seasons, n_teams, oc):
+    sd = oc["bands"][oc["lead_band"]]["trait_sd_log"]
+    hz = oc["oc_change_hazard"]["value"]
+    out = np.zeros((n_seasons, n_teams))
+    for t in range(n_teams):
+        cur = None
+        for s in range(n_seasons):
+            if cur is None or rng.random() < hz:
+                cur = sd * rng.standard_normal()
+            out[s, t] = cur
+    return out
+
+
 def tilt_weights(w, t, target):
     lo, hi = t.min(axis=0), t.max(axis=0)
     keep = hi > lo
@@ -1021,6 +1055,7 @@ def strength_adjust(vals, gam, z):
 class Engine:
     il = None
     gl = None
+    dpl = None
 
     def __init__(
         self,
@@ -1113,10 +1148,22 @@ class Engine:
             from sim10_situational import Situational
 
             self.sit = Situational(os.environ["SIM10_SITUATIONAL"].split(","))
+        self.pers = None
+        self.pkey = None
+        if os.environ.get("SIM10_PERSONNEL") == "1":
+            from sim10_personnel import Personnel
+
+            self.pers = Personnel(OUT / "real_games.parquet")
         self.drlam = float(os.environ.get("SIM10_DRLAM", "1.0"))
         self.olx = None
         self.olt = None
         self.orng = None
+        self.h2x = None
+        self.h2s = None
+        if os.environ.get("SIM10_HTADJ") == "1":
+            hj = json.loads((REPO / "artifacts" / "sim17" / "halftime_shift_h2.json").read_text())
+            self.h2x = hj["by_game_team"]
+            self.h2r = {k_: v_["slope"] for k_, v_ in hj["response"].items()}
         if os.environ.get("SIM10_OLEXIT") == "1":
             self.olx = json.loads((REPO / "artifacts" / "sim12" / "ol_exit.json").read_text())
             self.olx["exit_elapsed_seconds"] = np.sort(np.asarray(self.olx["exit_elapsed_seconds"]))
@@ -1152,6 +1199,17 @@ class Engine:
                 v_ = float((self.ptab[k_][0] * xj[mj]).var())
                 r_ = v_ / vs_
                 self.joint[k_] = (r_, math.sqrt(v_ * (1.0 - r_)))
+        self.wind_g = None
+        self.wind_slope = None
+        self.wind_tab = None
+        if os.environ.get("SIM10_WIND") == "1":
+            hk = json.loads((WIND_DIR / "wind_hook.json").read_text())
+            self.wind_slope = {int(k): v for k, v in hk["slope_per_10mph_by_season"].items()}
+            self.wind_share = hk["try_share_in_band"]
+            self.wind_flag = pd.read_parquet(WIND_DIR / "seg_long_fg.parquet")[
+                "long_fg_made"
+            ].to_numpy(np.float64)
+            assert self.models is not None and len(self.wind_flag) == len(self.out_arr)
         self.fgdec = None
         if os.environ.get("SIM10_FGDEC"):
             self.fgdec = json.loads(Path(os.environ["SIM10_FGDEC"]).read_text())
@@ -1162,6 +1220,17 @@ class Engine:
         self.poss_k = 0
         if os.environ.get("SIM10_TERMINAL"):
             self.term = TerminalTables(os.environ["SIM10_TERMINAL"])
+        self.cgo = None
+        self.cj = None
+        self.clat = (0.0, 0.0)
+        self.c2 = (0.0, 0.0)
+        if os.environ.get("SIM10_COACH") == "1":
+            self.cj = json.loads((REPO / "artifacts" / "sim14" / "hook.json").read_text())
+            self.cgo = np.load(self.cj["go_flags"]["path"]).astype(bool)
+        self.oc = None
+        self.c18 = (0.0, 0.0)
+        if os.environ.get("SIM10_LEADCLOCK") == "1":
+            self.oc = json.loads((REPO / "artifacts" / "sim18" / "hook.json").read_text())
         self.kst = (0.0, 0.0)
         self.st_m = 0.0
         self.stl = None
@@ -1194,6 +1263,17 @@ class Engine:
         self.ev_ptr, self.ev = c["ev_ptr"], c["ev"]
         self.pl_ptr, self.pl = c["pl_ptr"], c["pl"]
         self.trunctilt = os.environ.get("SIM10_TRUNCTILT") == "1"
+        self.ps_floor = None
+        if os.environ.get("SIM10_POOLSTRATUM"):
+            fj = json.loads(Path(os.environ["SIM10_POOLSTRATUM"]).read_text())
+            self.ps_floor = float(fj["floor"])
+            self.ps_reg = np.array(
+                [
+                    regime(int(h_), float(s_)) if h_ < 3 else -1
+                    for h_, s_ in zip(seg["half"], seg["secs"], strict=True)
+                ]
+            )
+            self.ps_sign = sign_class(seg["sd"].to_numpy(np.float64))
         if self.trunctilt:
             cnt = np.diff(self.ev_ptr)
             kd = np.repeat(np.arange(len(cnt)), cnt)
@@ -1248,6 +1328,16 @@ class Engine:
         if self.hecarry and hf == 2 and q[1] > 0:
             early &= ~(X[:, 1] > 0)
         z[early] = np.inf
+        if self.ps_floor is not None and hf == 2:
+            keep = (self.ps_sign[idx] == sign_class(q[1])) & (
+                self.ps_reg[idx] == regime(hf, math.expm1(q[2]))
+            )
+            zr = np.where(keep, z, np.inf)
+            if np.isfinite(zr).any():
+                ur = np.exp(-0.5 * (zr - zr.min()))
+                ur = ur / ur.sum()
+                if 1.0 / (ur @ ur) >= self.ps_floor:
+                    z = zr
         w = np.exp(-0.5 * (z - z.min()))
         nz = np.flatnonzero(w > 1e-12)
         w = w[nz]
@@ -1256,6 +1346,8 @@ class Engine:
             mk_ = u_ @ self.out_arr[idx[nz]]
         if self.sit is not None:
             w = w * self.sit.nh_ratio(idx[nz], hf, math.expm1(q[2]), q[1], 1 - hm)
+        if self.cgo is not None:
+            w = w * np.where(self.cgo[idx[nz]], math.exp(self.clat[0 if hm == 1 else 1]), 1.0)
         if self.head is not None and hf < 3:
             hq = [q[0], q[1], q[2], q[3], q[4], q[7], hf - 1.0, hm]
             w = self.head.reweight(idx[nz], w, hq, hf, hm)
@@ -1312,6 +1404,16 @@ class Engine:
                 tg[1:4] = self.term.reg(q[6], secs, q[1])
             if self.sit is not None:
                 tg = self.sit.tg_shift(tg, hf, secs, q[1], 1 - hm, q[7])
+            if self.pers is not None:
+                tg = self.pers.tg_shift(tg, hm)
+            if self.wind_g is not None:
+                u_w = w / w.sum()
+                fg_w = u_w @ self.out_arr[idx[nz], 2]
+                if fg_w > 0.0:
+                    long_w = u_w @ self.wind_flag[idx[nz]]
+                    foregone = min(1.0, -self.wind_g[1] * self.wind_g[0] / 10.0 / self.wind_share)
+                    tg = np.array(tg, dtype=np.float64)
+                    tg[2] = tg[2] * (1.0 - foregone * min(1.0, long_w / fg_w))
             tg0 = tg
             mt = q[5:6]
             if self.ptab is not None:
@@ -1396,11 +1498,15 @@ class Engine:
             return a[0] - b[1]
         return 0.0
 
-    def pat_points(self, sdv, gsecs, season, rng):
+    def pat_points(self, sdv, gsecs, season, rng, scorer=0):
         m, r = self.pat
         p2 = float(
             m.predict_proba(pat_x(np.array([sdv]), np.array([gsecs]), np.array([season])))[0, 1]
         )
+        if self.cgo is not None:
+            eps = float(np.finfo(np.float64).eps)
+            p2 = min(max(p2, eps), 1.0 - eps)
+            p2 = 1.0 / (1.0 + math.exp(-(math.log(p2 / (1.0 - p2)) + self.c2[scorer])))
         if rng.random() < p2:
             return 2.0 if rng.random() < r["two"] else 0.0
         xp = r["xp_post"] if season >= XP_RULE_SEASON else r["xp_pre"]
@@ -1425,6 +1531,15 @@ class Engine:
         burden = self.olx["slots"] * self.olx["hazard_per_starter"] * self.olf(el)
         return self.olx["epa_per_play_shift"] / self.s * (k - burden)
 
+    def ht_shift(self, gid, ht, at):
+        e = self.h2x.get(gid, {})
+        h, a = e.get(ht, {}), e.get(at, {})
+        ro, rd = self.h2r["off"], self.h2r["def"]
+        return [
+            (ro * h.get("off", 0.0) + rd * a.get("def", 0.0)) / self.s,
+            (ro * a.get("off", 0.0) + rd * h.get("def", 0.0)) / self.s,
+        ]
+
     def run_half(
         self, rng, hf, pos, yl, secs, sc, base, xq, season, evs, pls, ot_rule=None, week=9.0
     ):
@@ -1434,6 +1549,9 @@ class Engine:
         while secs > 0 and guard < 80:
             guard += 1
             other = 1 - pos
+            xs = xq[pos] + self.ol_shift(pos, hf, base, secs)
+            if self.h2s is not None and hf == 2:
+                xs = xs + self.h2s[pos]
             q = np.array(
                 [
                     yl,
@@ -1441,19 +1559,24 @@ class Engine:
                     math.log1p(secs),
                     tos[pos],
                     tos[other],
-                    xq[pos] + self.ol_shift(pos, hf, base, secs),
+                    xs,
                     season,
                     week,
                 ]
             )
             self.poss_k = n_poss
             j = self.draw(hf, 1 if pos == 0 else 0, q, rng)
-            trunc = self.he[j] == 1 or self.el[j] >= secs
+            ej = self.el[j]
+            if self.oc is not None and hf == 2 and self.oc["lead_lo"] <= q[1] <= self.oc["lead_hi"]:
+                ej = ej * math.exp(self.c18[pos])
+            trunc = self.he[j] == 1 or ej >= secs
             now = base + secs
             scored = td = dsc = False
             skip = None
             if self.il is not None:
                 p0, o0 = sc[pos], sc[other]
+            if self.dpl is not None:
+                m0 = sc[pos] - sc[other]
             for k in range(self.ev_ptr[j], self.ev_ptr[j + 1]):
                 off_, po, pd_ = self.ev[k]
                 if trunc and off_ > secs:
@@ -1472,7 +1595,9 @@ class Engine:
                 if self.pat is not None and hf < 3 and (po == 6) != (pd_ == 6):
                     scorer = pos if po == 6 else other
                     skip = scorer
-                    pts = self.pat_points(sc[scorer] - sc[1 - scorer], now - off_, season, rng)
+                    pts = self.pat_points(
+                        sc[scorer] - sc[1 - scorer], now - off_, season, rng, scorer
+                    )
                     if pts:
                         sc[scorer] += pts
                         evs.append(
@@ -1484,6 +1609,21 @@ class Engine:
                             )
                         )
             a, b = self.pl_ptr[j], self.pl_ptr[j + 1]
+            if self.dpl is not None:
+                kept = int((self.pl[a:b, 1] <= secs).sum()) if trunc else int(b - a)
+                self.dpl.append(
+                    [
+                        hf,
+                        pos,
+                        int(j),
+                        float(secs),
+                        float(m0),
+                        int(b - a),
+                        kept,
+                        float(self.el[j]),
+                        int(trunc),
+                    ]
+                )
             if b > a:
                 r = self.pl[a:b]
                 if trunc:
@@ -1498,13 +1638,13 @@ class Engine:
                         float(secs),
                         sc[pos] - p0,
                         sc[other] - o0,
-                        float(min(self.el[j], secs)),
+                        float(min(ej, secs)),
                         int(trunc),
                     ]
                 )
             if trunc:
                 return
-            secs -= self.el[j]
+            secs -= ej
             if self.sit is not None:
                 self.sit.after_drive(j, pos)
             tos[pos] = max(0.0, tos[pos] - self.uo[j])
@@ -1539,9 +1679,17 @@ class Engine:
     def game(self, rng, lat, season, week=9.0):
         if self.sit is not None:
             self.sit.reset()
+        if self.pers is not None:
+            self.pers.set_game(season, week, *self.pkey)
         week = float(min(week, LAST_REG_WEEK))
+        if self.wind_slope is not None:
+            wg = self.wind_row[self.wind_gi]
+            self.wind_g = None if wg is None else (wg, self.wind_slope[self.wind_season])
+            self.wind_gi += 1
         if self.il is not None:
             self.il = []
+        if self.dpl is not None:
+            self.dpl = []
         if self.tl is not None:
             self.tl = []
         sc = [0.0, 0.0]
@@ -1617,6 +1765,7 @@ class Engine:
                 "m120": float(hm[rm[:, 0] >= 120.0].sum()),
                 "last": rm[-2:, :3].tolist(),
                 "dr": self.il,
+                **({"dp": self.dpl} if self.dpl is not None else {}),
                 **({"tl": self.tl} if self.tl is not None else {}),
                 "oo": oo,
                 "end": [sc[0], sc[1]],
@@ -1675,6 +1824,16 @@ FORM_SEASON_VAR_NET = 8.9e-3
 FORM_DECAY = 0.8
 
 
+def real_wind():
+    t = pd.read_parquet(WIND_DIR / "wind_table.parquet").set_index("game_id")["wind_mph"]
+    g = pd.read_parquet(OUT / "real_games.parquet")
+    out = {}
+    for s_, d in g.groupby("season"):
+        d = d.sort_values(["week", "game_id"])
+        out[int(s_)] = [None if np.isnan(v) else float(v) for v in t.reindex(d["game_id"])]
+    return out
+
+
 def real_schedules():
     g = pd.read_parquet(OUT / "real_games.parquet")
     out = {}
@@ -1686,6 +1845,15 @@ def real_schedules():
             (int(wk), ix[h], ix[a])
             for wk, h, a in zip(d["week"], d["home_team"], d["away_team"], strict=True)
         ]
+    return out
+
+
+def real_game_ids():
+    g = pd.read_parquet(OUT / "real_games.parquet")
+    out = {}
+    for s_, d in g.groupby("season"):
+        d = d.sort_values(["week", "game_id"])
+        out[int(s_)] = list(zip(d["game_id"], d["home_team"], d["away_team"], strict=True))
     return out
 
 
@@ -1712,6 +1880,8 @@ def sim_world(task):
     ilines = []
     if ilab:
         eng.il = []
+        if os.environ.get("SIM10_DRPLAYS"):
+            eng.dpl = []
         if os.environ.get("SIM10_TILT"):
             eng.tl = []
     if eng.olx is not None:
@@ -1723,6 +1893,30 @@ def sim_world(task):
     rng = np.random.default_rng(wseed)
     lat = gen.gen_world_latents(rng, n_seasons, fit, setting)
     gseeds = wseed.spawn(n_seasons)
+    c18 = None
+    if eng.oc is not None:
+        c18 = lead_clock_latents(
+            np.random.default_rng(
+                np.random.SeedSequence(
+                    entropy=wseed.entropy, spawn_key=(*wseed.spawn_key, eng.oc["stream_key"])
+                )
+            ),
+            n_seasons,
+            gen.N_TEAMS,
+            eng.oc,
+        )
+    clat = None
+    if eng.cgo is not None:
+        clat = coach_latents(
+            np.random.default_rng(
+                np.random.SeedSequence(
+                    entropy=wseed.entropy, spawn_key=(*wseed.spawn_key, eng.cj["stream_key"])
+                )
+            ),
+            n_seasons,
+            gen.N_TEAMS,
+            eng.cj,
+        )
     stl = None
     if os.environ.get("SIM10_STFULL"):
         st_j = json.loads(Path(os.environ["SIM10_STFULL"]).read_text())
@@ -1736,7 +1930,14 @@ def sim_world(task):
         krng = np.random.default_rng(wseed.spawn(1)[0])
         kst = krng.normal(0.0, sg, (n_seasons, gen.N_TEAMS))
     rs = _W.get("rsched")
+    rgid = None
+    if eng.h2x is not None:
+        if not rs:
+            raise SystemExit("SIM10_HTADJ requires --realsched 1")
+        rgid = real_game_ids()
     perm = rng.permutation(gen.N_TEAMS) if rs else None
+    if eng.pers is not None and not rs:
+        raise SystemExit("SIM10_PERSONNEL requires --realsched 1")
     for sidx, (weekly, qb_out) in enumerate(lat):
         season = SEASONS[(w * n_seasons + sidx) % len(SEASONS)]
         if rs:
@@ -1745,6 +1946,14 @@ def sim_world(task):
             sched = gen.make_schedule(rng)
         ratings = gen.season_ratings(weekly, qb_out, fit, setting, 0.0, 0.0)
         grng = np.random.default_rng(gseeds[sidx])
+        if eng.wind_slope is not None:
+            if not rs:
+                raise SystemExit("SIM10_WIND=1 requires --realsched 1")
+            if eng.wind_tab is None:
+                eng.wind_tab = real_wind()
+            eng.wind_row = eng.wind_tab[season]
+            eng.wind_gi = 0
+            eng.wind_season = season
         book = None
         if eng.sit is not None and "stakes" in eng.sit.flags:
             from sim10_situational import StakesBook
@@ -1753,6 +1962,11 @@ def sim_world(task):
         sid = w * 1000 + sidx + 1
         for gi, (week, h, a) in enumerate(sched):
             rh, ra = ratings[week][h], ratings[week][a]
+            if clat is not None:
+                eng.clat = (float(clat[sidx][h][0]), float(clat[sidx][a][0]))
+                eng.c2 = (float(clat[sidx][h][1]), float(clat[sidx][a][1]))
+            if c18 is not None:
+                eng.c18 = (float(c18[sidx][h]), float(c18[sidx][a]))
             if kst is not None:
                 eng.kst = (float(kst[sidx][h]), float(kst[sidx][a]))
             if stl is not None:
@@ -1760,6 +1974,10 @@ def sim_world(task):
                 eng.kst = (float(stl[sidx][h][4]), float(stl[sidx][a][4]))
             if book:
                 eng.sit.set_stakes(book.tags(week, h, a))
+            if rgid is not None:
+                eng.h2s = eng.ht_shift(*rgid[season][gi])
+            if eng.pers is not None:
+                eng.pkey = rs[season][gi][1:]
             hs, as_, ms, reg, ot, pl = eng.game(grng, (rh, ra), season, week)
             if book:
                 book.record(week, h, a, hs - as_)
