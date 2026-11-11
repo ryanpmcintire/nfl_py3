@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T20:15:44.561432+00:00`
+Refreshed at: `2026-11-11T20:17:13.503108+00:00`
 
 ## Start here
 
@@ -21,16 +21,17 @@ Refreshed at: `2026-11-11T20:15:44.561432+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `44902ce1e540` — Close the personnel matchup row: the hook delivers a table too small to matter
-- Pending change set: 337 paths
+- Baseline commit: `bd5653a1a5af` — Point the lane index at the simulator's live run and the finished MOD-57 inputs
+- Pending change set: 338 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/README.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - `M  docs/lanes/sim-finish-2026-11-11.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  docs/sim_engine_summary.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-11T20:15:44.561432+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 317 more
+  - ...and 318 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
