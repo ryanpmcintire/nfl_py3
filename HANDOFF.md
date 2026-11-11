@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T15:33:26.683559+00:00`
+Refreshed at: `2026-11-11T15:38:58.023807+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T15:33:26.683559+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4e547a75de74` — Measure how far the line sits from hindsight team strength
-- Pending change set: 343 paths
+- Baseline commit: `300aa3a15f30` — Record the hindsight-gap forecast and open the simulator finish lane
+- Pending change set: 359 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/done/sim10-drive-resampler.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p2p-forecast-the-hindsight-gap.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - ` M docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
-  - `A  docs/lanes/sim-finish-2026-11-11.md`
-  - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
-  - ` M docs/lead64_freshness_audit.md`
-  - ` M registry/weak_signals/lead106.json`
-  - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `M  registry/weak_signals/mod57_how_wrong_is_the_line.json`
-  - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  scripts/mod57_p2p_forecast_the_hindsight_gap.py`
-  - `?? an.csv`
-  - ...and 323 more
+  - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
+  - `M  docs/lanes/sim-13-sim13-defensive-load.md`
+  - ` M docs/lanes/sim-14-sim14-coach-aggression.md`
+  - `M  docs/lanes/sim-15-sim15-weather-calls.md`
+  - `M  docs/lanes/sim-16-sim16-attrition-expectation.md`
+  - ` M docs/lanes/sim-18-lead-protection.md`
+  - `M  docs/lanes/sim-23-clock-truncated-drives.md`
+  - `M  docs/lanes/sim-24-next-drive-start-field-by-previous-drive.md`
+  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
+  - `M  docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
+  - ` M docs/lanes/sim-30-simulated-margin-distribution-challenger.md`
+  - ...and 339 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

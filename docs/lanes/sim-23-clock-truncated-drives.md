@@ -22,3 +22,4 @@ Sim treatment: pool keeps real last-of-half drives with full ev list; draw() rew
 Gap (sim minus real, standardised to real cell mix; includes tied, so differs from SIM-21 -.019/-.015/+.001): trail -.040, lead -.033, tied -.022 pooled all drives; excluding last-of-half drives: lead -.0275, tied -.0119. Share of gap from truncated drives (see json frac_explained): trail ~37% [33,43], lead ~27% [23,33], tied ~48% [35,76]. Remaining gap persists on non-truncated drives (prob negative ~1.0).
 Caveat: this standardisation gives larger gaps than SIM-21 unit 1; cell mix (secs bins) differs. Inferred: truncation explains a third, not all; unit 2's double count (tilt on untruncated outcomes) is the entry point.
 Next: repeat gap on non-truncated drives by deficit bin; test sim last-of-half draws whose pool secs exceeds query secs.
+Recorded in ROADMAP 2026-11-11

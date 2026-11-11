@@ -20,3 +20,4 @@ Script scripts/sim16_attrition.py (out tests/scratch/sim16), ruff clean. Family 
 Opener grade, 1368 games, intercept-only control acc 52.8% LL 0.6921. Term (home-away): acc 51.8%, LL 0.6935 (gap ins/oos 0.002), coef +0.033 (se 0.054, P>0 0.73), folds +.07 +.09 +.02 -.01 +.02 +.01; decisive 112 games term 49 v control 63; LL gain -0.0015 (-0.0026,-0.0004), P>0 0.004; placebo p>=obs 0.95. Flat-hazard 43-57; hazard-only 52-55.
 Availability corr: OL unavailability 0.00, OL continuity 0.11, offense continuity 0.06. Positive coef is the wrong sign for a cost. Recorded 3 cells unresolved_below_power.
 Next: none unless a mechanism for sign; backup quality by EPA not snaps.
+Recorded in ROADMAP 2026-11-11

@@ -15,14 +15,25 @@ Owner 2026-11-11: get the simulator finished once and for all, in parallel with 
 - No simulator process running; 24 logical cores, 38 GB free (measured 10:30 ET).
 
 ## Units
-- S1 inventory and plan: fills the table below from all 27 simulator lanes. Running.
+- S1 inventory and plan: DONE, docs/sim_finish_inventory.md.
 - S2 heavy queue, first item: record the SIM-27 verdict, then the joint truncation-plus-bandwidth arm the SIM-27 lane declared (the two fixes move scoring in opposite directions), seeds 11-13. Running. One heavy job at a time, always.
+
+- Launched 2026-11-11 about 10:45 ET beside S2: L3 SIM-30 key-number mass and grade from the existing market-anchored margins (scripts/sim30_margin_mass.py); L4 SIM-12 quarterback exit hazard and effect (scripts/sim12_qb_exit.py); patch prep for SIM-14 coach aggression and SIM-18 lead protection (patches under tests/scratch/sim_finish/, not applied); bookkeeping of ROADMAP rows 06, 09-13, 16, 23, 24, 26, 27 from the inventory. Not yet launched: L1 SIM-28 timeouts, L2 SIM-25 stratum counts, patch prep for SIM-15, 17, 19, 20, 26.
+- Engine file rule while any simulation runs: nobody edits scripts/sim10_drive.py, mod25_generator.py or sim10_situational.py; patches are prepared as files and applied by the orchestrator between runs, flag-off identity hash first.
 
 ## Tried
 - See State; nine mechanisms measured on real plays, hooked behind flags, none adopted.
 
-## Next
-- From S1's table: the ordered heavy queue and the data-only units that can run beside it.
+## Next (S1 done 2026-11-11 10:40 ET; detail in docs/sim_finish_inventory.md; counts: adopted 2, not adopted 6, no hook warranted 3, hook not built 6, hook built not run 1, not started 6, forecaster 1)
+(a) Heavy queue, one job at a time, Tier B = 3 seeds 11-13, workers 11, ~15 min per arm; rule: gate count not lower, none lost, a moved gate toward real beyond 2x dflt SD, else not adopted:
+1. S2 (running): dflt rerun s11-13, then trunc_bw (SIM10_TRUNCTILT=1, `--h artifacts/sim10/bandwidths_week_v2.json`); `tests/scratch/tierb_cmp.py trunc_bw 11,12,13`. Decides SIM-21, 23, 27.
+2. SIM10_TERMINAL identity (tests/scratch/engine_queue/run_identity.ps1) then Tier B of SIM10_TERMINAL=1 (A4 needs SIM-11 14 gates to pass): ~20 min.
+3. SIM-08 A4 smoke, 1 core ~7 min (spec-a lane line 83).
+4. Hook arms, each needs a root engine edit with flag-off hash = HEAD first: SIM-15 wind, SIM-20 OC halftime, SIM-14 coach latent, SIM-18 lead 1-8; SIM-22 logging and SIM-25 restricted pool as small runs. ~15 min each.
+5. SIM-08 A4 full run, 12-30 h, `$env:SIM10_TERMINAL='1'; .tools\uv.exe run --no-sync python scripts\sim08_market_anchored.py full --run amend4 --arms primary --workers 4 --draws 372 --amend4 1`; then `scripts\sim08_evaluate.py --run amend4 --arms primary`. Blockers cleared by 2-3; no SE floor or missing function found in lanes.
+6. SIM-30 grade from the A4 margins (light); SIM-29 small run after.
+(b) Light units now, one agent each: L1 SIM-28 timeout tabulation; L2 SIM-25 stratum counts; L3 SIM-30 key-number mass by spread band from artifacts/sim08_market_anchored/main/primary_*.npz; L4 SIM-12 QB exit hazard (OL done); L5 ROADMAP rows 12,13,14,15,18,23,24,26,27 corrected to lane facts; L6 recording SIM-13, 16, 24 verdicts.
+(c) Finished, record verdict: SIM-10, 11 adopted; SIM-09 not adopted (four arms); SIM-12 not adopted (ol_exit, ol_exit2); SIM-13 no hook (unresolved_below_power); SIM-16 wrong sign, no hook; SIM-24 start field 13% of lead gap, no hook; SIM-06 head not adopted (12 v 13).
 
 ## Open
 - None.

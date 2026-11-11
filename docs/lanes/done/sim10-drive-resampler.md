@@ -39,3 +39,4 @@ None for SIM-10. Any future work is a new row: strength transmission.
 Strength transmits weak in every config (sim strength variance 47-51 v real 58; game EPA
 responds ~.95 to latent); strength variance and late R2 fail in all four configs; end-of-half matching did not fix it on the
 3-seed mean. OT strength-neutral (371-segment pool).
+Recorded in ROADMAP 2026-11-11

@@ -49,3 +49,4 @@ Unit 4 result (16 looks, 444k plays, 2009-2025): EPA/play joint with placebos. A
 
 ## Root decision 2026-11-03 13:30
 - Parked, unresolved_below_power. The exogenous accumulated-load shock leaves a small consistent effect (B minus placebo +0.0033 EPA/play [-0.0040, +0.0101], P+ .81; success P+ .975; LOSO positive 17/17, every fold under 0.008). At that size it is below the simulator's resolution (SIM-07 measured seed noise: aggregate gates cannot see ~0.1 pt/team-game), so no engine hook. Reopen only with player-level snap load (SKY-02 tracking) or a sharper exogenous shock.
+Recorded in ROADMAP 2026-11-11

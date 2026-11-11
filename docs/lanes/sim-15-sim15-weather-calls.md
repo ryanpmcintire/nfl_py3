@@ -46,3 +46,4 @@ Engine sites (read, sim10_drive.py): Pool.draw line 1206 (neighbour pick, pass/r
 Measured effects the hook would use (per 10 mph wind, unit 1): pass rate -0.91 pp [-1.29,-0.43]; deep share -0.49 pp [-0.90,-0.04] (2009-2017); FG attempts 48-57 yd -6.94 pp [-9.3,-4.8], 38-47 -1.78 pp; temp per 10 F pass +0.36 pp. Observed weather for mechanism, forecast for any pregame term.
 ## Next
 Engine owner wires wind_mph per game into the sim; the Tier B chain must finish reading real_games.parquet first.
+Recorded in ROADMAP 2026-11-11
