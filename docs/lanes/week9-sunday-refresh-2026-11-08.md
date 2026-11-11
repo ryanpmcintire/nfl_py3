@@ -16,5 +16,7 @@ Owner asked (Sun 06:30 ET) for fresh lineups, spreads and injuries, a board upda
 2. Scheduler carries the day: refresh_last_call_sun_0830, lineups_sun_am 09:30, refresh_sun 10:00 (card, re-nomination), inactives 11:35/14:40 + refreshes 11:55/15:00, odds_private_sun 12:10. Any flip notifies via ntfy.
 3. Single nflverse timeout aborts refresh_lineup_forecast.py; candidate fix is a retry inside the depth-chart fetch (ENG row, not done).
 
+4. Board text defect (owner asked 10:15 why NO -2.5 is the Best Pick): the CLE at NO explanation (explanations.json, artifact 2026-week-09-20261108T144043Z) says "Situational adjustment fired: bye-week rest edge", but flag_bye is not a counted term (pick_probability/20261108T144530Z coefficients.json counted_flag_columns = division, protection) and that overlay pointed toward CLE. The served 64.7% is mostly the 2.0-point leader move toward NO (coef 0.220/pt) plus the pool hook (0.805); raw model 52.6%. Fix: explanation text names only counted terms and the move/hook contributions.
+
 ## Open
 - Status shows many Sunday 11-01 and Tuesday 11-03 jobs as MISSED/NEVER RUN although the daemon was up for parts of that span; not investigated.

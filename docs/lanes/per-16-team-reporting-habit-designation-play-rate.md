@@ -17,6 +17,15 @@ Held-out 2016-25 (9,575 Q rows) gains: position x practice cells vs dxp LL .0058
 Selection (measured, play-by-play appearance of QB/RB/WR/TE; false appear 0, sensitivity .80-1.0): unverified Q rows appear less than verified in same season x group x practice: -19.3 pp [-23.9,-14.6] P+ 0; implied unverified play rate RB .45, WR .52, TE .38, QB .12 vs verified .64-.70, .47 QB. Verified play rates are biased UP. OL is 0.2% verified (3,009 rows unverified), so habit has no OL evidence. Team habit verified vs unverified skill rows r .035 [-.16,.23], 84 units, perm p .32 (underpowered, unresolved).
 2026 (87 Q, 294 all): read vs dxp Q LL .028 P+ .85; vs ctrl Q .012 P+ .65; vs ctrl+team Q .031 P+ .88; vs ctrl+coach Q -.001 P+ .49 (all: .021 P+ .90). Read no longer clearly beats habit + position + practice; n tiny.
 
+## Unit 3 gsis-keyed outcome, unverified rows included (2026-11-03 18:40 ET)
+Artifact artifacts/per03/played_by_gsis.parquet (scripts/played_by_gsis.py build/validate/rerun [--complete]/lead106; validate.json). 70,729 injury player-weeks 2013-2026 keyed on gsis_id; played = in a participation list (offense_players/defense_players, 2016-2025) or any pbp player id (2013-2017 full pbp all roles; 2018-2026 narrow pbp passer/rusher/receiver/fumble only) or snaps>0 where crosswalk exists. Participation seasons cover OL (appear .56 like other groups). 2013-15 and 2026 are lower bounds for non-skill groups. 2026 pbp ends wk7.
+Validation vs snaps (43,893 rows both): appearance agrees .971 (appear|snap .957, snap|appear .9997); 2016-25 1.000; 2013-15 .95; 2026 skill-only .53; union with snaps .9998. Crosswalk covers 29 OL rows.
+Rerun Q, held-out coach LL gain over league ladder: all rows incl. lower-bound seasons (14,067 rows) .0111 but Probable rate .96 to .78 so untrusted; complete-source rows (2016-25 participation + 2026 crosswalk/skill wk1-7; held-out 2019-25, 9,784 Q rows): coach LL .0089 [.0053,.0127] P+ 1.0, Brier .0040; team LL .0066 [.0026,.0106] P+ .9995; split-half team .505 [.40,.60]; coach yoy same team .382 [.26,.51]. Habit survives.
+Confounds (complete): pos x practice vs dxp LL .0047; coach over ctrl LL .0044 [-.0001,.0087] P+ .97, Brier .0032 P+ 1.0 (verified-only .0014 P+ .76); team over ctrl LL .0007 P+ .61; controlled split-half coach .501, yoy .349.
+2026 (87 Q): read vs team ladder Q .094 [.023,.157] P+ .996; vs ctrl+coach Q .002 P+ .53 (no clear edge over habit+position+practice, same as before).
+Registry: 11 per16 cells replaced with same ids (weak-signals record --batch --replace); the two selection cells kept.
+Next: habit by position group incl. OL; full pbp 2018+ (only 1999-2017 on disk) to close 2013-15/2026 gaps; step (4) availability input on served base.
+
 ## Tried
 Team and coach keys are near-collinear (HC changes rare); not separable here. No decay weighting, no position adjustment.
 

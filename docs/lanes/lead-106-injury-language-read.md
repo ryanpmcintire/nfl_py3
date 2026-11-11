@@ -34,6 +34,11 @@ Vs designation x practice ladder: all 0.036 [-0.002, 0.083] P+ .959; Brier 0.012
 Verdict: gain survives vs the designation ladder (slightly smaller); vs the practice ladder it is weaker and the Questionable gain is mostly practice information. Registry cells replaced/recorded (unresolved_below_power).
 Next: forward capture Week 9+ of the same read, then test as player-availability input; consider the bigger sample for Questionable.
 
+## Unit 4 gsis-keyed outcome rescore (2026-11-03 18:40 ET)
+Outcome from artifacts/per03/played_by_gsis.parquet (scripts/played_by_gsis.py lead106; artifacts/per03/lead106_complete/score_ids.json): 282 of 331 sampled rows (crosswalk or skill position through wk7), stored reads reused, no LLM calls, 142 team-week clusters.
+Read vs designation ladder LL .066 [.013,.133] P+ .997 (verified-only .065); Brier .021; Questionable .068 P+ .98; none .093 P+ .976. Vs designation x practice ladder LL .036 [-.003,.085] P+ .955 (was .036); Questionable .009 P+ .62; none .063 P+ .97. Survives unchanged. Snap-share MAE not rescored.
+Registry: both lead106 p_plays cells replaced, same ids.
+
 ## Unit 3 forward capture (2026-11-03 17:53 ET)
 Added `forward --week N --view thursday|sunday [--dry]` to scripts/lead106_injury_language.py. Reads newest data/raw/nflverse_injuries snapshot (all designations, week N rows) plus injury_news headlines (7 days before kickoff, lastmod <= capture), verifies frozen prompt hash and model, batches 40 rows, writes artifacts/lead106_injury_language/forward/2026_weekNN_<view>_<capture utc>.json (per player: gsis_id, team, game_id, designation, p_plays, snap_share, capture_utc, kickoff_utc). Games already kicked off are excluded before the model call and again at write; existing file for same (week, view, capture) is not rewritten. thursday = ET-Thursday games, sunday = all others.
 Dry run Week 9 (latest snapshot 20261103T192549Z): 0 players in every game (Thursday JAX@BAL 0; 14 Sunday/Monday games 0). Week 9 reports are not filed yet (first 2026 week-9 rows expected Wed). Reference Week 8 same code: Thursday 17 players, Sunday/Monday 303 (15-34 per game, 13 games).

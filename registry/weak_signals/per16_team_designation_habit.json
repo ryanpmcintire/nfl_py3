@@ -6,102 +6,102 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Coach-keyed shrunk Questionable P(plays) vs league ladder, prior seasons only",
-      "effect": 0.0074,
+      "description": "Coach-keyed shrunk Questionable P(plays) vs league ladder, prior seasons only (all-rows gsis outcome)",
+      "effect": 0.0089,
       "effect_units": "log_loss_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.004,
-        0.01069
+        0.0053,
+        0.0127
       ],
       "league": "nfl",
-      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Coach-keyed prior beats the league ladder on held-out seasons 2016-2025.",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 9575,
+      "sample_games": 9784,
       "seasons": [
-        2016,
+        2019,
         2025
       ],
-      "source": "artifacts/per16",
-      "standard_error": 0.0017
+      "source": "artifacts/per03/all_rows_complete/*.json",
+      "standard_error": null
     },
     "per16_q_coach_yoy_same_team_reliability": {
       "category": "health",
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Questionable play rate, same head coach on same team, season t vs t+1",
-      "effect": 0.3371,
+      "description": "Questionable play rate, same head coach on same team, season t vs t+1 (all-rows gsis outcome)",
+      "effect": 0.382,
       "effect_units": "correlation",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.2192,
-        0.4475
+        0.26,
+        0.507
       ],
       "league": "nfl",
-      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "A coach's Questionable play rate carries into the next season.",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 273,
+      "sample_games": 221,
       "seasons": [
-        2013,
+        2016,
         2025
       ],
-      "source": "artifacts/per16",
-      "standard_error": 0.058
+      "source": "artifacts/per03/all_rows_complete/*.json",
+      "standard_error": null
     },
     "per16_q_team_ladder_heldout": {
       "category": "health",
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Team-keyed shrunk Questionable P(plays) vs league ladder, prior seasons only",
-      "effect": 0.00339,
+      "description": "Team-keyed shrunk Questionable P(plays) vs league ladder, prior seasons only (all-rows gsis outcome)",
+      "effect": 0.0066,
       "effect_units": "log_loss_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.000155,
-        0.006543
+        0.0026,
+        0.0106
       ],
       "league": "nfl",
-      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Team-keyed prior beats the league ladder slightly on held-out seasons 2016-2025.",
-      "probability_positive": 0.979,
+      "probability_positive": 0.9995,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 9575,
+      "sample_games": 9784,
       "seasons": [
-        2016,
+        2019,
         2025
       ],
-      "source": "artifacts/per16",
-      "standard_error": 0.0016
+      "source": "artifacts/per03/all_rows_complete/*.json",
+      "standard_error": null
     },
     "per16_q_team_ladder_vs_read_2026": {
       "category": "health",
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "LEAD-106 wording read vs team-keyed ladder, Questionable rows 2026 wk2-8",
-      "effect": 0.0925,
+      "description": "LEAD-106 wording read vs team-keyed ladder, Questionable rows 2026 wk2-8 (all-rows gsis outcome)",
+      "effect": 0.094,
       "effect_units": "log_loss_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.0255,
-        0.1549
+        0.0225,
+        0.1569
       ],
       "league": "nfl",
-      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "The wording read still beats the team-keyed ladder on 2026 Questionable players.",
-      "probability_positive": 0.999,
+      "probability_positive": 0.9955,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -110,54 +110,54 @@
         2026,
         2026
       ],
-      "source": "artifacts/per16",
-      "standard_error": 0.033
+      "source": "artifacts/per03/all_rows_complete/*.json",
+      "standard_error": null
     },
     "per16_q_team_splithalf_reliability": {
       "category": "health",
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Questionable play rate by team-season, odd vs even weeks",
-      "effect": 0.4212,
+      "description": "Questionable play rate by team-season, odd vs even weeks (all-rows gsis outcome)",
+      "effect": 0.505,
       "effect_units": "correlation",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.3349,
-        0.5076
+        0.4,
+        0.598
       ],
       "league": "nfl",
-      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Teams differ in how often a Questionable player plays; the odd-week and even-week rates agree (permutation p 0.001).",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 369,
+      "sample_games": 313,
       "seasons": [
-        2013,
+        2016,
         2025
       ],
-      "source": "artifacts/per16",
-      "standard_error": 0.044
+      "source": "artifacts/per03/all_rows_complete/*.json",
+      "standard_error": null
     },
     "per16_u2_2026_read_vs_ctrl_coach_logloss_q": {
       "category": "health",
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "2026 wording read gain in log loss vs position x practice cells plus coach offset, 87 Questionable rows",
-      "effect": -0.00099,
+      "description": "2026 wording read gain in log loss vs position x practice cells plus coach offset, 87 Questionable rows (all-rows gsis outcome)",
+      "effect": 0.0019,
       "effect_units": "log_loss_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        -0.0536,
-        0.0512
+        -0.054,
+        0.0551
       ],
       "league": "nfl",
-      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "On 87 Questionable rows the wording read no longer beats habit plus practice and position.",
-      "probability_positive": 0.489,
+      "probability_positive": 0.526,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -166,7 +166,7 @@
         2026,
         2026
       ],
-      "source": "artifacts/per16/unit2_*.json",
+      "source": "artifacts/per03/all_rows_complete/*.json",
       "standard_error": null
     },
     "per16_u2_q_coach_over_ctrl_brier": {
@@ -174,27 +174,27 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Coach offset on top of position x practice cells vs those cells alone, Brier, held out",
-      "effect": 0.00193,
+      "description": "Coach offset on top of position x practice cells vs those cells alone, Brier, held out (all-rows gsis outcome)",
+      "effect": 0.0032,
       "effect_units": "brier_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.00085,
-        0.00302
+        0.0019,
+        0.0045
       ],
       "league": "nfl",
-      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Coach habit adds a small Brier gain over the position-aware ladder.",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 9575,
+      "sample_games": 9784,
       "seasons": [
-        2016,
+        2019,
         2025
       ],
-      "source": "artifacts/per16/unit2_*.json",
+      "source": "artifacts/per03/all_rows_complete/*.json",
       "standard_error": null
     },
     "per16_u2_q_coach_over_ctrl_logloss": {
@@ -202,27 +202,27 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Coach offset on top of position x practice cells vs those cells alone, held out",
-      "effect": 0.00142,
+      "description": "Coach offset on top of position x practice cells vs those cells alone, held out (all-rows gsis outcome)",
+      "effect": 0.0044,
       "effect_units": "log_loss_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        -0.0028,
-        0.0051
+        -0.0001,
+        0.0087
       ],
       "league": "nfl",
-      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Coach habit's extra gain over the position-aware ladder is small in log loss.",
-      "probability_positive": 0.7575,
+      "probability_positive": 0.9715,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 9575,
+      "sample_games": 9784,
       "seasons": [
-        2016,
+        2019,
         2025
       ],
-      "source": "artifacts/per16/unit2_*.json",
+      "source": "artifacts/per03/all_rows_complete/*.json",
       "standard_error": null
     },
     "per16_u2_q_coach_splithalf_controlled": {
@@ -230,27 +230,27 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Questionable coach split-half residual correlation after designation x practice x position-group cell rate",
-      "effect": 0.4082,
+      "description": "Questionable coach split-half residual correlation after designation x practice x position-group cell rate (all-rows gsis outcome)",
+      "effect": 0.501,
       "effect_units": "correlation",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.3059,
-        0.4997
+        0.398,
+        0.599
       ],
       "league": "nfl",
-      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Coach habit survives the position and practice controls.",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 366,
+      "sample_games": 312,
       "seasons": [
-        2013,
+        2016,
         2025
       ],
-      "source": "artifacts/per16/unit2_*.json",
+      "source": "artifacts/per03/all_rows_complete/*.json",
       "standard_error": null
     },
     "per16_u2_q_coach_yoy_controlled": {
@@ -258,27 +258,27 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Questionable coach yoy same team residual correlation after position x practice controls",
-      "effect": 0.3008,
+      "description": "Questionable coach yoy same team residual correlation after position x practice controls (all-rows gsis outcome)",
+      "effect": 0.349,
       "effect_units": "correlation",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.1725,
-        0.4174
+        0.215,
+        0.469
       ],
       "league": "nfl",
-      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Coach habit carries to the next season after controls.",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 273,
+      "sample_games": 221,
       "seasons": [
-        2013,
+        2016,
         2025
       ],
-      "source": "artifacts/per16/unit2_*.json",
+      "source": "artifacts/per03/all_rows_complete/*.json",
       "standard_error": null
     },
     "per16_u2_q_ctrl_coach_vs_dxp_logloss": {
@@ -286,27 +286,27 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "Position x practice cells plus shrunk coach offset vs designation x practice ladder, held out",
-      "effect": 0.00723,
+      "description": "Position x practice cells plus shrunk coach offset vs designation x practice ladder, held out (all-rows gsis outcome)",
+      "effect": 0.0092,
       "effect_units": "log_loss_improvement",
       "family": "per16_team_designation_habit",
       "interval": [
-        0.0026,
-        0.0115
+        0.0044,
+        0.0139
       ],
       "league": "nfl",
-      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet, participation lists plus play-by-play ids plus snap counts), complete-source rows only: 2016-2025 participation seasons plus 2026 rows with a snap crosswalk or a skill position through week 7; held-out seasons 2019-2025; unverified rows included, OL included (participation lists). Replaces the verified-only measurement, which was biased up (verified rows play 19 pp more). Source: artifacts/per03/all_rows_complete.",
       "plain_summary": "Position-aware coach prior beats the practice ladder on held-out seasons.",
-      "probability_positive": 0.998,
+      "probability_positive": 0.9995,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 9575,
+      "sample_games": 9784,
       "seasons": [
-        2016,
+        2019,
         2025
       ],
-      "source": "artifacts/per16/unit2_*.json",
+      "source": "artifacts/per03/all_rows_complete/*.json",
       "standard_error": null
     },
     "per16_u2_q_verified_vs_unverified_skill_appearance": {

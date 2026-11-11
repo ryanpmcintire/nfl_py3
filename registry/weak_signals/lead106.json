@@ -6,55 +6,55 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "Rescored by player id (gsis to pfr crosswalk, unverified rows dropped); one season; even/odd halves .030/.108; gain sits in Questionable and none; availability term only, no side rule",
       "closing_ground": null,
-      "description": "Frozen LLM read of injury-report wording vs designation ladder fit on prior weeks; P(plays), id-joined verified outcomes only (294 of 331 stratified player-weeks), 2026 wk2-8",
-      "effect": 0.0649,
+      "description": "Frozen LLM read of injury-report wording vs designation ladder fit on prior weeks; P(plays), id-joined verified outcomes only (294 of 331 stratified player-weeks), 2026 wk2-8 (all-rows gsis outcome)",
+      "effect": 0.0664,
       "effect_units": "log_loss_improvement",
       "family": "lead106",
       "interval": [
-        0.0136,
-        0.1301
+        0.013,
+        0.1331
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet), 2026 rows with a snap crosswalk or a skill position through week 7 (282 of 331 sampled rows; unverified rows with skill positions now included); stored reads reused, no new model calls; team-week clusters 142. Replaces the id-crosswalk verified-only measurement.",
       "plain_summary": null,
-      "probability_positive": 0.9985,
+      "probability_positive": 0.997,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 49,
+      "sample_blocks": 142,
       "sample_games": null,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/lead106_injury_language/score_ids.json",
-      "standard_error": 0.03
+      "source": "artifacts/per03/lead106_complete/score_ids.json",
+      "standard_error": null
     },
     "lead106_injury_language_p_plays_vs_practice_ladder": {
       "category": "health",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval reaches slightly below zero; halves .032/.041; one season",
       "closing_ground": null,
-      "description": "Same read vs designation x practice ladder fit on prior weeks; id-joined verified outcomes, 294 rows",
-      "effect": 0.0357,
+      "description": "Same read vs designation x practice ladder fit on prior weeks; id-joined verified outcomes, 294 rows (all-rows gsis outcome)",
+      "effect": 0.0362,
       "effect_units": "log_loss_improvement",
       "family": "lead106",
       "interval": [
-        -0.0025,
-        0.0825
+        -0.0033,
+        0.0846
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Remeasured 2026-11-03 on the gsis-keyed played outcome (artifacts/per03/played_by_gsis.parquet), 2026 rows with a snap crosswalk or a skill position through week 7 (282 of 331 sampled rows; unverified rows with skill positions now included); stored reads reused, no new model calls; team-week clusters 142. Replaces the id-crosswalk verified-only measurement.",
       "plain_summary": null,
-      "probability_positive": 0.959,
+      "probability_positive": 0.955,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 49,
+      "sample_blocks": 142,
       "sample_games": null,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/lead106_injury_language/score_ids.json",
+      "source": "artifacts/per03/lead106_complete/score_ids.json",
       "standard_error": null
     }
   }
