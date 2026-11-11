@@ -723,6 +723,27 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"served_terms_check_{day}",
+            day,
+            at,
+            60,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "check_served_terms.py"),
+            ],
+            True,
+            "Fails loudly when a served probability term (pool-line offset anchor or line-move "
+            "input) is silent for the live week.",
+            requires=("weekly_lock",) if day == "tue" else (),
+            added_on="2026-11-10",
+        )
+        for day, at in (("tue", "12:50"), ("thu", "18:30"), ("sun", "09:15"))
+    ),
+    *(
+        Job(
             f"schedule_snapshot_{day}",
             day,
             at,
