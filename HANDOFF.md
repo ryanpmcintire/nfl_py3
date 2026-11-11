@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T20:25:17.853425+00:00`
+Refreshed at: `2026-11-11T23:20:56.485611+00:00`
 
 ## Start here
 
@@ -21,13 +21,16 @@ Refreshed at: `2026-11-11T20:25:17.853425+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2fc043828dcc` — Note that the card-explanation defect was already fixed; clear a lint finding
-- Pending change set: 329 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `97c562c88a72` — Make the Tuesday LLM read wait for the lock instead of failing at 13:30
+- Pending change set: 332 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/lead99-llm-read.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  scripts/capture_scheduler.py`
+  - `M  docs/model.html`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-11T20:25:17.853425+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
-  - `?? data/raw_schedules/20261106T140053Z/schedules.parquet`
-  - ...and 309 more
+  - ...and 312 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
