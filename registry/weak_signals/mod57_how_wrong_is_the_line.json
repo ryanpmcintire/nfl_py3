@@ -672,6 +672,902 @@
       ],
       "source": "artifacts/mod57_p2p/results.json",
       "standard_error": null
+    },
+    "mod57_p2q_D1_hindsight_gap_overall_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 hindsight gap overall on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.3165300868587109,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.23359438523308138,
+        0.41057477973831247
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_hindsight_gap_weeks_13_18_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 hindsight gap weeks 13 18 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.3470304041602119,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.26089239228478295,
+        0.4360538428106359
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_hindsight_gap_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 hindsight gap weeks 1 6 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.25827210783663757,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.0891245991454404,
+        0.42520175445749003
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_hindsight_gap_weeks_7_12_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 hindsight gap weeks 7 12 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.3006478346249617,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.18921285343747757,
+        0.4198701043130133
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_real_residual_overall_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 real residual overall on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.14597277791894642,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.036763415987002376,
+        0.2767419924102947
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.99525,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_real_residual_weeks_13_18_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 real residual weeks 13 18 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.10156100555610709,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.09400570500082034,
+        0.3184747463289346
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.8435,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_real_residual_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 real residual weeks 1 6 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.0209520723249739,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.38930020071089827,
+        0.390186172423633
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.437,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D1_real_residual_weeks_7_12_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D1 real residual weeks 7 12 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.25590973541991113,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.09570857764850274,
+        0.3951848638005492
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_hindsight_gap_overall_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 hindsight gap overall on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.2137533776684197,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.18062126124686673,
+        0.24887427167246026
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_hindsight_gap_weeks_13_18_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 hindsight gap weeks 13 18 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.49567136108651877,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.4400522351264425,
+        0.5405786986828849
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_hindsight_gap_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 hindsight gap weeks 1 6 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.11678126439572993,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.08414189959965739,
+        0.1517416081055054
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_hindsight_gap_weeks_7_12_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 hindsight gap weeks 7 12 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.34421410601283287,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.29287436793037486,
+        0.39517876289575604
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_real_residual_overall_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 real residual overall on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.02451154028788097,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0679080112586346,
+        0.021588545044518456
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.1485,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_real_residual_weeks_13_18_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 real residual weeks 13 18 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.08647885631102152,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.02506503809146068,
+        0.19449105865539565
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.9425,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_real_residual_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 real residual weeks 1 6 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.05651789752055299,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.11744742885988818,
+        -0.0010436495451441575
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.0225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D2_real_residual_weeks_7_12_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D2 real residual weeks 7 12 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.009230888828072933,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.07913702313139456,
+        0.1069067328527267
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.56475,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D3_hindsight_gap_overall_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D3 hindsight gap overall on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.11652576234312408,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.08403110130568751,
+        0.15194882238252225
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D3_hindsight_gap_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D3 hindsight gap weeks 1 6 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": 0.11678126439572993,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.08446863148574817,
+        0.15171582738373537
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D3_real_residual_overall_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D3 real residual overall on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.05660498559440896,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.11440199052805797,
+        -0.0006199395943143808
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.02375,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_D3_real_residual_weeks_1_6_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Slope of D3 real residual weeks 1 6 on the pregame market quantity, points per point; hindsight gap is a leak used only as a descriptive outcome; season-block bootstrap",
+      "effect": -0.05651789752055299,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.11762999819432758,
+        0.0011702661157802008
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.02775,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D1_close_overall_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D1_close, overall, decisive games, season-block bootstrap",
+      "effect": 0.7253158633598544,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.2465798020101697,
+        2.5082632573470063
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.76625,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D1_close_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D1_close, weeks_2_6, decisive games, season-block bootstrap",
+      "effect": 0.6369426751592355,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -3.798073046843505,
+        4.777070063694268
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.6035,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D1_open_overall_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D1_open, overall, decisive games, season-block bootstrap",
+      "effect": 2.2309711286089273,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.0,
+        4.708451035781546
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.9745,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D1_open_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D1_open, weeks_2_6, decisive games, season-block bootstrap",
+      "effect": 3.0487804878048808,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.28901734104046245,
+        7.057405784399657
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.93875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D2_close_overall_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D2_close, overall, decisive games, season-block bootstrap",
+      "effect": 2.2201138519924113,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.6097328952741582,
+        3.822361052315942
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.99725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D2_close_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D2_close, weeks_2_6, decisive games, season-block bootstrap",
+      "effect": 6.004901960784315,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        2.919073787588415,
+        8.859590943660802
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D2_open_overall_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D2_open, overall, decisive games, season-block bootstrap",
+      "effect": 1.5647226173541973,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.34106412005457026,
+        3.770739064856712
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 0.916,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D2_open_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D2_open, weeks_2_6, decisive games, season-block bootstrap",
+      "effect": 5.011655011655014,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        2.5,
+        7.8431372549019605
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D3_close_overall_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D3_close, overall, decisive games, season-block bootstrap",
+      "effect": 6.004901960784315,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        2.8535980148883375,
+        8.930741190765492
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D3_close_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D3_close, weeks_2_6, decisive games, season-block bootstrap",
+      "effect": 6.004901960784315,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        2.911839850014475,
+        8.924205378973106
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D3_open_overall_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D3_open, overall, decisive games, season-block bootstrap",
+      "effect": 5.011655011655014,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        2.358490566037736,
+        7.9326923076923075
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
+    },
+    "mod57_p2q_walkforward_D3_open_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward sign-following pick accuracy minus 50, D3_open, weeks_2_6, decisive games, season-block bootstrap",
+      "effect": 5.011655011655014,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        2.413793103448276,
+        7.847573285956561
+      ],
+      "league": "nfl",
+      "notes": "Market rating drift and surprise to date against the hindsight gap (leak, outcome only) and against real results; walk-forward sign for picks.",
+      "plain_summary": "Whether the betting line reacts too slowly or too fast to what a season has shown.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2q/results.json",
+      "standard_error": null
     }
   }
 }

@@ -448,6 +448,90 @@
       ],
       "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
       "standard_error": null
+    },
+    "sim12_qb_exit_effect_pbp_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval is positive, not wrong-signed negative; placebo mean 0.048 shares the effect so no clean separation; not closed",
+      "closing_ground": null,
+      "description": "QB non-blowout in-game exit, post minus pre offence EPA per play net of quarter-matched no-exit splits, 373 events, game-cluster bootstrap 300; opposite sign to the lane's 2016-2025 participation-based -0.016",
+      "effect": 0.0704,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        0.0005,
+        0.1428
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.973,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 373,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim12/qb_exit.json",
+      "standard_error": null
+    },
+    "sim12_qb_exit_hazard_pbp_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "descriptive hazard, no sign tested; cell of family, not closed",
+      "closing_ground": null,
+      "description": "QB in-game exit hazard per team-game (replacement dropback, starter never returns, further drive exists), 958 exits of 8007 team-games; non-blowout 380 (0.0475), blowout >=17 578 (0.0722); by quarter all 59/116/205/578",
+      "effect": 0.1196,
+      "effect_units": "rate_pp",
+      "family": "sim12_starter_exit",
+      "interval": [
+        0.1127,
+        0.1269
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": null,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8007,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim12/qb_exit.json",
+      "standard_error": null
+    },
+    "sim12_qb_exit_placebo_loso_pbp_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "observed minus placebo mean; placebo drawn by drive index shares the quarter baseline gap so the exit effect is not separated from placebo; not closed",
+      "closing_ground": null,
+      "description": "QB exit placebo at same drive index in no-exit games: mean 0.0476 (-0.0051,0.1039), 76.3% of pseudo effects at or below observed 0.0704; LOSO per-season effect negative in 5 of 17 seasons",
+      "effect": 0.0228,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.0051,
+        0.1039
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": null,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 373,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim12/qb_exit.json",
+      "standard_error": null
     }
   }
 }

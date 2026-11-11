@@ -1,0 +1,173 @@
+{
+  "family": "sim30_margin_distribution_challenger",
+  "signals": {
+    "sim30_served_vs_market_2way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026-11-03 market-anchored engine (not final); week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied to this non-final engine",
+      "closing_ground": null,
+      "description": "Served discrete read vs market histogram, 2-way decisive log loss",
+      "effect": -0.00287,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.01092,
+        0.00476
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the 2026-11-03 market-anchored engine, not a final engine.",
+      "plain_summary": null,
+      "probability_positive": 0.249,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/sim30_margin_mass.json",
+      "standard_error": 0.004
+    },
+    "sim30_served_vs_market_3way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026-11-03 market-anchored engine (not final); week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied to this non-final engine",
+      "closing_ground": null,
+      "description": "Served discrete read vs market histogram, 3-way log loss (positive = served better)",
+      "effect": -0.00624,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.01432,
+        0.00158
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the 2026-11-03 market-anchored engine, not a final engine.",
+      "plain_summary": null,
+      "probability_positive": 0.057,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/sim30_margin_mass.json",
+      "standard_error": 0.00406
+    },
+    "sim30_sim_vs_market_2way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026-11-03 market-anchored engine (not final); week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied to this non-final engine",
+      "closing_ground": null,
+      "description": "Simulated vs market histogram, 2-way decisive log loss",
+      "effect": -0.0139,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.02012,
+        -0.00749
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the 2026-11-03 market-anchored engine, not a final engine.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/sim30_margin_mass.json",
+      "standard_error": 0.00322
+    },
+    "sim30_sim_vs_market_3way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026-11-03 market-anchored engine (not final); week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied to this non-final engine",
+      "closing_ground": null,
+      "description": "Simulated vs market histogram, 3-way log loss",
+      "effect": -0.01701,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.02357,
+        -0.0101
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the 2026-11-03 market-anchored engine, not a final engine.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/sim30_margin_mass.json",
+      "standard_error": 0.00344
+    },
+    "sim30_sim_vs_served_2way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026-11-03 market-anchored engine (not final); week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied to this non-final engine",
+      "closing_ground": null,
+      "description": "Simulated vs served discrete read, 2-way decisive log loss",
+      "effect": -0.01103,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.0205,
+        -0.0014
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the 2026-11-03 market-anchored engine, not a final engine.",
+      "plain_summary": null,
+      "probability_positive": 0.0135,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/sim30_margin_mass.json",
+      "standard_error": 0.00487
+    },
+    "sim30_sim_vs_served_3way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026-11-03 market-anchored engine (not final); week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied to this non-final engine",
+      "closing_ground": null,
+      "description": "Simulated margin distribution minus served discrete read, 3-way log loss at opener, positive = sim better",
+      "effect": -0.01077,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.02017,
+        -0.00022
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the 2026-11-03 market-anchored engine, not a final engine.",
+      "plain_summary": null,
+      "probability_positive": 0.0215,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/sim30_margin_mass.json",
+      "standard_error": 0.00509
+    }
+  }
+}
