@@ -1,0 +1,61 @@
+{
+  "family": "mod57_team_change_gap_frame",
+  "signals": {
+    "coach_change_gap_label_weeks_1_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "coach_change input vs gap label, weeks_1_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.0014054581143840635,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.006180663728693289,
+        0.009440034979117487
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether coach_change predicts early-season line error.",
+      "probability_positive": 0.6195,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3e/coach_change_results.json",
+      "standard_error": null
+    },
+    "coach_change_margin_label_weeks_1_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "coach_change input vs margin label, weeks_1_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": -0.006793564599645676,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.0240573526455708,
+        0.008034605283749916
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether coach_change predicts early-season line error.",
+      "probability_positive": 0.225,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3e/coach_change_results.json",
+      "standard_error": null
+    }
+  }
+}
