@@ -1,6 +1,62 @@
 {
   "family": "mod57_team_change_gap_frame",
   "signals": {
+    "arr_volume_gap_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "arr_volume input vs gap label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.0007087707173000583,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.022236287754586234,
+        0.017461186206964043
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether arr_volume predicts early-season line error.",
+      "probability_positive": 0.561,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3d/arr_volume_results.json",
+      "standard_error": null
+    },
+    "arr_volume_margin_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "arr_volume input vs margin label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": -0.033461874621818925,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.06617966292868971,
+        -0.002805769791821318
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether arr_volume predicts early-season line error.",
+      "probability_positive": 0.013,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3d/arr_volume_results.json",
+      "standard_error": null
+    },
     "coach_change_gap_label_weeks_1_6_mae_improvement": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -169,6 +225,62 @@
       "source": "artifacts/mod57_p3d/qb_changed_results.json",
       "standard_error": null
     },
+    "qb_prior_share_gap_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "qb_prior_share input vs gap label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.006406262042798115,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.005115703799277089,
+        0.01737958423700413
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether qb_prior_share predicts early-season line error.",
+      "probability_positive": 0.86,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3d/qb_prior_share_results.json",
+      "standard_error": null
+    },
+    "qb_prior_share_margin_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "qb_prior_share input vs margin label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": -0.026748540737091365,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.05239289728348974,
+        -0.0026292560169540085
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether qb_prior_share predicts early-season line error.",
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3d/qb_prior_share_results.json",
+      "standard_error": null
+    },
     "ret_share_gap_label_weeks_2_6_mae_improvement": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -279,6 +391,62 @@
         2025
       ],
       "source": "artifacts/mod57_p3d/roster_sameweek_week1_results.json",
+      "standard_error": null
+    },
+    "team_change_pooled_gap_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "team_change_pooled input vs gap label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.020275891323077357,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.006995194454972639,
+        0.060296619543133784
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether team_change_pooled predicts early-season line error.",
+      "probability_positive": 0.8805,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3d/team_change_pooled_results.json",
+      "standard_error": null
+    },
+    "team_change_pooled_margin_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "team_change_pooled input vs margin label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": -0.03559850187530257,
+      "effect_units": "mae_improvement",
+      "family": "mod57_team_change_gap_frame",
+      "interval": [
+        -0.0824267475624461,
+        5.137000388203479e-05
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether team_change_pooled predicts early-season line error.",
+      "probability_positive": 0.026,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p3d/team_change_pooled_results.json",
       "standard_error": null
     }
   }

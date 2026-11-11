@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T19:22:29.414675+00:00`
+Refreshed at: `2026-11-11T19:40:15.311067+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T19:22:29.414675+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4a9a94eb3924` — Close the wind row: field-goal hook recovers a tenth of the real gap
-- Pending change set: 342 paths
+- Baseline commit: `ddfdb3ff3534` — Close the drive-play logging row with the observed split
+- Pending change set: 339 paths
   - `M  HANDOFF.md`
   - ` M README.md`
-  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
+  - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `M  docs/lanes/sim-22-plays-per-drive-logging-in-the-resampler.md`
-  - `M  docs/lanes/sim-finish-2026-11-11.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
+  - `M  registry/weak_signals/mod57_team_change_gap_frame.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  registry/weak_signals/sim22_drive_play_decomposition.json`
-  - `A  scripts/sim22_drive_play_decomposition.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - ...and 322 more
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 319 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
