@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 10
 
-Published from the synchronized weak stack model, 2026-11-11 01:20 UTC.
+Published from the synchronized weak stack model, 2026-11-11 17:26 UTC.
 
-<!-- publication: model_id=86164166a956aa78 published_at_utc=2026-11-11T01:20:49.852352+00:00 -->
+<!-- publication: model_id=37997f7a0a453bac published_at_utc=2026-11-11T17:26:02.339854+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -10,24 +10,24 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CIN -3.5 in PIT at CIN. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** CIN -3.5 in PIT at CIN. The pool scores one Best Pick per regular-season week. This pick was the Tuesday star, held until the Sunday-morning re-nomination moves it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Nov 12 | WAS at NYG | NYG -1.5         | 52.4%          |
-| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 52.0%          |
-| Sun, Nov 15 | CAR at NO  | CAR +1.5         | 51.0%          |
-| Sun, Nov 15 | HOU at CLE | HOU -4.5         | 51.7%          |
-| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 53.3%          |
-| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 52.3%          |
-| Sun, Nov 15 | LA at ARI  | LA -9.5          | 54.9%          |
-| Sun, Nov 15 | MIA at IND | IND -2.5         | 51.1%          |
-| Sun, Nov 15 | MIN at GB  | GB -4.5          | 56.2%          |
-| Sun, Nov 15 | NE at DET  | NE +2.5          | 50.4%          |
-| Sun, Nov 15 | PIT at CIN | ★ CIN -3.5       | 55.0%          |
-| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 52.5%          |
-| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 50.5%          |
-| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 52.1%          |
+| Thu, Nov 12 | WAS at NYG | NYG -1.5         | 53.3%          |
+| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 52.9%          |
+| Sun, Nov 15 | CAR at NO  | NO -1.5          | 54.5%          |
+| Sun, Nov 15 | HOU at CLE | HOU -4.5         | 50.9%          |
+| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 54.0%          |
+| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.1%          |
+| Sun, Nov 15 | LA at ARI  | LA -9.5          | 56.8%          |
+| Sun, Nov 15 | MIA at IND | IND -2.5         | 55.6%          |
+| Sun, Nov 15 | MIN at GB  | GB -4.5          | 51.8%          |
+| Sun, Nov 15 | NE at DET  | DET -2.5         | 50.0%          |
+| Sun, Nov 15 | PIT at CIN | ★ CIN -3.5       | 55.6%          |
+| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 63.8%          |
+| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 51.3%          |
+| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 55.6%          |
 
 **Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
 
@@ -38,11 +38,13 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-3 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| HOU at CLE | CLE             | HOU        | 51.7%          |
-| SF at DAL  | SF              | DAL        | 50.5%          |
-| WAS at NYG | WAS             | NYG        | 52.4%          |
+| CAR at NO  | CAR             | NO         | 54.5%          |
+| HOU at CLE | CLE             | HOU        | 50.9%          |
+| NE at DET  | NE              | DET        | 50.0%          |
+| SF at DAL  | SF              | DAL        | 51.3%          |
+| WAS at NYG | WAS             | NYG        | 53.3%          |
 <!-- LATE_WEEK_REFRESH:END -->

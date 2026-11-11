@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T17:09:41.215440+00:00`
+Refreshed at: `2026-11-11T17:35:23.284045+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T17:09:41.215440+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1ed6e6697725` — Record the offset-term era placebo and the draft-class input
-- Pending change set: 337 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `5fc2ee6b8fef` — Add roster-continuity and quarterback-change inputs and declare their grade
+- Pending change set: 346 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p3c-team-change-features.md`
-  - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - ` M docs/lanes/sim-finish-2026-11-11.md`
+  - ` M docs/lanes/sim-finish-patch-queue.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `M  docs/model.html`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  scripts/mod57_p3c_team_change_features.py`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - ...and 317 more
+  - ...and 326 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `86164166a956aa78`
+- Model ID: `37997f7a0a453bac`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261111T011816Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261111T171905Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,159 / 2,211 (52.42%)**
-- Linked forecast: **2026 Week 10**, created `2026-11-11T01:14:51.856963+00:00`
+- Linked forecast: **2026 Week 10**, created `2026-11-11T17:15:42.859461+00:00`
 
 The 52.42% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `86164166a956aa78`, published `2026-11-11T01:20:49.852352+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `37997f7a0a453bac`, published `2026-11-11T17:26:02.339854+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
