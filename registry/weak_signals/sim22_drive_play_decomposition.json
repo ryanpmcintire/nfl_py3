@@ -1,0 +1,229 @@
+{
+  "family": "sim22_drive_play_decomposition",
+  "signals": {
+    "sim22_spp_lead1_8_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting lead1_8 in all, instrumented seed 11 against real 2009-2017",
+      "effect": -1.2206,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -1.3853,
+        -1.0503
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_lead1_8_last5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting lead1_8 in last5, instrumented seed 11 against real 2009-2017",
+      "effect": -4.0691,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -4.7048,
+        -3.3643
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_lead9_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting lead9 in all, instrumented seed 11 against real 2009-2017",
+      "effect": -1.8232,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -2.0496,
+        -1.5979
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_lead9_last5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting lead9 in last5, instrumented seed 11 against real 2009-2017",
+      "effect": -5.6503,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -6.7112,
+        -4.6814
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_lead9_q4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting lead9 in q4, instrumented seed 11 against real 2009-2017",
+      "effect": -3.1891,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -3.5615,
+        -2.7801
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_tied_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting tied in all, instrumented seed 11 against real 2009-2017",
+      "effect": -0.5484,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -0.7034,
+        -0.3858
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_trail1_8_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting trail1_8 in all, instrumented seed 11 against real 2009-2017",
+      "effect": 0.1166,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        -0.0386,
+        0.2784
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 0.928,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    },
+    "sim22_spp_trail9_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Single simulated seed; descriptive simulator residual, not a refuted mechanism or a powered control; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Simulated minus real seconds per play, drives starting trail9 in all, instrumented seed 11 against real 2009-2017",
+      "effect": 1.3026,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim22_drive_play_decomposition",
+      "interval": [
+        1.087,
+        1.4972
+      ],
+      "league": "nfl",
+      "notes": "60 descriptive cells declared (5 score states x 4 time bands plus whole game, 3 quantities); 8 recorded: five whole-game score states and the three largest seconds-per-play cells. Game-cluster bootstrap, 1000 draws, seed 22; interval is 95 percent; seed 11 single world.",
+      "plain_summary": "Compares how many seconds a play takes in the simulator and in real games from the same score situation.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim22/drive_play_decomposition.json",
+      "standard_error": null
+    }
+  }
+}
