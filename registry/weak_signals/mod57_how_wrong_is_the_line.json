@@ -1,0 +1,341 @@
+{
+  "family": "mod57_how_wrong_is_the_line",
+  "signals": {
+    "mod57_p2o_H_close_calibration_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, USES FUTURE GAMES, NOT SERVABLE: calibration_slope of the season rating against the close line, season-block bootstrap",
+      "effect": 0.36541664194742557,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.3161194268132573,
+        0.4111916711758938
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_H_close_mae_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, USES FUTURE GAMES, NOT SERVABLE: mae_diff_line_minus_rating of the season rating against the close line, season-block bootstrap",
+      "effect": -0.43968887127029527,
+      "effect_units": "margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.545535702480882,
+        -0.34382845996654016
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_H_close_mse_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, USES FUTURE GAMES, NOT SERVABLE: mse_diff_line_minus_rating of the season rating against the close line, season-block bootstrap",
+      "effect": -8.889542699334772,
+      "effect_units": "squared_margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -11.532435787211503,
+        -6.217420524252366
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_H_open_calibration_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, USES FUTURE GAMES, NOT SERVABLE: calibration_slope of the season rating against the open line, season-block bootstrap",
+      "effect": 0.36596439547749793,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.28852435262823384,
+        0.4242232977053456
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_H_open_mae_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, USES FUTURE GAMES, NOT SERVABLE: mae_diff_line_minus_rating of the season rating against the open line, season-block bootstrap",
+      "effect": -0.39861608400330617,
+      "effect_units": "margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.5346853045893883,
+        -0.2983652286812802
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_H_open_mse_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, USES FUTURE GAMES, NOT SERVABLE: mse_diff_line_minus_rating of the season rating against the open line, season-block bootstrap",
+      "effect": -8.354657639320067,
+      "effect_units": "squared_margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -11.359379646959802,
+        -5.4872856659847775
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_P_close_calibration_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pregame rating (games before the date only): calibration_slope of the season rating against the close line, season-block bootstrap",
+      "effect": 0.0775256197765654,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.0351784941729523,
+        0.11549604190097484
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_P_close_mae_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pregame rating (games before the date only): mae_diff_line_minus_rating of the season rating against the close line, season-block bootstrap",
+      "effect": -0.9494755654199457,
+      "effect_units": "margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.0675622195437093,
+        -0.8325973564827795
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_P_close_mse_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pregame rating (games before the date only): mse_diff_line_minus_rating of the season rating against the close line, season-block bootstrap",
+      "effect": -27.817768082988646,
+      "effect_units": "squared_margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -31.136122337339238,
+        -24.61921180859909
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_P_open_calibration_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pregame rating (games before the date only): calibration_slope of the season rating against the open line, season-block bootstrap",
+      "effect": 0.06518653609914592,
+      "effect_units": "calibration_slope",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.045135800931078364,
+        0.14965747304556892
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.87725,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_P_open_mae_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pregame rating (games before the date only): mae_diff_line_minus_rating of the season rating against the open line, season-block bootstrap",
+      "effect": -0.9454306169306123,
+      "effect_units": "margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.1428151036699044,
+        -0.7208157807521987
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_P_open_mse_diff_line_minus_rating": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hindsight rating with the game removed; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pregame rating (games before the date only): mse_diff_line_minus_rating of the season rating against the open line, season-block bootstrap",
+      "effect": -27.66575589526986,
+      "effect_units": "squared_margin_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -32.51418774407229,
+        -22.121417626170214
+      ],
+      "league": "nfl",
+      "notes": "H is a positive control that uses future games of the same season, not servable. P uses only earlier games. Season-block bootstrap.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_lines_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    }
+  }
+}

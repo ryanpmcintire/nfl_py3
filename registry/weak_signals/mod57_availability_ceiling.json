@@ -2268,6 +2268,258 @@
       ],
       "source": "artifacts/mod57_p2m/results_LEAK_NOT_SERVABLE.json",
       "standard_error": null
+    },
+    "mod57_p2o_U_A_oracles_plus_own_removed_units_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (primary): base plus U_A_oracles_plus_own_removed_units minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 8.449767132401863,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        5.273826985844004,
+        11.638875885072268
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_A_oracles_plus_own_removed_units_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (primary): base plus U_A_oracles_plus_own_removed_units minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 8.269525267993874,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        3.5502958579881656,
+        13.085687304000762
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_A_oracles_plus_own_removed_units_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (primary): base plus U_A_oracles_plus_own_removed_units minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 8.482676224611708,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        4.970912818933786,
+        12.272336356893963
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_alone_own_removed_units_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (descriptive arm): base plus U_alone_own_removed_units minus served base, all games, opener grade, week-block bootstrap",
+      "effect": 7.584830339321358,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        4.439838470853856,
+        10.837765957446809
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_alone_own_removed_units_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (descriptive arm): base plus U_alone_own_removed_units minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": 6.431852986217458,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        1.633933279010689,
+        11.271254701582576
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_alone_own_removed_units_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (descriptive arm): base plus U_alone_own_removed_units minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": 8.363201911589007,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        4.658965837621498,
+        12.094885118165442
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_prior_games_only_units_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (descriptive arm): base plus U_prior_games_only_units minus served base, all games, opener grade, week-block bootstrap",
+      "effect": -1.5302727877578177,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -3.0264676810910807,
+        -0.06613429200062862
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.01825,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_prior_games_only_units_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (descriptive arm): base plus U_prior_games_only_units minus served base, moved games, opener grade, week-block bootstrap",
+      "effect": -2.4502297090352223,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -4.870809667000779,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.02125,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
+    },
+    "mod57_p2o_U_prior_games_only_units_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Own-row-removed positive controls; probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, LEAK, NOT SERVABLE (descriptive arm): base plus U_prior_games_only_units minus served base, quiet games, opener grade, week-block bootstrap",
+      "effect": -0.8363201911589008,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -2.8104693736187616,
+        1.10844280240832
+      ],
+      "league": "nfl",
+      "notes": "positive control, leak, not servable: unit rates averaged over the team's other games of the season (own row removed); later rows are as-of smoothed and may still carry the game.",
+      "plain_summary": "Measures how far the betting line sits from a hindsight rating of each team with the game itself left out.",
+      "probability_positive": 0.19175,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2o/results_units_LEAK_NOT_SERVABLE.json",
+      "standard_error": null
     }
   }
 }
