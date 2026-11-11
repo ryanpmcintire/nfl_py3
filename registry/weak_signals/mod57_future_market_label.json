@@ -1,0 +1,117 @@
+{
+  "family": "mod57_future_market_label",
+  "signals": {
+    "mod57_p4a_alternative_weeks_1_6_picks_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pick accuracy minus 50 against the close, weeks 1-6, side of the later-market label (weeks 1 to 4 ahead); future-information label, not servable; decisive games; season-block bootstrap",
+      "effect": 22.091503267973856,
+      "effect_units": "accuracy_points",
+      "family": "mod57_future_market_label",
+      "interval": [
+        19.69495344112652,
+        24.490820716051893
+      ],
+      "league": "nfl",
+      "notes": "Later-market rating label (closing lines of later weeks of the same season) versus the hindsight label, weeks 1-6; uses future lines, training label only. Later lines re-rate each team for its own game, so the label carries the game's own result (calibration slope above 1); a higher slope here is contamination, not quality.",
+      "plain_summary": "Whether what the market thinks of two teams a few weeks later is a cleaner target for how wrong the early line is than game results are.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p4a/results.json",
+      "standard_error": null
+    },
+    "mod57_p4a_alternative_weeks_1_6_slope_difference_vs_hindsight": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Calibration slope on the real result against the closing line, weeks 1-6, of the later-market label (weeks 1 to 4 ahead, same season, own week excluded) minus the hindsight label slope on the same games; both are future-information training labels, not servable; season-block bootstrap",
+      "effect": 2.0492418414563884,
+      "effect_units": "slope_difference",
+      "family": "mod57_future_market_label",
+      "interval": [
+        1.859349820882648,
+        2.276058843868832
+      ],
+      "league": "nfl",
+      "notes": "Later-market rating label (closing lines of later weeks of the same season) versus the hindsight label, weeks 1-6; uses future lines, training label only. Later lines re-rate each team for its own game, so the label carries the game's own result (calibration slope above 1); a higher slope here is contamination, not quality.",
+      "plain_summary": "Whether what the market thinks of two teams a few weeks later is a cleaner target for how wrong the early line is than game results are.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p4a/results.json",
+      "standard_error": null
+    },
+    "mod57_p4a_primary_weeks_1_6_picks_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Pick accuracy minus 50 against the close, weeks 1-6, side of the later-market label (weeks 3 to 8 ahead); future-information label, not servable; decisive games; season-block bootstrap",
+      "effect": 16.928104575163395,
+      "effect_units": "accuracy_points",
+      "family": "mod57_future_market_label",
+      "interval": [
+        14.3781471509377,
+        19.39189325294203
+      ],
+      "league": "nfl",
+      "notes": "Later-market rating label (closing lines of later weeks of the same season) versus the hindsight label, weeks 1-6; uses future lines, training label only. Later lines re-rate each team for its own game, so the label carries the game's own result (calibration slope above 1); a higher slope here is contamination, not quality.",
+      "plain_summary": "Whether what the market thinks of two teams a few weeks later is a cleaner target for how wrong the early line is than game results are.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p4a/results.json",
+      "standard_error": null
+    },
+    "mod57_p4a_primary_weeks_1_6_slope_difference_vs_hindsight": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Calibration slope on the real result against the closing line, weeks 1-6, of the later-market label (weeks 3 to 8 ahead, same season, own week excluded) minus the hindsight label slope on the same games; both are future-information training labels, not servable; season-block bootstrap",
+      "effect": 1.3105992878043087,
+      "effect_units": "slope_difference",
+      "family": "mod57_future_market_label",
+      "interval": [
+        1.1548822569570465,
+        1.4909641166855696
+      ],
+      "league": "nfl",
+      "notes": "Later-market rating label (closing lines of later weeks of the same season) versus the hindsight label, weeks 1-6; uses future lines, training label only. Later lines re-rate each team for its own game, so the label carries the game's own result (calibration slope above 1); a higher slope here is contamination, not quality.",
+      "plain_summary": "Whether what the market thinks of two teams a few weeks later is a cleaner target for how wrong the early line is than game results are.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod57_p4a/results.json",
+      "standard_error": null
+    }
+  }
+}

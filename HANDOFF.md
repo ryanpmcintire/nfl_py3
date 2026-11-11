@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T18:53:00.215316+00:00`
+Refreshed at: `2026-11-11T18:58:56.102283+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T18:53:00.215316+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bb85d58ecf48` — Score roster continuity, quarterback change and draft class early in the season
-- Pending change set: 343 paths
+- Baseline commit: `32df86dcf124` — Close the restricted-pool row; returning snap share adds nothing in the stack
+- Pending change set: 341 paths
   - `M  HANDOFF.md`
   - ` M README.md`
-  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `A  docs/lanes/mod57-p3g-returning-share-term.md`
+  - `A  docs/lanes/mod57-p4a-future-market-label.md`
   - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `M  docs/lanes/sim-finish-2026-11-11.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `A  registry/weak_signals/mod57_returning_share_stack_term.json`
+  - `A  registry/weak_signals/mod57_future_market_label.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  scripts/mod57_p3g_returning_share_term.py`
+  - `A  scripts/mod57_p4a_future_market_label.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 323 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - ...and 321 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
