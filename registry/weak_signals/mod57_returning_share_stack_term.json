@@ -1,0 +1,173 @@
+{
+  "family": "mod57_returning_share_stack_term",
+  "signals": {
+    "mod57_p3g_A_off_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Arm A_off: returning offensive snap share (home minus away) times a weeks 2-6 indicator added as fitted term(s) to the served four-term probability, leave-one-season-out at the opener, weeks 2-6 games, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -1.846073481204945,
+      "effect_units": "accuracy_points",
+      "family": "mod57_returning_share_stack_term",
+      "interval": [
+        -5.099894022563934,
+        1.5838001867413618
+      ],
+      "league": "nfl",
+      "notes": "Returning offensive snap share (home minus away) in weeks 2-6 as fitted term(s) in the four-term pick probability, leave-one-season-out at the opener 2020-25, with permutation, placebo, intercept-shift and frozen 2026 reads in the source.",
+      "plain_summary": "Whether how much of last season's playing time a roster keeps adds to the pick probability in the first weeks.",
+      "probability_positive": 0.1267,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p3g/results.json",
+      "standard_error": null
+    },
+    "mod57_p3g_A_off_weeks_2_6_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Arm A_off: returning offensive snap share (home minus away) times a weeks 2-6 indicator added as fitted term(s) to the served four-term probability, leave-one-season-out at the opener, weeks 2-6 games, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -0.0026297895806541354,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_returning_share_stack_term",
+      "interval": [
+        -0.007373557595207496,
+        0.0025104994278298065
+      ],
+      "league": "nfl",
+      "notes": "Returning offensive snap share (home minus away) in weeks 2-6 as fitted term(s) in the four-term pick probability, leave-one-season-out at the opener 2020-25, with permutation, placebo, intercept-shift and frozen 2026 reads in the source.",
+      "plain_summary": "Whether how much of last season's playing time a roster keeps adds to the pick probability in the first weeks.",
+      "probability_positive": 0.1495,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p3g/results.json",
+      "standard_error": null
+    },
+    "mod57_p3g_B_off_def_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Arm B_off_def: returning offensive snap share (home minus away) times a weeks 2-6 indicator added as fitted term(s) to the served four-term probability, leave-one-season-out at the opener, weeks 2-6 games, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -0.012862760320022298,
+      "effect_units": "accuracy_points",
+      "family": "mod57_returning_share_stack_term",
+      "interval": [
+        -4.428904428904429,
+        4.585202916549817
+      ],
+      "league": "nfl",
+      "notes": "Returning offensive snap share (home minus away) in weeks 2-6 as fitted term(s) in the four-term pick probability, leave-one-season-out at the opener 2020-25, with permutation, placebo, intercept-shift and frozen 2026 reads in the source.",
+      "plain_summary": "Whether how much of last season's playing time a roster keeps adds to the pick probability in the first weeks.",
+      "probability_positive": 0.4696,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p3g/results.json",
+      "standard_error": null
+    },
+    "mod57_p3g_B_off_def_weeks_2_6_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Arm B_off_def: returning offensive snap share (home minus away) times a weeks 2-6 indicator added as fitted term(s) to the served four-term probability, leave-one-season-out at the opener, weeks 2-6 games, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -0.002748859612349076,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_returning_share_stack_term",
+      "interval": [
+        -0.010028193907430056,
+        0.004421413522877787
+      ],
+      "league": "nfl",
+      "notes": "Returning offensive snap share (home minus away) in weeks 2-6 as fitted term(s) in the four-term pick probability, leave-one-season-out at the opener 2020-25, with permutation, placebo, intercept-shift and frozen 2026 reads in the source.",
+      "plain_summary": "Whether how much of last season's playing time a roster keeps adds to the pick probability in the first weeks.",
+      "probability_positive": 0.2322,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p3g/results.json",
+      "standard_error": null
+    },
+    "mod57_p3g_C_off_plus_T_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Arm C_off_plus_T: returning offensive snap share (home minus away) times a weeks 2-6 indicator added as fitted term(s) to the served four-term probability, leave-one-season-out at the opener, weeks 2-6 games, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -2.4953997791974567,
+      "effect_units": "accuracy_points",
+      "family": "mod57_returning_share_stack_term",
+      "interval": [
+        -6.053981519228156,
+        0.9501187648456056
+      ],
+      "league": "nfl",
+      "notes": "Returning offensive snap share (home minus away) in weeks 2-6 as fitted term(s) in the four-term pick probability, leave-one-season-out at the opener 2020-25, with permutation, placebo, intercept-shift and frozen 2026 reads in the source.",
+      "plain_summary": "Whether how much of last season's playing time a roster keeps adds to the pick probability in the first weeks.",
+      "probability_positive": 0.0746,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p3g/results.json",
+      "standard_error": null
+    },
+    "mod57_p3g_C_off_plus_T_weeks_2_6_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Arm C_off_plus_T: returning offensive snap share (home minus away) times a weeks 2-6 indicator added as fitted term(s) to the served four-term probability, leave-one-season-out at the opener, weeks 2-6 games, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0006478946988126591,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_returning_share_stack_term",
+      "interval": [
+        -0.008681435130012119,
+        0.010010323149959222
+      ],
+      "league": "nfl",
+      "notes": "Returning offensive snap share (home minus away) in weeks 2-6 as fitted term(s) in the four-term pick probability, leave-one-season-out at the opener 2020-25, with permutation, placebo, intercept-shift and frozen 2026 reads in the source.",
+      "plain_summary": "Whether how much of last season's playing time a roster keeps adds to the pick probability in the first weeks.",
+      "probability_positive": 0.552,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p3g/results.json",
+      "standard_error": null
+    }
+  }
+}
