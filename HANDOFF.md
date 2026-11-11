@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T15:46:20.972377+00:00`
+Refreshed at: `2026-11-11T15:49:07.283422+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T15:46:20.972377+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b2c819b6cae7` — Record the early-season overreaction lead and two simulator rows
-- Pending change set: 354 paths
+- Baseline commit: `58d4c35a2ceb` — Prepare three simulator hooks from measured coaching traits
+- Pending change set: 352 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
+  - `A  docs/lanes/mod57-p2r-early-overreaction-term.md`
+  - `M  docs/lanes/mod57-sixty-percent.md`
   - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `M  docs/lanes/sim-14-sim14-coach-aggression.md`
-  - `M  docs/lanes/sim-17-halftime-adjustment.md`
-  - `M  docs/lanes/sim-18-lead-protection.md`
-  - `M  docs/lanes/sim-20-coordinator-halftime-hook.md`
-  - ` M docs/lanes/sim-25-pool-stratum-by-score-sign-and-clock.md`
-  - ` M docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
+  - `M  docs/lanes/sim-25-pool-stratum-by-score-sign-and-clock.md`
+  - `M  docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
   - `M  docs/lanes/sim-finish-2026-11-11.md`
+  - `A  docs/lanes/sim-finish-forecaster-inversion.md`
   - ` M docs/lanes/week9-sunday-refresh-2026-11-08.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead106.json`
   - ` M registry/weak_signals/mod10_graph_rating_base_input.json`
+  - `M  registry/weak_signals/mod57_how_wrong_is_the_line.json`
   - ` M registry/weak_signals/per16_team_designation_habit.json`
-  - `A  registry/weak_signals/sim17_halftime_h2_epa_response.json`
-  - `A  scripts/sim14_hook_fit.py`
-  - ...and 334 more
+  - `M  registry/weak_signals/sim08_market_anchored.json`
+  - `A  registry/weak_signals/sim25_pool_stratum.json`
+  - ...and 332 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

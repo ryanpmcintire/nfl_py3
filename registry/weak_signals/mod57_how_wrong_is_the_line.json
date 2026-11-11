@@ -1568,6 +1568,566 @@
       ],
       "source": "artifacts/mod57_p2q/results.json",
       "standard_error": null
+    },
+    "mod57_p2r_control_intercept_only_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Control control_intercept_only through the same leave-one-season-out fit, weeks 2-6 accuracy versus the four-term, week-block bootstrap",
+      "effect": -7.277978179618655,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -13.349298206266331,
+        -1.1286046204217772
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.0108,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_control_permuted_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Control control_permuted through the same leave-one-season-out fit, weeks 2-6 accuracy versus the four-term, week-block bootstrap",
+      "effect": -0.45200786385559505,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -2.6006268696850525,
+        1.6510409697131883
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.3058,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_control_placebo_weeks_7_11_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Control control_placebo_weeks_7_11 through the same leave-one-season-out fit, weeks 2-6 accuracy versus the four-term, week-block bootstrap",
+      "effect": 0.22432404799721734,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.0,
+        0.6944444444444444
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.6301,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_forward_2026_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Forward read: early-season surprise term frozen on 2020-25 added to current structure, 2026 weeks 2-6 at the pool line, accuracy_points versus current, week-block bootstrap; improvement positive",
+      "effect": 5.3336321710985946,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -8.860759493670885,
+        20.27027027027027
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.7079,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_forward_2026_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Forward read: early-season surprise term frozen on 2020-25 added to current structure, 2026 weeks 2-6 at the pool line, brier versus current, week-block bootstrap; improvement positive",
+      "effect": 0.004342256953337757,
+      "effect_units": "brier_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0022426611741169188,
+        0.011018570095516338
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.8896,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_forward_2026_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Forward read: early-season surprise term frozen on 2020-25 added to current structure, 2026 weeks 2-6 at the pool line, log_loss versus current, week-block bootstrap; improvement positive",
+      "effect": 0.008833854097406422,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.005042667208856569,
+        0.022919883236910375
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.8896,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T2_taper_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T2_taper (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, all_games, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -0.4714631728699629,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.7287521588029615,
+        0.7458134095334655
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.209,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T2_taper_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T2_taper (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, all_games, brier versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0002352228118695483,
+      "effect_units": "brier_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0008429992007265001,
+        0.0012610336544870992
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.6799,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T2_taper_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T2_taper (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, all_games, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0004597527615604543,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0017917184272106437,
+        0.0025932080159361635
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.6709,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T2_taper_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T2_taper (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, weeks_2_6, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -2.299816472443044,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -5.133928571428571,
+        0.4618937644341801
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.0472,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T2_taper_weeks_2_6_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T2_taper (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, weeks_2_6, brier versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0006001095120393996,
+      "effect_units": "brier_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0029702110975966802,
+        0.003974497492603614
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.6368,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T2_taper_weeks_2_6_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T2_taper (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, weeks_2_6, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0011175136478491633,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.006382334599420025,
+        0.008169758693857741
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.6248,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T_all_games_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, all_games, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -0.048303814784688134,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -1.4725568942436413,
+        1.3550135501355014
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.4606,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T_all_games_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, all_games, brier versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0004764791088330534,
+      "effect_units": "brier_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0007334775928499176,
+        0.001694110325069673
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.7839,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T_all_games_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, all_games, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0009760571205454139,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0015544649961241204,
+        0.003511148172956722
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.7809,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T_weeks_2_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, weeks_2_6, accuracy_points versus the four-term, week-block bootstrap; improvement positive",
+      "effect": -0.6759600886865053,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -4.2554384123652325,
+        3.0023094688221708
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.3304,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T_weeks_2_6_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, weeks_2_6, brier versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0014705172677082743,
+      "effect_units": "brier_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.002700682620159147,
+        0.005535442825738175
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.765,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_plus_T_weeks_2_6_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Fifth fitted term plus_T (early-season surprise, weeks 2-6) added to the served four-term probability, leave-one-season-out, weeks_2_6, log_loss versus the four-term, week-block bootstrap; improvement positive",
+      "effect": 0.0029839117041852263,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        -0.0058333047081950634,
+        0.011440563869173031
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.7574,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_power_walkforward_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward one-term logistic on early-season surprise, fitted on all earlier seasons from 2009, weeks 2-6 games against the closing line, accuracy_points versus 0.5, season-block bootstrap",
+      "effect": 7.575757575757576,
+      "effect_units": "accuracy_points",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        4.024390243902439,
+        10.598802395209582
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 825,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
+    },
+    "mod57_p2r_power_walkforward_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block and season-block bootstrap, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "Walk-forward one-term logistic on early-season surprise, fitted on all earlier seasons from 2009, weeks 2-6 games against the closing line, log_loss_improvement versus 0.5, season-block bootstrap",
+      "effect": 0.005540334511321684,
+      "effect_units": "log_loss_improvement",
+      "family": "mod57_how_wrong_is_the_line",
+      "interval": [
+        0.00016008539221840063,
+        0.010570309381485413
+      ],
+      "league": "nfl",
+      "notes": "Early-season surprise to date (home minus away mean of margin minus close) in weeks 2-6 as a fifth fitted term in the four-term pick probability, leave-one-season-out, with a walk-forward power read and a frozen 2026 forward read.",
+      "plain_summary": "Whether a team beating or missing the line early in a season makes the next game's line too high or too low.",
+      "probability_positive": 0.9784,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 825,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/mod57_p2r/results.json",
+      "standard_error": null
     }
   }
 }

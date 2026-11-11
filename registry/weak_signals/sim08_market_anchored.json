@@ -1,6 +1,90 @@
 {
   "family": "sim08_market_anchored",
   "signals": {
+    "sim08_inv_centred_gain_over_raw_l1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Diagnostic on saved draws; no admissible closing ground; zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "Three-way log loss gain of re-centred over raw sim cover read, week-block bootstrap",
+      "effect": 0.0143,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        0.0076,
+        0.0208
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Diagnosis of the simulator cover inversion on saved draws; no pick or serving change.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_inversion/diagnosis.json",
+      "standard_error": 0.0034
+    },
+    "sim08_inv_centred_solo_coef": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Diagnostic on saved draws; no admissible closing ground; zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "Outcome logit on sim cover logit after exact re-centring of saved draws (diagnostic, not served), main run",
+      "effect": 0.448,
+      "effect_units": "logit_coefficient",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.365,
+        1.261
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Diagnosis of the simulator cover inversion on saved draws; no pick or serving change.",
+      "probability_positive": 0.8875,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_inversion/diagnosis.json",
+      "standard_error": 0.415
+    },
+    "sim08_inv_leftover_coef": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Diagnostic on saved draws; no admissible closing ground; zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "Outcome logit per point of anchor leftover (sim mean margin minus opener line), main run",
+      "effect": -0.044,
+      "effect_units": "logit_coefficient",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.097,
+        0.009
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Diagnosis of the simulator cover inversion on saved draws; no pick or serving change.",
+      "probability_positive": 0.05,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_inversion/diagnosis.json",
+      "standard_error": 0.027
+    },
     "sim08_ma_a1_l1": {
       "category": "modeling",
       "classification": "unresolved_below_power",

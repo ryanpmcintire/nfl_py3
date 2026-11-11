@@ -1,0 +1,33 @@
+{
+  "family": "sim25_pool_stratum",
+  "signals": {
+    "sim25_pool_stratum_restricted_vs_full_abs_points_gap_2009_2017": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 1000; headline look of the 225-look sim25_pool_stratum family; kernel stage only, no simulation; not closed",
+      "closing_ground": null,
+      "description": "Kernel-stage weighted absolute points-per-drive gap vs real held-out late (regimes 3-4) lead and trail drives: restricted same-sign-same-regime pool 0.059 vs full pool 0.223; restricted-minus-full interval -0.204 to -0.094; kernel stage only, restricted arm near cell mean by construction, regime 4 effective n 12-44",
+      "effect": 0.164,
+      "effect_units": "mae_improvement",
+      "family": "sim25_pool_stratum",
+      "interval": [
+        0.094,
+        0.204
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/sim-25-pool-stratum-by-score-sign-and-clock.md",
+      "standard_error": null
+    }
+  }
+}

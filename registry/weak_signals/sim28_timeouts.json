@@ -1,0 +1,61 @@
+{
+  "family": "sim28_timeouts",
+  "signals": {
+    "sim28_timeouts_loglik_gain_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 1000; 2 tested looks of the 450-look sim28_timeouts family; not closed",
+      "closing_ground": null,
+      "description": "10-fold game-grouped multinomial log likelihood per end-of-half drive gained by adding offence and defence timeouts to the base state; n 15252 drives",
+      "effect": 0.0128,
+      "effect_units": "log_loss_improvement",
+      "family": "sim28_timeouts",
+      "interval": [
+        0.0102,
+        0.0153
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4413,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md",
+      "standard_error": null
+    },
+    "sim28_timeouts_points_per_offence_timeout_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 1000; 2 tested looks of the 450-look sim28_timeouts family; not closed",
+      "closing_ground": null,
+      "description": "Points per end-of-half drive per extra offence timeout net of base state (pooled linear); sign flips by split: trailing +0.038 (P+ .93), level or lead +0.067 (P+ .999)",
+      "effect": -0.0375,
+      "effect_units": "slope_difference",
+      "family": "sim28_timeouts",
+      "interval": [
+        -0.0687,
+        -0.0057
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.012,
+      "recorded_at": "2026-11-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4413,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md",
+      "standard_error": null
+    }
+  }
+}
