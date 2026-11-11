@@ -9,6 +9,14 @@ Next, in order, one heavy job at a time (scripts and the combined patch are in t
 4. Then: SIM-29 once forward weeks exist (about Week 12); close lanes to done/; write the one-page summary of what the engine is and what each mechanism did.
 Rows still open after today: SIM-07, SIM-08, SIM-14, SIM-15, SIM-17, SIM-18, SIM-20, SIM-22, SIM-25, SIM-28, SIM-29, SIM-30 (all waiting on steps 1 to 3). Open finding: the truncation fix raises scoring by 0.6 points a game, so the default's scoring match rests partly on that truncation; the offsetting excess is not located.
 
+## PROGRESS since the resume note (orchestrator; times from the clock)
+- Step 1 DONE 12:00 ET: identity EQUAL on fresh outputs with both exits 0 (the 11:28 EQUAL was void, stale baseline folder); combined patch applied and committed (6e86ae8f). All seven hooks are in scripts/sim10_drive.py behind flags, default off. Detail in sim-finish-patch-queue.md runner log.
+- Step 2 arm verdicts (rule: count not lower on any seed, no passing gate lost, named gate toward real beyond 2x default seed SD; default 13/14/13):
+  - to3, SIM-28 timeout bandwidths (measured 12:20, artifacts\to3_cmp.log and per-seed gates.json): 10/10/12. Lost: mass at 14 on all three seeds (.0454, .0520, .0517 against the real interval .0456 to .0508; default .0500, .0496, .0492), late-season R2 on seeds 11 and 12 (.1046, .1186, .1227 v default .1409, .1329, .1268; mean move -0.018, away from real beyond 2 SD), plus home edge, strength variance, mass at 3 and Q4 slope on single seeds. Named gates: Q4 slope -0.0003 and points a game +0.06, both inside noise. NOT ADOPTED.
+  - to4, timeouts plus SIM-27 score bandwidths (measured 12:38, artifacts\to4_cmp.log): 11/14/11. Lost: Q4 slope on seeds 11 and 13 (-.0814, -.0850 against the real interval -.0797 to -.0393; mean move -0.0078, away from real, 1.5 SD), late-season R2 and strength variance on seed 11, xq covariance on seed 13; gained overtime share on seed 11. Toward real but inside 2 SD: points a game -0.02, mass at 14 -0.0005, margin SD. NOT ADOPTED. ROADMAP SIM-28 closed with both arms; default bandwidth file unchanged.
+  - coach (SIM-14, named gate margin_sd): launched 12:38.
+  - Then, in order: coach, htadj, leadclock, poolstratum, wind, drplays, personnel (personnel script repaired and smoke-tested, see patch-queue lane).
+
 ## Goal
 Owner 2026-11-11: get the simulator finished once and for all, in parallel with MOD-57. Finish line, all four:
 1. The default engine passes 14 of 14 realism gates on the six-seed mean, real schedules.
