@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-12T13:20:39.827786+00:00`
+Refreshed at: `2026-11-12T13:46:01.578583+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-12T13:20:39.827786+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `af5eb93aafd9` — Republish the site with the latest settled results
-- Pending change set: 345 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `1fec1cb7e2f3` — Refresh the pool standing after Week 9 and stop it going stale
+- Pending change set: 334 paths
   - `M  HANDOFF.md`
-  - ` M README.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/pool-standing-refresh.md`
+  - `M  docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
-  - `M  scripts/pool01_field_best_pick.py`
-  - `M  scripts/pool01_forward_sim.py`
-  - `M  scripts/pool01_weekly_points.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  tiebreaker.json`
+  - `M  registry/weak_signals/mod57_offset_term_era_placebo.json`
+  - `M  registry/weak_signals/mod57_pool_source_book.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 325 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
+  - ...and 314 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
