@@ -1,3 +1,4 @@
+import argparse
 import json
 import re
 from pathlib import Path
@@ -5,13 +6,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-RAW = Path("data/splash/field/2026_weekly_points_w01-08_raw.txt")
-OUT = Path("data/splash/field/2026_weekly_points_w01-08.parquet")
-GAMES = Path("data/splash/field/2026_field_best_picks_w01-08.parquet")
+FIELD = Path("data/splash/field")
+RAW = sorted(FIELD.glob("2026_weekly_points_w01-*_raw.txt"))[-1]
+WEEKS = int(re.search(r"w01-(\d+)_raw", RAW.name).group(1))
+OUT = FIELD / f"2026_weekly_points_w01-{WEEKS:02d}.parquet"
+GAMES = FIELD / f"2026_field_best_picks_w01-{WEEKS:02d}.parquet"
 RES = Path("artifacts/pool_rank_replay/weekly_points_field.json")
-WEEKS = 8
-OUR_TOTAL = 65
-OUR_RANK = 19
 
 
 def load():
@@ -34,6 +34,9 @@ def split_half(rate):
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Field weekly points from the latest standings read")
+    ap.add_argument("--points", type=int, required=True, help="our season points on the page")
+    our_total = ap.parse_args().points
     arr = load()
     n = games_per_week()
     entries = arr.shape[0]
@@ -61,7 +64,7 @@ def main():
     for _ in range(4000):
         i = rng.integers(0, entries, entries)
         reps.append(split_half(rate[i])[1])
-    ours = np.where(tot == OUR_TOTAL)[0]
+    ours = np.where(tot == our_total)[0]
     out = {
         "entries_read": int(entries),
         "games_per_week": n.tolist(),
@@ -81,11 +84,11 @@ def main():
             str(q): float(np.quantile(tot, q)) for q in (0.05, 0.25, 0.5, 0.75, 0.95)
         },
         "entries_with_our_total": len(ours),
-        "entries_above_our_total": int((tot > OUR_TOTAL).sum()),
+        "entries_above_our_total": int((tot > our_total).sum()),
         "our_percentile_of_read_entries": float(
-            (tot < OUR_TOTAL).mean() + 0.5 * (tot == OUR_TOTAL).mean()
+            (tot < our_total).mean() + 0.5 * (tot == our_total).mean()
         ),
-        "our_z": float((OUR_TOTAL - tot.mean()) / tot.std(ddof=1)),
+        "our_z": float((our_total - tot.mean()) / tot.std(ddof=1)),
     }
     RES.write_text(json.dumps(out, indent=2) + "\n")
     print(json.dumps(out, indent=2))

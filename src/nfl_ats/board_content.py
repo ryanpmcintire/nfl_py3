@@ -1053,7 +1053,10 @@ WEEK_REFRESH_PASSES: tuple[tuple[str, str, bool], ...] = (
     ("thu", "15:00", False),
     ("thu", "15:25", False),
     ("thu", "19:15", False),
+    ("fri", "12:40", False),
     ("fri", "13:30", False),
+    ("fri", "15:15", False),
+    ("fri", "19:00", False),
     ("sat", "10:30", False),
     ("sat", "12:15", False),
     ("sat", "15:50", False),
@@ -1063,6 +1066,7 @@ WEEK_REFRESH_PASSES: tuple[tuple[str, str, bool], ...] = (
     ("sun", "11:55", False),
     ("sun", "12:45", False),
     ("sun", "15:00", False),
+    ("sun", "15:35", False),
 )
 
 
@@ -2526,6 +2530,17 @@ def _load_pool_outlook(
         entries = int(start["entries"])
         remaining = int(start["weeks_remaining"])
         mean = float(chance["mean"])
+        stated = start.get("our_stated_cover_chance")
+        realised = start.get("our_realised_cover_rate")
+        our_side_text = (
+            "our card picking as it has against the opening line."
+            if stated is None or realised is None
+            else (
+                "our card covering as often as its stated chances say, about "
+                f"{float(stated):.0%} of the time. So far this season those picks have "
+                f"covered {float(realised):.0%}, so read this as the hopeful case."
+            )
+        )
     except (KeyError, ValueError, TypeError, OSError):
         return None
     if not totals:
@@ -2575,8 +2590,7 @@ def _load_pool_outlook(
         ),
         assumption_text=(
             f"This plays out the remaining {remaining} weeks many times, with every rival "
-            "picking like the real field has so far and our card picking as it has "
-            "against the opening line."
+            f"picking like the real field has so far and {our_side_text}"
         ),
         as_of_text=f"After Week {weeks_played}",
         stale_text=stale,

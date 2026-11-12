@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 10
 
-Published from the synchronized weak stack model, 2026-11-11 17:26 UTC.
+Published from the synchronized weak stack model, 2026-11-12 02:07 UTC.
 
-<!-- publication: model_id=37997f7a0a453bac published_at_utc=2026-11-11T17:26:02.339854+00:00 -->
+<!-- publication: model_id=5f01a3c7eee7a8f4 published_at_utc=2026-11-12T02:07:27.389798+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -31,7 +31,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
 
-**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 52% and 51%. These broad groups do not establish a large advantage for the single highest estimate.
 

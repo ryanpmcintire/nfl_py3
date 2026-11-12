@@ -487,11 +487,13 @@ def _week_by_week_text(rows: Sequence[HistoryPickRow]) -> str:
 def _field_week_texts(
     week_records: Sequence[tuple[int, int, int, int]], data_root: Path, season: int | None
 ) -> tuple[tuple[int, str], ...]:
-    path = data_root / "splash" / "field" / f"{season}_weekly_points_w01-08.parquet"
-    if season is None or not path.is_file():
+    if season is None:
+        return ()
+    paths = sorted((data_root / "splash" / "field").glob(f"{season}_weekly_points_w01-*.parquet"))
+    if not paths:
         return ()
     try:
-        field = pd.read_parquet(path)
+        field = pd.read_parquet(paths[-1])
     except (OSError, ValueError):
         return ()
     texts = []
@@ -518,8 +520,10 @@ def _half_point_week_texts(
     if not paths:
         return ()
     try:
-        picks = pd.concat([pd.read_parquet(path) for path in paths], ignore_index=True)
-    except (OSError, ValueError):
+        picks = pd.concat(
+            [pd.read_parquet(path) for path in paths], ignore_index=True
+        ).drop_duplicates(subset=["week", "game_id", "home"], keep="last")
+    except (OSError, ValueError, KeyError):
         return ()
     ours = {row.game_id: row.pick_side for row in rows if row.status == "settled"}
     texts = []

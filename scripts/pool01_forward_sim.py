@@ -9,8 +9,9 @@ from nfl_ats.evidence_conventions import probability_positive_from_draws
 
 K = 1000.0
 OUT = Path("artifacts/pool_rank_replay")
-FIELD_FILE = Path("data/splash/field/2026_field_best_picks_w01-08.parquet")
-WEEKLY_FILE = Path("data/splash/field/2026_weekly_points_w01-08.parquet")
+FIELD = Path("data/splash/field")
+FIELD_FILE = sorted(FIELD.glob("2026_field_best_picks_w01-*.parquet"))[-1]
+WEEKLY_FILE = sorted(FIELD.glob("2026_weekly_points_w01-*.parquet"))[-1]
 WEEKLY_JSON = OUT / "weekly_points_field.json"
 
 
@@ -78,7 +79,7 @@ def rival_table(our_points):
     tot = np.delete(tot, mine)
     n_games = float(sum(meta["games_per_week"]))
     rate = tot / n_games
-    r = meta["split_half_spearman_brown"]
+    r = max(float(meta["split_half_spearman_brown"]), 0.0)
     var_obs = float(rate.var(ddof=1))
     dmean = r * (rate - rate.mean())
     dsd = float(np.sqrt(r * (1.0 - r) * var_obs))
@@ -171,9 +172,9 @@ def main():
     )
     ap.add_argument("--paths", type=int, default=240)
     ap.add_argument("--inner", type=int, default=200)
-    ap.add_argument("--weeks", type=int, default=10)
-    ap.add_argument("--points", type=int, default=65)
-    ap.add_argument("--rank", type=int, default=19)
+    ap.add_argument("--weeks", type=int, required=True, help="weeks still to play")
+    ap.add_argument("--points", type=int, required=True, help="our season points on the page")
+    ap.add_argument("--rank", type=int, required=True, help="our rank on the page")
     ap.add_argument("--entries", type=int, default=250)
     ap.add_argument("--seed", type=int, default=20261103)
     ap.add_argument("--smoke", action="store_true")
@@ -206,6 +207,7 @@ def main():
     res["gain"] = res["aware"] - res["served"]
     res["bp_value"] = res["served"] - res["served_points_only"]
     brng = np.random.default_rng(a.seed + 1)
+    measured_reliability = float(json.loads(WEEKLY_JSON.read_text())["split_half_spearman_brown"])
     out = {
         "start": {
             "points": a.points,
@@ -214,6 +216,13 @@ def main():
             "weeks_remaining": a.weeks,
             "games_per_week": 15,
             "our_best_pick_wins_so_far": our_bp,
+            "games_played": int(len(df)),
+            "our_stated_cover_chance": float(df["p"].mean()),
+            "our_realised_cover_rate": float(df["cov_o"].mean()),
+        },
+        "rival_skill_reliability": {
+            "measured": measured_reliability,
+            "used": max(measured_reliability, 0.0),
         },
         "past_acceptance": {"accepted_pool": have, "drawn": drawn},
         "paths": len(res),

@@ -41,7 +41,8 @@ def parse_w1_2():
 
 def parse_w3_8():
     rows = []
-    for line in (FIELD / "2026_week03-08_pick_distribution_raw.txt").read_text().splitlines():
+    raw = sorted(FIELD.glob("2026_week03-*_pick_distribution_raw.txt"))[-1]
+    for line in raw.read_text().splitlines():
         if line.startswith("#") or not line.strip():
             continue
         head, body = line.split(" ", 1)
@@ -133,7 +134,7 @@ def main():
     df = pd.DataFrame(parse_w1_2() + parse_w3_8())
     df = df.sort_values(["week", "game_id", "home"]).reset_index(drop=True)
     df = attach_model_probability(df)
-    tidy = FIELD / "2026_field_best_picks_w01-08.parquet"
+    tidy = FIELD / f"2026_field_best_picks_w01-{int(df['week'].max()):02d}.parquet"
     df.to_parquet(tidy, index=False)
     print("rows", len(df), "games", df.game_id.nunique(), tidy)
 

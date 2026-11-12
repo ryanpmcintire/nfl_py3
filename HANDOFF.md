@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-11T23:20:56.485611+00:00`
+Refreshed at: `2026-11-12T13:20:39.827786+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-11T23:20:56.485611+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `97c562c88a72` — Make the Tuesday LLM read wait for the lock instead of failing at 13:30
-- Pending change set: 332 paths
+- Baseline commit: `af5eb93aafd9` — Republish the site with the latest settled results
+- Pending change set: 345 paths
   - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - ` M README.md`
   - ` M config/source_policies.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
   - `M  docs/model.html`
+  - `M  scripts/pool01_field_best_pick.py`
+  - `M  scripts/pool01_forward_sim.py`
+  - `M  scripts/pool01_weekly_points.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_site_content.py`
   - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 312 more
+  - ...and 325 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `37997f7a0a453bac`
+- Model ID: `5f01a3c7eee7a8f4`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261111T171905Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261112T020143Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,159 / 2,211 (52.42%)**
-- Linked forecast: **2026 Week 10**, created `2026-11-11T17:15:42.859461+00:00`
+- Linked forecast: **2026 Week 10**, created `2026-11-12T01:57:25.129461+00:00`
 
 The 52.42% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `37997f7a0a453bac`, published `2026-11-11T17:26:02.339854+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `5f01a3c7eee7a8f4`, published `2026-11-12T02:07:27.389798+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
