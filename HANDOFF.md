@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-13T00:19:22.821117+00:00`
+Refreshed at: `2026-11-13T05:32:04.319033+00:00`
 
 ## Start here
 
@@ -21,17 +21,14 @@ Refreshed at: `2026-11-13T00:19:22.821117+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0e5996c61046` — Give 18 research records a plain summary so no public page names a book
-- Pending change set: 347 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
+- Baseline commit: `a35b9fd5a9f4` — Republish the site with the latest settled results
+- Pending change set: 344 paths
   - ` M config/source_policies.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - ` M docs/lead64_freshness_audit.md`
   - `M  docs/model.html`
-  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-13T00:19:22.821117+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 327 more
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
+  - ...and 324 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
