@@ -1,0 +1,229 @@
+{
+  "family": "mod36_metric_power",
+  "signals": {
+    "mod36_metric_null_playoff_leverage_ats_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real levdiff column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus an intercept-only fit; graded on ats_points (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.177144,
+      "effect_units": "ats_points",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.636936,
+        0.298655
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in playoff stakes between the two teams in late-season games, to show how much a meaningless extra ingredient moves the average winning margin against the opening line of the side picked.",
+      "probability_positive": 0.25,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_playoff_leverage_rps_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real levdiff column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus an intercept-only fit; graded on rps_improvement (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.012702,
+      "effect_units": "rps_improvement",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.03713,
+        0.009182
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in playoff stakes between the two teams in late-season games, to show how much a meaningless extra ingredient moves how close the predicted spread of final margins sits to the real final margin.",
+      "probability_positive": 0.135,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_questionable_habit_ats_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real habit_adj column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; graded on ats_points (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.017503,
+      "effect_units": "ats_points",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.244029,
+        0.185961
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles each game's reading of how often a coach's doubtful-to-play listings suit up, to show how much a meaningless extra ingredient moves the average winning margin against the opening line of the side picked.",
+      "probability_positive": 0.4325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_questionable_habit_rps_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real habit_adj column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; graded on rps_improvement (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.00503,
+      "effect_units": "rps_improvement",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.015002,
+        0.002784
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles each game's reading of how often a coach's doubtful-to-play listings suit up, to show how much a meaningless extra ingredient moves how close the predicted spread of final margins sits to the real final margin.",
+      "probability_positive": 0.135,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_rest_difference_ats_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real rest_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; graded on ats_points (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.035268,
+      "effect_units": "ats_points",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.234381,
+        0.16482
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams, to show how much a meaningless extra ingredient moves the average winning margin against the opening line of the side picked.",
+      "probability_positive": 0.365,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_rest_difference_rps_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real rest_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; graded on rps_improvement (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.005067,
+      "effect_units": "rps_improvement",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.014218,
+        0.003188
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams, to show how much a meaningless extra ingredient moves how close the predicted spread of final margins sits to the real final margin.",
+      "probability_positive": 0.095,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_short_week_side_ats_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real short_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; graded on ats_points (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.027212,
+      "effect_units": "ats_points",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.193962,
+        0.128144
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not, to show how much a meaningless extra ingredient moves the average winning margin against the opening line of the side picked.",
+      "probability_positive": 0.36,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_metric_null_short_week_side_rps_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real short_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; graded on rps_improvement (picked-side margin against the opener, or whole-margin ranked probability score of the discrete line-conditional lattice tilted to the cover probability); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero.",
+      "effect": -0.004601,
+      "effect_units": "rps_improvement",
+      "family": "mod36_metric_power",
+      "interval": [
+        -0.013146,
+        0.004962
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_metric_power: 4 templates x 2 margin metrics; accuracy, log loss and Brier nulls are the identical draws already recorded under mod36_addone_noise_floor; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not, to show how much a meaningless extra ingredient moves how close the predicted spread of final margins sits to the real final margin.",
+      "probability_positive": 0.15,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    }
+  }
+}

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:52:48.944726+00:00`
+Refreshed at: `2026-11-14T20:54:12.413566+00:00`
 
 ## Start here
 
@@ -21,20 +21,16 @@ Refreshed at: `2026-11-14T20:52:48.944726+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0d1765c63ed9` — Test the college-centred prior against a zero centre and a placebo centre
-- Pending change set: 54 paths
+- Baseline commit: `5494308c5fdf` — Check the pool simulation against what the 250 entries did; give the first-place chance at our real win rate
+- Pending change set: 48 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/mod-36-mod36-add-one-noise-null.md`
-  - `M  docs/lanes/pool-04-pool04-field-simulator-calibration.md`
+  - `M  docs/lanes/mod-36-mod36-add-one-noise-null.md`
   - ` M docs/lanes/tuesday-reference-bundle-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  registry/weak_signals/pool04_field_calibration.json`
-  - `M  scripts/pool01_forward_sim.py`
-  - `M  scripts/pool04_field_ppc.py`
-  - `A  scripts/pool04_forward_backtest.py`
+  - `A  registry/weak_signals/mod36_metric_power.json`
+  - `A  scripts/mod36_metric_power.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-11-14T20:52:48.944726+00:00`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - ...and 34 more
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - ...and 28 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
