@@ -1,6 +1,454 @@
 {
   "family": "lead106",
   "signals": {
+    "lead106_forward_wk9_brier_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "309 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, Brier score on played or not, subset all, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0213,
+      "effect_units": "brier_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0036,
+        0.0427
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "The same Week 9 comparison scored a second way: the wording read again predicted who would play better than the official tag alone. It is one week, so the question stays open.",
+      "probability_positive": 0.9925,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_brier_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "309 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, Brier score on played or not, subset all, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0122,
+      "effect_units": "brier_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0016,
+        0.0281
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "The same Week 9 comparison scored a second way: the wording read again predicted who would play better than the official tag plus practice participation. It is one week, so the question stays open.",
+      "probability_positive": 0.963,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "309 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, log loss on played or not, subset all, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0834,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0186,
+        0.1605
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "In Week 9, reading the wording of each team's injury report predicted who would actually play better than going by the official tag alone. It is one week, so the question stays open.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_des_doubtful": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "4 id-verified player rows in 2 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; the whole forward interval is below zero on this split, one week only, left open for the orchestrator to adjudicate",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, log loss on played or not, subset Doubtful, id-joined verified outcomes, team-week bootstrap",
+      "effect": -0.0788,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1327,
+        -0.0609
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For the four players listed Doubtful in Week 9, the wording read gave them more chance to play than the official tag alone did, and none of them played. It is one week, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_des_none": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "180 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, log loss on played or not, subset none, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.161,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0565,
+        0.2816
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For players on the report with no game tag in Week 9, the wording read was better than the official tag alone at spotting who would sit; a few games supplied most of that. It is one week, so the question stays open.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_des_out": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "63 id-verified player rows in 23 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; the whole forward interval is below zero on this split, one week only, left open for the orchestrator to adjudicate",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, log loss on played or not, subset Out, id-joined verified outcomes, team-week bootstrap",
+      "effect": -0.0106,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0134,
+        -0.0082
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For players listed Out in Week 9, the wording read did slightly worse than the official tag alone: nobody listed Out played, and the read never goes all the way to zero. It is one week, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 23,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_des_questionable": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "62 id-verified player rows in 25 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, log loss on played or not, subset Questionable, id-joined verified outcomes, team-week bootstrap",
+      "effect": -0.0358,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1246,
+        0.0519
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For players listed Questionable in Week 9, the wording read did no better than the official tag alone and was a little worse. It is one week, so the question stays open.",
+      "probability_positive": 0.2385,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 25,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_des_status_filed_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "284 id-verified player rows in 28 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, log loss on played or not, subset status_filed_games, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0466,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0017,
+        0.1041
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "Leaving out the Monday game whose teams had not yet published their tags when the read was taken, the Week 9 wording read still came out ahead of the official tag alone, by a smaller margin. It is one week, so the question stays open.",
+      "probability_positive": 0.981,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 14,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "309 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, log loss on played or not, subset all, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0363,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0019,
+        0.0795
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "In Week 9, reading the wording of each team's injury report predicted who would actually play better than going by the official tag plus practice participation. It is one week, so the question stays open.",
+      "probability_positive": 0.9665,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_desprac_doubtful": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "4 id-verified player rows in 2 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; the whole forward interval is below zero on this split, one week only, left open for the orchestrator to adjudicate",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, log loss on played or not, subset Doubtful, id-joined verified outcomes, team-week bootstrap",
+      "effect": -0.0497,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1019,
+        -0.0323
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For the four players listed Doubtful in Week 9, the wording read gave them more chance to play than the official tag plus practice participation did, and none of them played. It is one week, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_desprac_none": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "180 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, log loss on played or not, subset none, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0872,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0299,
+        0.1478
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For players on the report with no game tag in Week 9, the wording read was better than the official tag plus practice participation at spotting who would sit; a few games supplied most of that. It is one week, so the question stays open.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_desprac_out": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "63 id-verified player rows in 23 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; the whole forward interval is below zero on this split, one week only, left open for the orchestrator to adjudicate",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, log loss on played or not, subset Out, id-joined verified outcomes, team-week bootstrap",
+      "effect": -0.0078,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0102,
+        -0.0051
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For players listed Out in Week 9, the wording read did slightly worse than the official tag plus practice participation: nobody listed Out played, and the read never goes all the way to zero. It is one week, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 23,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_desprac_questionable": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "62 id-verified player rows in 25 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; the whole forward interval is below zero on this split, one week only, left open for the orchestrator to adjudicate",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, log loss on played or not, subset Questionable, id-joined verified outcomes, team-week bootstrap",
+      "effect": -0.0614,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.12,
+        -0.0027
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "For players listed Questionable in Week 9, the wording read did no better than the official tag plus practice participation and was a little worse. It is one week, so the question stays open.",
+      "probability_positive": 0.0185,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 25,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_ll_desprac_status_filed_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "284 id-verified player rows in 28 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, log loss on played or not, subset status_filed_games, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0158,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0126,
+        0.0498
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "Leaving out the Monday game whose teams had not yet published their tags when the read was taken, the Week 9 wording read still came out ahead of the official tag plus practice participation, by a smaller margin. It is one week, so the question stays open.",
+      "probability_positive": 0.8425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 14,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_mae_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "309 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation ladder fit on weeks 1-8, absolute error of expected snap share, subset all, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0259,
+      "effect_units": "mae_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0108,
+        0.0402
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "In Week 9, the wording read came closer than the official tag alone on how much of the game each listed player would play. It is one week, so the question stays open.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_mae_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "309 id-verified player rows in 30 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound",
+      "closing_ground": null,
+      "description": "Forward Week 9 2026: frozen pre-kickoff LLM wording read vs designation x practice ladder fit on weeks 1-8, absolute error of expected snap share, subset all, id-joined verified outcomes, team-week bootstrap",
+      "effect": 0.0248,
+      "effect_units": "mae_improvement",
+      "family": "lead106",
+      "interval": [
+        0.011,
+        0.0382
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "In Week 9, the wording read came closer than the official tag plus practice participation on how much of the game each listed player would play. It is one week, so the question stays open.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
     "lead106_injury_language_p_plays": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -55,6 +503,62 @@
         2026
       ],
       "source": "artifacts/per03/lead106_complete/score_ids.json",
+      "standard_error": null
+    },
+    "lead106_pooled_wk2_9_ll_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "603 id-verified player rows in 173 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; overlaps the two weeks 2-8 cells and the forward cells, so it is not an independent vote",
+      "closing_ground": null,
+      "description": "Pooled 2026 weeks 2-8 stratified sample (weighted to population) plus forward Week 9 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, id-joined verified outcomes",
+      "effect": 0.0674,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0218,
+        0.1263
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "Across Weeks 2 through 9, reading the wording of injury reports predicted who would actually play better than the official tag alone. It is one season, so the question stays open.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 173,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
+      "standard_error": null
+    },
+    "lead106_pooled_wk2_9_ll_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "603 id-verified player rows in 173 team-week clusters; one of 66 declared looks (family lead106: forward 36, pooled 30); no split-half on one forward week; neither a resolved wrong sign across samples nor a control bound; overlaps the two weeks 2-8 cells and the forward cells, so it is not an independent vote",
+      "closing_ground": null,
+      "description": "Pooled 2026 weeks 2-8 stratified sample (weighted to population) plus forward Week 9 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, id-joined verified outcomes",
+      "effect": 0.0357,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0019,
+        0.0767
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-14 by scripts/lead106_forward_score.py --week 9; 360 forward reads recorded at least 164 minutes before kickoff, none excluded, 309 id-verified; reads scored as frozen, no model calls. Three games (BUF@MIN, JAX@BAL, HOU@LAC) carry most of the summed forward gain; BUF@MIN had no game designations filed at capture. Week 10 Thursday not scored: its snap counts are not on disk.",
+      "plain_summary": "Across Weeks 2 through 9, reading the wording of injury reports predicted who would actually play better than the official tag plus practice participation. It is one season, so the question stays open.",
+      "probability_positive": 0.98,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 173,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week09.json",
       "standard_error": null
     }
   }
