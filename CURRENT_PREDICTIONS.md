@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 10
 
-Published from the synchronized weak stack model, 2026-11-12 22:20 UTC.
+Published from the synchronized weak stack model, 2026-11-14 18:50 UTC.
 
-<!-- publication: model_id=d02469322b6a3264 published_at_utc=2026-11-12T22:20:02.274148+00:00 -->
+<!-- publication: model_id=0f0cf81cd966fbe1 published_at_utc=2026-11-14T18:50:26.161933+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,19 +15,19 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 12 | WAS at NYG | NYG -1.5         | 50.6%          |
-| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 52.9%          |
-| Sun, Nov 15 | CAR at NO  | NO -1.5          | 54.6%          |
-| Sun, Nov 15 | HOU at CLE | CLE +4.5         | 52.0%          |
-| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 54.2%          |
-| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.2%          |
-| Sun, Nov 15 | LA at ARI  | LA -9.5          | 57.7%          |
-| Sun, Nov 15 | MIA at IND | IND -2.5         | 58.3%          |
-| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 50.8%          |
-| Sun, Nov 15 | NE at DET  | NE +2.5          | 52.6%          |
-| Sun, Nov 15 | PIT at CIN | ★ CIN -3.5       | 55.9%          |
-| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 63.0%          |
+| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 53.0%          |
+| Sun, Nov 15 | CAR at NO  | NO -1.5          | 55.1%          |
+| Sun, Nov 15 | HOU at CLE | CLE +4.5         | 53.9%          |
+| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 53.7%          |
+| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.1%          |
+| Sun, Nov 15 | LA at ARI  | LA -9.5          | 57.1%          |
+| Sun, Nov 15 | MIA at IND | IND -2.5         | 61.0%          |
+| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 51.1%          |
+| Sun, Nov 15 | NE at DET  | NE +2.5          | 53.5%          |
+| Sun, Nov 15 | PIT at CIN | ★ CIN -3.5       | 55.2%          |
+| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 62.4%          |
 | Sun, Nov 15 | SF at DAL  | DAL +4.5         | 51.4%          |
-| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 54.2%          |
+| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 54.1%          |
 
 **Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
 
@@ -42,8 +42,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| CAR at NO  | CAR             | NO         | 54.6%          |
-| MIN at GB  | GB              | MIN        | 50.8%          |
+| CAR at NO  | CAR             | NO         | 55.1%          |
+| MIN at GB  | GB              | MIN        | 51.1%          |
 | SF at DAL  | SF              | DAL        | 51.4%          |
 | WAS at NYG | WAS             | NYG        | 50.6%          |
 <!-- LATE_WEEK_REFRESH:END -->

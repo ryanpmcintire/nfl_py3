@@ -1,0 +1,174 @@
+{
+  "artifact_directory": "artifacts\\margin_predictions\\2026-week-09-20261108T144043Z",
+  "backfill_note": null,
+  "code_diff_sha256": "320ebf9b3cf79344c4f4f28a019015a7499a664785aa5ea5d80c968b0aa53d84",
+  "code_dirty": true,
+  "code_revision": "1f782010a85e8515c92451bd4db71524fa05a505",
+  "command": "margin-predict",
+  "config_hash": "c38222c7c571387c88c7c8e8f8448fae549c64bb55cc370868d0e8d6efa8d156",
+  "experiment_id": "margin-predict/2026-week-09-20261108T144043Z",
+  "feature_table_sha256": "92ce37af6e543ab134a72095595c4a22a32b1016db57772dde5bdec3232c6287",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "environment",
+      "key_line_pick_read",
+      "lineage",
+      "provenance"
+    ],
+    "active_model_id": "3f85b4ef51411125",
+    "artifact_contract": {
+      "builder_module": "nfl_ats.cli",
+      "builder_version": "v1",
+      "kind": "forecast",
+      "schema_version": 1
+    },
+    "ats_method": "market_residual",
+    "calibration_method": "none",
+    "command": "margin-predict",
+    "created_at_utc": "2026-11-08T14:40:43.314828+00:00",
+    "discrete_push_read": {
+      "error": null,
+      "games": 15,
+      "mean_push_at_whole_number_lines": null,
+      "opener_lines_matched": 1537,
+      "path": "discrete_push_read.json",
+      "policy": "mass_preserving_lattice_mp1_v2",
+      "prior_rows": 1480,
+      "served": true,
+      "source_model_id": "64755e0fe05fec95",
+      "source_path": "opener_evaluation/20261108T115017Z",
+      "warnings": [],
+      "whole_number_lines": 0
+    },
+    "feature_profile": "weak_stack",
+    "game_type": "REG",
+    "games": 15,
+    "historical_evaluation": {
+      "accuracy": 0.5250455373406193,
+      "artifact": "margins/20261108T143914Z",
+      "correct": 1153,
+      "games": 2196,
+      "intervals": {
+        "season": {
+          "lower": 0.5111548073355507,
+          "upper": 0.5383812541397817
+        },
+        "week": {
+          "lower": 0.5034386321644072,
+          "upper": 0.5461226626246073
+        }
+      }
+    },
+    "home_side_offset": {
+      "error": null,
+      "offsets": {
+        "0-3": 0.0,
+        "10.5+": 1.9166858887784035,
+        "3.5-6.5": 0.0,
+        "7": -0.1677107238428046,
+        "7.5-10": 0.7798433805671869
+      },
+      "path": "home_side_offset.json",
+      "policy": "home_side_offset_big_spreads_v2",
+      "prior_games": {
+        "0-3": 504,
+        "10.5+": 113,
+        "3.5-6.5": 468,
+        "7": 65,
+        "7.5-10": 160
+      },
+      "sides_changed": [
+        "2026_09_LV_SF"
+      ],
+      "source_model_id": "64755e0fe05fec95",
+      "source_path": "opener_evaluation/20261108T115017Z",
+      "warnings": []
+    },
+    "line_sweep": {
+      "methods": [
+        "fair_margin",
+        "market",
+        "market_residual"
+      ],
+      "offsets": [
+        -4.0,
+        -3.5,
+        -3.0,
+        -2.5,
+        -2.0,
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0
+      ],
+      "path": "line_sweep.parquet",
+      "pick_read": "key_line_pick_read_v2",
+      "probability_method": "gaussian_median",
+      "push_read": "mass_preserving_lattice_mp1_v2",
+      "rows": 765
+    },
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "prediction_safety": {
+      "card_type": "outcomes",
+      "checks_passed": [
+        "unique_predictions",
+        "game_identity",
+        "card_scope",
+        "training_cutoff",
+        "market_inputs",
+        "method_coverage",
+        "margin_distribution",
+        "margin_identity",
+        "market_baseline",
+        "three_way_probabilities",
+        "three_way_sum",
+        "push_half_point",
+        "probabilities",
+        "decision_policy",
+        "injury_feature_presence",
+        "artifact_contract"
+      ],
+      "games": 15,
+      "rows": 75,
+      "status": "PASS",
+      "version": 1,
+      "warnings": []
+    },
+    "probability_method": "gaussian_median",
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "season": 2026,
+    "straight_up_pool_methods": [
+      "market",
+      "fair_margin",
+      "market_residual",
+      "straight_up"
+    ],
+    "synchronization_status": "SYNCHRONIZED",
+    "week": 9
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-11-08T14:40:43.314828+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats margin-predict",
+  "uv_lock_sha256": "d9c6de76a04edb224d918e720b48a1150144ff753813ec1c0547c7502fc75dcc",
+  "weak_signal_name": null
+}

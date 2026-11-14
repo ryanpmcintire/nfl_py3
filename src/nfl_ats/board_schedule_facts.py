@@ -5,11 +5,18 @@ from pathlib import Path
 import pandas as pd
 
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
-from nfl_ats.travel_geometry import haversine_mi, load_stadium_coordinate_registry
+from nfl_ats.travel_geometry import (
+    StadiumLocation,
+    _offset_hours,
+    haversine_mi,
+    load_stadium_coordinate_registry,
+)
 
 DAYS_PER_WEEK = 7
 PRIOR_GAME_DAY_NAMES = {"Thursday", "Monday"}
 NEUTRAL_LOCATION = "Neutral"
+GAMES_IN_A_ROW_MINIMUM = 2
+ORDINAL_WORDS = {2: "second", 3: "third", 4: "fourth", 5: "fifth"}
 
 
 def _previous_game(games: pd.DataFrame, team: str, season: int, week: int) -> pd.Series | None:
@@ -44,6 +51,38 @@ def _home_stadium(games: pd.DataFrame, team: str, season: int, week: int) -> str
     return str(home.iloc[-1]["stadium"]) if len(home) else None
 
 
+def _away_streak(games: pd.DataFrame, team: str, season: int, week: int) -> int:
+    through_this_week = games[
+        (games["season"] == season)
+        & (games["week"] <= week)
+        & ((games["home_team"] == team) | (games["away_team"] == team))
+    ].sort_values("week", ascending=False)
+    streak = 0
+    for game in through_this_week.itertuples():
+        if str(game.away_team) != team and str(game.location) != NEUTRAL_LOCATION:
+            break
+        streak += 1
+    return streak
+
+
+def _streak_note(games: pd.DataFrame, team: str, season: int, week: int) -> str:
+    streak = _away_streak(games, team, season, week)
+    if streak < GAMES_IN_A_ROW_MINIMUM:
+        return ""
+    ordinal = ORDINAL_WORDS.get(streak, f"{streak}th")
+    return f"{team} is away from home for the {ordinal} game in a row."
+
+
+def _clock_note(origin: StadiumLocation, destination: StadiumLocation, gameday: object) -> str:
+    day = pd.Timestamp(str(gameday))
+    shift = _offset_hours(destination, day) - _offset_hours(origin, day)
+    if not shift:
+        return ""
+    hours = abs(shift)
+    unit = "hour" if hours == 1 else "hours"
+    return f"{hours:g} {unit} {'ahead of' if shift > 0 else 'behind'} home"
+
+
 def build_schedule_facts(
     data_root: Path, *, season: int, week: int, game_ids: set[str]
 ) -> dict[str, str]:
@@ -61,17 +100,27 @@ def build_schedule_facts(
         destination = venues.get(str(row.stadium))
         neutral = str(row.location) == NEUTRAL_LOCATION
         travellers = (row.away_team, row.home_team) if neutral else (row.away_team,)
-        legs = []
+        legs: list[tuple[str, str, str]] = []
         for team in travellers:
             origin_name = _home_stadium(schedules, str(team), season, week)
             origin = venues.get(origin_name) if origin_name else None
             if origin is not None and destination is not None:
-                legs.append(
-                    f"{team} about {int(round(haversine_mi(origin, destination), -1)):,} miles"
-                )
+                miles = f"about {int(round(haversine_mi(origin, destination), -1)):,} miles"
+                legs.append((str(team), miles, _clock_note(origin, destination, row.gameday)))
         if neutral and legs:
-            text += f" Played at {row.stadium}, a neutral site: {', '.join(legs)}."
+            sites = ", ".join(
+                f"{team} {miles}" + (f" ({clock})" if clock else "") for team, miles, clock in legs
+            )
+            text += f" Played at {row.stadium}, a neutral site: {sites}."
         elif legs:
-            text += f" {row.away_team} travels {legs[0].split(' ', 1)[1]}."
+            team, miles, clock = legs[0]
+            text += f" {team} travels {miles}" + (f" to a time zone {clock}" if clock else "") + "."
+        streaks = [
+            note
+            for team in (row.away_team, row.home_team)
+            if (note := _streak_note(schedules, str(team), season, week))
+        ]
+        if streaks:
+            text += " " + " ".join(streaks)
         out[row.game_id] = text
     return out

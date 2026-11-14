@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "artifacts\\waterfall_feed\\20261108T144628Z",
+  "backfill_note": null,
+  "code_diff_sha256": "320ebf9b3cf79344c4f4f28a019015a7499a664785aa5ea5d80c968b0aa53d84",
+  "code_dirty": true,
+  "code_revision": "1f782010a85e8515c92451bd4db71524fa05a505",
+  "command": "waterfall-feed",
+  "config_hash": "51e0c5154d6fb292c8528d0dc10acbfdd715ed7b2d8dfa42131ec05c1a76e7c5",
+  "experiment_id": "waterfall-feed/20261108T144628Z",
+  "feature_table_sha256": "92ce37af6e543ab134a72095595c4a22a32b1016db57772dde5bdec3232c6287",
+  "metrics": {
+    "feature_table_age_hours": 0.1,
+    "games": 15,
+    "probability_rule_offset_points": 0.556340757243432,
+    "season": 2026,
+    "week": 9
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-11-08T14:46:02.299696+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats waterfall-feed",
+  "uv_lock_sha256": "d9c6de76a04edb224d918e720b48a1150144ff753813ec1c0547c7502fc75dcc",
+  "weak_signal_name": null
+}

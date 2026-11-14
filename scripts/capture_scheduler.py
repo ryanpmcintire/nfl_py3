@@ -749,6 +749,24 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day, at in (("tue", "12:50"), ("thu", "18:30"), ("sun", "09:15"))
     ),
+    Job(
+        "pool_standing_check_tue",
+        "tue",
+        "21:30",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "check_pool_standing.py"),
+        ],
+        True,
+        "Fails loudly when the pool standing files are behind the last settled week; the "
+        "Tuesday refresh is normally done by evening, after the Monday game settles and the "
+        "lock has run.",
+        added_on="2026-11-14",
+    ),
     *(
         Job(
             f"schedule_snapshot_{day}",

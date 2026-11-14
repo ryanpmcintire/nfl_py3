@@ -1,0 +1,150 @@
+{
+  "artifact_directory": "artifacts\\margin_predictions\\2026-week-06-20261014T161116Z",
+  "backfill_note": null,
+  "code_diff_sha256": "446ee8e4b49d2ad58229646d9b94e7fbf7e44f9b0569a97f7ea70cc6142a8ff9",
+  "code_dirty": true,
+  "code_revision": "5fc6fddb386cee7ca12d0a0b93cee59abbd19b4b",
+  "command": "margin-predict",
+  "config_hash": "7e5d3aaee4608bf8b098aa03d0d4a25d373e68f4a73eb485652f516f47f8cdee",
+  "experiment_id": "margin-predict/2026-week-06-20261014T161116Z",
+  "feature_table_sha256": "cf61f7a19c0f8fafed4ad7c22d719bcfd76eaa64802deee5917cdd08c97437bf",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "environment",
+      "key_line_pick_read",
+      "lineage",
+      "prediction_safety",
+      "provenance"
+    ],
+    "active_model_id": "3dab640dc07aa35c",
+    "artifact_contract": {
+      "builder_module": "nfl_ats.cli",
+      "builder_version": "v1",
+      "kind": "forecast",
+      "schema_version": 1
+    },
+    "ats_method": "market_residual",
+    "calibration_method": "none",
+    "command": "margin-predict",
+    "created_at_utc": "2026-10-14T16:11:16.063869+00:00",
+    "discrete_push_read": {
+      "error": null,
+      "games": 14,
+      "mean_push_at_whole_number_lines": null,
+      "opener_lines_matched": 1537,
+      "path": "discrete_push_read.json",
+      "policy": "mass_preserving_lattice_mp1_v2",
+      "prior_rows": 1438,
+      "served": true,
+      "source_model_id": "403b07a3c70aeef1",
+      "source_path": "opener_evaluation/20261013T222001Z",
+      "warnings": [],
+      "whole_number_lines": 0
+    },
+    "feature_profile": "weak_stack",
+    "game_type": "REG",
+    "games": 14,
+    "historical_evaluation": {
+      "accuracy": 0.5250696378830083,
+      "artifact": "margins/20261014T160911Z",
+      "correct": 1131,
+      "games": 2154,
+      "intervals": {
+        "season": {
+          "lower": 0.5110689740165884,
+          "upper": 0.5393264059023964
+        },
+        "week": {
+          "lower": 0.5058310656049784,
+          "upper": 0.5462973867166177
+        }
+      }
+    },
+    "home_side_offset": {
+      "error": null,
+      "offsets": {
+        "0-3": 0.0,
+        "10.5+": 1.9166858887784035,
+        "3.5-6.5": 0.0,
+        "7": -0.1677107238428046,
+        "7.5-10": 0.7798433805671869
+      },
+      "path": "home_side_offset.json",
+      "policy": "home_side_offset_big_spreads_v2",
+      "prior_games": {
+        "0-3": 504,
+        "10.5+": 113,
+        "3.5-6.5": 468,
+        "7": 65,
+        "7.5-10": 160
+      },
+      "sides_changed": [
+        "2026_06_ARI_LA",
+        "2026_06_LAC_KC"
+      ],
+      "source_model_id": "403b07a3c70aeef1",
+      "source_path": "opener_evaluation/20261013T222001Z",
+      "warnings": []
+    },
+    "line_sweep": {
+      "methods": [
+        "fair_margin",
+        "market",
+        "market_residual"
+      ],
+      "offsets": [
+        -4.0,
+        -3.5,
+        -3.0,
+        -2.5,
+        -2.0,
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0
+      ],
+      "path": "line_sweep.parquet",
+      "pick_read": "key_line_pick_read_v2",
+      "probability_method": "gaussian_median",
+      "push_read": "mass_preserving_lattice_mp1_v2",
+      "rows": 714
+    },
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "probability_method": "gaussian_median",
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "season": 2026,
+    "straight_up_pool_methods": [
+      "market",
+      "fair_margin",
+      "market_residual",
+      "straight_up"
+    ],
+    "synchronization_status": "SYNCHRONIZED",
+    "week": 6
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-10-14T16:11:16.063869+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats margin-predict",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

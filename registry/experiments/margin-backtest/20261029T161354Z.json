@@ -1,0 +1,48 @@
+{
+  "artifact_directory": "artifacts\\margins\\20261029T161354Z",
+  "backfill_note": null,
+  "code_diff_sha256": "4aad8119543c082451d002f1eaec534e82c15bd8f55a211378e05d9338c6c054",
+  "code_dirty": true,
+  "code_revision": "cec0c1d128b508be86c3abf5b8069d468ab465f5",
+  "command": "margin-backtest",
+  "config_hash": "0bb388911a03986662f7fdf21f88d221c047523f4fd015d6c9e3a35db7721326",
+  "experiment_id": "margin-backtest/20261029T161354Z",
+  "feature_table_sha256": "21e56c026334405acded74fa6857e68bfd83eaa649fec0751060f862efbf01ad",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance"
+    ],
+    "bootstrap_samples": 1000,
+    "bootstrap_seed": 20260812,
+    "calibration_method": "none",
+    "command": "margin-backtest",
+    "created_at_utc": "2026-10-29T16:13:56.057535+00:00",
+    "feature_profile": "weak_stack",
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "probability_method": "gaussian_median",
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2018,
+    "timing": {
+      "modeling_seconds": 177.0445960999932,
+      "total_seconds": 178.66997790010646,
+      "uncertainty_seconds": 1.153779200045392
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-10-29T16:13:56.057535+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats margin-backtest",
+  "uv_lock_sha256": "d9c6de76a04edb224d918e720b48a1150144ff753813ec1c0547c7502fc75dcc",
+  "weak_signal_name": null
+}
