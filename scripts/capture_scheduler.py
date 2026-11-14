@@ -3040,7 +3040,15 @@ def describe_pick_change(game: dict[str, Any]) -> str:
     return f"{matchup}: was {was}, now {now} ({probability:.0%}{reason})"
 
 
+ALARM_JOB_PREFIXES: tuple[str, ...] = ("served_terms_check_", "pool_standing_check_")
+ALARM_DETAIL_CHARS = 180
+
+
 def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
+    if job.name.startswith(ALARM_JOB_PREFIXES):
+        if status not in {"OK", "CAUGHT_UP"}:
+            send_notification("NFL card check failed", detail[:ALARM_DETAIL_CHARS])
+        return
     if not job.name.startswith(("refresh_", "lineups_")):
         return
     if status not in {"OK", "CAUGHT_UP"}:

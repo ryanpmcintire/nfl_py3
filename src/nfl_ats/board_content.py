@@ -2517,6 +2517,7 @@ class PoolOutlook:
     assumption_text: str
     as_of_text: str
     stale_text: str = ""
+    scenario_text: str = ""
     luck_text: str = ""
     luck_field_text: str = ""
     luck_axis: tuple[int, int] = (0, 0)
@@ -2546,12 +2547,100 @@ def _sample_quantile(values: list[int], level: float) -> int:
     return ordered[min(len(ordered), max(1, ceil(level * len(ordered)))) - 1]
 
 
+POOL_STANDING_KEYS = ("points", "rank", "entries", "weeks_remaining")
+POOL_REPLAY_QUANTITIES = ("our_points", "leader_score")
+
+
+@dataclass(frozen=True)
+class _RealisedPoolChance:
+    mean: float
+    low: float
+    high: float
+    wins: int
+    games: int
+    stated_rate: float
+    realised_rate: float
+
+
+def _chance_in_100_text(value: float) -> str:
+    per_hundred = value * 100
+    if per_hundred < 1:
+        return "under 1 in 100"
+    return f"about {round(per_hundred)} in 100"
+
+
+def _realised_pool_chance(
+    replay_root: Path, start: Mapping[str, Any], *, weeks_played: int, games_played: int
+) -> _RealisedPoolChance | None:
+    path = replay_root / "forward_sim_realised_cover_results.json"
+    if not path.is_file():
+        return None
+    try:
+        result = read_json(path)
+        own = result["start"]
+        games = int(own["games_played"])
+        same_standing = (
+            own["our_cover_assumption"] == "realised"
+            and int(own["weeks_played"]) == weeks_played
+            and games == games_played
+            and all(int(own[key]) == int(start[key]) for key in POOL_STANDING_KEYS)
+        )
+        if not same_standing:
+            return None
+        chance = result["p_first_served"]
+        low, high = chance["interval_95"]
+        realised_rate = float(own["our_realised_cover_rate"])
+        return _RealisedPoolChance(
+            mean=float(chance["mean"]),
+            low=float(low),
+            high=float(high),
+            wins=round(realised_rate * games),
+            games=games,
+            stated_rate=float(own["our_stated_cover_chance"]),
+            realised_rate=realised_rate,
+        )
+    except (KeyError, ValueError, TypeError, OSError):
+        return None
+
+
+def _pool_replay_text(replay_root: Path, *, weeks_played: int, points: int) -> str:
+    path = replay_root / "pool04_forward_backtest.json"
+    if not path.is_file():
+        return ""
+    try:
+        result = read_json(path)
+        if int(result["last_week"]) != weeks_played or int(result["our_points_on_page"]) != points:
+            return ""
+        by_start = result["modes"]["panel"]["by_start_week"]
+        ran_high: list[int] = []
+        for quantity in POOL_REPLAY_QUANTITIES:
+            gaps = [
+                float(cells[quantity]["sim_mean"]) - float(cells[quantity]["observed"])
+                for cells in by_start.values()
+            ]
+            if not gaps or min(gaps) <= 0:
+                return ""
+            ran_high.append(round(sum(gaps) / len(gaps)))
+        starts = len(by_start)
+    except (KeyError, ValueError, TypeError, OSError, AttributeError):
+        return ""
+    ours, leader = ran_high
+    if min(ours, leader) < 1:
+        return ""
+    return (
+        f"Replayed from {starts} earlier {'week' if starts == 1 else 'weeks'}, the estimate "
+        f"ran high every time: about {ours} pool {'point' if ours == 1 else 'points'} too many "
+        f"for us and about {leader} for the leader, on average."
+    )
+
+
 def _load_pool_outlook(
     artifacts_root: Path, data_root: Path | None, *, week: float | None
 ) -> PoolOutlook | None:
 
-    path = artifacts_root / "pool_rank_replay" / "forward_sim_real_rivals_results.json"
-    field_path = artifacts_root / "pool_rank_replay" / "weekly_points_field.json"
+    replay_root = artifacts_root / "pool_rank_replay"
+    path = replay_root / "forward_sim_real_rivals_results.json"
+    field_path = replay_root / "weekly_points_field.json"
     raw_path = (data_root or _default_data_root()) / "splash" / "field"
     raw_files = sorted(raw_path.glob("2026_weekly_points_w01-*_raw.txt"))
     if not (path.is_file() and field_path.is_file() and raw_files):
@@ -2619,6 +2708,43 @@ def _load_pool_outlook(
         if field_low >= coin_low - 1 and field_high <= coin_high + 1
         else f"Most of the pool sits between {field_low} and {field_high} wins."
     )
+    record = _realised_pool_chance(
+        replay_root, start, weeks_played=weeks_played, games_played=games_played
+    )
+    model_case = (
+        f"Our chance of finishing first is {_chance_in_100_text(mean)} if our picks win as "
+        "often as the model expects"
+    )
+    played_out = (
+        f"This plays out the remaining {remaining} weeks many times, with every rival "
+        "picking like the real field has so far"
+    )
+    if record is None:
+        chance_text = _percent_text(mean)
+        scenario_text = f"{model_case}."
+        range_text = (
+            f"Roughly {_percent_text(low)} to {_percent_text(high)} once the simulation's "
+            "own sampling noise is accounted for."
+        )
+        assumption_text = f"{played_out} and {our_side_text}"
+    else:
+        lower_text, higher_text = (_percent_text(value) for value in sorted((record.mean, mean)))
+        chance_text = lower_text if lower_text == higher_text else f"{lower_text} to {higher_text}"
+        replay_text = _pool_replay_text(replay_root, weeks_played=weeks_played, points=points)
+        scenario_text = (
+            f"{model_case}, and {_chance_in_100_text(record.mean)} if they keep winning at the "
+            f"rate they have so far ({record.wins} of {record.games}). {replay_text}"
+        ).strip()
+        range_text = (
+            "The simulation's own sampling noise leaves the first chance at roughly "
+            f"{_percent_text(low)} to {_percent_text(high)} and the second at roughly "
+            f"{_percent_text(record.low)} to {_percent_text(record.high)}."
+        )
+        assumption_text = (
+            f"{played_out}. Our picks either win as often as the model's stated chances say, "
+            f"about {record.stated_rate:.0%} of the time, or at the rate they have so far, "
+            f"about {record.realised_rate:.0%}."
+        )
     return PoolOutlook(
         luck_text=luck_text,
         luck_field_text=luck_field_text,
@@ -2629,15 +2755,10 @@ def _load_pool_outlook(
         rank_text=f"{rank} of {entries}",
         points_text=f"{points} points after Week {weeks_played}",
         gap_text=gap_text,
-        chance_text=_percent_text(mean),
-        range_text=(
-            f"Roughly {_percent_text(low)} to {_percent_text(high)} once the simulation's "
-            "own sampling noise is accounted for."
-        ),
-        assumption_text=(
-            f"This plays out the remaining {remaining} weeks many times, with every rival "
-            f"picking like the real field has so far and {our_side_text}"
-        ),
+        chance_text=chance_text,
+        scenario_text=scenario_text,
+        range_text=range_text,
+        assumption_text=assumption_text,
         as_of_text=f"After Week {weeks_played}",
         stale_text=stale,
     )

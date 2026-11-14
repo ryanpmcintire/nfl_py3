@@ -232,6 +232,7 @@ def main():
             "games_per_week": 15,
             "our_best_pick_wins_so_far": our_bp,
             "games_played": len(df),
+            "weeks_played": int(df["week"].max()),
             "our_stated_cover_chance": float(df["p"].mean()),
             "our_realised_cover_rate": float(df["cov_o"].mean()),
             "our_cover_assumption": a.our_cover,

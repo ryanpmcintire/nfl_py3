@@ -16,18 +16,30 @@ if str(SRC) not in sys.path:
 
 from nfl_ats import pool_hook  # noqa: E402
 from nfl_ats.active_model import load_active_ats_model  # noqa: E402
+from nfl_ats.clv import (  # noqa: E402
+    LIVE_CAPTURE_KIND,
+    load_decision_quotes,
+    load_snapshot_manifest_index,
+)
 from nfl_ats.forecast_cold_visitor_tilt_overlay import tuesday_noon_et_cutoff_utc  # noqa: E402
 from nfl_ats.market_data import POOL_TIMEZONE, load_quote_history  # noqa: E402
 from nfl_ats.pick_probability import (  # noqa: E402
+    MARKET_MOVE_FEATURE_SUNDAY,
     MOVE_AVAILABLE_COLUMN,
     load_pick_probability_model,
     market_move_toward_home,
+)
+from nfl_ats.sharp_book_movement_features import (  # noqa: E402
+    LEADER_BOOKS,
+    sharp_book_movement_features,
 )
 from nfl_ats.splash_lines import load_splash_capture  # noqa: E402
 
 TUESDAY_LOCK_CHECK_MINUTES = 12 * 60 + 30
 ANCHOR_MINIMUM_BOOKS = 2
 ANCHOR_MAXIMUM_BOOK_RANGE = 2.0
+MOVE_FIT_LEADER_BOOKS = len(LEADER_BOOKS)
+MOVE_WINDOW_DAYS = 2
 
 
 class AnchorBooks(NamedTuple):
@@ -187,6 +199,49 @@ def _contract_problems(contract: list[AnchorContract]) -> list[str]:
     return problems
 
 
+def _thin_move_games(
+    data_root: Path, pending: pd.DataFrame, now: pd.Timestamp, version: str
+) -> list[dict[str, Any]]:
+    quotes = load_decision_quotes(data_root / "market" / "raw", capture_kind=LIVE_CAPTURE_KIND)
+    kickoff = pd.to_datetime(pending["kickoff"], utc=True, errors="coerce")
+    games = pd.DataFrame(
+        {
+            "game_id": pending["game_id"].astype(str),
+            "commence_time_utc": kickoff,
+            "week_first_commence_utc": kickoff.min(),
+            "cutoff_utc": now,
+        }
+    ).dropna(subset=["commence_time_utc"])
+    depth = sharp_book_movement_features(
+        quotes, games, include_sunday=version == MARKET_MOVE_FEATURE_SUNDAY
+    )
+    thin = depth.loc[depth["leader_books"].gt(0) & depth["leader_books"].lt(MOVE_FIT_LEADER_BOOKS)]
+    return [
+        {
+            "game": str(row.game_id).split("_", 2)[2].replace("_", " at "),
+            "books": int(row.leader_books),
+            "books_fitted": MOVE_FIT_LEADER_BOOKS,
+            "move": round(float(row.leader_median_net_move), 2),
+        }
+        for row in thin.itertuples()
+    ]
+
+
+def _baselines_written_late(data_root: Path, wednesday: pd.Timestamp) -> list[str]:
+    index = load_snapshot_manifest_index(data_root / "market" / "raw")
+    index = index.loc[
+        index["capture_kind"].eq(LIVE_CAPTURE_KIND)
+        & index["snapshot_timestamp_utc"].ge(wednesday - timedelta(days=MOVE_WINDOW_DAYS))
+        & index["snapshot_timestamp_utc"].lt(wednesday)
+    ]
+    late = []
+    for row in index.itertuples(index=False):
+        path = Path(str(row.dir)) / "quotes.parquet"
+        if path.is_file() and pd.Timestamp(path.stat().st_mtime, unit="s", tz="UTC") >= wednesday:
+            late.append(Path(str(row.dir)).name)
+    return late
+
+
 def check(
     season: int | None, week: int | None, now: datetime, *, replay: bool = False
 ) -> dict[str, Any]:
@@ -210,6 +265,8 @@ def check(
     differs = 0
     nonzero = 0
     move_games = 0
+    thin_moves: list[dict[str, Any]] = []
+    late_files: list[str] = []
     if not pending.empty:
         push_table = dict(model.hook_push_mass)
         game_ids = pending["game_id"].astype(str).tolist()
@@ -233,6 +290,7 @@ def check(
         contract = _anchor_contract(
             pending, _anchor_books(data_root, season, week, game_ids, now_ts), push_table
         )
+        thin_moves = _thin_move_games(data_root, pending, now_ts, model.market_move_feature_version)
     capture = load_splash_capture(data_root, season, week)
     if model.has_pool_hook and differs > 0 and nonzero == 0:
         problems.append(
@@ -253,6 +311,9 @@ def check(
         tuesday = (first_et - pd.Timedelta(days=(first_et.weekday() - 1) % 7)).normalize()
         now_et = now_ts.tz_convert(POOL_TIMEZONE)
         tuesday_check = tuesday + pd.Timedelta(minutes=TUESDAY_LOCK_CHECK_MINUTES)
+        late_files = _baselines_written_late(
+            data_root, (tuesday + timedelta(days=1)).tz_convert("UTC")
+        )
         if capture is not None and now_et >= tuesday_check and not anchors:
             problems.append(
                 "The pool board is captured and it is past Tuesday 12:30 Eastern, "
@@ -262,6 +323,17 @@ def check(
             problems.append(
                 "It is Thursday or later of the game week and no game has a line-move input."
             )
+    for entry in thin_moves:
+        if entry["books"] < ANCHOR_MINIMUM_BOOKS:
+            problems.append(
+                f"{entry['game']}: the line move behind this pick comes from one book, "
+                "not a market consensus."
+            )
+    if late_files:
+        problems.append(
+            "Tuesday odds for this week were re-saved after Wednesday began, so the line move "
+            "behind some picks may have changed after they were served."
+        )
     return {
         "season": season,
         "week": week,
@@ -281,6 +353,9 @@ def check(
             }
             for row in contract
         ],
+        "move_fit_leader_books": MOVE_FIT_LEADER_BOOKS,
+        "thin_move_games": thin_moves,
+        "late_written_quote_files": late_files,
         "problems": problems,
     }
 

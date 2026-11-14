@@ -20,6 +20,20 @@ READ_ONLY_SCRIPT = True
 
 POINTS_NAME = re.compile(r"^(?P<season>\d{4})_weekly_points_w01-(?P<week>\d{2})\.parquet$")
 REGULAR_SEASON = "REG"
+OUTLOOK_FILES = (
+    ("forward_sim_realised_cover_results.json", ("start", "weeks_played")),
+    ("pool04_forward_backtest.json", ("last_week",)),
+)
+
+
+def outlook_file_week(path: Path, keys: tuple[str, ...]) -> int | None:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        for key in keys:
+            value = value[key]
+        return int(value)
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
 
 
 def newest_points_file(field_root: Path, season: int | None) -> tuple[int, int, Path] | None:
@@ -45,7 +59,9 @@ def last_settled_week(schedules: pd.DataFrame, season: int, as_of: date) -> int:
     return int(settled.index.max()) if not settled.empty else 0
 
 
-def check(season: int | None, as_of: date, data_root: Path) -> dict[str, object]:
+def check(
+    season: int | None, as_of: date, data_root: Path, artifacts_root: Path
+) -> dict[str, object]:
     newest = newest_points_file(data_root / "splash" / "field", season)
     if newest is None:
         return {
@@ -64,10 +80,21 @@ def check(season: int | None, as_of: date, data_root: Path) -> dict[str, object]
             "Distribution from Splash and rerun the pool refresh in "
             "docs/lanes/pool-standing-refresh.md."
         )
+    outlook_weeks: dict[str, int | None] = {}
+    for name, keys in OUTLOOK_FILES:
+        found = outlook_file_week(artifacts_root / "pool_rank_replay" / name, keys)
+        outlook_weeks[name] = found
+        if found != file_week:
+            state = "is missing or unreadable" if found is None else f"is from Week {found}"
+            problems.append(
+                f"{name} {state} but the standings run through Week {file_week}. Rerun step 2 "
+                "of docs/lanes/pool-standing-refresh.md."
+            )
     return {
         "season": file_season,
         "points_file": path.name,
         "points_last_week": file_week,
+        "outlook_file_weeks": outlook_weeks,
         "last_settled_week": settled,
         "as_of": as_of.isoformat(),
         "problems": problems,
@@ -81,9 +108,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--season", type=int, default=None)
     parser.add_argument("--as-of", type=date.fromisoformat, default=None, help="YYYY-MM-DD")
     parser.add_argument("--data-root", type=Path, default=REPO / "data")
+    parser.add_argument("--artifacts-root", type=Path, default=REPO / "artifacts")
     args = parser.parse_args(argv)
     as_of = args.as_of or datetime.now(tz=POOL_TIMEZONE).date()
-    result = check(args.season, as_of, args.data_root)
+    result = check(args.season, as_of, args.data_root, args.artifacts_root)
     print(json.dumps(result))
     if result["problems"]:
         print("; ".join(result["problems"]), file=sys.stderr)

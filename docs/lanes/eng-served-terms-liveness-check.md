@@ -18,3 +18,9 @@ Fail loudly when a served probability term goes silent (offset anchor collapse 2
 
 ## Open
 - move_available_games is 0 on Tuesday night by design; the Thursday check is the first live test of condition c.
+
+## 2026-11-14 21:08Z line-move depth and late-file alarms
+- scripts/check_served_terms.py now reports `thin_move_games` (game, books of the fitted 3, move) for every unplayed game below full leader-book depth, plus `late_written_quote_files`. Problem only when books < ANCHOR_MINIMUM_BOOKS (2, smallest count with a cross-book median); two of three is reported, not alarmed. Any quote file saved after Wednesday began for a Mon-Tue snapshot is always a problem (the 10-31 re-parse moved live picks). Lane flip-attribution-audit-2026-11-14 holds the evidence.
+- Live Week 10 (measured): LAC at BAL 2/3 -0.5, LA at ARI 2/3 -0.25, MIN at GB 1/3 -1.5; problem "MIN at GB: the line move behind this pick comes from one book, not a market consensus."; exit 1.
+- Replay: --as-of cannot reach Week 8 (forecast file holds Week 10 only); `_baselines_written_late` at Week 8 Wednesday returns 20261027T182541Z-odds-gap-private-reparse.
+- On failure the owner sees only a scheduler_log line `FAIL(1) served_terms_check_<day>: ...`; capture_scheduler.py notify_after_job pushes only for refresh_/lineups_ jobs, so no phone alert. ruff clean; pytest -k "served_terms or scheduler": 64 passed.

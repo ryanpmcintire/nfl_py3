@@ -1820,6 +1820,12 @@ def _pool_outlook_section(content: BoardContent) -> str:
     if outlook is None:
         return ""
     stale = f'<p class="policy-note">{escape(outlook.stale_text)}</p>' if outlook.stale_text else ""
+    foot = outlook.scenario_text or outlook.range_text
+    worked_out = (
+        f"{outlook.assumption_text} {outlook.range_text}"
+        if outlook.scenario_text
+        else outlook.assumption_text
+    )
     return (
         '<section aria-labelledby="pool-outlook-h"><div class="section-head">'
         '<h2 id="pool-outlook-h">Where we stand in the pool</h2>'
@@ -1830,11 +1836,11 @@ def _pool_outlook_section(content: BoardContent) -> str:
         f'<span class="foot">{escape(outlook.points_text)}. {escape(outlook.gap_text)}</span></div>'
         '<div class="kpi"><span class="label">Chance of finishing first</span>'
         f'<span class="value">{escape(outlook.chance_text)}</span>'
-        f'<span class="foot">{escape(outlook.range_text)}</span></div>'
+        f'<span class="foot">{escape(foot)}</span></div>'
         "</div>"
         f"{_luck_band_html(outlook)}"
         '<details class="policy-note"><summary>How this chance is worked out</summary>'
-        f'<p class="policy-note">{escape(outlook.assumption_text)}</p></details>'
+        f'<p class="policy-note">{escape(worked_out)}</p></details>'
         f"{stale}</section>"
     )
 
