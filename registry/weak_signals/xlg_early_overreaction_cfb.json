@@ -1,0 +1,621 @@
+{
+  "family": "xlg_early_overreaction_cfb",
+  "signals": {
+    "xlg_eo_cfb_addone_early_accuracy_points": {
+      "category": "market",
+      "classification": "bounded_by_control",
+      "classification_evidence": "Positive control on this term's own shape (200 planted draws per size through the college add-one): a linear effect of 0.104 logit per SD (+0.97 accuracy points over all games) is seen at P+ >= 0.90 in 97% of draws by log loss, and the NFL per-point coefficient carried to the college scale (0.157 per SD) in 100%; the real term sits at the 22.5th percentile of its matched shuffle null on log loss. Bounds the linear fitted form in college below that size; does not bound the sign-rule fade cells and says nothing about the NFL term.",
+      "closing_ground": "positive_control_bound",
+      "description": "College-first harness: surprise to date in the early window as one added fitted term on the opener-input cover probability, leave-one-season-out, accuracy_points against the base, season-week block bootstrap; changed picks 76-77",
+      "effect": -0.011204481792725929,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.2690199033319113,
+        0.24956701913604515
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.44,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_early_log_loss_improvement": {
+      "category": "market",
+      "classification": "bounded_by_control",
+      "classification_evidence": "Positive control on this term's own shape (200 planted draws per size through the college add-one): a linear effect of 0.104 logit per SD (+0.97 accuracy points over all games) is seen at P+ >= 0.90 in 97% of draws by log loss, and the NFL per-point coefficient carried to the college scale (0.157 per SD) in 100%; the real term sits at the 22.5th percentile of its matched shuffle null on log loss. Bounds the linear fitted form in college below that size; does not bound the sign-rule fade cells and says nothing about the NFL term.",
+      "closing_ground": "positive_control_bound",
+      "description": "College-first harness: surprise to date in the early window as one added fitted term on the opener-input cover probability, leave-one-season-out, log_loss_improvement against the base, season-week block bootstrap; changed picks 76-77",
+      "effect": -0.00012065115744797072,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.00019544432180867156,
+        -5.748158678803295e-05
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_late_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: surprise to date in the late window as one added fitted term on the opener-input cover probability, leave-one-season-out, accuracy_points against the base, season-week block bootstrap; changed picks 113-110",
+      "effect": 0.03361344537814448,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.299731145663405,
+        0.3397827118814758
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.565,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_late_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: surprise to date in the late window as one added fitted term on the opener-input cover probability, leave-one-season-out, log_loss_improvement against the base, season-week block bootstrap; changed picks 113-110",
+      "effect": -0.00020694982538438378,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.0003940295133334715,
+        -5.493493099404667e-05
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.001,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_mid_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: surprise to date in the mid window as one added fitted term on the opener-input cover probability, leave-one-season-out, accuracy_points against the base, season-week block bootstrap; changed picks 459-430",
+      "effect": 0.3249299719887855,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.31395110819267824,
+        0.980519869932575
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.838,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_mid_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: surprise to date in the mid window as one added fitted term on the opener-input cover probability, leave-one-season-out, log_loss_improvement against the base, season-week block bootstrap; changed picks 459-430",
+      "effect": 8.320015670315595e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.0002842928129028588,
+        0.00046724637413511904
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.669,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_permuted_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: surprise to date in the permuted window as one added fitted term on the opener-input cover probability, leave-one-season-out, accuracy_points against the base, season-week block bootstrap; changed picks 141-143",
+      "effect": -0.022408963585440755,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.367681604777038,
+        0.34337295753785324
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.47,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_addone_permuted_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: surprise to date in the permuted window as one added fitted term on the opener-input cover probability, leave-one-season-out, log_loss_improvement against the base, season-week block bootstrap; changed picks 141-143",
+      "effect": -9.42333520520533e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.00023685766061269653,
+        4.6726982974837296e-05
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.09,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_fade_early_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: fade the surprise to date (direction fixed from the NFL term), games where teams bring 1 to 5 earlier lined games (early window), accuracy minus 50 against the close line, season-block bootstrap; record 1852-1728, 9 of 13 seasons above half",
+      "effect": 1.7318435754189943,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.028292372422561416,
+        3.4069402510726214
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.972,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3580,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_fade_early_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: fade the surprise to date (direction fixed from the NFL term), games where teams bring 1 to 5 earlier lined games (early window), accuracy minus 50 against the open line, season-block bootstrap; record 1820-1763, 9 of 13 seasons above half",
+      "effect": 0.7954228300307006,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.8589671381842602,
+        2.319735126232361
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.8135,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3583,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_fade_late_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: fade the surprise to date (direction fixed from the NFL term), games where teams bring 9 or more earlier lined games (late window), accuracy minus 50 against the close line, season-block bootstrap; record 915-921, 7 of 13 seasons above half",
+      "effect": -0.16339869281045752,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -2.640349304917687,
+        2.213345572354212
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.4425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1836,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_fade_late_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: fade the surprise to date (direction fixed from the NFL term), games where teams bring 9 or more earlier lined games (late window), accuracy minus 50 against the open line, season-block bootstrap; record 899-934, 5 of 13 seasons above half",
+      "effect": -0.9547190398254228,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -3.6280161654582197,
+        1.6829561230531513
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.23625,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1833,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_fade_mid_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: fade the surprise to date (direction fixed from the NFL term), games where teams bring 6 to 8 earlier lined games (mid window), accuracy minus 50 against the close line, season-block bootstrap; record 1250-1226, 7 of 13 seasons above half",
+      "effect": 0.48465266558966075,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -1.3325406643479647,
+        2.210451400971165
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.70375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2476,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_fade_mid_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: fade the surprise to date (direction fixed from the NFL term), games where teams bring 6 to 8 earlier lined games (mid window), accuracy minus 50 against the open line, season-block bootstrap; record 1216-1250, 4 of 13 seasons above half",
+      "effect": -0.689375506893755,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -2.606289034079141,
+        1.2758735476457599
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.23125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2466,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_learned_sign_early_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: follow the direction chosen by college's own earlier seasons (walk-forward), early window, accuracy minus 50 against the close line, season-block bootstrap; record 1377-1435",
+      "effect": -1.031294452347084,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -2.9725881096475613,
+        1.3565563502151723
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.1835,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2812,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_learned_sign_early_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: follow the direction chosen by college's own earlier seasons (walk-forward), early window, accuracy minus 50 against the open line, season-block bootstrap; record 1381-1436",
+      "effect": -0.9762158324458644,
+      "effect_units": "accuracy_points",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -2.726066351687858,
+        0.879173622387234
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.1375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2817,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_slope_early_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: slope of result minus the close line on surprise to date, games where teams bring 1 to 5 earlier lined games (early window), season-block bootstrap; negative in 8 of 13 seasons; the NFL early slope is negative",
+      "effect": -0.015294192544221848,
+      "effect_units": "slope_difference",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.0578406205103981,
+        0.022408609621056647
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.23025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3667,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_slope_early_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: slope of result minus the open line on surprise to date, games where teams bring 1 to 5 earlier lined games (early window), season-block bootstrap; negative in 5 of 13 seasons; the NFL early slope is negative",
+      "effect": 0.007140847972292131,
+      "effect_units": "slope_difference",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.03794052435594751,
+        0.04841068879187219
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.63,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3658,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_slope_late_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: slope of result minus the close line on surprise to date, games where teams bring 9 or more earlier lined games (late window), season-block bootstrap; negative in 5 of 13 seasons; the NFL early slope is negative",
+      "effect": 0.026924507449358086,
+      "effect_units": "slope_difference",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.0894553887878066,
+        0.1427295357650276
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.665,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1871,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_slope_late_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: slope of result minus the open line on surprise to date, games where teams bring 9 or more earlier lined games (late window), season-block bootstrap; negative in 4 of 13 seasons; the NFL early slope is negative",
+      "effect": 0.07374308803331617,
+      "effect_units": "slope_difference",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.05003711446182749,
+        0.19244229233308954
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.87975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1865,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_slope_mid_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: slope of result minus the close line on surprise to date, games where teams bring 6 to 8 earlier lined games (mid window), season-block bootstrap; negative in 4 of 13 seasons; the NFL early slope is negative",
+      "effect": 0.04089996754523688,
+      "effect_units": "slope_difference",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.02774805834909675,
+        0.11124197635310712
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.873,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2509,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    },
+    "xlg_eo_cfb_slope_mid_open": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block and season-week block bootstrap with probability_positive; matched within-season shuffle null on the college add-one; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College: slope of result minus the open line on surprise to date, games where teams bring 6 to 8 earlier lined games (mid window), season-block bootstrap; negative in 5 of 13 seasons; the NFL early slope is negative",
+      "effect": 0.07104380031988718,
+      "effect_units": "slope_difference",
+      "family": "xlg_early_overreaction_cfb",
+      "interval": [
+        -0.004725153641381848,
+        0.14734818244570005
+      ],
+      "league": "cfb",
+      "notes": "College test of the NFL early-season overreaction term (MOD-57 P2-Q, P2-R): surprise to date built from earlier closing lines, windows by count of earlier games, direction fixed from the NFL fit, declared in docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md before outcomes were joined.",
+      "plain_summary": "Whether a college team that has beaten or missed the betting line early in a season gets a next line that is too high or too low.",
+      "probability_positive": 0.96625,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2507,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/xlg_early_overreaction_cfb/results.json",
+      "standard_error": null
+    }
+  }
+}

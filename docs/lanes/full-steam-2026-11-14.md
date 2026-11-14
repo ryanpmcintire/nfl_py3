@@ -24,6 +24,9 @@ Owner 2026-11-14 (Saturday): maximum parallel work. Done = the simulator's final
 - Tuesday reference time: keep the live configuration; patch stays unapplied; no late-Tuesday capture; cohort v9 untouched (d6cc4777). Reopen only as a declared refit at the next cohort boundary, after the harness-level reconcile.
 - XLG-11: unresolved, no served change, no further unit.
 - MOD-30 and UI-33 stay not started, not blocked on the owner.
+- Counted-flag gate (lane flag-gate-evaluation-2026-11-14.md): stays as served. A first plan to freeze the set at protection only on Tuesday was withdrawn the same afternoon: the 10-25 audit declared the gate, not a list; the frozen set differs from the gate on one game all season (PIT at CIN, Week 10); a no-information flag moves a pick between two near-even sides. The patch is on file unapplied.
+- Early-overreaction term T: college gives the same sign and a smaller size on the sign rule and nothing in the linear form; T is forward-logged from Week 2 of 2027 before any serving (MOD-57 lane, update of this date).
+- rest_diff on rescheduled games (features.py:680-694, 18 games since 2011) is queued for the next pinned change; no pinned change is planned for Tuesday.
 
 ## Running (six agents)
 College and pooled harness detectable effect (lane xlg-harness-power-2026-11-14.md); counted-flag gate evaluation (lane flag-gate-evaluation-2026-11-14.md); neutral-site check on NE at DET (lane eng-60); flexed-games input audit (lane eng-58); two slots free. Owed at session end: one ROADMAP pass for today's results with tests/scratch/reconcile_2026_11_14/apply.py (give it a new stamp so rows stamped this morning are not skipped).
