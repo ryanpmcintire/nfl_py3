@@ -1,64 +1,51 @@
 # XLG-14 College-first discovery
 
 ## Goal
-College-first discovery: screen a declared candidate family on CFB, carry only the survivors to a pre-declared NFL confirmation ROADMAP row XLG-14.
+Screen declared candidate families on college games first, carry only survivors to one pre-declared NFL confirmation each (ROADMAP row XLG-14). Zero crossing closes nothing; one fitted probability selects the side; every parameter leave-one-season-out; every cell a look; opener input and opener grade.
 
-## State
-Added 2026-11-03 as an unmeasured backlog row; nothing run, no registry window spent. Mechanism: CFB supplies about 4-5x the graded games and the pooled ranking holds in 2023-25, so a family of candidate features has far more power to show a real sign in CFB. Discovering there and confirming once in NFL cuts the NFL look count from K to the survivors, which is the multiplicity that currently buries small real signals. Data: CFB espn_book_era 2023-25 opener population and the shared 14-input harness (mod24-more-games lane); candidate family declared before any sign is seen; NFL opener grade 2020-25 as the one-shot confirmation.
+## State (2026-11-14 16:50 local)
+Unit 3, luck family `xlg14_luck_family_u3`, is screened and recorded. One of five candidates passed the pre-declared rule: `fumble_recovery_luck`. Its NFL confirmation is declared under Next and NOT run.
+
+**Measured** (`scripts/xlg14_luck_family.py build` then `screen`; `artifacts/xlg14_luck_family/` build.json, summary.json, summary.txt, weak_signals_batch.json, team_values.parquet). 8,925 college games, 13 seasons; 200 within-season shuffles per candidate (seed 36, stream 3). Null log-loss mean -.00006 to -.00007 [-.00019, +.00013].
+
+| Candidate (nonzero games) | Changed; record | Accuracy pts [95%] P+ (null pct) | Log-loss gain [95%] P+ (null pct) | In-sample; gap | Coef per SD; folds; halves 2012-18 / 2019-25 |
+|---|---|---|---|---|---|
+| fumble_recovery_luck (7,392) | 1,058; 541-517 | +0.27 [-0.40,+0.96] .78 (93.5) | +.00025 [-.00037,+.00085] .79 (99.5) | +.00042; +.00017 | -.058; 13/13; -.043 / -.078 |
+| interception_luck (8,208) | 72; 32-40 | -0.09 [-0.28,+0.09] .16 (37.5) | -.00009 [-.00015,-.00002] .006 (40.5) | +.000001; +.00009 | +.003; 9/13; -.002 / +.014 |
+| non_offensive_td (6,700) | 454; 214-240 | -0.29 [-0.74,+0.18] .12 (6.5) | -.00010 [-.00033,+.00015] .24 (32.5) | +.00006; +.00016 | +.022; 13/13; +.020 / +.025 |
+| field_goal_luck (8,393) | 766; 400-366 | +0.38 [-0.20,+1.03] .89 (96.5) | +.00003 [-.00036,+.00041] .56 (89.0) | +.00016; +.00013 | -.035; 13/13; -.073 / +.010 |
+| kick_block_muff (6,155) | 112; 53-59 | -0.07 [-0.29,+0.16] .30 (48.3) | -.00009 [-.00016,-.00003] .003 (47.0) | +.000001; +.00009 | +.003; 10/13; +.003 / +.002 |
+
+Controls (**measured**): base 50.48% and log loss .69400; constant 50.72% and .69311; base plus fitted intercept 50.40% and .69403. The base is worse than a constant on log loss, so the survivor's +.00025 does not bring it to the constant.
+
+What the survivor is and is not:
+- It passed a rule fixed before outcomes: 99.5th percentile of its own null on log loss, negative coefficient in both season halves (the hypothesised over-reaction sign), 13 of 13 folds. That buys one NFL look, nothing more.
+- **Inferred:** with five gating reads at a 95th-percentile bar, about 23% of no-information families pass at least one (1 - .95^5). Its size (.058 logit per SD) is under what this harness sees four times in five (.086-.109 per SD, +0.7 to +1.1 points; `docs/lanes/xlg-harness-power-2026-11-14.md`).
+- The held-out gain is all in the later half (-.00005 earlier, +.00059 later). The term is zero in 2012 and thin in 2013 (own recoveries not labelled) and fumble labels are thin in 2021-24.
+- The other four showed no effect this harness can see; none is closed. interception_luck and kick_block_muff have whole log-loss intervals below zero yet sit at the 40th-47th percentile of their nulls: that is the cost of one more fitted term, not a resolved wrong sign. field_goal_luck reached the 96.5th percentile on accuracy but 89th on log loss with opposite half signs, so it does not pass.
+
+Recorded: 15 cells (`xlg14_luck_cfb_<candidate>_<units>`; accuracy_points, log_loss_improvement, brier_improvement; league cfb, category onfield, unresolved_below_power). `weak-signals pool --league nfl --effect-units accuracy_points` exit 0.
+
+## Unit 3 declaration (written 16:40, before the script ran; amended about 16:45 from recording counts only, before any outcome was joined)
+- History (**read**): NFL only and all unresolved: close-game/turnover luck and special-teams return terms on production, FTN turnover luck, luck-stripped base inputs (acc-u7b, -0.3 to -0.6 points), a season-lagged special-teams rating. Both leagues on the shared 14-input harness (XLG-10 opener rerun): raw fumbles-lost rate, interception rate, bundle (college -0.17, +0.15, -0.26 points); the NFL-only negative was a closing-line artefact. Nothing against an expected baseline, no non-offensive touchdowns, no special-teams term and no matched null existed for college.
+- Candidates: each a team's per-game value over its games in strictly earlier weeks of the same season, home minus away, 0 with none. (1) opponent fumbles recovered minus own lost, each less the league lost share; (2) interceptions made minus thrown, each less the league share of defended passes (interceptions plus broken-up incompletions) intercepted; (3) return and defensive touchdowns for minus against, scorer read from the score columns; (4) field goals made minus expected from the same yard line in earlier seasons, own less opponents'; (5) blocked kicks plus muffed punts recovered by the punting team, for minus against. Hypothesis negative for all; rule two-sided.
+- Amendment: own fumble recoveries are unlabelled in 2005-13 and broken-up passes thin in 2004-06 and 2021-24, so (1) and (2) take the league share from earlier weeks of the SAME season (a season that lacks the denominator gives share 1 and a zero term). Blocked kicks are labelled from 2014 only. Score columns are post-play (96.9% of 54,778 rushing touchdowns reproduce).
+- Harness: unit 2 college frame; the instrument's add-one (one offset-logistic coefficient per SD, leave-one-season-out). Controls: intercept only; within-season shuffle. Survivor rule: log-loss gain above the 95th percentile of its own null AND equal coefficient sign in 2012-18 and 2019, 2021-25. Looks: 5 gating, 15 recorded cells, 10 half coefficients, 2 controls.
+- As-of check (**measured**): five random season-weeks, later games removed and the cutoff week's own events blanked; 590 team-games, largest difference 2e-16.
 
 ## Tried
-Novelty check only: Nearest: cfb_lead_screens_wave1.md and wave2.md (NFL leads replicated in CFB, the opposite direction), XLG-10 (NFL candidates screened on the pooled harness), cfb_replication_program_20260901.md. Differs: CFB is the discovery arm and NFL the single confirmation; grep for college-first and CFB-first discovery returned no hit.
+- Unit 1 (2026-11-03): MOD-41 workload replication on college, 6 cells `xlg14_mod41_cfb_u1`; residual coefficient +.0013 against NFL -.044, log loss -.00013 P+ .014; not commensurable, nothing refuted. `artifacts/xlg14/mod41_cfb.json`.
+- Unit 2 (2026-11-03): schedule family (short week, bye, prior ATS, early carryover, road trip), 5 cells `xlg14_family_u2`; log-loss P+ .001 to .29; zero survivors, no NFL run. `artifacts/xlg14/family_cfb.json`. Full declarations in git history of this file.
+- Unit 3 first build used earlier-season league rates; recording counts showed them wrong (.96 lost share in 2012-14), amended before the screen. `xlg_harness_power.py` ends in a bare `main()`, so its null machinery is loaded from source without that call (an import reruns 788 s and overwrites its artifacts).
 
 ## Next
-First unit: Declare the family (K candidates with college analogs, survivor count k fixed by the declared look budget, not by sign), run the CFB leave-one-season-out screen, freeze the survivor list and its expected sign in a registry declaration, and only then compute the NFL confirmation; count every candidate as a look in both leagues.
-Rules: Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener on the same market and simple-model baselines.
+NFL confirmation for `fumble_recovery_luck` (declared 2026-11-14 16:50; one look; not run):
+- Build the same value from NFL play-by-play (`data/pbp/raw` latest snapshot per season; run or pass plays with a fumbling player = fumbles, `fumble_lost` = lost, by `posteam`, as `scripts/xlg10_addone2.py` `nfl_counts`): opponent fumbles recovered minus own lost, each less the league lost share in earlier weeks of the same season, per game over strictly earlier weeks, home minus away; same as-of check.
+- Frame: MOD-36 `games()` (NFL 2020-25, opener grade, 1,503 games), base = served `out_of_season_home_probability`, never the raw `home_cover_probability_at_open`. Same offset add-one, leave-one-season-out; intercept-only control; 200 within-season shuffles (seed 36, a new stream).
+- The single gating read: held-out log-loss gain as a percentile of its matched NFL null, expected coefficient sign negative. Passes only with a negative full-sample coefficient AND a percentile above the 95th. A positive coefficient with the whole interval on the wrong side is the only refutation; everything else stays `unresolved_below_power`. The NFL harness sees about .26 per SD (+1.6 points), so expect a sign and a percentile, not a resolved effect; a smaller NFL reading is magnitude, not absence. Accuracy and Brier secondary. Record league nfl in family `xlg14_luck_family_u3`. Passing is not serving: serving needs the term fitted inside the one calibrated probability.
+- After that: a third family, or split-half reliability of each luck trait for the registry `reliability` field.
 
 ## Open
-Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
-
-## Unit 1 DECLARATION: out-of-league replication of MOD-41 (written 2026-11-03 16:50 local BEFORE any outcome computed)
-Spec (analog of scripts/mod41_cumulative_workload.py + mod41_unit2_components.py), script scripts/xlg14_mod41_cfb.py.
-- Plays: CFB pbp rush or pass plays, regular season, not kneel_down, pos_team_id present (no EPA or competitive filter; NFL used all pass/run). run = plays by team offense in the game, defended = plays by the opponent offense, total = run + defended.
-- Per team-game: load_total = mean of total over the prior 3 games (same season) minus the season-to-date mean of total over all prior games. own_td = season-to-date mean of run (prior games); opp3 = mean of defended over prior 3 games. Usable = 4+ prior games for both teams, else term 0. Game term s_* = home minus away.
-- s_resid = s_load_total minus OLS fit on (1, s_own, s_opp) over usable rows (pooled, as NFL). Primary cell: s_resid.
-- Population: FBS vs FBS regular season (table filter in cfb_game_features), seasons 2012-2019 and 2021-2025 with spread_open present, 2020 excluded, pushes (result == spread_open) dropped. 2026 excluded (no results).
-- Base: LOSO ridge (alpha 10, median impute, standardized, same as xlg12 base) on ats-margin-vs-opener (result - spread_open) using the pooled shared columns with spread_open as the market input and NO closing line column (spread_line, spread_dispersion, total_line dropped); p = Phi(pred/resid_sd) with resid_sd from the training seasons; logit_p = logit(p). Then LOSO logistic [logit_p] is the base, [logit_p, term] the test, as in NFL. Intercept-only LOSO control reported. Grade: home cover vs opener (y = result > spread_open).
-- Metric: out-of-sample log loss improvement vs base, LOSO by held-out season (13 folds); blocks = season-week bootstrap 1000 draws, interval and probability_positive; accuracy points secondary; decisive (pick changed) record first; in-sample vs out-of-sample gap; per-fold coefficient on the term with NFL sign reference (NFL residual coef -0.0395..-0.0501, same sign = negative = more recent residual workload for home hurts home cover).
-- Looks declared (6): total, resid (primary), own, opp, joint own+opp+resid, resid placebo (window shifted one game earlier). Recorded as log_loss_improvement, unresolved_below_power, league cfb, family xlg14_mod41_cfb_u1.
-- Commensurability caveat: CFB plays/game, tempo, season length (12 games vs 17) and population differ; no pooling with NFL unless declared before signs (not declared). Refutation only if whole interval on the wrong (positive coef, ll loss) side with resolved sign.
-
-## Unit 1 status 2026-11-03 16:54
-Declaration above written first. scripts/xlg14_mod41_cfb.py written (ruff clean), launched once in background (task bkcui0tkq; log in scratchpad xlg14.log). Output to artifacts/xlg14/mod41_cfb.json when done. Not yet read; no cells recorded. Next: read the artifact, report per-fold coef vs NFL negative sign, ll gain with P+, decisive record, then record 6 cells (log_loss_improvement, unresolved_below_power, league cfb, family xlg14_mod41_cfb_u1, 2012-2025 ex 2020).
-
-## Unit 1 RESULT 2026-11-03 16:57
-artifacts/xlg14/mod41_cfb.json; 6 cells recorded (xlg14_mod41_cfb_u1, unresolved_below_power, league cfb). 8925 games, 6145 usable, 13 seasons. Base acc 50.3% (opener input), intercept ll .69311, base .69304.
-- resid (primary): coef +.0013 (NFL -.044), positive in 11/13 folds; ll gain -.00013 [-.00025,-.00001] p+ .014; decisive 202-191 of 393; gap .00014. Opposite sign, near-zero magnitude. Total: coef -.0018, ll -.00011 p+ .09, 258-256. Own coef -.0072 ll +.00015 p+ .74; opp ll +.00024 p+ .79; joint +.00021 p+ .72; placebo +.00008 p+ .61.
-- Not recorded as wrong_sign_resolved: CFB-only, not commensurable (tempo, 12-game seasons, base ~coin flip), magnitude 1/30 of NFL. NFL signal neither strengthened nor refuted.
-Next: CFB EPA-based load or per-play fatigue analog; then XLG-14 family declaration.
-
-## Unit 2 DECLARATION: family screen (written 2026-11-03 16:59 local BEFORE any outcome computed)
-Script scripts/xlg14_family_screen.py; CFB arm uses the unit 1 harness (base logit_p from LOSO ridge on opener, close columns dropped; LOSO logistic [logit_p] vs [logit_p, term]; season-week block bootstrap 1000; 13 folds). All features come from the game table alone (gameday, home/away team, neutral flag, result, spread_open), so they exist in both leagues. Prior = the team's previous game in the same season; missing prior or a first game gives 0. Game term s = home value minus away value. Neutral-site games count as not-away. Rest = days since own previous game. WINDOW=3 inherited from unit 1 (no new constant).
-Candidates (5 looks, sign hypothesis = expected coef sign of s on home cover):
-1. short_week: 1[rest < 7] home minus away (7 = one calendar week, the schedule modal). Hypothesis negative (less recovery hurts the short side). Base carries rest_diff linearly; this is the threshold nonlinearity.
-2. bye: 1[rest >= 13] home minus away (13 = a skipped week). Hypothesis positive (extra prep and recovery).
-3. prior_ats: sign(prior-game margin minus that game's opener, team perspective) home minus away; prior game needs its own opener. Hypothesis negative (market over-weights last result; reversion). Sign used, so no cap constant.
-4. early_carryover: (home prior-season mean margin minus away prior-season mean margin) times 1[both teams have played fewer than WINDOW games this season]. Hypothesis positive (early lines under-use prior-season strength).
-5. road_trip: 1[away team previous game was away] minus 1[home team previous game was away]. Hypothesis positive (consecutive road games fatigue/travel on the visitor).
-Not carried (no free data in both leagues): kickoff temperature (CFB table has none), turnover-luck and special-teams luck (would need NFL pbp rebuild; deferred to a later unit, not dropped for sign).
-Promotion screen (never a closure): carry to NFL if coef has hypothesised sign in >= 10 of 13 LOSO folds (75%, ceil) AND out-of-sample log-loss gain P+ >= 0.75, and the CFB coefficient sign equals the hypothesis. If more than 2 pass, carry the 2 with highest P+. Decisive record (pick changed) reported first. Failing the screen does not close a candidate; it just is not spent on NFL.
-NFL confirmation (survivors only, one cell each): 2020-25 opener grade, per_game.parquet from artifacts/opener_evaluation/20260929T192743Z, base = served logit of home_cover_probability_at_open, LOSO logistic add-one, intercept-only control, same bootstrap. Prior ATS uses per_game openers within season.
-Recording: log_loss_improvement, family xlg14_family_u2, league cfb or nfl, unresolved_below_power unless a closing ground is met. Total looks: 5 CFB + k NFL.
-
-## Unit 2 status 2026-11-03 17:05
-Declaration above written first. scripts/xlg14_family_screen.py written (ruff clean). CFB screen launched once in background (task bz9x5zdx7, output C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3\352ecbdc-246f-44c0-9f81-c287a6ef4436\tasks\bz9x5zdx7.output); writes artifacts/xlg14/family_cfb.json. Not read; nothing recorded; no NFL run. Next: read artifact, apply declared screen (>=10/13 folds hypothesis sign and P+ >=0.75, max 2), freeze survivors here, run `scripts/xlg14_family_screen.py nfl <survivors>`, record cells (family xlg14_family_u2).
-
-## Unit 2 RESULT 2026-11-03 17:15
-artifacts/xlg14/family_cfb.json, 8925 games. Per candidate: decisive (term-base correct of changed), ll gain [CI] P+, coef, folds with hypothesis sign.
-- short_week 256-253 of 509; -.00007 [-.00031,.00018] P+ .29; coef -.060; 13/13 sign
-- bye 162-174 of 336; -.00010 [-.00021,.00001] P+ .04; +.017; 13/13
-- prior_ats 116-115 of 231; -.00007 [-.00011,-.00002] P+ .005; 8/13
-- early_carryover 70-65 of 135; -.00008 [-.00015,-.00002] P+ .001; 4/13
-- road_trip 287-290 of 577; -.00015 [-.00027,-.00003] P+ .007; 2/13
-Screen (P+ >= .75): zero survivors, so no NFL confirmation run (5 looks total). Not a closure. Fold sign for short_week and bye is 13/13 but ll gain is negative (sign without out-of-sample gain). Not yet recorded via weak-signals record (5 CFB cells, unresolved_below_power, family xlg14_family_u2).
-Next: record the 5 cells; then a family with data needing a rebuild (turnover/ST luck from pbp in both leagues).
-- 2026-11-03 17:04 ET (root): 5 CFB cells recorded (family xlg14_family_u2, unresolved_below_power) from artifacts/xlg14/family_cfb_batch.json.
+- `reliability` is unrecorded on all 15 cells.
+- College fumble and breakup labels vary by season; the fumble term's later-half concentration may be a recording effect.
+- ROADMAP row XLG-14 and the handoff are the orchestrator's to update; nothing committed.

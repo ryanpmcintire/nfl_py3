@@ -1,0 +1,425 @@
+{
+  "family": "xlg14_luck_family_u3",
+  "signals": {
+    "xlg14_luck_cfb_field_goal_luck_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, field_goal_luck: field goals made minus expected from the same yard line in earlier seasons, own kicks less opponents' kicks. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 766, record 400-366; coefficient per SD -0.0354; earlier and later season-half coefficients -0.0726 and +0.0097; this metric sits at percentile 96.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.179272.",
+      "effect": 0.380952,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.201961,
+        1.030812
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have had field goals fall their way more often than the distances predict so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.8892,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_field_goal_luck_brier_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, field_goal_luck: field goals made minus expected from the same yard line in earlier seasons, own kicks less opponents' kicks. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 766, record 400-366; coefficient per SD -0.0354; earlier and later season-half coefficients -0.0726 and +0.0097; this metric sits at percentile 90.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000064.",
+      "effect": 1.7e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000176,
+        0.000203
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have had field goals fall their way more often than the distances predict so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.569,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_field_goal_luck_log_loss_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, field_goal_luck: field goals made minus expected from the same yard line in earlier seasons, own kicks less opponents' kicks. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 766, record 400-366; coefficient per SD -0.0354; earlier and later season-half coefficients -0.0726 and +0.0097; this metric sits at percentile 89.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000128.",
+      "effect": 2.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000358,
+        0.000406
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have had field goals fall their way more often than the distances predict so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.558,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_fumble_recovery_luck_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, fumble_recovery_luck: opponent fumbles recovered minus own fumbles lost, each less the league share of fumbles lost in earlier weeks of the same season. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 1058, record 541-517; coefficient per SD -0.0584; earlier and later season-half coefficients -0.0428 and -0.0783; this metric sits at percentile 93.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.089636.",
+      "effect": 0.268908,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.403641,
+        0.963866
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have recovered more loose balls than chance would give them so far this season go on to beat the opening spread more or less often. It stood out from chance and goes to one pro-football check.",
+      "probability_positive": 0.78,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_fumble_recovery_luck_brier_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, fumble_recovery_luck: opponent fumbles recovered minus own fumbles lost, each less the league share of fumbles lost in earlier weeks of the same season. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 1058, record 541-517; coefficient per SD -0.0584; earlier and later season-half coefficients -0.0428 and -0.0783; this metric sits at percentile 99.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000084.",
+      "effect": 0.000128,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000181,
+        0.000426
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have recovered more loose balls than chance would give them so far this season go on to beat the opening spread more or less often. It stood out from chance and goes to one pro-football check.",
+      "probability_positive": 0.7975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_fumble_recovery_luck_log_loss_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, fumble_recovery_luck: opponent fumbles recovered minus own fumbles lost, each less the league share of fumbles lost in earlier weeks of the same season. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 1058, record 541-517; coefficient per SD -0.0584; earlier and later season-half coefficients -0.0428 and -0.0783; this metric sits at percentile 99.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000169.",
+      "effect": 0.000254,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000369,
+        0.000852
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have recovered more loose balls than chance would give them so far this season go on to beat the opening spread more or less often. It stood out from chance and goes to one pro-football check.",
+      "probability_positive": 0.794,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_interception_luck_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, interception_luck: interceptions made minus thrown, each less the league share of defended passes (interceptions plus broken-up incompletions) intercepted in earlier weeks of the same season. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 72, record 32-40; coefficient per SD +0.0031; earlier and later season-half coefficients -0.0015 and +0.0139; this metric sits at percentile 37.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.123249.",
+      "effect": -0.089636,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.280112,
+        0.089636
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have turned more of the passes they got a hand on into interceptions than usual so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.164,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_interception_luck_brier_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, interception_luck: interceptions made minus thrown, each less the league share of defended passes (interceptions plus broken-up incompletions) intercepted in earlier weeks of the same season. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 72, record 32-40; coefficient per SD +0.0031; earlier and later season-half coefficients -0.0015 and +0.0139; this metric sits at percentile 40.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000045.",
+      "effect": -4.4e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -7.6e-05,
+        -1.2e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have turned more of the passes they got a hand on into interceptions than usual so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0065,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_interception_luck_log_loss_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, interception_luck: interceptions made minus thrown, each less the league share of defended passes (interceptions plus broken-up incompletions) intercepted in earlier weeks of the same season. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 72, record 32-40; coefficient per SD +0.0031; earlier and later season-half coefficients -0.0015 and +0.0139; this metric sits at percentile 40.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000090.",
+      "effect": -8.9e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000153,
+        -2.4e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have turned more of the passes they got a hand on into interceptions than usual so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0065,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_kick_block_muff_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, kick_block_muff: blocked punts and field goals plus muffed punts recovered by the punting team, for minus against. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 112, record 53-59; coefficient per SD +0.0027; earlier and later season-half coefficients +0.0034 and +0.0020; this metric sits at percentile 48.3 of 200 within-season shuffles of the same column; in-sample minus held-out -0.033613.",
+      "effect": -0.067227,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.291597,
+        0.156863
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have come out ahead on blocked kicks and muffed punts so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.298,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_kick_block_muff_brier_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, kick_block_muff: blocked punts and field goals plus muffed punts recovered by the punting team, for minus against. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 112, record 53-59; coefficient per SD +0.0027; earlier and later season-half coefficients +0.0034 and +0.0020; this metric sits at percentile 46.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000047.",
+      "effect": -4.7e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -7.8e-05,
+        -1.2e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have come out ahead on blocked kicks and muffed punts so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_kick_block_muff_log_loss_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, kick_block_muff: blocked punts and field goals plus muffed punts recovered by the punting team, for minus against. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 112, record 53-59; coefficient per SD +0.0027; earlier and later season-half coefficients +0.0034 and +0.0020; this metric sits at percentile 47.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000094.",
+      "effect": -9.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000157,
+        -2.5e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have come out ahead on blocked kicks and muffed punts so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_non_offensive_td_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, non_offensive_td: return and defensive touchdowns scored minus allowed. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 454, record 214-240; coefficient per SD +0.0222; earlier and later season-half coefficients +0.0199 and +0.0250; this metric sits at percentile 6.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.168067.",
+      "effect": -0.291317,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.739776,
+        0.179272
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have scored more touchdowns on returns and defense than they have given up so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.1205,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_non_offensive_td_brier_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, non_offensive_td: return and defensive touchdowns scored minus allowed. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 454, record 214-240; coefficient per SD +0.0222; earlier and later season-half coefficients +0.0199 and +0.0250; this metric sits at percentile 32.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000079.",
+      "effect": -4.8e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000162,
+        7.5e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have scored more touchdowns on returns and defense than they have given up so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2415,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_cfb_non_offensive_td_log_loss_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for a declared mechanism (a small held-out log-loss cost is what a no-information term shows on this harness), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .09 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first luck family, non_offensive_td: return and defensive touchdowns scored minus allowed. Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 454, record 214-240; coefficient per SD +0.0222; earlier and later season-half coefficients +0.0199 and +0.0250; this metric sits at percentile 32.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000160.",
+      "effect": -9.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000327,
+        0.00015
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_luck_family_u3: 5 candidates x 3 metrics = 15 recorded cells; 5 gating reads (log-loss percentile in the matched null), 10 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have scored more touchdowns on returns and defense than they have given up so far this season go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    }
+  }
+}

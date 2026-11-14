@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:47:30.466755+00:00`
+Refreshed at: `2026-11-14T21:52:29.095825+00:00`
 
 ## Start here
 
@@ -21,14 +21,16 @@ Refreshed at: `2026-11-14T21:47:30.466755+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `564b1f3d1286` — Test the early-season overreaction term in college football
-- Pending change set: 44 paths
+- Baseline commit: `df127afe1898` — Check the model's quarterback inputs against this week's starters
+- Pending change set: 45 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - `A  docs/lanes/wk10-qb-input-check-2026-11-14.md`
-  - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
+  - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
+  - `A  registry/weak_signals/xlg14_luck_family_u3.json`
+  - `A  scripts/xlg14_luck_family.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-14T21:47:30.466755+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
-  - ...and 24 more
+  - ...and 25 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
