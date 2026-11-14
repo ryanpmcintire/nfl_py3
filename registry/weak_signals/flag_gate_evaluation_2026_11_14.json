@@ -1,0 +1,89 @@
+{
+  "family": "flag_gate_evaluation_2026_11_14",
+  "signals": {
+    "flaggate_gated_side_vs_all_flags_2026_w7_w10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a measurement of what the in-season flag membership gate did to served sides, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "2026 games served while the post-discovery flag gate was in force whose side differs from the side with every flag counted at the weight then served; effect is the gated side's cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": -30.0,
+      "effect_units": "accuracy_points",
+      "family": "flag_gate_evaluation_2026_11_14",
+      "interval": [
+        -49.49,
+        21.64
+      ],
+      "league": "nfl",
+      "notes": "gated side 1-4, exact two-sided p 0.375; other terms held as served; three comparisons, one family",
+      "plain_summary": "The card only counts a situational flag once that flag has a winning record this season. This counts the games where the pick would differ if every situational flag had been counted, and how often the pick actually made covered the pool number.",
+      "probability_positive": 0.109,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 5,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flag_gate_evaluation/summary.json",
+      "standard_error": null
+    },
+    "flaggate_gated_side_vs_fixed_all_flags_2026_w7_w10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a measurement of what the in-season flag membership gate did to served sides, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "2026 games served while the post-discovery flag gate was in force whose side differs from the side with every flag always counted at the weight fitted on 2020-25 with all flags; effect is the gated side's cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": -25.0,
+      "effect_units": "accuracy_points",
+      "family": "flag_gate_evaluation_2026_11_14",
+      "interval": [
+        -49.37,
+        30.59
+      ],
+      "league": "nfl",
+      "notes": "gated side 1-3, exact two-sided p 0.625; other terms held as served; three comparisons, one family",
+      "plain_summary": "The card only counts a situational flag once that flag has a winning record this season. This counts the games where the pick would differ if every situational flag were always counted at one fixed weight, and how often the pick actually made covered the pool number.",
+      "probability_positive": 0.188,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 4,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flag_gate_evaluation/summary.json",
+      "standard_error": null
+    },
+    "flaggate_gated_side_vs_no_flags_2026_w7_w10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a measurement of what the in-season flag membership gate did to served sides, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "2026 games served while the post-discovery flag gate was in force whose side differs from the side with no flag counted; effect is the gated side's cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": 50.0,
+      "effect_units": "accuracy_points",
+      "family": "flag_gate_evaluation_2026_11_14",
+      "interval": [
+        -47.5,
+        50.0
+      ],
+      "league": "nfl",
+      "notes": "gated side 1-0, exact two-sided p 1.000; other terms held as served; three comparisons, one family",
+      "plain_summary": "The card only counts a situational flag once that flag has a winning record this season. This counts the games where the pick would differ if no situational flag had been counted, and how often the pick actually made covered the pool number.",
+      "probability_positive": 0.75,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 1,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flag_gate_evaluation/summary.json",
+      "standard_error": null
+    }
+  }
+}

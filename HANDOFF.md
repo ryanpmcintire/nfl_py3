@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:19:26.869999+00:00`
+Refreshed at: `2026-11-14T21:23:04.607426+00:00`
 
 ## Start here
 
@@ -21,15 +21,16 @@ Refreshed at: `2026-11-14T21:19:26.869999+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8554eda33029` — Trace the neutral-site game through the pipeline before it kicks off
-- Pending change set: 47 paths
+- Baseline commit: `a664d6e85f33` — Measure what the college and pooled harnesses can detect
+- Pending change set: 45 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `A  docs/lanes/xlg-harness-power-2026-11-14.md`
+  - `A  docs/lanes/flag-gate-evaluation-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/flag_gate_evaluation_2026_11_14.json`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/xlg_harness_power.json`
-  - `A  scripts/xlg_harness_power.py`
+  - `A  scripts/flag_gate_evaluation.py`
+  - ` M scripts/pool05_ownership_v2.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-14T21:19:26.869999+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - ...and 27 more
+  - ...and 25 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
