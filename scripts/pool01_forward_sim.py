@@ -45,12 +45,13 @@ def draw_week(games, rng, S, E, idx=None, delta=None):
     if idx is None:
         idx = rng.integers(0, len(games["p"]), size=(S, 15))
     p, sh, uo, ut = (games[k][idx] for k in ("p", "share", "u_o", "u_t"))
-    cover = rng.random(p.shape) < p
+    pc = games["pc"][idx] if "pc" in games else p
+    cover = rng.random(p.shape) < pc
     thr = np.where(cover, sh, 1.0 - sh)
     tp = thr[:, None, :]
     if delta is not None:
         tp = np.clip(tp + delta[None, :, None], 0.0, 1.0)
-    pts = (rng.random((S, E, 15), dtype=np.float32) < tp).sum(axis=2).astype(float)
+    pts = (rng.random((S, E, p.shape[1]), dtype=np.float32) < tp).sum(axis=2).astype(float)
     eo, et = np.exp(uo), np.exp(ut)
     z = (eo + et).sum(axis=1, keepdims=True)
     rate = (np.where(cover, eo, et) / z).sum(axis=1)
@@ -178,9 +179,23 @@ def main():
     ap.add_argument("--entries", type=int, default=250)
     ap.add_argument("--seed", type=int, default=20261103)
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument(
+        "--our-cover",
+        choices=("stated", "realised"),
+        default="stated",
+        help="chance our side covers: each game's stated chance, or the realised rate so far",
+    )
+    ap.add_argument(
+        "--out",
+        default="forward_sim_real_rivals_results.json",
+        help="results file name under artifacts/pool_rank_replay",
+    )
     a = ap.parse_args()
     df = load_games()
     games = {k: df[k].to_numpy() for k in ("p", "share", "u_o", "u_t")}
+    if a.our_cover == "realised":
+        games["pc"] = np.full(len(df), float(df["cov_o"].mean()))
+    cover_used = float(games["pc"].mean()) if "pc" in games else float(df["p"].mean())
     rng = np.random.default_rng(a.seed)
     E = a.entries - 1
     table = rival_table(a.points)
@@ -216,9 +231,11 @@ def main():
             "weeks_remaining": a.weeks,
             "games_per_week": 15,
             "our_best_pick_wins_so_far": our_bp,
-            "games_played": int(len(df)),
+            "games_played": len(df),
             "our_stated_cover_chance": float(df["p"].mean()),
             "our_realised_cover_rate": float(df["cov_o"].mean()),
+            "our_cover_assumption": a.our_cover,
+            "our_cover_chance_used": cover_used,
         },
         "rival_skill_reliability": {
             "measured": measured_reliability,
@@ -235,7 +252,7 @@ def main():
         "paths_where_policies_differ": int((res["gain"] != 0).sum()),
     }
     if not a.smoke:
-        (OUT / "forward_sim_real_rivals_results.json").write_text(json.dumps(out, indent=2) + "\n")
+        (OUT / a.out).write_text(json.dumps(out, indent=2) + "\n")
     print(json.dumps(out, indent=2))
 
 

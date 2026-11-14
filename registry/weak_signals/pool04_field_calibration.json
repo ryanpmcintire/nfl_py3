@@ -1,6 +1,90 @@
 {
   "family": "pool04_field_calibration",
   "signals": {
+    "pool04_backtest_w01_start_leader_score_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; observed leader below the simulated mean at all eight overlapping start weeks, inside the band at five",
+      "closing_ground": null,
+      "description": "Backtest from the real Week 1 standings to Week 9 with the panel construction: leader's final score, observed minus simulated mean, in points per week over 8 weeks; 90 percent simulation band; the eight start weeks overlap and are one realised season",
+      "effect": -0.2492187500000007,
+      "effect_units": "pool_points_per_week",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -0.875,
+        0.25
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Starting from the real Week 1 standings, the simulation expected the leader to finish about two points higher than the leader did",
+      "probability_positive": 0.244875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 120,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_forward_backtest_w09.json",
+      "standard_error": 0.3551128478133508
+    },
+    "pool04_backtest_w01_start_our_points_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; observed points below the simulated mean at all eight overlapping start weeks, inside the band at seven",
+      "closing_ground": null,
+      "description": "Backtest from the real Week 1 standings to Week 9 with the panel construction and stated cover chances: points of the model's sides, observed minus simulated mean, in points per week over 8 weeks; 90 percent simulation band; the eight start weeks overlap",
+      "effect": -0.6509999999999998,
+      "effect_units": "pool_points_per_week",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -1.75,
+        0.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Starting from the real Week 1 standings, the simulation expected our picks to score about five points more than they did",
+      "probability_positive": 0.16849999999999998,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 120,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_forward_backtest_w09.json",
+      "standard_error": 0.6754053731682376
+    },
+    "pool04_first_place_chance_realised_minus_stated_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "an input sensitivity, not a signal: the realised rate's own 95 percent interval contains the stated chance, so neither input is resolved as the right one",
+      "closing_ground": null,
+      "description": "Simulated chance of finishing first from rank 65 with nine weeks left: our sides covering at the realised rate so far (69 of 136) minus covering at their stated chances, in percentage points; 1200 paths each; normal interval from the two runs' bootstrap intervals",
+      "effect": -5.333333333333333,
+      "effect_units": "payout_first_pp",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -6.76296153869148,
+        -3.903705127975186
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If our picks keep winning at the rate they have so far instead of the rate the model expects, our chance of finishing first is lower",
+      "probability_positive": 1.3180335345207195e-13,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_forward_sim_realised_cover_w09.json",
+      "standard_error": 0.7294155430192325
+    },
     "pool04_total_sd_ratio_fixed_cover": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -28,6 +112,146 @@
       ],
       "source": "artifacts/pool_rank_replay/pool04_field_ppc.json",
       "standard_error": 0.046
+    },
+    "pool04_w01_09_leader_score_gap_fixed_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; observed leader sits inside the simulated band",
+      "closing_ground": null,
+      "description": "Leader's season total after Week 9, observed minus simulated from scratch with real results fixed, in points per week over 9 weeks; 90 percent simulation band",
+      "effect": -0.1665000000000008,
+      "effect_units": "pool_points_per_week",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -0.561111111111106,
+        0.2222222222222222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The simulated leader after nine weeks has about a point and a half more than the real leader",
+      "probability_positive": 0.25675000000000003,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_field_ppc_w09.json",
+      "standard_error": 0.23811637182793371
+    },
+    "pool04_w01_09_split_half_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; observed value sits inside the no-skill band, so the no-rival-skill setting is not contradicted and not proven",
+      "closing_ground": null,
+      "description": "Odd-even split-half Spearman-Brown of entry hit rates Weeks 1-9, observed minus the no-skill simulation mean; 90 percent simulation band",
+      "effect": -0.07878587851101097,
+      "effect_units": "correlation",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -0.2716110027547266,
+        0.15126610995705392
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Entries that scored well in half of the weeks did no better in the other half, which is what the simulation assumes",
+      "probability_positive": 0.2425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_field_ppc_w09.json",
+      "standard_error": 0.128545485712343
+    },
+    "pool04_w01_09_top_decile_share_gap_fixed_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; the band excludes zero for this one cell but the threshold was set on the observed totals and the weekly tail cells do not share the sign",
+      "closing_ground": null,
+      "description": "Share of entries at or above the observed top-decile season total after Week 9, observed minus simulated with real results fixed, in percentage points; 90 percent simulation band; threshold set from the observed data",
+      "effect": -5.6518000000000015,
+      "effect_units": "rate_pp",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -9.6,
+        -1.9999999999999991
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The simulation puts more entries near the top of the standings than the real pool has had through nine weeks",
+      "probability_positive": 0.006999999999999999,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_field_ppc_w09.json",
+      "standard_error": 2.31023543730933
+    },
+    "pool04_w01_09_total_sd_ratio_fixed_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; ratio interval spans both signs",
+      "closing_ground": null,
+      "description": "Observed 250-entry Weeks 1-9 season-total sd over the field-model simulated sd with real results fixed and no skill term, minus 1; 95 percent simulation interval",
+      "effect": 0.008828437412684798,
+      "effect_units": "slope_difference",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -0.07370384572170292,
+        0.10559090546562921
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "After nine weeks the simulated pool is spread out about as widely as the real 250 entries",
+      "probability_positive": 0.583,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_field_ppc_w09.json",
+      "standard_error": 0.04542023189283551
+    },
+    "pool04_w01_09_week_to_week_correlation_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "129 calibration looks and 224 backtest looks in this family; no cell selected as the finding; observed correlation sits inside the no-skill band",
+      "closing_ground": null,
+      "description": "Mean pairwise correlation of an entry's weekly scores across Weeks 1-9, observed minus the no-skill simulation mean; 90 percent simulation band",
+      "effect": -0.006170340453663544,
+      "effect_units": "correlation",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -0.024022627509714657,
+        0.010331072093927068
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How an entry scored one week says nothing about how it scores the next, in the real pool and in the simulated one",
+      "probability_positive": 0.29,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_field_ppc_w09.json",
+      "standard_error": 0.013665893416424078
     }
   }
 }

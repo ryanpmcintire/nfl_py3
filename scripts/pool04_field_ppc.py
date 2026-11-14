@@ -1,14 +1,16 @@
 import argparse
 import json
+import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from pool01_forward_sim import load_games, rival_table
+from pool01_forward_sim import WEEKLY_FILE, load_games, rival_table
+from pool01_weekly_points import split_half
 
 OUT = Path("artifacts/pool_rank_replay")
-WEEKLY_FILE = Path("data/splash/field/2026_weekly_points_w01-08.parquet")
-WEEKS = 8
+LAST_WEEK = int(re.search(r"w01-(\d+)", WEEKLY_FILE.name).group(1))
+MODES = ("model_cover", "fixed_cover", "fixed_cover_skill")
 
 
 def stats(m):
@@ -19,19 +21,43 @@ def pct(sim, obs):
     return float((sim < obs).mean() + 0.5 * (sim == obs).mean())
 
 
-def simulate(df, rng, S, E, mode, dsd):
+def cell(obs, sim):
+    lo, hi = np.quantile(sim, [0.05, 0.95])
+    return [float(obs), float(sim.mean()), pct(sim, obs), float(lo), float(hi)]
+
+
+def week_corr(m):
+    c = np.corrcoef(m.T)
+    return float(c[np.triu_indices_from(c, k=1)].mean())
+
+
+def tied_at_max(m):
+    return (m == m.max(axis=-1, keepdims=True)).sum(axis=-1)
+
+
+def block(o, s):
+    sm, ss, sx = stats(s)
+    thr = float(np.quantile(o, 0.9, method="higher"))
+    return {
+        "mean": cell(o.mean(), sm),
+        "sd": cell(o.std(ddof=1), ss),
+        "max": cell(o.max(), sx),
+        "top_decile_score": thr,
+        "share_at_or_above_top_decile": cell((o >= thr).mean(), (s >= thr).mean(axis=1)),
+    }
+
+
+def simulate(df, rng, S, E, mode, dsd, weeks):
     wk = []
-    for w in range(1, WEEKS + 1):
+    for w in range(1, weeks + 1):
         g = df[df["week"] == w]
-        games = {k: g[k].to_numpy() for k in ("p", "share", "u_o", "u_t")}
         n = len(g)
-        p, sh = games["p"], games["share"]
-        if mode == "fixed_cover":
-            cover = np.tile(g["cov_o"].to_numpy(), (S, 1))
-        else:
+        p, sh = g["p"].to_numpy(), g["share"].to_numpy()
+        if mode == "model_cover":
             cover = rng.random((S, n)) < p[None, :]
-        thr = np.where(cover, sh[None, :], 1.0 - sh[None, :])
-        wk.append(thr)
+        else:
+            cover = np.tile(g["cov_o"].to_numpy(), (S, 1))
+        wk.append(np.where(cover, sh[None, :], 1.0 - sh[None, :]))
     skill = dsd * rng.standard_normal((S, E)) if mode == "fixed_cover_skill" else np.zeros((S, E))
     pts = []
     for thr in wk:
@@ -41,46 +67,87 @@ def simulate(df, rng, S, E, mode, dsd):
 
 
 def main():
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description="Observed field scores against the simulated field")
     ap.add_argument("--sims", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=20261104)
+    ap.add_argument("--weeks", type=int, default=LAST_WEEK, help="last week to score")
+    ap.add_argument("--points", type=int, required=True, help="our season points on the page")
+    ap.add_argument("--out", default="pool04_field_ppc.json", help="results file name")
     a = ap.parse_args()
     df = load_games()
     w = pd.read_parquet(WEEKLY_FILE)
-    obs = w[[f"w{k}" for k in range(1, WEEKS + 1)]].to_numpy(float)
+    obs = w[[f"w{k}" for k in range(1, a.weeks + 1)]].to_numpy(float)
+    n_games = df[df["week"] <= a.weeks].groupby("week").size().to_numpy(float)
     E = obs.shape[0]
-    _, _, dsd = rival_table(65)
+    _, _, dsd = rival_table(a.points)
     rng = np.random.default_rng(a.seed)
-    res = {"entries": E, "sims": a.sims, "dsd": dsd, "looks_per_mode": 28, "modes": {}}
-    for mode in ("model_cover", "fixed_cover", "fixed_cover_skill"):
-        sim = simulate(df, rng, a.sims, E, mode, dsd)
-        cells = {}
-        for k in range(WEEKS):
-            sm, ss, sx = stats(sim[:, :, k])
-            om, os_, ox = obs[:, k].mean(), obs[:, k].std(ddof=1), obs[:, k].max()
-            cells[f"w{k+1}"] = {
-                "mean": [float(om), float(sm.mean()), pct(sm, om)],
-                "sd": [float(os_), float(ss.mean()), pct(ss, os_)],
-                "max": [float(ox), float(sx.mean()), pct(sx, ox)],
-            }
+    ot = obs.sum(axis=1)
+    looks = 4 * a.weeks + 5 + 2
+    res = {
+        "weekly_file": WEEKLY_FILE.name,
+        "weeks": a.weeks,
+        "entries": E,
+        "sims": a.sims,
+        "dsd": dsd,
+        "looks_per_mode": looks,
+        "looks": looks * len(MODES),
+        "cell_layout": ["observed", "sim_mean", "percentile_of_observed", "sim_q05", "sim_q95"],
+        "observed_split_half_spearman_brown": split_half(obs / n_games)[1],
+        "modes": {},
+    }
+    for mode in MODES:
+        sim = simulate(df, rng, a.sims, E, mode, dsd, a.weeks)
+        cells = {f"w{k + 1}": block(obs[:, k], sim[:, :, k]) for k in range(a.weeks)}
         tot = sim.sum(axis=2)
-        sm, ss, sx = stats(tot)
-        ot = obs.sum(axis=1)
-        cells["total"] = {
-            "mean": [float(ot.mean()), float(sm.mean()), pct(sm, ot.mean())],
-            "sd": [float(ot.std(ddof=1)), float(ss.mean()), pct(ss, ot.std(ddof=1))],
-            "max": [float(ot.max()), float(sx.mean()), pct(sx, ot.max())],
-        }
-        wsd = np.mean([cells[f"w{k+1}"]["sd"][0] for k in range(WEEKS)])
-        wsd_sim = np.mean([cells[f"w{k+1}"]["sd"][1] for k in range(WEEKS)])
+        ss = tot.std(axis=1, ddof=1)
+        cells["total"] = block(ot, tot)
+        cells["total"]["tied_at_max"] = cell(tied_at_max(ot), tied_at_max(tot))
+        cells["week_to_week_correlation"] = cell(
+            week_corr(obs), np.array([week_corr(sim[i]) for i in range(a.sims)])
+        )
+        cells["split_half_spearman_brown"] = cell(
+            res["observed_split_half_spearman_brown"],
+            np.array([split_half(sim[i] / n_games)[1] for i in range(a.sims)]),
+        )
+        wsd = np.mean([cells[f"w{k + 1}"]["sd"][0] for k in range(a.weeks)])
+        wsd_sim = np.mean([cells[f"w{k + 1}"]["sd"][1] for k in range(a.weeks)])
+        ratio = ot.std(ddof=1) / ss - 1.0
         cells["avg_weekly_sd_ratio_obs_over_sim"] = float(wsd / wsd_sim)
         cells["total_sd_ratio_obs_over_sim"] = float(ot.std(ddof=1) / ss.mean())
         cells["total_variance_ratio"] = float(ot.var(ddof=1) / (ss**2).mean())
+        cells["total_sd_ratio_minus_one"] = {
+            "effect": float(ot.std(ddof=1) / ss.mean() - 1.0),
+            "interval_95": [float(np.quantile(ratio, 0.025)), float(np.quantile(ratio, 0.975))],
+            "standard_error": float(ratio.std(ddof=1)),
+            "probability_positive": float((ratio > 0).mean()),
+        }
+        outside = [
+            f"w{k + 1}.{s}"
+            for k in range(a.weeks)
+            for s in ("mean", "sd", "max", "share_at_or_above_top_decile")
+            if not cells[f"w{k + 1}"][s][3] <= cells[f"w{k + 1}"][s][0] <= cells[f"w{k + 1}"][s][4]
+        ]
+        cells["weekly_cells_outside_90_band"] = outside
         res["modes"][mode] = cells
-    (OUT / "pool04_field_ppc.json").write_text(json.dumps(res, indent=1) + "\n")
+    (OUT / a.out).write_text(json.dumps(res, indent=1) + "\n")
     for mode, c in res["modes"].items():
-        keys = ("total_sd_ratio_obs_over_sim", "total_variance_ratio")
-        print(mode, c["total"], {k: c[k] for k in keys})
+        print(mode)
+        for k in [f"w{j + 1}" for j in range(a.weeks)] + ["total"]:
+            row = {
+                s: [round(v, 3) for v in c[k][s]]
+                for s in ("mean", "sd", "max", "share_at_or_above_top_decile")
+            }
+            print(" ", k, c[k]["top_decile_score"], row)
+        for k in (
+            "week_to_week_correlation",
+            "split_half_spearman_brown",
+            "total_sd_ratio_minus_one",
+            "avg_weekly_sd_ratio_obs_over_sim",
+            "weekly_cells_outside_90_band",
+        ):
+            print(" ", k, c[k])
+        print("  tied_at_max", c["total"]["tied_at_max"])
+
 
 if __name__ == "__main__":
     main()
