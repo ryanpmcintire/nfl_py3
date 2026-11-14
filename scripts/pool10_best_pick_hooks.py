@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -8,22 +9,31 @@ from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.pool_hook import POOL_OFFSET, is_whole, tuesday_market_lines
 
 FAMILY = "pool10_best_pick_hooks"
-OUT = Path("artifacts/pool_rank_replay/pool10_best_pick_hooks.json")
+OUT_DIR = Path("artifacts/pool_rank_replay")
 SCORING = Path("artifacts/prospective_scoring")
 SEASON = 2026
-WEEKS = range(1, 9)
-FIELD_FILE = Path("data/splash/field/2026_field_best_picks_w01-08.parquet")
+FIELD_DIR = Path("data/splash/field")
 DATA_ROOT = Path("data")
 BOOT_DRAWS = 4000
 PERM_DRAWS = 20000
 SEED = 10
+ADJUSTED_SEED = 1010
 INTERVAL = (2.5, 97.5)
+IRLS_MAX_ITER = 50
+IRLS_TOL = 1e-9
+SPECS = {
+    "favourite_line": ("favourite", "favoured_by"),
+    "favourite_only": ("favourite",),
+}
+PRIMARY = "favourite_line"
+PLACEMENT_LOOKS = 11
+OUTCOME_LOOKS = 1
 
 
 def hook_games(raw):
     ids = raw["game_id"].unique().tolist()
     market = {}
-    for w in WEEKS:
+    for w in sorted(int(v) for v in raw["week"].unique()):
         market.update(
             tuesday_market_lines(
                 DATA_ROOT, SEASON, w, [g for g in ids if g.split("_")[1] == f"{w:02d}"]
@@ -37,15 +47,115 @@ def hook_games(raw):
     return home[["game_id", "hook_home"]]
 
 
-def team_rows():
-    raw = pd.read_parquet(FIELD_FILE)
+def team_rows(last_week):
+    raw = pd.read_parquet(FIELD_DIR / f"{SEASON}_field_best_picks_w01-{last_week:02d}.parquet")
     raw = raw.merge(hook_games(raw), on="game_id")
     raw["hook_game"] = raw["hook_home"] != 0
     sign = np.where(raw["home"], 1.0, -1.0)
     raw["hook_side"] = raw["hook_game"] & (raw["hook_home"] * sign > 0)
     raw["favourite"] = raw["line"] < 0
+    raw["favoured_by"] = -raw["line"]
     raw["size"] = raw["line"].abs()
     return raw
+
+
+def poisson_fit(X, y, off, w, start):
+    b = start.copy()
+    for _ in range(IRLS_MAX_ITER):
+        mu = np.exp(off + X @ b)
+        hess = (X * (w * mu)[:, None]).T @ X
+        step = np.linalg.lstsq(hess, X.T @ (w * (y - mu)), rcond=None)[0]
+        b += step
+        if np.abs(step).max() < IRLS_TOL:
+            break
+    return b
+
+
+def side_flags(game_hook):
+    flags = np.zeros(2 * len(game_hook))
+    flags[0::2] = game_hook < 0
+    flags[1::2] = game_hook > 0
+    return flags
+
+
+def pct(draws):
+    lo, hi = np.percentile(draws, INTERVAL)
+    return [float(lo), float(hi)]
+
+
+def adjusted(frame, spec, rng, permute):
+    f = frame.sort_values(["week", "game_id", "home"]).reset_index(drop=True)
+    if (f["picks"] <= 0).any() or not f["home"].to_numpy()[1::2].all():
+        raise ValueError("every game needs two picked sides")
+    weeks = sorted(int(v) for v in f["week"].unique())
+    wk = f["week"].to_numpy()
+    y = f["best_picks"].to_numpy().astype(float)
+    off = np.log(f["picks"].to_numpy().astype(float))
+    game_hook = f["hook_home"].to_numpy()[1::2]
+    game_week = wk[1::2]
+    names = [*SPECS[spec], "hook_side"]
+    cols = [(wk == w).astype(float) for w in weeks]
+    cols += [f[c].to_numpy().astype(float) for c in SPECS[spec]]
+    X = np.column_stack([*cols, side_flags(game_hook)])
+    start = np.zeros(X.shape[1])
+    for i, w in enumerate(weeks):
+        start[i] = np.log(y[wk == w].sum() / f.loc[wk == w, "picks"].sum())
+    ones = np.ones(len(f))
+    b = poisson_fit(X, y, off, ones, start)
+    k = len(weeks)
+    game_idx = [np.where(game_week == w)[0] for w in weeks]
+    game_draws = np.zeros((BOOT_DRAWS, len(names)))
+    week_draws = np.zeros((BOOT_DRAWS, len(names)))
+    for d in range(BOOT_DRAWS):
+        gw = np.zeros(len(game_hook))
+        for idx in game_idx:
+            gw[idx] = rng.multinomial(len(idx), np.full(len(idx), 1.0 / len(idx)))
+        game_draws[d] = poisson_fit(X, y, off, np.repeat(gw, 2), b)[k:]
+        if k > 1:
+            ww = rng.multinomial(k, np.full(k, 1.0 / k))
+            week_draws[d] = poisson_fit(X, y, off, ww[np.searchsorted(weeks, wk)], b)[k:]
+    ok = np.isfinite(game_draws).all(1)
+    okw = np.isfinite(week_draws).all(1)
+    out = {
+        "spec": spec,
+        "weeks": weeks,
+        "games": len(game_hook),
+        "hook_games": int((game_hook != 0).sum()),
+        "hook_games_per_week": {
+            w: int((game_hook[i] != 0).sum()) for w, i in zip(weeks, game_idx, strict=True)
+        },
+        "best_picks": int(y.sum()),
+        "best_picks_on_hook_side": int(y[X[:, -1] > 0].sum()),
+        "coefficients": {n: float(v) for n, v in zip(names, b[k:], strict=True)},
+        "intervals_game_bootstrap": {n: pct(game_draws[ok, j]) for j, n in enumerate(names)},
+        "hook_coefficient": float(b[-1]),
+        "hook_rate_ratio": float(np.exp(b[-1])),
+        "hook_interval_game_bootstrap": pct(game_draws[ok, -1]),
+        "hook_probability_positive": float(probability_positive_from_draws(game_draws[ok, -1])),
+        "failed_game_draws": int((~ok).sum()),
+    }
+    if k > 1:
+        out["hook_interval_week_bootstrap"] = pct(week_draws[okw, -1])
+        out["hook_probability_positive_weeks"] = float(
+            probability_positive_from_draws(week_draws[okw, -1])
+        )
+        loo = {}
+        for w in weeks:
+            loo[w] = float(poisson_fit(X, y, off, (wk != w).astype(float), b)[-1])
+        out["hook_coefficient_leaving_out_week"] = loo
+    if permute:
+        Xp = X.copy()
+        null = np.zeros(PERM_DRAWS)
+        for d in range(PERM_DRAWS):
+            gp = game_hook.copy()
+            for idx in game_idx:
+                gp[idx] = rng.permutation(game_hook[idx])
+            Xp[:, -1] = side_flags(gp)
+            null[d] = poisson_fit(Xp, y, off, ones, b)[-1]
+        out["hook_permutation_p_two_sided"] = float((np.abs(null) >= abs(b[-1])).mean())
+        out["hook_permutation_null_interval"] = pct(null)
+        out["permutation"] = "game hook status shuffled across games within week"
+    return out
 
 
 def cluster(raw, mask_fn, rng):
@@ -161,19 +271,55 @@ def ours(raw):
 
 
 def main():
-    raw = team_rows()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--last-week", type=int, required=True)
+    parser.add_argument("--subset", action="append", default=[])
+    parser.add_argument("--out", type=Path, default=None)
+    args = parser.parse_args()
+    out_path = args.out or OUT_DIR / f"pool10_best_pick_hooks_w{args.last_week:02d}.json"
+    raw = team_rows(args.last_week)
+    rng = np.random.default_rng(ADJUSTED_SEED)
+    fitted = {spec: adjusted(raw, spec, rng, spec == PRIMARY) for spec in SPECS}
+    subsets = []
+    for s in args.subset:
+        lo, hi = (int(v) for v in s.split("-"))
+        sub = raw[(raw["week"] >= lo) & (raw["week"] <= hi)]
+        cell = adjusted(sub, PRIMARY, rng, True)
+        cell["subset"] = s
+        if lo < hi:
+            cell["hook_side_excess"] = cluster(sub, lambda f: f["hook_side"], rng)
+        subsets.append(cell)
     result = {
         "family": FAMILY,
+        "last_week": args.last_week,
+        "anchor": "served multi-book Tuesday line from tuesday_market_lines",
         "games": int(raw["game_id"].nunique()),
         "hook_games": int(raw.loc[raw["hook_game"], "game_id"].nunique()),
         "total_best_picks": int(raw["best_picks"].sum()),
-        "looks": 11 + 1,
+        "looks": PLACEMENT_LOOKS + OUTCOME_LOOKS + len(SPECS) + 2 * len(subsets),
         "placement": record(raw),
         "outcome": outcome(raw),
+        "favourite_adjusted_model": {
+            "definition": "Poisson rate of Best Picks per pick on a side, week fixed effects, "
+            "offset log picks; equivalent to a within-week multinomial of Best Pick share",
+            "primary": PRIMARY,
+            "specs": fitted,
+            "subsets": subsets,
+        },
         "ours": ours(raw),
     }
-    OUT.write_text(json.dumps(result, indent=2, default=float) + "\n")
-    print(json.dumps(result, indent=1, default=float))
+    out_path.write_text(json.dumps(result, indent=2, default=float) + "\n")
+    brief = {k: v for k, v in result.items() if k not in ("placement", "ours")}
+    print(json.dumps(brief, indent=1, default=float))
+    for k, v in result["placement"].items():
+        lo, hi = v["excess_interval"]
+        print(
+            k,
+            f"bp {v['best_pick_share']:.4f} pk {v['pick_share']:.4f} ex {v['excess']:+.4f}",
+            f"[{lo:+.4f},{hi:+.4f}] P+ {v['probability_positive']:.3f}",
+            f"wk+ {v['weeks_positive']} n {v['best_picks']}",
+        )
+    print(json.dumps(result["ours"], default=float))
 
 
 main()
