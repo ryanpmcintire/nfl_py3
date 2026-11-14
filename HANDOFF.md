@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:07:32.792266+00:00`
+Refreshed at: `2026-11-14T20:11:58.406923+00:00`
 
 ## Start here
 
@@ -21,18 +21,21 @@ Refreshed at: `2026-11-14T20:07:32.792266+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `93c8e141f526` — Refresh the handoff after new research records
-- Pending change set: 49 paths
+- Baseline commit: `106128f6c2b1` — Record the short-week side term and the Week 9 forward score of the injury wording read
+- Pending change set: 51 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/eng-62-leader-book-quote-capture.md`
-  - `M  docs/lanes/lead-106-injury-language-read.md`
-  - `M  docs/lanes/mod-47-short-week-confidence-slope.md`
+  - `M  docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/mod47_short_week_side_term.json`
-  - `A  scripts/lead106_forward_score.py`
-  - `A  scripts/mod47_short_week_side_term.py`
+  - `M  registry/weak_signals/mod39_playoff_leverage.json`
+  - `M  scripts/forward_ledger.py`
+  - `M  scripts/forward_terms_week.py`
+  - `A  scripts/mod39_freeze_levdiff_served.py`
+  - `M  scripts/mod39_leverage.py`
   - ` M scripts/pool08_hook_field_share.py`
+  - ` M scripts/pool09_hook_value_slope.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-14T20:07:32.792266+00:00`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 29 more
+  - ...and 31 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

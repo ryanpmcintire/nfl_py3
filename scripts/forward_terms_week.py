@@ -32,6 +32,7 @@ TERMS = (
     "mod41_residual_load",
     "mod41_residual_load_served",
     "mod41_avgwin_served",
+    "mod39_levdiff_served",
 )
 
 
@@ -961,6 +962,52 @@ def avgwin_week(week, games, now, term="mod41_avgwin_served"):
     return pd.Series(x, dtype=float), fr, ts
 
 
+MOD39_TERM = "mod39_levdiff_served"
+
+
+def mod39_frozen():
+    import mod39_freeze_levdiff_served as f39
+
+    body = json.loads((OUT / MOD39_TERM / "frozen_coefficients.json").read_text())
+    assert body["no_2026_outcomes"] is True
+    assert body["coefficient_hash"] == sha_obj({k: body[k] for k in f39.HASH_KEYS})
+    body["b_logit_per_point"] = body["b_logit_per_unit"]
+    return body
+
+
+def mod39_in_domain(week):
+    first, last = mod39_frozen()["domain_weeks"]
+    return first <= week <= last
+
+
+def mod39_week(week, games):
+    import mod39_freeze_levdiff_served as f39
+
+    from nfl_ats.snapshots import latest_snapshot, load_snapshot
+
+    fr = mod39_frozen()
+    snap = latest_snapshot(ROOT / "data" / "raw")
+    sc, _ = load_snapshot(snap)
+    rows, meta = f39.week_levdiff(sc, SEASON, week, fr["rating_params"], fr["simulations"])
+    x = {}
+    ts = {
+        "schedule_snapshot": snap.snapshot_id,
+        "trait_data_through_week": meta["results_through_week"],
+        **meta,
+        "per_game": {},
+        "missing": [],
+    }
+    for r in games.itertuples():
+        if r.game_id not in rows:
+            ts["missing"].append(
+                {"game_id": r.game_id, "reason": "game absent from the schedule snapshot"}
+            )
+            continue
+        x[r.game_id] = rows[r.game_id]["levdiff"]
+        ts["per_game"][r.game_id] = rows[r.game_id]
+    return pd.Series(x, dtype=float), fr, ts
+
+
 def served_card_probability(week):
     pub = pd.read_parquet(ROOT / "artifacts" / "clv_ledger" / "published_picks.parquet")
     pub = pub[(pub.season == SEASON) & (pub.week == week)]
@@ -972,7 +1019,7 @@ def served_card_probability(week):
     return dict(zip(last.game_id, home, strict=True))
 
 
-SERVED_BASE_TERMS = ("mod41_residual_load_served", "mod41_avgwin_served")
+SERVED_BASE_TERMS = ("mod41_residual_load_served", "mod41_avgwin_served", MOD39_TERM)
 
 
 def combine(term, games, x, fr, week):
@@ -1059,6 +1106,9 @@ def main():
         if prior:
             status[term] = f"already frozen: {Path(prior[-1]).name}"
             continue
+        if term == MOD39_TERM and not mod39_in_domain(week):
+            status[term] = "outside the declared weeks; nothing to freeze"
+            continue
         try:
             if term == "sky03":
                 x, fr, ts = sky03_week(week, games, not a.no_fetch)
@@ -1074,6 +1124,8 @@ def main():
                 x, fr, ts = mod35_week(week, games, now)
             elif term == "mod41_avgwin_served":
                 x, fr, ts = avgwin_week(week, games, now, term)
+            elif term == MOD39_TERM:
+                x, fr, ts = mod39_week(week, games)
             elif term in ("mod41_residual_load", "mod41_residual_load_served"):
                 x, fr, ts = mod41_week(week, games, now, term)
             else:

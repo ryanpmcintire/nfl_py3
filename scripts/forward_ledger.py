@@ -27,6 +27,7 @@ TERM_DIRS = [
     "mod41_residual_load",
     "mod41_residual_load_served",
     "mod41_avgwin_served",
+    "mod39_levdiff_served",
 ]
 CFB_EXCLUDED = ["xlg12_cfb_v1", "xlg12_cfb_v2"]
 

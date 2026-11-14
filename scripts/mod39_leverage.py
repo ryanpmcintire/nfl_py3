@@ -196,4 +196,5 @@ def main():
         print(k, {a: r[a] for a in r if a not in ("coefs_by_heldout_season", "insample_coefs")})
 
 
-main()
+if __name__ == "__main__":
+    main()

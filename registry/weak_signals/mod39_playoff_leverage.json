@@ -4,21 +4,21 @@
     "mod39_levdiff_close_slope_2009_19": {
       "category": "schedule",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval spans both signs, not a resolved wrong sign; split-half reliability not established as zero; no positive control; 8 looks in family",
       "closing_ground": null,
       "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
-      "effect": -1.588,
+      "effect": -0.2611,
       "effect_units": "ats_points",
       "family": "mod39_playoff_leverage",
       "interval": [
-        -6.329,
-        3.077
+        -1.0405,
+        0.5059
       ],
       "league": "nfl",
-      "notes": "close-graded, not opener; secondary look",
+      "notes": "unit repair 2026-11-14: ATS points per one SD of the term (SD 0.1644 on these 1186 games), was stored as the slope per 1.0 of the term (-1.588, interval -6.329..3.077, first recorded 2026-11-03); close-graded, not opener; secondary look",
       "plain_summary": "Teams with more to play for in the playoff race were compared with teams with less; the opening line already looks to price it, with no measurable lean either way.",
       "probability_positive": 0.2566,
-      "recorded_at": "2026-11-03",
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": 1186,
@@ -27,7 +27,7 @@
         2019
       ],
       "source": "artifacts/mod39/mod39_results.json",
-      "standard_error": 2.409
+      "standard_error": 0.396
     },
     "mod39_levdiff_loso_accuracy_2020_25": {
       "category": "schedule",
@@ -88,21 +88,21 @@
     "mod39_levdiff_opener_slope_2020_25": {
       "category": "schedule",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval spans both signs, not a resolved wrong sign; split-half reliability not established as zero; no positive control; 8 looks in family",
       "closing_ground": null,
       "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
-      "effect": 3.175,
+      "effect": 0.4977,
       "effect_units": "ats_points",
       "family": "mod39_playoff_leverage",
       "interval": [
-        -2.851,
-        9.333
+        -0.4469,
+        1.463
       ],
       "league": "nfl",
-      "notes": "ats points per 1.0 levdiff, margin_vs_open, game bootstrap 5000; levdiff SD 0.162",
+      "notes": "unit repair 2026-11-14: ATS points per one SD of the term (SD 0.1568 on these 592 games), was stored as the slope per 1.0 of the term (3.175, interval -2.851..9.333, first recorded 2026-11-03); margin_vs_open, game bootstrap 5000",
       "plain_summary": "Teams with more to play for in the playoff race were compared with teams with less; the opening line already looks to price it, with no measurable lean either way.",
       "probability_positive": 0.8486,
-      "recorded_at": "2026-11-03",
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": 592,
@@ -111,7 +111,63 @@
         2025
       ],
       "source": "artifacts/mod39/mod39_results.json",
-      "standard_error": 3.107
+      "standard_error": 0.487
+    },
+    "mod39_levdiff_served_loso_accuracy_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans both signs, not a resolved wrong sign; split-half reliability not established as zero; no positive control; 8 looks in family",
+      "closing_ground": null,
+      "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
+      "effect": -0.868,
+      "effect_units": "accuracy_points",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -3.819,
+        2.083
+      ],
+      "league": "nfl",
+      "notes": "leave-one-season-out, offset = served probability (out_of_season_home_probability), term vs intercept-only, 16 opener pushes excluded; decisive games 77: term 36 control 41; held-out-fold coefficient 0.349..0.930, positive in all six folds; frozen forward from 2026 Week 10",
+      "plain_summary": "When one team has more riding on a game for its playoff chances than the other, adding that to the pick did not clearly help or hurt in past seasons; it is now being tracked on this season's games.",
+      "probability_positive": 0.2698,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/forward_terms/mod39_levdiff_served/frozen_coefficients.json",
+      "standard_error": null
+    },
+    "mod39_levdiff_served_loso_logloss_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans both signs, not a resolved wrong sign; split-half reliability not established as zero; no positive control; 8 looks in family",
+      "closing_ground": null,
+      "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
+      "effect": -0.000599,
+      "effect_units": "log_loss_improvement",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -0.004362,
+        0.003106
+      ],
+      "league": "nfl",
+      "notes": "leave-one-season-out, offset = served probability (out_of_season_home_probability), term vs intercept-only, 16 opener pushes excluded; in-sample gain +0.00083, gap 0.0014; Brier gain -0.00030 (probability positive 0.378)",
+      "plain_summary": "When one team has more riding on a game for its playoff chances than the other, adding that to the pick did not clearly help or hurt in past seasons; it is now being tracked on this season's games.",
+      "probability_positive": 0.3736,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/forward_terms/mod39_levdiff_served/frozen_coefficients.json",
+      "standard_error": null
     }
   }
 }
