@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T19:44:25.929271+00:00`
+Refreshed at: `2026-11-14T19:47:03.408764+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T19:44:25.929271+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0e688667929f` — Republish the site with the latest settled results
-- Pending change set: 375 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `3cb52b0a2ade` — Show time-zone change and away streaks on each game; alarm when the pool panel goes stale
+- Pending change set: 49 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/full-steam-2026-11-14.md`
-  - `M  docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/ui20-2026-11-14.md`
+  - `M  docs/lanes/full-steam-2026-11-14.md`
+  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g1.md`
+  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g2.md`
+  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g3.md`
+  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g4.md`
+  - `A  docs/lanes/scheduler-missed-window-triage-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `A  registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `A  registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `A  registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `A  registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `A  registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `A  registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 355 more
+  - ` M src/nfl_ats/card_ledger_check.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - ...and 29 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

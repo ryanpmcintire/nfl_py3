@@ -3,30 +3,24 @@
 ## Goal
 Owner 2026-11-14 (Saturday): maximum parallel work. Done = the simulator's final run is graded and SIM-08/SIM-30 closed, every open ROADMAP row carries its lane's verdict, one dashboard improvement is live, and each unit below is committed and pushed.
 
-## State (clock read 14:28 ET at session start)
-- Found: Windows Update restarted the machine 2026-11-11 20:09 (EventLog 1074, planned, not a crash) and killed the simulator's final run in fold 2023. Folds 2020-22 are saved (artifacts/sim08_market_anchored/amend6/primary_202{0,1,2}.npz).
-- Relaunched about 14:35 ET as a session background job: tests/scratch/sim_finish_queue/forecaster_full.ps1 (10 workers, resumes by fold, about 5 hours for 2023-25). End marker artifacts/sim08_amend6_full.done. If this session is gone and no `sim08_market_anchored.py` process is running, rerun the same launcher.
-- Week 10 card healthy (measured 14:31 ET): scripts/check_served_terms.py reports 13 games, 13 anchors, offset term nonzero on 8, no problems. Every flip since Tuesday has a NOTIFY-OK line (Wed CAR/NO, NE/DET, MIN/GB; Thu HOU/CLE, NE/DET back).
-- Found: all 105 rows still marked not started in ROADMAP.md have a lane from 2026-11-03 holding results; the roadmap is stale, not the work.
-- Wave 1 launched (six agents):
-  - Reconcile g1 (MOD-28..54), g2 (MKT-21..28, XLG-10..15, PER-11..16, ENV-02, LEAD-75), g3 (LEAD-100..112, ENG-48..60), g4 (UI-21..37, POOL-02..10). Each writes tests/scratch/reconcile_2026_11_14/gN.json and lane roadmap-reconcile-2026-11-14-gN.md; none edits ROADMAP.md. Root applies the JSON in one write (LF newlines).
-  - Dashboard unit: lane ui20-2026-11-14.md.
-  - Pool-standing staleness check: lane pool-standing-refresh.md Next 4.
-
-- DONE 14:38 ET (measured): pool-standing alarm. scripts/check_pool_standing.py passes today (file through Week 9, last settled week 9) and exits 1 with `--as-of 2026-11-17`; job `pool_standing_check_tue` Tue 21:30 in scripts/capture_scheduler.py; MANUAL-RUN OK 14:37; daemon restarted once 14:38 (single tree, pid 31884, ALIVE, code and schedule current, 320 enabled jobs). Not committed yet.
-- Found 14:39 (measured, `--health`): every source fresh, but OVERALL FAIL from 116 unacknowledged missed windows dated 10-28 to 11-10 (six on 11-10 are the missed noon lock and its dependents, rerun by hand that evening). The standing failure would hide a real miss.
-- Slot refilled 14:36: ENG-61 Best Pick star in card-ledger-check (lane best-pick-chain-audit-2026-11-08.md); it must prove the Sunday re-nomination cannot trip it or leave a patch under tests/scratch/eng61/.
+## State (clock read 14:28 ET at session start; times below from the scheduler log or commit)
+- Simulator final run: Windows Update restarted the machine 2026-11-11 20:09 (EventLog 1074, planned) and killed it in fold 2023. Relaunched about 14:35 ET as a session background job: tests/scratch/sim_finish_queue/forecaster_full.ps1 (10 workers, resumes by fold, about 5 hours for 2023-25). End marker artifacts/sim08_amend6_full.done. If no `sim08_market_anchored.py` process is alive and the marker is missing, rerun the launcher.
+- Week 10 card healthy (measured 14:31): check_served_terms.py 13 games, 13 anchors, offset term nonzero on 8, no problems; every flip since Tuesday has a NOTIFY-OK line.
+- DONE, pushed 3cb52b0a: dashboard game details show hours ahead of or behind home and away-from-home streaks (board_schedule_facts.py; five Week 10 streak lines checked against the schedule; lane ui20-2026-11-14.md); pool-standing alarm scripts/check_pool_standing.py with job pool_standing_check_tue Tue 21:30 (daemon restarted 14:38, single tree); 316 experiment records.
+- DONE (measured): scheduler `--health` reads OVERALL: OK. 116 old missed windows (10-28 to 11-10) classified from the log and acknowledged with their cause (lane scheduler-missed-window-triage-2026-11-14.md); the last three (odds_espn_sun_* on 11-08) acknowledged by root because the same capture script ran OK daily 11-09 to 11-14.
+- DONE: ROADMAP reconcile. All 100 rows marked not started had 2026-11-03 lanes; four agents transcribed them (lanes roadmap-reconcile-2026-11-14-g1..g4.md, JSON in tests/scratch/reconcile_2026_11_14/), root applied with apply.py. Inventory 87/223 done to 122/223; 83 in progress with a named next unit; 7 not started. Root overrides: UI-37 done (shipped today), UI-33 and MOD-30 kept not started instead of blocked.
+- Running (six agents): ENG-61 Best Pick star in card-ledger-check (lane best-pick-chain-audit-2026-11-08.md); offset-anchor book-agreement alarm (fix-picks-2026-11-10.md Next 3); forward ledger, monitor and stacker through Week 9 (eng-49, eng-48, eng-50 lanes); LEAD-105 tiebreak-total read, Week 10 record before Monday kickoff (lead-105 lane); XLG-12 college shadow ledger silent no-op repair (xlg-12 lane); PER-16 coach-keyed Questionable play rate as a fitted term on the served base (per-16 lane).
 
 ## Tried
-- Nothing yet.
+- A reconcile agent's "blocked" for MOD-30 (unlicensed public ratings repository needs a source-policy entry) was not accepted as an owner wait; it stays not started until a unit decides the source from the policy file's own rules.
 
 ## Next
-1. On each reconcile return: check the JSON loads; when all four are in, apply to ROADMAP.md, run scripts/roadmap_inventory.py, commit.
-2. Refill queue, in order: missed-window triage (classify the 116 unacknowledged windows by cause from data/scheduler_log.txt, acknowledge with a true reason only those proven rerun or unrecoverable, so `--health` means something on Sunday); fix-picks Next 3 (book-agreement contract for the offset anchor, in scripts/check_served_terms.py, not in pinned src); ENG-62 (leader-book depth on the Week 10 captures, free Caesars-bearing source); then the next units the reconcile JSONs name.
-3. Dashboard unit returns: `nfl-ats publish-board`, review the rendered diff, commit, push.
-4. Scheduler edit returns: check the process list, restart the daemon once, confirm the heartbeat.
-5. Simulator run ends: sim-finish-amendment6.md Next 4 (evaluate, grade stage 2), scripts/sim30_margin_mass.py, record, close SIM-08 and SIM-30, fill the PENDING line in docs/sim_engine_summary.md, lanes to done/.
-6. Commit the 316 untracked registry/experiments records and the scheduler's site refresh with the next push (needs `nfl-ats handoff`).
+1. Scheduler batch when ENG-49 and LEAD-105 return: add their Job texts (in their lanes) to scripts/capture_scheduler.py in one edit, `--run-job` each, restart the daemon once (no child job running, check the process list after).
+2. Refill queue, in order: MOD-39 playoff leverage (domain Weeks 10-16, forward record before Sunday kickoffs if its term can be frozen; start after the forward-ledger agent returns, shared files); LEAD-106 score Week 9 wording reads against snaps (unlocks LEAD-108 to 110); MOD-47 short-week term beside the served terms; POOL-08 and POOL-09 Week 9 reruns; UI-30 number-moved lines; ENG-62 leader-book depth on Week 10 captures; MOD-52 record its 17 cells.
+3. ENG-61 returns: if applied, run `nfl-ats card-ledger-check` once more, commit; if HOLD, the patch is under tests/scratch/eng61/.
+4. Simulator run ends: sim-finish-amendment6.md Next 4 (evaluate, grade stage 2), scripts/sim30_margin_mass.py, record, close SIM-08 and SIM-30, fill the PENDING line in docs/sim_engine_summary.md, lanes to done/.
+5. Sunday 11-15: scheduler check lines from mod57-sixty-percent.md Next (odds_private_sun_0815, _sun_1445, _sun_1520, refresh_last_call_sun_1535); re-nomination star at 10:00.
+6. Every push needs `nfl-ats handoff` first with HANDOFF.md and README.md staged.
 
 ## Open
 - None.
