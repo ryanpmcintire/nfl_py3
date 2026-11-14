@@ -1,0 +1,1125 @@
+{
+  "family": "eng62_tuesday_reference_anchor",
+  "signals": {
+    "eng62_anchor_before_minus_after_pool_after_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.3105590062111801,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.2500078222778473,
+        0.9237023353402667
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.849375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_after_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": -0.00019161364064738083,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001132391331659501,
+        0.0007948705532166195
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.3525,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_after_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.12422360248447205,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.37831021437578816,
+        0.6806930693069307
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.678,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_after_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.00018966892427894357,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0009727467462519785,
+        0.0006519004193483985
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.32175,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_before_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.24813895781637718,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.3708281829419036,
+        0.8783488395950223
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.78,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_before_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": -0.00023280375909114637,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0015403977975241387,
+        0.0013504110287955447
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.35,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_before_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.24813895781637718,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.25286052373101064,
+        0.8674101610904585
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.8122499999999999,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_before_minus_after_pool_before_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the before anchor minus the after anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.0002989264996155061,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0011364595034854973,
+        0.0006195972462112903
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number just before the noon freeze against reading it just after the noon freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.24275,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_after_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": -0.062111801242236024,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -1.178696653977159,
+        1.0638631152348959
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.46775,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_after_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.00012955271472997188,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001380085368549465,
+        0.00164556477058799
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.57375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_after_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.18633540372670807,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -1.1742892459826948,
+        0.75
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.362875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_after_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.00031359135035911563,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0008759020847561784,
+        0.0014921551767266116
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.693,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_before_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": -0.24813895781637718,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -1.4815272627386349,
+        0.9247842170160296
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.34700000000000003,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_before_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 1.6618947181204457e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0019820586316395233,
+        0.001934319729319578
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.503,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_before_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.24813895781637718,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -1.2774892382556615,
+        0.6918238993710693
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.3065,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_late_minus_live_pool_before_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the late anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.0002725598931108272,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0009635394827003042,
+        0.0015026455098902988
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number late on Tuesday night against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.668,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_after_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.3105590062111801,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.43370508054522927,
+        1.0585635071722936
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.79175,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_after_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.00048063482188197504,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001309051357812997,
+        0.002461769175609317
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.67925,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_after_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.062111801242236024,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.6765067650676507,
+        0.8074534161490683
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5551250000000001,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_after_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 5.4131820880907296e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0013395210446998094,
+        0.001496677165822437
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.516,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_before_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.12406947890818859,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.6258018324911152,
+        0.9768607565425194
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.62175,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_before_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.0005755075877737669,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0017001821553368425,
+        0.003083836777173292
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6715,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_before_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.062034739454094295,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.7472212991804424,
+        0.6841008996115314
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.43375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_fit_pool_before_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the fit anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -4.217584269894302e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0014399700100229831,
+        0.001374346714265578
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it on Tuesday morning, three hours before the freeze, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.4665,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_after_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.5590062111801243,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.7537925476438797,
+        1.9135802469135803
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.7955,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_after_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": -0.00017128398067180718,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.00242650082788172,
+        0.0020694613396652086
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.44125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_after_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.4968944099378882,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.6909547738693468,
+        1.734820322180917
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.793125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_after_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.0003917428353500896,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.0021413861503596114,
+        0.0013229540617761674
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.33425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_before_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.9925558312655087,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.43535052294636545,
+        2.5966781460754773
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.898625,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_before_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 1.319099851261569e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.002739269845646502,
+        0.00293251677582971
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.47925,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_before_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.6823821339950372,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.5617977528089888,
+        1.86341197738018
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.863125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_late_pool_before_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the late anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.00044521834481336617,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.002218155096240585,
+        0.0012951448402166075
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it late on Tuesday night, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.314,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_after_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.4968944099378882,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.18270958973292534,
+        1.1801242236024845
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.92725,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_after_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": -4.1731265941835317e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001291948492924675,
+        0.0012144498841262874
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.474,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_after_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.3105590062111801,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.3212685761155057,
+        0.9340266239755531
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.83675,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_after_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote after Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -7.815148499097403e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001103859601465843,
+        0.0009868114896669491
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.45325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_before_fold_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 0.7444168734491315,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.061957868649318466,
+        1.5884795877799525
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.96325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_before_fold_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient fitted leave-one-season-out on the fit arm; week-block bootstrap",
+      "effect": 1.793804703246568e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001569892933476496,
+        0.0017946775826674145
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.49075,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_before_served_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": 0.4342431761786601,
+      "effect_units": "accuracy_points",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.24783147459727387,
+        1.1336087342808105
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.8897499999999999,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    },
+    "eng62_anchor_nearest_minus_live_pool_before_served_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pool-line offset term, 2023-25, pushes kept, stage 1 and push table out of season: two-stage probability with the nearest anchor minus the live anchor; pool line built from DraftKings at its quote before Tuesday noon; coefficient held at the served value; week-block bootstrap",
+      "effect": -0.00017265845170253902,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_tuesday_reference_anchor",
+      "interval": [
+        -0.001244843310495606,
+        0.0009457866092685096
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quote the pool-line offset term's market anchor should read: five declared arm contrasts, two pool-line builds, two coefficient modes, two units; 40 looks.",
+      "plain_summary": "The pool freezes its lines at noon on Tuesday while sportsbooks keep moving. This compares reading the sportsbooks' number at the moment closest to the noon freeze against reading it early on Tuesday afternoon, to see which makes the pool-line adjustment pick more winners on past seasons. The two are too close to separate.",
+      "probability_positive": 0.37325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 806,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/tuesday_reference_oos.json",
+      "standard_error": null
+    }
+  }
+}
