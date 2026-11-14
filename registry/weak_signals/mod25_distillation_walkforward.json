@@ -144,9 +144,9 @@
     "mod25_wfj_hgb_forward_2026_w01_w07_open_reconstructed": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval spans zero with n 102; decisive games 11-10 arm v 10-11 served; reconstruction not prospective",
+      "classification_evidence": "interval spans zero with n 102; decisive games 11-10 arm v 10-11 raw-model pool card; reconstruction not prospective; the reference is not the served card",
       "closing_ground": null,
-      "description": "Joint-engine hgb student (T2025, library to 2024) combined at frozen weight 0.278, 2026 W1-7 reconstruction with student inputs taken from locked-folder features, graded at Tuesday opener, arm minus locked served card",
+      "description": "Joint-engine hgb student (T2025, library to 2024) combined at frozen weight 0.278 on the raw model base, 2026 W1-7 reconstruction with student inputs taken from locked-folder features, graded at Tuesday opener, arm minus the locked raw-model pool card (the pool_card.csv side, not the published served card; description corrected 2026-11-14 under ENG-54)",
       "effect": 0.98,
       "effect_units": "accuracy_points",
       "family": "mod25_distillation_walkforward",
@@ -155,7 +155,7 @@
         9.8
       ],
       "league": "nfl",
-      "notes": "pool-line variant: 62-45 v 64-43, -1.87 pts, P+ 0.281; log loss gain v served -0.0052 P+ 0.259 (open)",
+      "notes": "pool-line variant: 62-45 v 64-43, -1.87 pts, P+ 0.281; log loss gain v the raw model probability -0.0052 P+ 0.259 (open). ENG-54 2026-11-14: the reference this cell first called served is the raw model pool card and recommendations probability; on 2026 W1-9 its side matches the published card on 90 of 136 games. Numbers unchanged.",
       "plain_summary": null,
       "probability_positive": 0.548,
       "recorded_at": "2026-11-03",
@@ -252,6 +252,62 @@
       ],
       "source": "artifacts/sim10_wf/pipeline_joint/grade_ridge_nomkt.json",
       "standard_error": 0.00039862244897959185
+    },
+    "mod25_wfj_served_history_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval straddles zero; probability_positive 0.105; unresolved below power",
+      "closing_ground": null,
+      "description": "2020-25 leave-one-season-out history of mod25_wfj_served against the card pick, opener grade, accuracy points; changed picks 109 won 48; forward test starts in Week 11 of 2026. 1 look.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -2.1956087824351296,
+        0.4657351962741184
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Changing the card pick with the student term won 48 of 109 changed games in 2020-25; too few to settle whether it helps.",
+      "probability_positive": 0.10465,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_wfj_served_forward/frozen_coefficients.json",
+      "standard_error": null
+    },
+    "mod25_wfj_served_history_2020_2025_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval straddles zero; probability_positive 0.22; 2 of 6 held-out seasons positive (2021, 2025); unresolved, not a refuted mechanism",
+      "closing_ground": null,
+      "description": "2020-25 leave-one-season-out history of mod25_wfj_served (card probability plus the hgb_nomkt student margin term) against the card probability, opener grade; the forward test of this term starts in Week 11 of 2026. 1 look.",
+      "effect": -0.0005754366377768248,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -0.002036758707931609,
+        0.0008437815788931397
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On 2020-25 the simulator student added to the card's probability did not improve log loss out of season; the read is too small to say whether it helps or hurts.",
+      "probability_positive": 0.22045,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_wfj_served_forward/frozen_coefficients.json",
+      "standard_error": null
     }
   }
 }

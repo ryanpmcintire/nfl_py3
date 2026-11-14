@@ -386,8 +386,8 @@ def record(week, now):
         }
         if served is not None and game_id in served.index:
             sp = float(served.loc[game_id, "home_cover_probability"])
-            row["served_home_cover_probability"] = sp
-            row["served_side"] = side_of(sp)
+            row["raw_home_cover_probability"] = sp
+            row["raw_side"] = side_of(sp)
         rows.append(row)
     if not rows:
         print(json.dumps({"week": week, "logged": [], "refused": refused}, indent=1))

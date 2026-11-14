@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T22:59:31.556549+00:00`
+Refreshed at: `2026-11-14T23:03:17.201951+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T22:59:31.556549+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2b933ecf103b` — Withdraw the wrong-sign reading on pregame attrition: it came from a name join
-- Pending change set: 56 paths
+- Baseline commit: `34e75b6852b1` — Find what the student model's forward record compared; add a served-base version
+- Pending change set: 59 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/opener-error-transfer.md`
-  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
-  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
   - `M  docs/lanes/mod25-v3-sim11-distill.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - ` M registry/weak_signals/mod25_distillation_walkforward.json`
+  - `M  registry/weak_signals/mod25_distillation_walkforward.json`
+  - ` M registry/weak_signals/opener_error_transfer_v1.json`
+  - ` M registry/weak_signals/opener_error_transfer_v2.json`
+  - ` M registry/weak_signals/opener_error_transfer_v3.json`
+  - ` M registry/weak_signals/opener_error_transfer_v4.json`
+  - ` M registry/weak_signals/opener_error_transfer_v5.json`
+  - ` M registry/weak_signals/xlg09_unit6_nested_pooled.json`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M scripts/forward_ledger.py`
-  - `M  scripts/mod25_wfj_forward.py`
-  - `A  scripts/mod25_wfj_served_freeze.py`
-  - `M  scripts/mod54_forward_log.py`
+  - `M  scripts/mod25_forward_q.py`
   - ` M scripts/opener_error_transfer_eval.py`
   - ` M scripts/opener_error_transfer_unit2.py`
   - ` M scripts/opener_error_transfer_unit3.py`
-  - ` M scripts/opener_error_transfer_unit4.py`
-  - ` M scripts/sim05_whatif.py`
-  - `?? an.csv`
-  - ...and 36 more
+  - ...and 39 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
