@@ -1,13 +1,13 @@
 {
   "family": "xlg13_screen_transfer",
   "signals": {
-    "xlg13_screen_transfer_pearson_nfl_2020_2025": {
+    "xlg13_screen_transfer_pearson_logloss_nfl_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "4 candidates, bootstrap interval spans -1 to 1; no resolved sign, no split-half reliability measured and no positive control proven.",
+      "classification_evidence": "4 pairs, bootstrap interval spans -1 to 1; a description, not a test. No resolved sign, no split-half reliability measured, no positive control proven.",
       "closing_ground": null,
-      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain (fixed opener-input harness) vs 88-input served gain (pearson); sign agreement 1 of 4.",
-      "effect": 0.2785301369707205,
+      "description": "Product-moment correlation across the same 4 candidates of screen log-loss gain against served log-loss gain, 2020-25 opener.",
+      "effect": -0.6191291931905156,
       "effect_units": "correlation",
       "family": "xlg13_screen_transfer",
       "interval": [
@@ -15,9 +15,9 @@
         1.0
       ],
       "league": "nfl",
-      "notes": "Replaces the 2026-11-03 pre-fix values (spearman -0.40, pearson -0.84), which the lane struck: the pooled harness had used the closing spread as model input while grading at the opener. Screen gains now come from the fixed opener-input harness (artifacts/pooled_sweep_fixed, NFL opener 2020-25, n 1503, base 754-749): ridgecv +0.93, enet +0.60, accalpha -0.40, huber +0.73 accuracy points. Served gains (-0.73, -3.19, -1.80, -0.87) are unchanged from the MOD-23 units and were not re-verified after the fix. Family xlg13_screen_transfer, 2 looks. Transcribed 2026-11-14 from the artifact and lane; no new measurement.",
-      "plain_summary": "Whether a quick test on a small model predicts what the same change does to the full model: with only four examples the agreement leans positive and is not settled.",
-      "probability_positive": 0.8459975619666802,
+      "notes": "Same pairs and caveats as the log-loss Spearman cell. Slope through the origin -2.99 [-6.54, +0.41], probability_positive .035, kept in the lane (no registry unit for a ratio of two gains).",
+      "plain_summary": "On the stricter probability score, a better result on the quick test went with a worse result on the full model in four cases; too few to settle anything.",
+      "probability_positive": 0.24737966826091382,
       "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
@@ -26,26 +26,82 @@
         2020,
         2025
       ],
-      "source": "artifacts/xlg13_screen_transfer/report_fixed.json",
+      "source": "artifacts/xlg13_screen_transfer/report_pairs.json",
+      "standard_error": null
+    },
+    "xlg13_screen_transfer_pearson_nfl_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "8 pairs, bootstrap over pairs spans both signs; a description, not a test. No resolved sign, no split-half reliability measured, no positive control proven.",
+      "closing_ground": null,
+      "description": "Product-moment correlation across the same 8 candidates of screen gain against served gain, accuracy points, 2020-25 opener. Fitted line: served = -1.04 - 0.01 x screen.",
+      "effect": -0.0059034560756676124,
+      "effect_units": "correlation",
+      "family": "xlg13_screen_transfer",
+      "interval": [
+        -0.9146902943633055,
+        0.7033164087752168
+      ],
+      "league": "nfl",
+      "notes": "Supersedes the four-pair value +0.28 and its line served = -1.90 + 0.53 x screen (artifacts/xlg13_screen_transfer/report_fixed.json), which the harness-power lane used to convert a screen gain into a served gain. With eight pairs the intercept slope is -0.01 [-1.60, +1.03], probability_positive .49: the size of the screen gain says nothing measurable about the size of the served gain, and the served gains average about one point below zero. Same pairs, caveats and look count as the Spearman cell.",
+      "plain_summary": "A bigger gain on the quick test has not meant a bigger gain on the full model in the eight cases where both were measured; the question is not settled.",
+      "probability_positive": 0.4879,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg13_screen_transfer/report_pairs.json",
+      "standard_error": null
+    },
+    "xlg13_screen_transfer_spearman_logloss_nfl_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "4 pairs, bootstrap interval spans -1 to 1; a description, not a test. No resolved sign, no split-half reliability measured, no positive control proven.",
+      "closing_ground": null,
+      "description": "Rank correlation across 4 candidates of the log-loss gain on a cheaper screen against the log-loss gain of the same candidate on the served NFL model, 2020-25 opener. Sign agreement 1 of 4; the one positive screen gain (fumble-recovery luck) was negative on the served side.",
+      "effect": -0.39999999999999997,
+      "effect_units": "correlation",
+      "family": "xlg13_screen_transfer",
+      "interval": [
+        -1.0,
+        1.0
+      ],
+      "league": "nfl",
+      "notes": "Pairs: college-centred prior, short-week differential, fumble-recovery luck, early-season overreaction (artifacts/xlg13_screen_transfer/pairs.json). The four estimator swaps have no served log loss on file and are out. Exact permutation share at or above the observed value .79. Every pair was assembled after both results were known; pairs share the same NFL games.",
+      "plain_summary": "On the stricter probability score, the quick test and the full model agreed on direction in one of four cases; too few to settle anything.",
+      "probability_positive": 0.25058381561579857,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg13_screen_transfer/report_pairs.json",
       "standard_error": null
     },
     "xlg13_screen_transfer_spearman_nfl_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "4 candidates, bootstrap interval spans -1 to 1; no resolved sign, no split-half reliability measured and no positive control proven.",
+      "classification_evidence": "8 pairs, bootstrap over pairs spans both signs; a description, not a test. No resolved sign, no split-half reliability measured, no positive control proven.",
       "closing_ground": null,
-      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain (fixed opener-input harness) vs 88-input served gain (spearman); sign agreement 1 of 4; exact permutation P(rho>=obs) 4/24.",
-      "effect": 0.8,
+      "description": "Rank correlation across 8 candidates of the gain on a cheaper screen (14-input opener-input harness or college) against the gain of the same candidate on the served NFL model, accuracy points, 2020-25 opener. Sign agreement 2 of 8; 6 screen gains were positive and 0 of those stayed positive on the served side; the served gain was negative in all 8.",
+      "effect": -0.16766767666785626,
       "effect_units": "correlation",
       "family": "xlg13_screen_transfer",
       "interval": [
-        -1.0,
-        1.0
+        -0.9687499999999999,
+        0.6000000000000001
       ],
       "league": "nfl",
-      "notes": "Replaces the 2026-11-03 pre-fix values (spearman -0.40, pearson -0.84), which the lane struck: the pooled harness had used the closing spread as model input while grading at the opener. Screen gains now come from the fixed opener-input harness (artifacts/pooled_sweep_fixed, NFL opener 2020-25, n 1503, base 754-749): ridgecv +0.93, enet +0.60, accalpha -0.40, huber +0.73 accuracy points. Served gains (-0.73, -3.19, -1.80, -0.87) are unchanged from the MOD-23 units and were not re-verified after the fix. Family xlg13_screen_transfer, 2 looks. Transcribed 2026-11-14 from the artifact and lane; no new measurement.",
-      "plain_summary": "Whether a quick test on a small model predicts what the same change does to the full model: with only four examples the agreement leans positive and is not settled.",
-      "probability_positive": 0.9413982878108439,
+      "notes": "Supersedes the four-pair value +0.80 (estimator swaps only, artifacts/xlg13_screen_transfer/report_fixed.json). Pairs (artifacts/xlg13_screen_transfer/pairs.json): ridgecv, elastic net, accuracy-chosen alpha, Huber swaps; college-centred prior; short-week differential; fumble-recovery luck (college screen); early-season overreaction (college screen, NFL measured first). Every pair was assembled after both results were known. Five served sides are the 88-input production evaluator, three are an added term on the served probability; the four swap served gains were not re-verified after the opener-input fix. Pairs share the same 1,503 NFL games and four are one lever family, so they are not independent. Permutation share at or above the observed rank correlation .67. Slope through the origin -1.12 served points per screen point [-2.44, +0.03], probability_positive .03, kept in the lane: no registry unit represents a ratio of two gains. Family looks: 26 on 2026-11-14 plus 2 earlier.",
+      "plain_summary": "When a change looked good on a quicker, smaller test, it has not gone on to look good on the full model: across eight examples the two results show no clear relationship, and the question is not settled.",
+      "probability_positive": 0.3567,
       "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
@@ -54,7 +110,7 @@
         2020,
         2025
       ],
-      "source": "artifacts/xlg13_screen_transfer/report_fixed.json",
+      "source": "artifacts/xlg13_screen_transfer/report_pairs.json",
       "standard_error": null
     }
   }

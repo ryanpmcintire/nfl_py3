@@ -46,3 +46,5 @@ Margin plant (MOD-36 unit 3) on these harnesses; planted magnitude ratios betwee
 ## Open
 - 200 draws: shares resolve to about 5.5 points, the 80% size to one grid step. Positive-direction control only.
 - The shared-harness accuracy null is positive and its P+ over-alarms; cause not measured (base at 50.2-50.4% with log loss worse than a constant).
+
+- Correction 2026-11-14 18:34 ET (root, from lane xlg-13-xlg13-screen-transfer.md, measured): the transfer arithmetic above used a screen-to-served slope of 0.53 from four pairs. With today's pairs added (8 screen-to-served, 2 raw-to-served) the sign agrees in 2 of 8, the served side is negative in all 8, and none of the 8 results that looked positive on a cheaper or raw harness stayed positive on the served card. Drop the 0.53 conversion: a college or screen pass predicts nothing about the served gain; it buys exactly one pre-declared served look. The detectable sizes in this lane stand.
