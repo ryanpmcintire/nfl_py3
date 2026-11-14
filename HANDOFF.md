@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T22:32:53.316352+00:00`
+Refreshed at: `2026-11-14T22:44:04.016567+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-11-14T22:32:53.316352+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d25b31a2606b` — Measure the quarterback replacement constant and prepare the starter repairs
+- Baseline commit: `6d3ece945472` — Confirm the wind-forecast forward log's pass-rate input holds no leak
 - Pending change set: 42 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/lead75.md`
+  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
   - `?? an.csv`
