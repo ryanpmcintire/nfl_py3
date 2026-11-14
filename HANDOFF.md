@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:33:51.095539+00:00`
+Refreshed at: `2026-11-14T21:38:57.484414+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-14T21:33:51.095539+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `187bef7b961f` — Rerun the field ownership proxy and Best Pick placement through Week 9
-- Pending change set: 45 paths
+- Baseline commit: `1b566624e245` — Rerun the language read's revision path through Week 9
+- Pending change set: 46 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/lead-104-read-revision-path.md`
+  - `M  docs/lanes/flag-gate-evaluation-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/lead104_revision_path.json`
+  - `A  registry/weak_signals/flag_set_freeze_2026_11_14.json`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  scripts/lead104_revision_path.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-14T21:33:51.095539+00:00`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
   - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - ...and 25 more
+  - ...and 26 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

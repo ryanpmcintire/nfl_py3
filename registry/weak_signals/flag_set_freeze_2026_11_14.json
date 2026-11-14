@@ -1,0 +1,89 @@
+{
+  "family": "flag_set_freeze_2026_11_14",
+  "signals": {
+    "flagfreeze_frozen_side_vs_served_card_2026": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a measurement of a frozen declared flag set against the in-season gate, recorded as measured.",
+      "closing_ground": null,
+      "description": "2026 settled games, Weeks 2-10, whose side under the frozen protection-only flag set differs from the side the card served; effect is the frozen side's cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": 28.95,
+      "effect_units": "accuracy_points",
+      "family": "flag_set_freeze_2026_11_14",
+      "interval": [
+        4.43,
+        43.95
+      ],
+      "league": "nfl",
+      "notes": "frozen side 15-4, exact two-sided p 0.019; other terms held as served; the set was chosen on Weeks 1-6 records, so games before 2026-10-25 are in-sample to the choice; three cells, one family; all differing games fall before the 2026-10-25 declaration; Week 1 (16 games) predates the fitted probability and is not replayed",
+      "plain_summary": "This counts this season's games where the pick would have been different if only the pass-protection mismatch rule had counted all year, and how often that different pick covered the pool number.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 19,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/flag-gate-evaluation-2026-11-14.md",
+      "standard_error": null
+    },
+    "flagfreeze_frozen_vs_gate_set_two_stage_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "These six seasons are the ones on which the division flag was found, so the difference is that flag's fit to its own discovery data and cannot refute the frozen set going forward; the log-loss interval includes zero, the only clean record is 2026 (division 3-1), and there is no positive control. Recorded as measured, closing nothing.",
+      "closing_ground": null,
+      "description": "2020-25 leave-one-season-out two-stage served construction (stated probability at the half-point pool line plus hook); accuracy of the frozen protection-only flag set minus the set the in-season gate counts today (flag_division+flag_protection); paired game bootstrap",
+      "effect": -2.345,
+      "effect_units": "accuracy_points",
+      "family": "flag_set_freeze_2026_11_14",
+      "interval": [
+        -4.009,
+        -0.681
+      ],
+      "league": "nfl",
+      "notes": "frozen [723, 599] v gate set [754, 568]; decisive rows frozen side 33-64; every flag was found on these seasons, so the level is in-sample to discovery; three cells, one family",
+      "plain_summary": "The card adds a small push from situational rules. This compares counting only the pass-protection mismatch rule with counting the rules that happen to have a winning record this season, on six past seasons.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/flag-gate-evaluation-2026-11-14.md",
+      "standard_error": null
+    },
+    "flagfreeze_frozen_vs_gate_set_two_stage_logloss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "These six seasons are the ones on which the division flag was found, so the difference is that flag's fit to its own discovery data and cannot refute the frozen set going forward; the log-loss interval includes zero, the only clean record is 2026 (division 3-1), and there is no positive control. Recorded as measured, closing nothing.",
+      "closing_ground": null,
+      "description": "2020-25 leave-one-season-out two-stage served construction; log loss of the set the in-season gate counts today minus log loss of the frozen protection-only set (positive favours the frozen set); paired game bootstrap",
+      "effect": -0.00366,
+      "effect_units": "log_loss_improvement",
+      "family": "flag_set_freeze_2026_11_14",
+      "interval": [
+        -0.00773,
+        0.00038
+      ],
+      "league": "nfl",
+      "notes": "log loss frozen 0.68199 v gate set 0.67833; in-sample to flag discovery; three cells, one family",
+      "plain_summary": "The card adds a small push from situational rules. This asks whether the stated cover chances are better calibrated when only the pass-protection mismatch rule counts, on six past seasons.",
+      "probability_positive": 0.0368,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/flag-gate-evaluation-2026-11-14.md",
+      "standard_error": null
+    }
+  }
+}
