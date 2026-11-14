@@ -1,0 +1,341 @@
+{
+  "family": "mod36_addone_noise_floor",
+  "signals": {
+    "mod36_null_playoff_leverage_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real levdiff column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus an intercept-only fit; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 50, median record 22-28.",
+      "effect": -0.899306,
+      "effect_units": "accuracy_points",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -2.777778,
+        1.5625
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in playoff stakes between the two teams in late-season games, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.205,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_playoff_leverage_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real levdiff column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus an intercept-only fit; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 50, median record 22-28.",
+      "effect": -0.000532,
+      "effect_units": "brier_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.001766,
+        0.000794
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in playoff stakes between the two teams in late-season games, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.195,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_playoff_leverage_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real levdiff column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus an intercept-only fit; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 50, median record 22-28.",
+      "effect": -0.001096,
+      "effect_units": "log_loss_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.003576,
+        0.001579
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in playoff stakes between the two teams in late-season games, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.195,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 576,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_questionable_habit_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real habit_adj column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 76, median record 36-42.",
+      "effect": -0.272788,
+      "effect_units": "accuracy_points",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -1.131071,
+        0.535595
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles each game's reading of how often a coach's doubtful-to-play listings suit up, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.29,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_questionable_habit_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real habit_adj column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 76, median record 36-42.",
+      "effect": -0.000234,
+      "effect_units": "brier_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.00077,
+        0.000322
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles each game's reading of how often a coach's doubtful-to-play listings suit up, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.155,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_questionable_habit_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real habit_adj column shuffled among games within each season, 200 draws (seed 36), entered as an intercept and one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 76, median record 36-42.",
+      "effect": -0.000479,
+      "effect_units": "log_loss_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.001569,
+        0.000584
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles each game's reading of how often a coach's doubtful-to-play listings suit up, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.155,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_rest_difference_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real rest_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 50, median record 22-29.",
+      "effect": -0.209248,
+      "effect_units": "accuracy_points",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -1.001331,
+        0.598802
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.295,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_rest_difference_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real rest_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 50, median record 22-29.",
+      "effect": -0.000228,
+      "effect_units": "brier_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.00079,
+        0.000282
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.13,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_rest_difference_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real rest_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 50, median record 22-29.",
+      "effect": -0.000469,
+      "effect_units": "log_loss_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.001592,
+        0.000611
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_short_week_side_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real short_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 37, median record 16-20.",
+      "effect": -0.16833,
+      "effect_units": "accuracy_points",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.738523,
+        0.469062
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.3125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_short_week_side_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real short_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 37, median record 16-20.",
+      "effect": -0.000186,
+      "effect_units": "brier_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.000627,
+        0.000388
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.235,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    },
+    "mod36_null_short_week_side_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null: the real short_diff column shuffled among games within each season, 200 draws (seed 36), entered as one coefficient on the served out-of-season logit, leave-one-season-out 2020-2025, versus the served probability; effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 37, median record 16-20.",
+      "effect": -0.000381,
+      "effect_units": "log_loss_improvement",
+      "family": "mod36_addone_noise_floor",
+      "interval": [
+        -0.001282,
+        0.000792
+      ],
+      "league": "nfl",
+      "notes": "Family mod36_addone_noise_floor: 4 templates x 3 metrics at each template's matched reference; planted-effect cells and detection shares stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not, to show how much a meaningless extra ingredient moves the pick probability's score.",
+      "probability_positive": 0.23,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-36-mod36-add-one-noise-null.md",
+      "standard_error": null
+    }
+  }
+}
