@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:23:04.607426+00:00`
+Refreshed at: `2026-11-14T21:25:33.262183+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-11-14T21:23:04.607426+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a664d6e85f33` — Measure what the college and pooled harnesses can detect
+- Baseline commit: `0271fbd37476` — Measure the rule that decides which situational flags count
 - Pending change set: 45 paths
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `A  docs/lanes/flag-gate-evaluation-2026-11-14.md`
+  - `M  docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/flag_gate_evaluation_2026_11_14.json`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  scripts/flag_gate_evaluation.py`
   - ` M scripts/pool05_ownership_v2.py`
+  - ` M scripts/pool10_best_pick_hooks.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
