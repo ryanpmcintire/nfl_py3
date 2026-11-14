@@ -4,21 +4,21 @@
     "opener_error_transfer_added_term_vs_base_v2": {
       "category": null,
       "classification": "unresolved_below_power",
-      "classification_evidence": "Interval crosses zero (P+=0.76); per-fold LOSO betas for cfb_transfer_logit flip sign across the 6 NFL seasons (-0.0098,+0.0009,-0.0084,-0.0405,-0.0236,+0.0135), an order of magnitude smaller than the stable base four-term coefficients; in-sample-minus-OOS accuracy gap -0.00067 (no overfitting); split-half reliability 0.141, not zero, so no_split_half_reliability is not admissible either",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.7319 [-1.8366, +0.2104] P+ 0.0808 accuracy_points, n 1503. No closing ground is met. The earlier record read +0.1331 [-0.2022, +0.4746] P+ 0.7599, unresolved_below_power.",
       "closing_ground": null,
-      "description": "CFB-trained opener-error logit (13-season, 4301-game, two-book widened training set) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base",
-      "effect": 0.13306719893546592,
+      "description": "CFB-trained opener-error logit (13-season, 4301-game, two-book widened training set) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.1331 [-0.2022, +0.4746] P+ 0.7599, unresolved_below_power.",
+      "effect": -0.7318695941450515,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v2",
       "interval": [
-        -0.20215633423180668,
-        0.4745762711864443
+        -1.8366054464851178,
+        0.21037868162693263
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": null,
-      "probability_positive": 0.759875,
-      "recorded_at": "2026-09-23",
+      "probability_positive": 0.08075,
+      "recorded_at": "2026-11-14",
       "reliability": 0.14132263925353555,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -26,27 +26,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T202410Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225431Z/summary.json",
       "standard_error": null
     },
     "opener_error_transfer_nflonly_vs_cfbdirect_v2": {
       "category": null,
       "classification": "unresolved_below_power",
-      "classification_evidence": "Interval crosses zero (P+=0.58), wide because it compares two already-noisy standalone predictors; cannot yet separate a CFB-transfer-specific cost from a generic feature-set cost; in-sample-minus-OOS accuracy gap +0.018 (no overfitting)",
+      "classification_evidence": "Corrected rerun 2026-11-14: -1.6633 [-3.4127, +0.1283] P+ 0.0352 accuracy_points, n 1503. No closing ground is met. The earlier record read +0.3992 [-4.3179, +4.4849] P+ 0.5819, unresolved_below_power.",
       "closing_ground": null,
-      "description": "NFL-only-trained 5-feature twin vs CFB-trained-direct on the same features, widened CFB (13-season, 4301-game) population; isolates transfer cost from feature-set cost",
-      "effect": 0.39920159680638667,
+      "description": "NFL-only-trained 5-feature twin vs CFB-trained-direct on the same features, widened CFB (13-season, 4301-game) population; isolates transfer cost from feature-set cost Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.3992 [-4.3179, +4.4849] P+ 0.5819, unresolved_below_power.",
+      "effect": -1.663339986693274,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v2",
       "interval": [
-        -4.317897371714641,
-        4.48493342676945
+        -3.4127495170637454,
+        0.1282532564595306
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": null,
-      "probability_positive": 0.581875,
-      "recorded_at": "2026-09-23",
+      "probability_positive": 0.03525,
+      "recorded_at": "2026-11-14",
       "reliability": 0.14132263925353555,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -54,7 +54,7 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T202410Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225431Z/summary.json",
       "standard_error": null
     }
   }

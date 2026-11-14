@@ -4,21 +4,21 @@
     "xlg09_unit6_nested_pooled_vs_base_accuracy_2020_2025": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.6653 [-1.4895, +0.2553] P+ 0.0772 accuracy_points, n 1503. No closing ground is met. The earlier record read -0.9980 [-2.3826, +0.3752] P+ 0.0793, unresolved_below_power.",
       "closing_ground": null,
-      "description": "Same, 2020-2025 subset",
-      "effect": -0.9980039920159722,
+      "description": "Same, 2020-2025 subset Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -0.9980 [-2.3826, +0.3752] P+ 0.0793, unresolved_below_power.",
+      "effect": -0.6653359946773074,
       "effect_units": "accuracy_points",
       "family": "xlg09_unit6_nested_pooled",
       "interval": [
-        -2.3826208829712647,
-        0.37523452157598447
+        -1.4895057549085933,
+        0.255264837268665
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Negative point estimate on six seasons; interval reaches above zero, not resolved.",
-      "probability_positive": 0.07925,
-      "recorded_at": "2026-09-29",
+      "probability_positive": 0.07725,
+      "recorded_at": "2026-11-14",
       "reliability": 0.14132263925353555,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -26,27 +26,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "source": "artifacts/xlg09_unit6/20261114T225946Z/summary.json",
       "standard_error": null
     },
     "xlg09_unit6_nested_pooled_vs_base_accuracy_all_graded": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "Corrected rerun 2026-11-14: +0.7112 [-0.4390, +1.9409] P+ 0.8805 accuracy_points, n 3234. No closing ground is met. The earlier record read +0.4638 [-0.7827, +1.7760] P+ 0.7485, unresolved_below_power.",
       "closing_ground": null,
-      "description": "Nested pooled term as 5th fitted term, accuracy vs four-term base, 2013-2025",
-      "effect": 0.4638218923933235,
+      "description": "Nested pooled term as 5th fitted term, accuracy vs four-term base, 2013-2025 Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.4638 [-0.7827, +1.7760] P+ 0.7485, unresolved_below_power.",
+      "effect": 0.7111935683364323,
       "effect_units": "accuracy_points",
       "family": "xlg09_unit6_nested_pooled",
       "interval": [
-        -0.7827359921758633,
-        1.7759792467429907
+        -0.4389731213971415,
+        1.9408575112531845
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Small positive accuracy point estimate, not resolvable at this size.",
-      "probability_positive": 0.7485,
-      "recorded_at": "2026-09-29",
+      "probability_positive": 0.8805,
+      "recorded_at": "2026-11-14",
       "reliability": 0.14132263925353555,
       "sample_blocks": 13,
       "sample_games": 3234,
@@ -54,27 +54,27 @@
         2013,
         2025
       ],
-      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "source": "artifacts/xlg09_unit6/20261114T225946Z/summary.json",
       "standard_error": null
     },
     "xlg09_unit6_nested_pooled_vs_base_linemove_2020_2025": {
       "category": "market",
       "classification": "refuted_mechanism",
-      "classification_evidence": "Whole season-block interval below zero; same mechanism",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.0762 [-0.1359, -0.0237] P+ 0.0010 ats_points, n 1503. The whole season-block interval is below zero, so wrong_sign_resolved still holds. The earlier record read -0.0855 [-0.1494, -0.0313] P+ 0.0000, refuted_mechanism.",
       "closing_ground": "wrong_sign_resolved",
-      "description": "Same as all-graded, 2020-2025 subset",
-      "effect": -0.0854956753160346,
+      "description": "Same as all-graded, 2020-2025 subset Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -0.0855 [-0.1494, -0.0313] P+ 0.0000, refuted_mechanism.",
+      "effect": -0.07618097139055223,
       "effect_units": "ats_points",
       "family": "xlg09_unit6_nested_pooled",
       "interval": [
-        -0.14940517844646606,
-        -0.031270572745227126
+        -0.13585434173669467,
+        -0.023650899400399734
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "On the last six seasons the leak-free pooled term still moves the line the wrong way.",
-      "probability_positive": 0.0,
-      "recorded_at": "2026-09-29",
+      "probability_positive": 0.001,
+      "recorded_at": "2026-11-14",
       "reliability": 0.14132263925353555,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -82,27 +82,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "source": "artifacts/xlg09_unit6/20261114T225946Z/summary.json",
       "standard_error": null
     },
     "xlg09_unit6_nested_pooled_vs_base_linemove_all_graded": {
       "category": "market",
       "classification": "refuted_mechanism",
-      "classification_evidence": "Whole season-block interval below zero and nested beta negative in 13 of 13 folds; leak-free replication of unit 5",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.0586 [-0.0960, -0.0235] P+ 0.0000 ats_points, n 3234. The whole season-block interval is below zero, so wrong_sign_resolved still holds. The earlier record read -0.0880 [-0.1265, -0.0539] P+ 0.0000, refuted_mechanism.",
       "closing_ground": "wrong_sign_resolved",
-      "description": "Unit 6 nested-LOSO pooled two-league term (stacking leak removed) as 3rd fitted term, line movement toward pick vs Tuesday base, 2013-2025",
-      "effect": -0.08797155225726655,
+      "description": "Unit 6 nested-LOSO pooled two-league term (stacking leak removed) as 3rd fitted term, line movement toward pick vs Tuesday base, 2013-2025 Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -0.0880 [-0.1265, -0.0539] P+ 0.0000, refuted_mechanism.",
+      "effect": -0.05859616573902288,
       "effect_units": "ats_points",
       "family": "xlg09_unit6_nested_pooled",
       "interval": [
-        -0.1265123323864504,
-        -0.05385010217488092
+        -0.09602864742570624,
+        -0.023467289819692563
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Removing a stacking artifact does not rescue the pooled college-plus-NFL term; it still moves the line away from the pick.",
       "probability_positive": 0.0,
-      "recorded_at": "2026-09-29",
+      "recorded_at": "2026-11-14",
       "reliability": 0.14132263925353555,
       "sample_blocks": 13,
       "sample_games": 3234,
@@ -110,7 +110,7 @@
         2013,
         2025
       ],
-      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "source": "artifacts/xlg09_unit6/20261114T225946Z/summary.json",
       "standard_error": null
     }
   }

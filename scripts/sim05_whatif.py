@@ -16,7 +16,7 @@ import sim04_engine as eng  # noqa: E402
 ARTIFACT_ROOT = REPO / "artifacts" / "sim05_whatif"
 SEASONS = tuple(range(2009, 2026))
 QB_SEASONS = tuple(range(2015, 2026))
-LINES = (-3.0, -7.0, 3.0)
+LINES = (3.0, 7.0, -3.0)
 KEY_NUMBERS = (3, 7, 10, 14, 17)
 N_GAMES = 20000
 BASE_SEED = 20260925
@@ -25,7 +25,7 @@ N_BOOT = 2000
 
 
 def cover_push_probs(margins: np.ndarray, line: float) -> dict:
-    adj = margins + line
+    adj = margins - line
     cover = float(np.mean(adj > 0))
     push = float(np.mean(adj == 0))
     loss = float(np.mean(adj < 0))

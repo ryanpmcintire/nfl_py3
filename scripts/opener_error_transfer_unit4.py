@@ -88,7 +88,7 @@ def load_line_move_population() -> tuple[pd.DataFrame, dict[str, Any], dict[str,
         columns=["gameday_sbr", "tue_open_home_spread", "open_home_spread", "sbr_open_move"]
     )
 
-    extended["home_favorite"] = extended["home_open"].lt(0.0).astype(float)
+    extended["home_favorite"] = extended["home_open"].gt(0.0).astype(float)
     extended["spread_size"] = extended["home_open"].abs()
     extended["key_number_distance"] = key_number_distance(extended["home_open"])
     extended = attach_transfer_features(extended, date_col="gameday", move_col="open_move")

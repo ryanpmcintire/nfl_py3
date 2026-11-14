@@ -135,7 +135,7 @@ def load_cfb_population() -> pd.DataFrame:
         game = base.merge(home_rows, on="game_id", how="inner")
         frames.append(game)
     games = pd.concat(frames, ignore_index=True)
-    games["move"] = games["home_close"] - games["home_open"]
+    games["move"] = games["home_open"] - games["home_close"]
     games["home_margin"] = games["home_points"] - games["away_points"]
     games["margin_vs_open"] = games["home_margin"] + games["home_open"]
     games = games.loc[games["margin_vs_open"].ne(0.0)].reset_index(drop=True)
@@ -178,7 +178,7 @@ def load_extended_nfl_population() -> tuple[pd.DataFrame, dict[str, Any], dict[s
         columns=["gameday_sbr", "tue_open_home_spread", "proxy_open_home_spread"]
     )
 
-    extended["home_favorite"] = extended["home_open"].lt(0.0).astype(float)
+    extended["home_favorite"] = extended["home_open"].gt(0.0).astype(float)
     extended["spread_size"] = extended["home_open"].abs()
     extended["key_number_distance"] = key_number_distance(extended["home_open"])
     extended = attach_transfer_features(extended, date_col="gameday", move_col="open_move")

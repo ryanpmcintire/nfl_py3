@@ -4,21 +4,21 @@
     "opener_error_transfer_added_term_vs_base": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Interval crosses zero (-1.50, 0.26), probability_positive=0.326; only 40 of 1,503 games flip pick vs base (17-23 for the plus model, 23-17 for base on those). Candidate Brier 0.24579/log-loss 0.68478 vs base 0.24539/0.68395 -- essentially flat, term does not sharpen calibration either. Reliability tables for base and plus are both well aligned bin-by-bin. No zero-crossing closure per AGENTS.md; this is the decision-relevant cell for whether the term joins the served probability, and it does not yet clear either direction.",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.9315 [-2.0833, +0.2146] P+ 0.0619 accuracy_points, n 1503. No closing ground is met. The earlier record read -0.3992 [-1.5013, +0.2626] P+ 0.3259, unresolved_below_power.",
       "closing_ground": null,
-      "description": "CFB-trained cover-probability logit added as a fifth fitted term inside the served four-term probability, refit LOSO per NFL season, vs the four-term base, paired accuracy points, Brier, log loss, reliability table.",
-      "effect": -0.39920159680638667,
+      "description": "CFB-trained cover-probability logit added as a fifth fitted term inside the served four-term probability, refit LOSO per NFL season, vs the four-term base, paired accuracy points, Brier, log loss, reliability table. Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -0.3992 [-1.5013, +0.2626] P+ 0.3259, unresolved_below_power.",
+      "effect": -0.9314703925482393,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v1",
       "interval": [
-        -1.5013054830287142,
-        0.2626438413015239
+        -2.083333333333326,
+        0.214568395957374
       ],
       "league": "nfl",
-      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Adding a college-football opener-mistake signal as a fifth ingredient to the real four-part model neither clearly helps nor clearly hurts yet -- the sample is too small to tell, so it stays off the card.",
-      "probability_positive": 0.325875,
-      "recorded_at": "2026-09-23",
+      "probability_positive": 0.061875,
+      "recorded_at": "2026-11-14",
       "reliability": 0.4752335640250196,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -26,27 +26,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225322Z/summary.json",
       "standard_error": null
     },
     "opener_error_transfer_cfb_direct_vs_base": {
       "category": "modeling",
       "classification": "refuted_mechanism",
-      "classification_evidence": "Interval entirely below zero (upper -3.76 accuracy points): using the CFB-trained predictor standalone in place of the served four-term probability is resolved worse. On the 750 games where the two disagreed, CFB-direct went 323-427 and base went 427-323.",
+      "classification_evidence": "Corrected rerun 2026-11-14: -5.2562 [-8.6815, -2.1578] P+ 0.0000 accuracy_points, n 1503. The whole season-block interval is below zero, so wrong_sign_resolved still holds. The earlier record read -6.9195 [-10.9823, -3.7649] P+ 0.0000, refuted_mechanism.",
       "closing_ground": "wrong_sign_resolved",
-      "description": "CFB-trained cover-probability model (same 5 features) used directly as the pick source (not added as a term) vs the served four-term base probability, paired accuracy points, LOSO base.",
-      "effect": -6.91949434464405,
+      "description": "CFB-trained cover-probability model (same 5 features) used directly as the pick source (not added as a term) vs the served four-term base probability, paired accuracy points, LOSO base. Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -6.9195 [-10.9823, -3.7649] P+ 0.0000, refuted_mechanism.",
+      "effect": -5.256154357950771,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v1",
       "interval": [
-        -10.982264665757157,
-        -3.764894775137716
+        -8.681462140992169,
+        -2.157788267026295
       ],
       "league": "nfl",
-      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Picking games purely off the college-football-trained model instead of the real four-part model loses meaningfully more picks -- it is not a stand-in for the served model.",
       "probability_positive": 0.0,
-      "recorded_at": "2026-09-23",
+      "recorded_at": "2026-11-14",
       "reliability": 0.4752335640250196,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -54,27 +54,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225322Z/summary.json",
       "standard_error": null
     },
     "opener_error_transfer_cfb_move_vs_zero": {
       "category": "modeling",
       "classification": "refuted_mechanism",
-      "classification_evidence": "Season-blocked bootstrap (6 NFL seasons, 4000 draws) interval entirely below zero (upper -0.0077): the CFB-trained move predictor is reliably worse than guessing zero move, not better. Resolved wrong sign for the hypothesis that the shared opener-setting mechanism yields a usable move-size prediction.",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.0393 [-0.0561, -0.0239] P+ 0.0000 mae_improvement, n 1503. The whole season-block interval is below zero, so wrong_sign_resolved still holds. The earlier record read -0.0181 [-0.0327, -0.0077] P+ 0.0000, refuted_mechanism.",
       "closing_ground": "wrong_sign_resolved",
-      "description": "CFB-trained ridge model (5 predeclared point-in-time features, Bovada 2021-2024) predicting NFL close-minus-open line move vs a naive zero-move guess, scored on the 1,503-game NFL opener population 2020-2025.",
-      "effect": -0.01809356317241273,
+      "description": "CFB-trained ridge model (5 predeclared point-in-time features, Bovada 2021-2024) predicting NFL close-minus-open line move vs a naive zero-move guess, scored on the 1,503-game NFL opener population 2020-2025. Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -0.0181 [-0.0327, -0.0077] P+ 0.0000, refuted_mechanism.",
+      "effect": -0.03929527159126922,
       "effect_units": "mae_improvement",
       "family": "opener_error_transfer_v1",
       "interval": [
-        -0.03266525044866175,
-        -0.0076685985487706665
+        -0.05612941544664174,
+        -0.023850949548720246
       ],
       "league": "nfl",
-      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "A model trained only on college-football opening-line mistakes does not predict how far an NFL line will move by kickoff -- guessing 'no move' beats it.",
       "probability_positive": 0.0,
-      "recorded_at": "2026-09-23",
+      "recorded_at": "2026-11-14",
       "reliability": 0.4752335640250196,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -82,27 +82,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225322Z/summary.json",
       "standard_error": null
     },
     "opener_error_transfer_nflonly_twin_vs_base": {
       "category": "modeling",
       "classification": "refuted_mechanism",
-      "classification_evidence": "Interval entirely below zero (upper -4.40 points): even fit on NFL data only, these 5 features alone underperform the four-term base by a resolved margin -- the shortfall seen training on CFB is feature-set poverty, not only a transfer loss.",
+      "classification_evidence": "Corrected rerun 2026-11-14: -5.3892 [-8.3907, -2.7416] P+ 0.0000 accuracy_points, n 1503. The whole season-block interval is below zero, so wrong_sign_resolved still holds. The earlier record read -7.3852 [-11.0363, -4.4008] P+ 0.0000, refuted_mechanism.",
       "closing_ground": "wrong_sign_resolved",
-      "description": "NFL-only-trained twin of the identical 5 features (standalone, not added), LOSO per NFL season, vs the four-term base, paired accuracy points -- isolates feature value from transfer value.",
-      "effect": -7.385229540918164,
+      "description": "NFL-only-trained twin of the identical 5 features (standalone, not added), LOSO per NFL season, vs the four-term base, paired accuracy points -- isolates feature value from transfer value. Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -7.3852 [-11.0363, -4.4008] P+ 0.0000, refuted_mechanism.",
+      "effect": -5.389221556886231,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v1",
       "interval": [
-        -11.036339165545089,
-        -4.4008124576845
+        -8.390732623669377,
+        -2.7416038382453767
       ],
       "league": "nfl",
-      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Even when the same five ingredients are trained fresh on NFL data only, on their own they still pick worse than the real four-part model.",
       "probability_positive": 0.0,
-      "recorded_at": "2026-09-23",
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -110,27 +110,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225322Z/summary.json",
       "standard_error": null
     },
     "opener_error_transfer_nflonly_vs_cfbdirect": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Interval crosses zero (-6.12, 4.76), probability_positive=0.459, on 859 games where the two standalone models disagreed (426-433 vs 433-426). Cannot yet distinguish CFB-transfer-specific loss from generic feature-set loss.",
+      "classification_evidence": "Corrected rerun 2026-11-14: -0.1331 [-1.3880, +1.1204] P+ 0.4046 accuracy_points, n 1503. No closing ground is met. The earlier record read -0.4657 [-6.1184, +4.7572] P+ 0.4587, unresolved_below_power.",
       "closing_ground": null,
-      "description": "NFL-only-trained twin vs CFB-trained predictor, both standalone with the identical 5 features, paired accuracy points -- isolates whether CFB transfer specifically costs accuracy relative to fitting the same features on NFL data.",
-      "effect": -0.4657351962741141,
+      "description": "NFL-only-trained twin vs CFB-trained predictor, both standalone with the identical 5 features, paired accuracy points -- isolates whether CFB transfer specifically costs accuracy relative to fitting the same features on NFL data. Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read -0.4657 [-6.1184, +4.7572] P+ 0.4587, unresolved_below_power.",
+      "effect": -0.13306719893546037,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v1",
       "interval": [
-        -6.118421052631584,
-        4.757205837882585
+        -1.387970918704562,
+        1.1204481792717103
       ],
       "league": "nfl",
-      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Whether the five ingredients work better learned from college football or learned fresh from the NFL is still unclear at this sample size.",
-      "probability_positive": 0.45875,
-      "recorded_at": "2026-09-23",
+      "probability_positive": 0.404625,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -138,7 +138,7 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "source": "artifacts/opener_error_transfer/20261114T225322Z/summary.json",
       "standard_error": null
     }
   }
