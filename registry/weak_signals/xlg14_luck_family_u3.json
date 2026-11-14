@@ -420,6 +420,90 @@
       ],
       "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
       "standard_error": null
+    },
+    "xlg14_luck_nfl_fumble_recovery_luck_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor fumble_recovery_luck: opponent fumbles recovered minus own fumbles lost, each less the league share of fumbles lost in earlier weeks of the same season (run and pass plays with a fumbling player, charged to the team in possession, regular season). Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1400; changed picks 56, record 25-31; coefficient per SD +0.0133 [-0.0937, +0.1180], negative in 2 of 6 folds (expected negative); this metric sits at percentile 40.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.465735.",
+      "effect": -0.399202,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -1.330672,
+        0.467399
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_luck_family_u3: the one pre-declared NFL confirmation of the college survivor; 1 gating read (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells with accuracy and Brier secondary, 3 control reads; terms resolved in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro teams that have recovered more loose balls than chance would give them so far this season go on to beat the opening spread less often, as college teams appeared to. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.1982,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_nfl_fumble_recovery_luck_brier_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor fumble_recovery_luck: opponent fumbles recovered minus own fumbles lost, each less the league share of fumbles lost in earlier weeks of the same season (run and pass plays with a fumbling player, charged to the team in possession, regular season). Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1400; changed picks 56, record 25-31; coefficient per SD +0.0133 [-0.0937, +0.1180], negative in 2 of 6 folds (expected negative); this metric sits at percentile 15.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000478.",
+      "effect": -0.000468,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.000911,
+        -7e-05
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_luck_family_u3: the one pre-declared NFL confirmation of the college survivor; 1 gating read (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells with accuracy and Brier secondary, 3 control reads; terms resolved in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro teams that have recovered more loose balls than chance would give them so far this season go on to beat the opening spread less often, as college teams appeared to. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0095,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_luck_nfl_fumble_recovery_luck_log_loss_improvement": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor fumble_recovery_luck: opponent fumbles recovered minus own fumbles lost, each less the league share of fumbles lost in earlier weeks of the same season (run and pass plays with a fumbling player, charged to the team in possession, regular season). Per game over each team's games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1400; changed picks 56, record 25-31; coefficient per SD +0.0133 [-0.0937, +0.1180], negative in 2 of 6 folds (expected negative); this metric sits at percentile 16.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000975.",
+      "effect": -0.000953,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_luck_family_u3",
+      "interval": [
+        -0.001854,
+        -0.000148
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_luck_family_u3: the one pre-declared NFL confirmation of the college survivor; 1 gating read (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells with accuracy and Brier secondary, 3 control reads; terms resolved in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro teams that have recovered more loose balls than chance would give them so far this season go on to beat the opening spread less often, as college teams appeared to. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0095,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
     }
   }
 }

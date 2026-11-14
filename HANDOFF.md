@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:52:29.095825+00:00`
+Refreshed at: `2026-11-14T22:00:17.754268+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-11-14T21:52:29.095825+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `df127afe1898` — Check the model's quarterback inputs against this week's starters
+- Baseline commit: `d37e4e2000ce` — Screen a turnover-luck and special-teams-luck family on college games first
 - Pending change set: 45 paths
   - `M  HANDOFF.md`
   - `M  README.md`
@@ -29,8 +29,8 @@ Refreshed at: `2026-11-14T21:52:29.095825+00:00`
   - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/xlg14_luck_family_u3.json`
-  - `A  scripts/xlg14_luck_family.py`
+  - `M  registry/weak_signals/xlg14_luck_family_u3.json`
+  - `A  scripts/xlg14_fumble_luck_nfl_confirmation.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
