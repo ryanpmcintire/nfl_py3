@@ -1,22 +1,33 @@
 # LEAD-110
 
 ## Goal
-Market absorption of the wording read: does the Tuesday-to-deadline line move already load on the read availability difference (ROADMAP LEAD-110).
+Market absorption of the wording read (ROADMAP LEAD-110): does the read's home-minus-away availability difference predict the line move from the read to the pick deadline, and does it say anything about the cover at the frozen Tuesday pool line beyond the served probability, which already holds the move term. Research only; one fitted probability selects every side, nothing here changes a pick.
 
-## State
-Added 2026-11-03 (backlog expansion 7), not started, nothing run. Mechanism: If the market prices the wording, the read adds nothing beyond the move; if it lags, the read leads the move. Fitted term: read availability difference in a model of the move, then in the cover probability with move as a separate term. Data: LEAD-106 reads, Tuesday and deadline lines (local).
+## Declaration (written 2026-11-14 before any join of moves or outcomes)
+Family `lead110_market_absorption`, 8 looks. x_read = sum of group weight x (1 - read P(plays)), home minus away, spread points, positive = home healthier; weights read from `artifacts/lead110_absorption/report.json` (OLS 2011-2025, 3680 games). x_ladder = same with the designation ladder; x_extra = x_read - x_ladder. Read time = forward file `recorded_utc`. Line at read = each book's last quote at or before it; deadline line = the same book's last quote after the read and at or before min(kickoff, Sunday 4 PM ET); medians over books quoted at both; store `data/market/raw/*/quotes.parquet`. Pool line `data/splash/2026_weekNN_*.json`. Served probability = last `clv_ledger/published_picks.parquet` row at or before the deadline. Looks: a1 post-read move on x_read; a2 on x_extra with x_ladder held; a3 ladder control; b1 x_read as one added term to the served logit; b0 intercept-only control; b2 ladder-term control; c1 pool-line-to-deadline gap on x_read; c2 pool-line-to-read gap on x_read. Game bootstrap 2000, permutation of x within week.
+
+## State (2026-11-14 15:21 ET; all numbers measured this session unless labelled)
+Command `scripts/lead110_market_absorption.py` -> `artifacts/lead110/{report.json,games.parquet,games.csv,registry_batch.json}`. Run twice, identical. ruff check and format clean.
+- Games: 107 with stored reads. Excluded 92: all 91 Weeks 2-8 games (reads recorded 2026-11-03, after every deadline; by week 11/10/16/15/14/13/12, listed in `report.json` `excluded_games`) and Week 10 WAS@NYG (no scored ladder table yet). Used: 15, Week 9 only. Move looks use 13: CIN@ATL and JAX@BAL have no quote between the read and the deadline. Cover looks use 15.
+- Timing: Sunday view recorded Sat 23:02Z, Thursday view Thu 22:30Z. Line at read is 8 hours old (Sat 15:01Z); deadline quote is 34 to 460 minutes before the deadline; 3 books per game. 5 of 13 games moved after the read, each by half a point.
+- (a) Post-read move per point of read difference: a1 -0.030 [-0.124, +0.130], P+ .35, permutation p .68. a2 read minus ladder +0.046 [-0.92, +1.30], P+ .75, p .70. a3 ladder control -0.049 [-0.144, +0.202], P+ .30, p .50.
+- (c) Share already in the gap between the pool line and the deadline line: c1 +0.310 [-0.054, +0.698], P+ .94, p .11. Same gap at the read time: c2 +0.340 [-0.081, +0.725], P+ .905, p .081. All of it was there before the read.
+- (b) Cover at the pool line, leave-one-game-out because one admissible week makes leave-one-week-out impossible. Served card 5-10, log loss .752 against .693 for a coin. b1 read term: decisive games 1-1, record with the term 5-10, held-out log-loss gain -0.112 [-0.275, +0.002], P+ .028, permutation p .67 one-sided and .40 two-sided, in-sample +0.010 (gap .122), coefficient +0.154 logit per point (folds -0.14 to +0.45). b2 ladder control: decisive 0-1, -0.181 [-0.455, -0.010], P+ .0005, p .25 two-sided, in-sample +0.002. b0 intercept control: decisive 7-1, record 11-4, +0.036 [-0.263, +0.306], P+ .64, in-sample +0.123, coefficient -1.06 (away sides covered 11 of 15).
+- No served side changed between the read and the deadline (0 of 15).
+- Registry: 8 cells `lead110_fwd_*`, all `unresolved_below_power`, in `registry/weak_signals/lead110_market_absorption.json`. `weak-signals pool --league nfl --effect-units accuracy_points` loads (exit 0, no coherence problems).
+- Implication (inferred): in Week 9 the line did not move toward the read after Saturday evening, and the part of the read the market carries was in the line before the read. The card already receives that part through the served move term, so a Saturday read gives no earlier action at the frozen line. On cover, 15 games say nothing either way; the read stays out of the card. Rough sample sizes: about 100 games resolve a post-read slope of 0.05; about 1,600 games would be needed for the cover term if the in-sample coefficient were the true size.
 
 ## Tried
-Novelty check only. Nearest: LEAD-101 (news delta), LEAD-104 (view revision), MKT-25. Differs: tests absorption of one frozen read, not a new read.
+- Unit 1 (11-03): `scripts/lead110_absorption.py`, 91 games Weeks 2-8, Tuesday-to-deadline move; 4 cells in family `lead110_absorption`. Its reads were recorded after the games and are sampled, so this unit does not reuse them.
+- Unit 2 (11-14): this State. Week 10 not usable: `forward_score/2026_week10_scored.parquet` does not exist and `game_features` has no Week 10 result.
 
 ## Next
-First unit for one agent: Regress move on the read difference with designation-ladder and intercept-only controls, game-level bootstrap and a within-week permutation null, weeks 2-8.
+1. Repair Unit 1 signs and re-record its 4 cells with `--replace`. Store lines are positive when the home team is favoured (measured: correlation with the pool line .99 on 15 games, mean absolute gap .6 against 11.1 with the sign flipped). `lead110_absorption.py:166` therefore measures the move toward the away side, and `:209` grades the cover as result plus line where it should be result minus line (read). The unexplained negative ladder loading in Unit 1 is the expected positive one (inferred).
+2. Rerun this script after each scored forward week; it picks up every `forward_score/2026_weekNN_scored.parquet` and switches to leave-one-week-out at two weeks. Re-record with `record --batch artifacts/lead110/registry_batch.json --replace`.
+3. Scheduler owner: add a line capture at the forward read time and one inside each deadline window (the early kickoff and Thursday had none), and a midweek forward view so a read exists before the Tuesday-to-Saturday move. That earlier read is the only one that can test acting sooner.
+4. Keep position and ladder probability for the 51 unverified forward rows so team sums are a census (this unit used 309 of 360).
 
 ## Open
-Rules: Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
-
-## Unit 1 result (2026-11-03 5:4x PM local, agent)
-Script scripts/lead110_absorption.py, output artifacts/lead110_absorption/report.json. 91 games (weeks 2-8, 294 id-verified sampled players). Position weights: OLS of spread minus ratings-implied on Out/Doubtful count differences by group, seasons 2011-2025 only (mkt25_unit2 method). Move = Tuesday noon ET to deadline consensus median, toward home. Deadline view, not opener.
-Loading of move on read-minus-ladder availability: -0.97 [-8.8, 6.1] P+ .38, perm p .73 (designation-only ladder control -0.74 [-12.6, 5.6]). Unresolved. Ladder availability loads negative on move (-1.7 [-2.4,-0.6]), unexplained; suspect sampling-weight/baseline artefact, not diagnosed.
-Cover on residual side: 38-48 all (mean -2.6 pts [-5.8, 0.7] P+ .06); top half 19-24. Looks: 2 loadings + 1 ladder control + 2 cover = 5. Recorded 4 cells (family lead110_absorption).
-Next: read is sampled (not every player), so team sums are partial; need full-population forward reads (Week 9+) before conclusions.
+- For the orchestrator to adjudicate, not closed here: b2 has its whole interval below zero and b1 has P+ .028. Both sit inside their permutation nulls and refit a coefficient on 14 games; one week, 8 looks.
+- The weights are spread points per absent player, so a slope of 1.0 is only a rough mark for full absorption. The Tuesday pool line already holds injuries known on Tuesday; c measures only what moved since.
+- Rules: zero crossing closes nothing; one fitted probability selects the side; parameters out of season; every cell a look; verdicts through `weak-signals record`.

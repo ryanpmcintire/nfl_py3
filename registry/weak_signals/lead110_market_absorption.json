@@ -1,0 +1,229 @@
+{
+  "family": "lead110_market_absorption",
+  "signals": {
+    "lead110_fwd_absorbed_share_pool_line_to_deadline": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Slope of the pool-line-to-deadline line gap on the read difference (spread points of line move per spread point of expected availability difference); 2026 forward weeks [9], read recorded before the deadline",
+      "effect": 0.3096,
+      "effect_units": "slope_difference",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.0537,
+        0.6977
+      ],
+      "league": "nfl",
+      "notes": "within-week permutation p two-sided 0.111; 10 of 13 games have a nonzero move; 8 looks in the family",
+      "plain_summary": "How much of the health gap the wording read saw is already in the gap between the frozen pool line and the line at the pick deadline.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.2079
+    },
+    "lead110_fwd_absorbed_share_pool_line_to_read": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Slope of the pool-line-to-read-time line gap on the read difference (spread points of line move per spread point of expected availability difference); 2026 forward weeks [9], read recorded before the deadline",
+      "effect": 0.3399,
+      "effect_units": "slope_difference",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.0815,
+        0.7249
+      ],
+      "league": "nfl",
+      "notes": "within-week permutation p two-sided 0.081; 9 of 13 games have a nonzero move; 8 looks in the family",
+      "plain_summary": "How much of the health gap the wording read saw was already in the betting line at the moment the read was made.",
+      "probability_positive": 0.905,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.2296
+    },
+    "lead110_fwd_cover_pool_line_intercept_control": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Control: held-out log-loss gain from an intercept-only shift of the served probability; 2026 forward weeks [9], read recorded before the deadline",
+      "effect": 0.0365,
+      "effect_units": "log_loss_improvement",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.263,
+        0.3061
+      ],
+      "league": "nfl",
+      "notes": "leave_one_game_out; decisive games 7-1; in-sample gain 0.1226; coefficient -1.064; 8 looks in the family",
+      "plain_summary": "Control check: a plain home-or-away tilt added to the card's probability, with no injury information at all.",
+      "probability_positive": 0.643,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.1517
+    },
+    "lead110_fwd_cover_pool_line_ladder_term_control": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Control: held-out log-loss gain from the designation-ladder difference as the added term; 2026 forward weeks [9], read recorded before the deadline",
+      "effect": -0.1808,
+      "effect_units": "log_loss_improvement",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.4551,
+        -0.0097
+      ],
+      "league": "nfl",
+      "notes": "leave_one_game_out; decisive games 0-1; in-sample gain 0.0016; coefficient 0.062; within-week permutation p one-sided 0.770, two-sided 0.245; 8 looks in the family",
+      "plain_summary": "Control check: the official injury tags' health gap added to the card's probability in place of the wording read.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.116
+    },
+    "lead110_fwd_cover_pool_line_read_term": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Held-out log-loss gain from the read difference as one added term to the served probability, cover at the Tuesday pool line; 2026 forward weeks [9], read recorded before the deadline",
+      "effect": -0.1118,
+      "effect_units": "log_loss_improvement",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.2749,
+        0.0022
+      ],
+      "league": "nfl",
+      "notes": "leave_one_game_out; decisive games 1-1; in-sample gain 0.0103; coefficient 0.154; within-week permutation p one-sided 0.674, two-sided 0.404; 8 looks in the family",
+      "plain_summary": "Adding the wording read's health gap to the card's own probability: did it predict covers at the frozen pool line any better? Too few games to say yet.",
+      "probability_positive": 0.028,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.0717
+    },
+    "lead110_fwd_move_after_read_on_ladder_control": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Control: slope of the read-to-deadline move on the designation-ladder gap; 2026 forward weeks [9], read recorded before the deadline",
+      "effect": -0.0494,
+      "effect_units": "slope_difference",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.1437,
+        0.2022
+      ],
+      "league": "nfl",
+      "notes": "within-week permutation p two-sided 0.503; 5 of 13 games have a nonzero move; 8 looks in the family",
+      "plain_summary": "Control check: did the line move after the read toward the team the official injury tags alone called healthier?",
+      "probability_positive": 0.2997,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.0937
+    },
+    "lead110_fwd_move_after_read_on_read": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Slope of the read-to-deadline spread move on the read availability gap; 2026 forward weeks [9], read recorded before the deadline",
+      "effect": -0.0303,
+      "effect_units": "slope_difference",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.1236,
+        0.1299
+      ],
+      "league": "nfl",
+      "notes": "within-week permutation p two-sided 0.679; 5 of 13 games have a nonzero move; 8 looks in the family",
+      "plain_summary": "After the injury wording was read, did the betting line then move toward the team the read called healthier? Too few games to say yet.",
+      "probability_positive": 0.3527,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.0685
+    },
+    "lead110_fwd_move_after_read_on_read_minus_ladder": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 forward week(s), 8 looks; one slate cannot resolve a sign, the held-out cover cells refit a coefficient with one game left out and sit inside their permutation null (see notes); no reliability estimate, no positive control",
+      "closing_ground": null,
+      "description": "Slope of the read-to-deadline move on read-minus-ladder availability, ladder held; 2026 forward weeks [9], read recorded before the deadline",
+      "effect": 0.0459,
+      "effect_units": "slope_difference",
+      "family": "lead110_market_absorption",
+      "interval": [
+        -0.9219,
+        1.2966
+      ],
+      "league": "nfl",
+      "notes": "within-week permutation p two-sided 0.699; 5 of 13 games have a nonzero move; 8 looks in the family",
+      "plain_summary": "Did the line later move toward what the wording read saw beyond the official injury tags? Too few games to say yet.",
+      "probability_positive": 0.7488,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110/report.json",
+      "standard_error": 0.4286
+    }
+  }
+}

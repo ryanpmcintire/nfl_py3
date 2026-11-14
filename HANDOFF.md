@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:21:10.902789+00:00`
+Refreshed at: `2026-11-14T20:22:52.142620+00:00`
 
 ## Start here
 
@@ -21,28 +21,28 @@ Refreshed at: `2026-11-14T20:21:10.902789+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4bc7b3d0b06c` — Record measured results that never reached the registry
+- Baseline commit: `68d55e14c09d` — Rerun the pool field's half-point lean through Week 9 and record it
 - Pending change set: 58 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/eng-62-leader-book-quote-capture.md`
-  - ` M docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
-  - `M  docs/lanes/pool-08-hook-side-field-share.md`
-  - `M  docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
+  - `M  docs/lanes/eng-62-leader-book-quote-capture.md`
+  - `M  docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
+  - ` M docs/lanes/lead99-llm-read.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/pool08_hook_field_share.json`
-  - `M  registry/weak_signals/pool09_hook_value_slope.json`
+  - ` M registry/weak_signals/eng49_forward_ledger_vs_card.json`
+  - ` M registry/weak_signals/eng50_online_stacker.json`
+  - `A  registry/weak_signals/lead110_market_absorption.json`
   - ` M scripts/eng50_online_stacker.py`
   - ` M scripts/forward_ledger.py`
   - ` M scripts/forward_monitor.py`
-  - `M  scripts/pool08_hook_field_share.py`
-  - `M  scripts/pool09_hook_value_slope.py`
+  - `A  scripts/lead110_market_absorption.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_move_reason.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
