@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:54:12.413566+00:00`
+Refreshed at: `2026-11-14T20:54:55.828168+00:00`
 
 ## Start here
 
@@ -21,16 +21,15 @@ Refreshed at: `2026-11-14T20:54:12.413566+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5494308c5fdf` — Check the pool simulation against what the 250 entries did; give the first-place chance at our real win rate
-- Pending change set: 48 paths
+- Baseline commit: `c809177b8c46` — Compare grading metrics under a planted effect: none sees much smaller effects
+- Pending change set: 45 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mod-36-mod36-add-one-noise-null.md`
-  - ` M docs/lanes/tuesday-reference-bundle-2026-11-14.md`
+  - `M  docs/lanes/tuesday-reference-bundle-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/eng62_reference_system_arms.json`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/mod36_metric_power.json`
-  - `A  scripts/mod36_metric_power.py`
+  - `A  scripts/eng62_reference_system_arms.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-14T20:54:12.413566+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 28 more
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - ...and 25 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

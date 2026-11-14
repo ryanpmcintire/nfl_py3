@@ -1,0 +1,2525 @@
+{
+  "family": "eng62_reference_system_arms",
+  "signals": {
+    "eng62_sysarm_B_minus_A_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.3105590062111801,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.0732282558674644,
+        1.4111732751065313
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.36924999999999997,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 2.1096265657621954e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0015692435937638206,
+        0.0015781333418284748
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5185,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 6.865551730471229e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0032374562890484225,
+        0.0032908095040675702
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.52325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -1.185770750988142,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -6.299252608667818,
+        3.832116788321168
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.316,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0005067979436375324,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00393697631383618,
+        0.004777225107468095
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.582,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0012086300254731466,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.008035519953004507,
+        0.01004760734769227
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5955,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.09057971014492754,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.366146900614754,
+        1.5152191558441561
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5311250000000001,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.00020151700341650353,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0012340326390955193,
+        0.0008209424101549664
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.34525,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_B_minus_A_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm B minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.0004538327989391534,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00258561809721138,
+        0.001668507044445511
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both early on Tuesday afternoon, as the card does today against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.32875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.062111801242236024,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.6765067650676507,
+        0.8074534161490683
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5551250000000001,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 1.7727006551620684e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0006618534450807396,
+        0.0007183345272063374
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.50625,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 5.4131820880907296e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013395210446998094,
+        0.001496677165822437
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.516,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.7905138339920948,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.7968924302788845,
+        2.521274332517818
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.824375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0005518011086037928,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0006707601329960793,
+        0.0018107295926316695
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.8135,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0011805301624970982,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013028687440786578,
+        0.0037814235271371958
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.82375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.2717391304347826,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.1071135711357114,
+        0.546448087431694
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.258375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.0002270569568889582,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0011492670558330648,
+        0.0006909759091827066
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.306,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_A_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.0004621340856931803,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0023529598923573937,
+        0.0014331629601238758
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.309,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.37267080745341613,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.007652208249609,
+        1.7588492778357194
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.7010000000000001,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -3.3692591060012292e-06,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013169189752497512,
+        0.001394097426732981
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5095,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -1.4523696423804958e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0027447809115288485,
+        0.0028860634782299785
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.50825,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 1.9762845849802373,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.5196864880777157,
+        6.626818477228418
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.7995,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 4.500316496626044e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003970230191974824,
+        0.004263454288110254
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5115,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -2.8099862976047918e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00837862861702678,
+        0.00863049580573025
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.504,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.36231884057971014,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.5096407776257597,
+        0.7259528130671506
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.26137499999999997,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -2.5539953472454643e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0004939458873452772,
+        0.0004390720718101216
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.4585,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_C_minus_B_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm C minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -8.301286754026835e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.000970371725012756,
+        0.0009564439432703263
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them one at the pool's noon freeze and the other late Tuesday night against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.49575,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.43478260869565216,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.319934874828225,
+        1.4888799839711482
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.32,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00020393367776865516,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0014130065871243657,
+        0.0017604257390048462
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5895,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0004858212162146504,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0028665048500739424,
+        0.003725563787496342
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.9881422924901186,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -6.640918387875537,
+        4.612694319714282
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.35675,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.000981596698466414,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003792080054093889,
+        0.005711978976434364
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.65925,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.002296478816455117,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.007507873729390105,
+        0.012097229814123606
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6755,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.18115942028985507,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.3011758149709594,
+        0.9107883610546051
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.36750000000000005,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.00015249520671781742,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0011560687558172264,
+        0.0008723958742944608
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.3815,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_A_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.0003440635172288974,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0024270464082986674,
+        0.0017743117941112605
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.36675,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.12422360248447205,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.178696653977159,
+        0.9305499899819676
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.39575,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00018283741211103316,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00038235127152454114,
+        0.0007583024737886529
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.72975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0004171656989099378,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0007469324859700676,
+        0.001620984072485129
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.75475,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.1976284584980237,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.7131782945736433,
+        3.0740867233353586
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5543750000000001,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0004747987548288814,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013571741012902159,
+        0.0023895113932307496
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6805,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0010878487909819707,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.002652282375078737,
+        0.005027999340768746
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.69975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.2717391304347826,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.18192601194426,
+        0.5649717514124294
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.28325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 4.902179669868605e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00019991588813065756,
+        0.0002967108556534355
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.646,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_B_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00010976928171025617,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0003938532034856283,
+        0.0006147385675117971
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.66175,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.4968944099378882,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.1876237058465287,
+        1.1097753116865325
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.281125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0001862066712170345,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013035100961827906,
+        0.0015921013685826046
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0004316893953337432,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.002636457242959989,
+        0.0033440076983718625
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.61025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -1.7786561264822136,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -7.172752111276701,
+        3.4482758620689653
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.246625,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00042979558986262057,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003946862155274453,
+        0.004609456036132182
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.56875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0011159486539580206,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.008051199211884958,
+        0.009804002465597232
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5855,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.09057971014492754,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.6469800438146095,
+        0.8050089445438283
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5985,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 7.45617501711407e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00033888454868156716,
+        0.0005093080298258949
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6345,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_D_minus_C_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm D minus arm C, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00011807056846428301,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0007328832900670033,
+        0.0010209680057297645
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights left alone against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.60475,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.37267080745341613,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.3040043345568972,
+        1.6626128267115343
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.37374999999999997,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0002623281558307424,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013383871494013517,
+        0.0018218670516377
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6405,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0006368173048854839,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.002674204511347345,
+        0.0038889435294039505
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6605,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.18633540372670807,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.2588257100490474,
+        1.9279207170870432
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.4335,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00041768891039091976,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0013004294293047576,
+        0.0020420340176303944
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.69425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.000968645099640295,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.002543809963427065,
+        0.004334665565777437
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.711,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.592885375494071,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -6.300855708136913,
+        5.133211349734743
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.425125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0007281535996046653,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003965580987782008,
+        0.00539979312295086
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6185,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0017774212976581303,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.007901186247957067,
+        0.011367751041812079
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.64125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.764733216706757,
+        1.7400585888805788
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5075,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0002753925945012858,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0011584634467334432,
+        0.0017716337290030935
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6555,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_fold_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A_fold, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0005979560088821204,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.002412178239733569,
+        0.003744852439137034
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the first setup with its pool-line weight refitted on other seasons, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.661,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -1.185770750988142,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -7.039774749580515,
+        4.372869737778924
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.340375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0008813347695242768,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003850361449330235,
+        0.005329126278614141
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.64075,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0021081481715882196,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.007620845953158586,
+        0.011303969478461757
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.6685,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.5654497359890729,
+        1.509836254685436
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5105,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -2.138320877879453e-05,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.001327366543867763,
+        0.00128397933118824
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.49,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_A_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm A, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -3.7542675686603396e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0027367675813819515,
+        0.002697814931874424
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them the way they were first set up, one early Tuesday morning and one late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.4885,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.062111801242236024,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.2659434159522622,
+        1.2182133815767482
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.470375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0002412318901731201,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.000502065098856053,
+        0.0009674666058784272
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.74025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0005681617875807709,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0009816879351128975,
+        0.0020876958320256225
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.76325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -3.205321285140562,
+        3.0973451327433628
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.512375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0003745368258867441,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0017129909651161395,
+        0.00247186558592924
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.635,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.000899518146115071,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003462242092518023,
+        0.00530156665436039
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.65875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.09057971014492754,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.4456706595681752,
+        1.2962962962962963
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.452,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00018013379463770895,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.00040581364532627445,
+        0.000740617092494995
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.73875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_B_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm B, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0004162901232525498,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0008171116788553911,
+        0.0016002726499904708
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them both early on Tuesday afternoon, as the card does today, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.759,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_all_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -0.43478260869565216,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -2.233319975956722,
+        1.4267990074441688
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.315375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_all_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0002446011492791214,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0011513483288793298,
+        0.0016082220008069397
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.64325,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_all_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population all (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0005826854840045761,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.002346041226418685,
+        0.0034087347992974642
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.664,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 805,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_moved_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": -1.9762845849802373,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -7.276119402985075,
+        3.2922941256274596
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.2315,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_moved_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.00032953366092048324,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.003891537481266107,
+        0.004221178984263952
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.562,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_moved_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population moved (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0009276180090911196,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.007814689105905319,
+        0.008974750288155196
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number moved on Tuesday afternoon or evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.5865,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 253,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_rest_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.2717391304347826,
+      "effect_units": "accuracy_points",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -1.1384036931207178,
+        1.6216216216216217
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.654875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_rest_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0002056737481101636,
+      "effect_units": "brier_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0005087422887953334,
+        0.0009096382959489887
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.72,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    },
+    "eng62_sysarm_E_minus_C_rest_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday reference system arms, 2023-25, pushes kept, stage 1 and push table out of season, pool line from DraftKings' first quote after Tuesday noon: arm E minus arm C, population rest (moved = the number changed between Tuesday noon and Wednesday 00:00 ET); week-block bootstrap; arms defined in docs/lanes/tuesday-reference-bundle-2026-11-14.md",
+      "effect": 0.0004245914100065768,
+      "effect_units": "log_loss_improvement",
+      "family": "eng62_reference_system_arms",
+      "interval": [
+        -0.0010447748197613823,
+        0.0018749147217472565
+      ],
+      "league": "nfl",
+      "notes": "Which Tuesday quotes the pool-line offset term and the line-move term read, as one system: 10 declared arm contrasts, 3 populations, 2 pool-line builds (the first recorded, the second in the source), 3 units; 180 looks plus 4 matched-null looks.",
+      "plain_summary": "Two of the card's adjustments read where the sportsbooks' number stood on Tuesday. This compares reading them both at the pool's noon freeze with the weights refitted on other seasons against reading them one at the pool's noon freeze and the other late Tuesday night, on games whose number stayed put on Tuesday afternoon and evening, on past seasons. The two are too close to separate.",
+      "probability_positive": 0.71975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 552,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/eng62/reference_system_arms.json",
+      "standard_error": null
+    }
+  }
+}
