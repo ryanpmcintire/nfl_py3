@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.board_move_reason import move_size_words
 from nfl_ats.card_explanation import BANNED_BOILERPLATE, MEMBER_LABELS, PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct, served_paper_decisions
@@ -229,6 +230,7 @@ class GameRow:
     pool_hook_effect: float | None = None
     move_reason: str = ""
     move_reason_evidence: tuple[str, ...] = ()
+    market_move_toward_pick: float | None = None
     forecast_text: str = ""
     schedule_text: str = ""
 
@@ -1462,6 +1464,28 @@ class WeekChangeRow:
 
 
 @dataclass(frozen=True)
+class NumberMoveRow:
+    game_id: str
+    matchup: str
+    pick_team: str
+    pool_number_text: str
+    books_now_text: str
+    toward_pick_points: float
+    is_best: bool = False
+
+    @property
+    def sentence(self) -> str:
+        size = move_size_words(abs(self.toward_pick_points))
+        direction = "toward" if self.toward_pick_points > 0 else "away from"
+        best = " (Best Pick)" if self.is_best else ""
+        return (
+            f"{self.matchup}: still {self.pick_team} {self.pool_number_text} in the pool{best}. "
+            f"The market has moved {size} {direction} {self.pick_team} since Tuesday; "
+            f"books now have {self.books_now_text}."
+        )
+
+
+@dataclass(frozen=True)
 class WeekChangesPanel:
     comparable: bool = False
     summary: str = WEEK_CHANGES_NO_LOCK
@@ -1469,6 +1493,7 @@ class WeekChangesPanel:
     rows: tuple[WeekChangeRow, ...] = ()
     method_note: str = WEEK_CHANGES_METHOD_NOTE
     catch_up_note: str = ""
+    number_moves: tuple[NumberMoveRow, ...] = ()
 
 
 def _default_week_changes() -> WeekChangesPanel:
@@ -1750,6 +1775,7 @@ def _build_week_changes(
     starred_now = next((game.game_id for game in games if game.is_best), None)
 
     dated: list[tuple[Any, WeekChangeRow]] = []
+    number_moves: list[NumberMoveRow] = []
     for game in games:
         locked = locked_state.get(game.game_id)
         if locked is None:
@@ -1767,6 +1793,23 @@ def _build_week_changes(
         ahead_of_board = played_side != board_side
         now_team = game.home if played_side == "HOME" else game.away
         side_moved = was_team != now_team
+        if (
+            not side_moved
+            and not ahead_of_board
+            and not game.final
+            and game.market_move_toward_pick is not None
+        ):
+            number_moves.append(
+                NumberMoveRow(
+                    game_id=game.game_id,
+                    matchup=_matchup_label(game.away, game.home),
+                    pick_team=game.pick_team,
+                    pool_number_text=game.pick_spread_text,
+                    books_now_text=game.market_now_text,
+                    toward_pick_points=game.market_move_toward_pick,
+                    is_best=game.is_best,
+                )
+            )
         if not side_moved and was_best == game.is_best:
             continue
         when, reason = _week_change_attribution(
@@ -1815,6 +1858,9 @@ def _build_week_changes(
         count_text=count_text,
         rows=rows,
         catch_up_note=_catch_up_note(rows),
+        number_moves=tuple(
+            sorted(number_moves, key=lambda move: abs(move.toward_pick_points), reverse=True)
+        ),
     )
 
 
@@ -2707,6 +2753,7 @@ def _with_move_reasons(
             game,
             move_reason=reasons[game.game_id].sentence,
             move_reason_evidence=reasons[game.game_id].evidence,
+            market_move_toward_pick=reasons[game.game_id].toward_pick_points,
         )
         if game.game_id in reasons
         else game

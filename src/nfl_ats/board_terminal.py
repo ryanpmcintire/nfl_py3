@@ -1603,7 +1603,8 @@ def _changed_strip_html(content: BoardContent, *, archived: bool = False) -> str
     panel = content.week_changes
     if not panel.comparable:
         return ""
-    if not panel.rows:
+    moves = panel.number_moves
+    if not panel.rows and not moves:
         return (
             '<p class="policy-note changed-strip"><b>Changed since Tuesday</b> &mdash; '
             "No changes since Tuesday.</p>"
@@ -1619,12 +1620,23 @@ def _changed_strip_html(content: BoardContent, *, archived: bool = False) -> str
             items.append(f"{row.matchup}: now the Best Pick. {row.reason}")
         else:
             items.append(f"{row.matchup}: no longer the Best Pick. {row.reason}")
+    lead = (
+        f"{count_noun(len(items), 'game')} changed{'' if archived else link}."
+        if items
+        else "No pick has changed."
+    )
+    if moves:
+        items.append(
+            "Same pick, new number: the market has moved on "
+            f"{count_noun(len(moves), 'game')} since Tuesday, biggest move first."
+        )
+        items.extend(move.sentence for move in moves)
     lines = "".join(
         f'<span class="game-sub" style="display:block;">{escape(i)}</span>' for i in items
     )
     return (
         '<div class="policy-note changed-strip"><b>Changed since Tuesday</b> &mdash; '
-        f"{count_noun(len(items), 'game')} changed{'' if archived else link}.{lines}</div>"
+        f"{lead}{lines}</div>"
     )
 
 

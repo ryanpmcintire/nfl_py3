@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:27:18.527674+00:00`
+Refreshed at: `2026-11-14T20:31:16.220128+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T20:27:18.527674+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b3a5919c0ef7` — Correct an inverted line sign in the first wording-read market test
-- Pending change set: 51 paths
+- Baseline commit: `d98236d708d3` — Measure what an uninformative term does in the add-one harness, and how big an effect it can see
+- Pending change set: 56 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - ` M docs/findings.html`
-  - ` M docs/index.html`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/full-steam-2026-11-14.md`
   - ` M docs/lanes/lead-101-news-delta-read.md`
-  - `M  docs/lanes/mod-36-mod36-add-one-noise-null.md`
-  - ` M docs/lanes/ui-30-changed-since-tuesday.md`
+  - `M  docs/lanes/ui-30-changed-since-tuesday.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/mod36_addone_noise_floor.json`
-  - `A  scripts/mod36_addone_noise_floor.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_move_reason.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - ` M scripts/lead101_delta_read.py`
+  - ` M scripts/pool01_forward_sim.py`
+  - ` M scripts/pool04_field_ppc.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_move_reason.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 31 more
+  - ...and 36 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

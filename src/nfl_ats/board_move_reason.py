@@ -46,6 +46,7 @@ NO_NEWS_SENTENCE = "No captured news explains this move."
 class MoveReason:
     sentence: str
     evidence: tuple[str, ...]
+    toward_pick_points: float = 0.0
 
 
 def window_start_utc(first_gameday: date) -> pd.Timestamp:
@@ -75,12 +76,19 @@ def _move_onset(
     return None if hit.empty else pd.Timestamp(hit.index[0])
 
 
-def _move_text(delta: float, step: float, pick_team: str, home: str) -> str:
+def move_size_words(size: float) -> str:
+    return "half a point" if size == 0.5 else f"{size:g} point" if size == 1 else f"{size:g} points"
+
+
+def _toward_pick_points(delta: float, step: float, pick_team: str, home: str) -> float:
     size = round(abs(delta) / step) * step
     sign = -1.0 if pick_team == home else 1.0
-    toward = delta * sign < 0
-    word = "half a point" if size == 0.5 else f"{size:g} point" if size == 1 else f"{size:g} points"
-    return f"{word} {'toward' if toward else 'against'} {pick_team}"
+    return size if delta * sign < 0 else -size
+
+
+def _move_text(delta: float, step: float, pick_team: str, home: str) -> str:
+    points = _toward_pick_points(delta, step, pick_team, home)
+    return f"{move_size_words(abs(points))} {'toward' if points > 0 else 'against'} {pick_team}"
 
 
 def _regulars(data_root: Path, season: int, week: int) -> pd.DataFrame:
@@ -180,6 +188,7 @@ def build_move_reasons(
         if abs(delta) < step - 1e-9:
             continue
         move_text = _move_text(delta, step, pick_team, home)
+        toward_pick = _toward_pick_points(delta, step, pick_team, home)
         onset = _move_onset(series, start_line=tuesday_line, now_line=now_line, step=step)
         found: dict[tuple[str, str], tuple[str, pd.Timestamp, str, str]] = {}
         if onset is not None:
@@ -234,7 +243,7 @@ def build_move_reasons(
         ) or (f"{game_id} {move_text}; move onset {onset}; no qualifying news",)
         if not chosen:
             result[game_id] = MoveReason(
-                f"The line moved {move_text}. {NO_NEWS_SENTENCE}", evidence
+                f"The line moved {move_text}. {NO_NEWS_SENTENCE}", evidence, toward_pick
             )
             continue
         groups: dict[tuple[str, str], int] = {}
@@ -250,5 +259,6 @@ def build_move_reasons(
             f"The line moved {move_text}. Earlier captured news: {listed} who plays most of the "
             f"snaps was reported {level_word}.",
             evidence,
+            toward_pick,
         )
     return result
