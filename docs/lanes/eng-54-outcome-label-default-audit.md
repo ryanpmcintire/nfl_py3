@@ -18,13 +18,15 @@ Unit 2 (2026-11-14 17:42, date). Detail: artifacts/eng54/label_audit_unit2.json 
 Ranked repairs, none made:
 1. Forward logs: mod54_forward_log.py:183-184 and mod25_wfj_forward.py:116,198 write the model-only forecast as served; rename the field or read out_of_season_home_probability. mod24_forward_log.py:135 and the armb and draftcap served_frames are not line-checked.
 2. Dashboard: none found.
-3. Recorded cells: sim16 replace; opener_error_transfer_v3 (fix unit3 line 173, rerun, replace); raw-base add-on cells never retested (mod42, mod43, mod44, mod47, lead76_rule_prior, mkt27: take z from out_of_season_home_probability, replace); sky01, per15, xlg06 crosswalk (use the players-table crosswalk as availability.py does); mod33 lines 25 and 166-205; sim05 sign.
+Unit 3a (2026-11-14 17:50, date; measured): sim16 cells replaced through `record --batch --replace` (tests/scratch/sim16_rerecord/batch.json). scripts/sim16_attrition.py takes `--join {id,name}`, default id; name reproduces the old cells exactly. Same 1368 games by id: full -0.00089 [-0.00228, +0.00030] P+ 0.074; flat gap -0.00085 [-0.00227, +0.00054] P+ 0.102; hazard only -0.00061 [-0.00156, +0.00031] P+ 0.106; all unresolved_below_power, no closing ground. Name join mislabelled 957 of 25220 starter slots and moved the gap on 805 of 5044 team-weeks. The unit 2 sim16 figures (n 1283) reproduce but come from a copy that also drops 1762 starter slots with no prior snaps, so they were not the ones recorded. Corrected row sentence (not applied; full text and the summary line in docs/lanes/sim-16-sim16-attrition-expectation.md): wrong-sign reading withdrawn, a name-join artifact; by id the term is -0.041 (se .054, expected sign), unresolved below power; no hook built.
+
+3. Recorded cells: sim16 replaced 2026-11-14 (unit 3a); opener_error_transfer_v3 (fix unit3 line 173, rerun, replace); raw-base add-on cells never retested (mod42, mod43, mod44, mod47, lead76_rule_prior, mkt27: take z from out_of_season_home_probability, replace); sky01, per15, xlg06 crosswalk (use the players-table crosswalk as availability.py does); mod33 lines 25 and 166-205; sim05 sign.
 
 ## Tried
 Regex scan of single-line margin-versus-line expressions plus a short-name grep; multi-line and unnamed operands are not covered. The pool_card to per_game comparison found no shared game ids, so pool_card as raw stays reported, not measured.
 
 ## Next
-Unit 3: (a) `nfl-ats weak-signals record` with replace for the three sim16 cells; (b) settle the college line sign with corr(home_margin, home_open) in opener_error_transfer_unit3.py, repair line 173, rerun, replace opener_error_transfer_v3; (c) relabel the two forward logs and line-check the other three; (d) swap the crosswalk in sky01, per15, xlg06 and rerun per15.
+Unit 3: (a) done 2026-11-14; the orchestrator applies the corrected SIM-16 sentences to ROADMAP.md and docs/sim_engine_summary.md line 29; (b) settle the college line sign with corr(home_margin, home_open) in opener_error_transfer_unit3.py, repair line 173, rerun, replace opener_error_transfer_v3; (c) relabel the two forward logs and line-check the other three; (d) swap the crosswalk in sky01, per15, xlg06 and rerun per15.
 
 ## Open
 Whether the 23 served-label scripts not verified by line mean the served mapping rather than the pick probability. Four flag tables unmeasured.

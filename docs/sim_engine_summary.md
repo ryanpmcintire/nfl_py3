@@ -26,7 +26,7 @@ Rule for adoption (Tier B): gate count not lower on any seed, no passing gate lo
 | SIM-13 | Defensive snap load | +0.0033 per play [-0.0040, +0.0101], P+ .81; 17 of 17 seasons positive, each under 0.008 | Not run | Measured, no hook warranted |
 | SIM-14 | Coach aggression on fourth down | Trait SD 0.322 logit [0.248, 0.382]; next-season slope 0.372 | 10/11/12; lost mass at 3 on all seeds; margin SD +0.087 away | Not adopted |
 | SIM-15 | Wind on field goals | Games at 15 mph or more: total points -2.39 [-4.40, -0.39] | 14/12/12; recovers about a tenth of the gap (-0.14 [-0.61, +0.30] v default +0.10) | Not adopted |
-| SIM-16 | Pregame attrition | Opener-graded term +0.033 (SE .054), wrong sign; 51.8% v 52.8% control | Not run | Measured, no hook warranted |
+| SIM-16 | Pregame attrition | Opener-graded term -0.041 (SE .054), expected sign, unresolved (P+ .074); 52.6% v 52.8% control | Not run | Measured, unresolved below power; no hook built |
 | SIM-17 | Halftime adjustment, measured | Coordinator trait: offence next-season r .209, held-out slope 0.40 [0.18, 0.61] | Run as SIM-20 | See SIM-20 |
 | SIM-18 | Lead-protection clock | Lead 1-8 trait SD 0.053 log [0, 0.099], P(variance above 0) .80 | 12/12/11; fourth-quarter slope toward real by .0031 against a .004 bar | Not adopted |
 | SIM-19 | Trailing risk shape | Final 9 min trailing by 5+: touchdown real minus drawn +.056 [.041, .070] | Not run | Measured, no hook warranted |

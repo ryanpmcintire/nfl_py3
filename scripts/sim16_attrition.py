@@ -7,9 +7,12 @@ import os
 import numpy as np
 import pandas as pd
 
+from nfl_ats.players import attach_snap_player_ids
+
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", default="tests/scratch/sim16")
 ap.add_argument("--reps", type=int, default=200)
+ap.add_argument("--join", choices=["id", "name"], default="id")
 args = ap.parse_args()
 os.makedirs(args.out, exist_ok=True)
 R = "F:/Repos/nfl_py3/"
@@ -45,23 +48,26 @@ hz = hz.merge(q, on=["season", "team", "wk", "player"], how="left")
 hz["quest"] = hz.quest.fillna(0)
 sc = pd.read_parquet(latest("snap_counts"))
 sc = sc[sc.game_type == "REG"]
-sc = sc.groupby(["season", "week", "team", "player", "position"]).offense_snaps.sum().reset_index()
-sc = sc.sort_values(["season", "team", "player", "week"])
-sc["cum_prior"] = sc.groupby(["season", "team", "player"]).offense_snaps.cumsum() - sc.offense_snaps
-sc["games_prior"] = sc.groupby(["season", "team", "player"]).cumcount()
+SK, HK = "player", "full_name"
+if args.join == "id":
+    sc = attach_snap_player_ids(sc, pd.read_parquet(latest("weekly_rosters")))
+    SK, HK = "gsis_id", "player"
+print("join", args.join, "snap rows without key", int(sc[SK].isna().sum()), "of", len(sc))
+sc = sc.groupby(["season", "week", "team", SK, "position"]).offense_snaps.sum().reset_index()
+sc = sc.sort_values(["season", "team", SK, "week"])
+sc["cum_prior"] = sc.groupby(["season", "team", SK]).offense_snaps.cumsum() - sc.offense_snaps
+sc["games_prior"] = sc.groupby(["season", "team", SK]).cumcount()
 sc["ppg"] = np.where(sc.games_prior > 0, sc.cum_prior / sc.games_prior.clip(lower=1), np.nan)
-pp = sc[["season", "team", "player", "week", "ppg"]].rename(
-    columns={"player": "full_name", "week": "wk"}
-)
-hz = hz.merge(pp, on=["season", "team", "full_name", "wk"], how="left")
+pp = sc[["season", "team", SK, "week", "ppg"]].rename(columns={SK: HK, "week": "wk"})
+hz = hz.merge(pp, on=["season", "team", HK, "wk"], how="left")
 ol = sc[sc.position.isin(OLP)]
-names = hz.groupby(["season", "team", "wk"]).full_name.apply(set).to_dict()
+names = hz.groupby(["season", "team", "wk"])[HK].apply(set).to_dict()
 rows = []
 for (s, t, w), g in ol.groupby(["season", "team", "week"]):
     st = names.get((s, t, w), set())
-    b = g[~g.player.isin(st)].ppg.dropna()
+    b = g[~g[SK].isin(st)].ppg.dropna()
     top = b.max() if len(b) else 0.0
-    sp = g[g.player.isin(st)].ppg.dropna()
+    sp = g[g[SK].isin(st)].ppg.dropna()
     rows.append((s, t, w, top, sp.mean() if len(sp) else np.nan))
 gp = pd.DataFrame(rows, columns=["season", "team", "wk", "bk_ppg", "st_ppg"])
 gp["gap"] = (1 - gp.bk_ppg / gp.st_ppg).clip(0, 1).fillna(1.0)
@@ -230,5 +236,8 @@ ac = [
 j = pg.merge(av[["game_id", *ac]], on="game_id")
 j["d"] = j.home_c_full - j.away_c_full
 print(len(j), {a: round(float(j.d.corr(j[a], method="spearman")), 3) for a in ac})
+hz[["season", "team", "wk", "player", "ppg", "gap"]].to_parquet(args.out + "/slots.parquet")
 with open(args.out + "/cells.json", "w") as fh:
-    json.dump({"cells": cells, "hazard_folds": hcoef}, fh, default=float)
+    json.dump(
+        {"join": args.join, "n": len(pg), "cells": cells, "hazard_folds": hcoef}, fh, default=float
+    )
