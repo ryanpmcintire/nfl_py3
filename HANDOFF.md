@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T22:00:17.754268+00:00`
+Refreshed at: `2026-11-14T22:19:08.385461+00:00`
 
 ## Start here
 
@@ -21,16 +21,19 @@ Refreshed at: `2026-11-14T22:00:17.754268+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d37e4e2000ce` — Screen a turnover-luck and special-teams-luck family on college games first
-- Pending change set: 45 paths
+- Baseline commit: `72d6dcc2c555` — Run the declared NFL confirmation of fumble-recovery luck: not confirmed
+- Pending change set: 53 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
+  - `M  docs/lanes/mkt-24-slot-opener-residual.md`
+  - ` M docs/lanes/mkt-25-opener-revision-size.md`
+  - ` M docs/lanes/wk10-qb-input-check-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  registry/weak_signals/xlg14_luck_family_u3.json`
-  - `A  scripts/xlg14_fumble_luck_nfl_confirmation.py`
+  - `M  registry/weak_signals/mkt24_slot_opener_residual.json`
+  - `M  scripts/mkt24_slot_residual.py`
+  - ` M scripts/mkt25_opener_revision.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-14T22:00:17.754268+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 25 more
+  - ...and 33 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

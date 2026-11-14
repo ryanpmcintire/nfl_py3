@@ -560,6 +560,1070 @@
       ],
       "source": "artifacts/mkt24_slot_residual/report.json",
       "standard_error": 2.519
+    },
+    "mkt24_u2_era_opener_2020_2025_holiday_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "holiday slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 12-17, exact binomial p 0.458; sign agrees with the other era.",
+      "effect": -8.620689655172415,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -26.47597902471015,
+        11.063720860309378
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Thanksgiving and Christmas games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.17268498091182377,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 29,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_holiday_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "holiday slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 12-17, exact binomial p 0.458; sign agrees with the other era.",
+      "effect": -2.6379310344827585,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -8.017595998258466,
+        2.741733929292949
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Thanksgiving and Christmas games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.16825777535921738,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 29,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_international_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "international slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 17-11, exact binomial p 0.345; sign disagrees with the other era.",
+      "effect": 10.71428571428571,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -14.000000000000002,
+        36.95652173913043
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in international neutral-site games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.777,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 28,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_international_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "international slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 17-11, exact binomial p 0.345; sign disagrees with the other era.",
+      "effect": 1.4642857142857142,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.357142857142857,
+        7.675
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in international neutral-site games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.6858,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 28,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_monday_night_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "monday_night slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 50-57, exact binomial p 0.562; sign agrees with the other era.",
+      "effect": -3.2710280373831777,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -12.980669667578487,
+        6.624264998889695
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Monday night games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.2485605405462217,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 108,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_monday_night_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "monday_night slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 50-57, exact binomial p 0.562; sign agrees with the other era.",
+      "effect": -0.0625,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -2.284576227342884,
+        2.159576227342884
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Monday night games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.4780184004622106,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 108,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_saturday_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "saturday slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 18-26, exact binomial p 0.291; sign agrees with the other era.",
+      "effect": -9.090909090909088,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -23.662057491869636,
+        6.750357274782893
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Saturday games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.08472425303007705,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 45,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_saturday_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "saturday slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 18-26, exact binomial p 0.291; sign agrees with the other era.",
+      "effect": -1.3333333333333333,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -6.21875,
+        2.522727272727273
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Saturday games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.241,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 45,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_sunday_early_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_early slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 367-368, exact binomial p 1.000; sign disagrees with the other era.",
+      "effect": -0.0680272108843527,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.7442816060233977,
+        3.6087751039185267
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Sunday early-window games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.4852831189795871,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 754,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_sunday_early_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_early slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 367-368, exact binomial p 1.000; sign disagrees with the other era.",
+      "effect": 0.8630636604774535,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.0845692823533637,
+        1.8106966033082708
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Sunday early-window games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.9628735253674943,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 754,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_sunday_late_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_late slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 192-176, exact binomial p 0.434; sign agrees with the other era.",
+      "effect": 2.1739130434782594,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.0654601776814117,
+        7.378040521947071
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Sunday late-afternoon games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.783155284906084,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 379,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_sunday_late_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_late slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 192-176, exact binomial p 0.434; sign agrees with the other era.",
+      "effect": -0.06464379947229551,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -1.355544435080625,
+        1.226256836136034
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Sunday late-afternoon games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.46090732400289,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 379,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_sunday_night_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_night slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 51-49, exact binomial p 0.920; sign disagrees with the other era.",
+      "effect": 1.0000000000000009,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -9.196367084454627,
+        11.13558348383622
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Sunday night games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.5400657597325736,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_sunday_night_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_night slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 51-49, exact binomial p 0.920; sign disagrees with the other era.",
+      "effect": -0.5588235294117647,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -2.9522903535881904,
+        1.8346432947646607
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Sunday night games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.3236163832530089,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_thursday_night_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "thursday_night slot, 2020-2025, line = Tuesday multi-book opener: home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 39-50, exact binomial p 0.289; sign disagrees with the other era.",
+      "effect": -6.179775280898875,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -16.682459466230437,
+        4.745879297137523
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Thursday night games, 2020 to 2025, using the Tuesday opening line, compared with a coin flip.",
+      "probability_positive": 0.12024068842004058,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 89,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_opener_2020_2025_thursday_night_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "thursday_night slot, 2020-2025, line = Tuesday multi-book opener: mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 39-50, exact binomial p 0.289; sign disagrees with the other era.",
+      "effect": -0.8820224719101124,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.1344917045031466,
+        1.3704467606829218
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Thursday night games beat or missed the opening line on average, 2020 to 2025, using the Tuesday opening line.",
+      "probability_positive": 0.22139714112078362,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 6,
+      "sample_games": 89,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_holiday_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "holiday slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 9-20, exact binomial p 0.061; sign agrees with the other era.",
+      "effect": -18.96551724137931,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -34.715406039136845,
+        0.8323353809990053
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Thanksgiving and Christmas games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.01613396423368756,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 32,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_holiday_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "holiday slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 9-20, exact binomial p 0.061; sign agrees with the other era.",
+      "effect": -3.9375,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -8.5894498640243,
+        0.7144498640242993
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Thanksgiving and Christmas games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.04856280488981462,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 32,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_international_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "international slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 11-18, exact binomial p 0.265; sign disagrees with the other era.",
+      "effect": -12.06896551724138,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -29.313130051349283,
+        7.739535933559882
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in international neutral-site games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.09161081298614943,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 29,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_international_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "international slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 11-18, exact binomial p 0.265; sign disagrees with the other era.",
+      "effect": -1.8793103448275863,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -8.26257650137398,
+        4.503955811718807
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in international neutral-site games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.28195723911377385,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 29,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_monday_night_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "monday_night slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 70-77, exact binomial p 0.621; sign agrees with the other era.",
+      "effect": -2.3809523809523836,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -10.81081081081081,
+        6.081081081081086
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Monday night games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.2864,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 149,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_monday_night_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "monday_night slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 70-77, exact binomial p 0.621; sign agrees with the other era.",
+      "effect": -0.26174496644295303,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -2.3645868866339277,
+        1.8410969537480217
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Monday night games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.40363064326213227,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 149,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_saturday_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "saturday slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 16-25, exact binomial p 0.211; sign agrees with the other era.",
+      "effect": -10.97560975609756,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -28.57142857142857,
+        5.4952176629310845
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Saturday games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.07611623593004459,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 43,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_saturday_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "saturday slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 16-25, exact binomial p 0.211; sign agrees with the other era.",
+      "effect": -0.6046511627906976,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.416819032099246,
+        3.2075167065178505
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Saturday games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.3779491399054679,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 43,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_sunday_early_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_early slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 570-610, exact binomial p 0.256; sign disagrees with the other era.",
+      "effect": -1.6949152542372892,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -4.581228387393227,
+        1.1998647366621151
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Sunday early-window games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.1162119259942524,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 1221,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_sunday_early_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_early slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 570-610, exact binomial p 0.256; sign disagrees with the other era.",
+      "effect": -0.5315315315315315,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -1.2625922686905429,
+        0.1995292056274799
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Sunday early-window games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.07707442753566757,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 1221,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_sunday_late_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_late slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 263-278, exact binomial p 0.547; sign agrees with the other era.",
+      "effect": -1.3863216266173761,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -5.672887137252925,
+        2.915463098755189
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Sunday late-afternoon games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.25935909991254685,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 558,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_sunday_late_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_late slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 263-278, exact binomial p 0.547; sign agrees with the other era.",
+      "effect": -0.19623655913978494,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -1.321608182368184,
+        0.929135064088614
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Sunday late-afternoon games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.3662625529001794,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 558,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_sunday_night_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_night slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 79-65, exact binomial p 0.279; sign disagrees with the other era.",
+      "effect": 4.861111111111116,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.6414936464375938,
+        13.159597607215845
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Sunday night games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.8617280352185805,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 150,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_sunday_night_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "sunday_night slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 79-65, exact binomial p 0.279; sign disagrees with the other era.",
+      "effect": 3.3433333333333333,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        1.0312660304542187,
+        5.655400636212448
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Sunday night games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.9977028215422997,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 150,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_thursday_night_home_cover_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "thursday_night slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): home cover rate minus 50 in percentage points, pushes out; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 67-52, exact binomial p 0.199; sign disagrees with the other era.",
+      "effect": 6.302521008403361,
+      "effect_units": "rate_pp",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -3.0907216914462134,
+        15.374538395179705
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks how often the home team covered the opening line in Thursday night games, 2011 to 2019, using an archived opening number, compared with a coin flip.",
+      "probability_positive": 0.9167387424609671,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 121,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_sbr_2011_2019_thursday_night_mean_residual_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "thursday_night slot, 2011-2019, line = SBR archive opening number (a proxy, not the Tuesday opener): mean final home margin minus the line in points; interval is the wider of the season-block bootstrap and the game-level interval; home record at the line 67-52, exact binomial p 0.199; sign disagrees with the other era.",
+      "effect": 1.4421487603305785,
+      "effect_units": "ats_points",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.9331342469926933,
+        3.8174317676538503
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks by how many points home teams in Thursday night games beat or missed the opening line on average, 2011 to 2019, using an archived opening number.",
+      "probability_positive": 0.8829745578454224,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 9,
+      "sample_games": 121,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_slot_pattern_split_half_correlation": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Correlation of the 8 kickoff-slot mean residuals (final home margin minus the line) across halves (2011-2019 SBR open vs 2020-2025 Tuesday open), weighted by n1*n2/(n1+n2); unweighted +0.20; permutation p (slot labels shuffled inside season-week) 0.811; implied slot spread -0.48 points.",
+      "effect": -0.2743677674886986,
+      "effect_units": "correlation",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.6496199126167687,
+        0.38452444126116647
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks whether kickoff slots where home teams beat the opening line in one half of the seasons did so again in the other half.",
+      "probability_positive": 0.2726,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.2743677674886986,
+      "sample_blocks": 15,
+      "sample_games": 3837,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_era_thursday_two_half_concordance": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two-half reliability of the Thursday residual -0.89 [-1.00, +0.94] cannot be told from zero or from one. Planted control: the product test flags a constant Thursday miss in this share of draws: 1 pt 0.17, 2 pt 0.55, 3 pt 0.88, 4 pt 0.99, 6 pt 1.00; the observed product is not flagged (permutation p 0.86), which bounds only the larger misses on that grid. Smaller misses stay below power, so no admissible closing ground for the mechanism.",
+      "closing_ground": null,
+      "description": "Thursday night alone (2011-2019 SBR open vs 2020-2025 Tuesday open): concordance 2ab/(a^2+b^2) of the two half mean residuals; cross-half product -1.27 points squared [-5.64, +1.54], probability same sign 0.20, permutation p 0.865. Planted control, share of draws the product test flags a constant Thursday miss: 1 pt 0.17, 2 pt 0.55, 3 pt 0.88, 4 pt 0.99, 6 pt 1.00.",
+      "effect": -0.8902140758481739,
+      "effect_units": "correlation",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.9992954268976361,
+        0.9404975304145565
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks whether the Thursday night home-team result against the opening line in one half of the seasons shows up again in the other half.",
+      "probability_positive": 0.203,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.8902140758481739,
+      "sample_blocks": 15,
+      "sample_games": 210,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_parity_opener_slot_pattern_split_half_correlation": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Correlation of the 8 kickoff-slot mean residuals (final home margin minus the line) across halves (even seasons 2020-2025 vs odd seasons 2020-2025), weighted by n1*n2/(n1+n2); unweighted -0.36; permutation p (slot labels shuffled inside season-week) 0.486; implied slot spread +0.18 points.",
+      "effect": 0.03301074364813845,
+      "effect_units": "correlation",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.4481740325692947,
+        0.4949891039727253
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks whether kickoff slots where home teams beat the opening line in one half of the seasons did so again in the other half.",
+      "probability_positive": 0.6082,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.03301074364813845,
+      "sample_blocks": 6,
+      "sample_games": 1534,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_parity_opener_thursday_two_half_concordance": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two-half reliability of the Thursday residual -0.34 [-1.00, +0.98] cannot be told from zero or from one. Planted control: the product test flags a constant Thursday miss in this share of draws: 1 pt 0.12, 2 pt 0.33, 3 pt 0.62, 4 pt 0.84, 6 pt 0.99; the observed product is not flagged (permutation p 0.68), which bounds only the larger misses on that grid. Smaller misses stay below power, so no admissible closing ground for the mechanism.",
+      "closing_ground": null,
+      "description": "Thursday night alone (even seasons 2020-2025 vs odd seasons 2020-2025): concordance 2ab/(a^2+b^2) of the two half mean residuals; cross-half product -0.82 points squared [-6.20, +3.83], probability same sign 0.37, permutation p 0.679. Planted control, share of draws the product test flags a constant Thursday miss: 1 pt 0.12, 2 pt 0.33, 3 pt 0.62, 4 pt 0.84, 6 pt 0.99.",
+      "effect": -0.3378734778640347,
+      "effect_units": "correlation",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.9972602739726026,
+        0.9772580028905096
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks whether the Thursday night home-team result against the opening line in one half of the seasons shows up again in the other half.",
+      "probability_positive": 0.3678,
+      "recorded_at": "2026-11-14",
+      "reliability": -0.3378734778640347,
+      "sample_blocks": 6,
+      "sample_games": 89,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_parity_slot_pattern_split_half_correlation": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Split-half reliability of the slot pattern across eras -0.27 [-0.65, +0.38], probability_positive 0.27, within-week permutation p 0.81: interval reaches above zero, so zero reliability is not established. Planted control (a Thursday-only miss added to label-shuffled data), share of draws the pattern correlation flags: 1 pt 0.06, 2 pt 0.12, 3 pt 0.24, 4 pt 0.42, 6 pt 0.81. No resolved wrong sign and no control bound at the size in question, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Correlation of the 8 kickoff-slot mean residuals (final home margin minus the line) across halves (even seasons 2011-2025 vs odd seasons 2011-2025), weighted by n1*n2/(n1+n2); unweighted +0.48; permutation p (slot labels shuffled inside season-week) 0.129; implied slot spread +0.52 points.",
+      "effect": 0.5109680852860288,
+      "effect_units": "correlation",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.4427621782883186,
+        0.8233821097809567
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks whether kickoff slots where home teams beat the opening line in one half of the seasons did so again in the other half.",
+      "probability_positive": 0.7968,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.5109680852860288,
+      "sample_blocks": 15,
+      "sample_games": 3837,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
+    },
+    "mkt24_u2_parity_thursday_two_half_concordance": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two-half reliability of the Thursday residual +0.00 [-1.00, +1.00] cannot be told from zero or from one. Planted control: the product test flags a constant Thursday miss in this share of draws: 1 pt 0.16, 2 pt 0.54, 3 pt 0.88, 4 pt 0.99, 6 pt 1.00; the observed product is not flagged (permutation p 0.49), which bounds only the larger misses on that grid. Smaller misses stay below power, so no admissible closing ground for the mechanism.",
+      "closing_ground": null,
+      "description": "Thursday night alone (even seasons 2011-2025 vs odd seasons 2011-2025): concordance 2ab/(a^2+b^2) of the two half mean residuals; cross-half product +0.00 points squared [-3.18, +3.31], probability same sign 0.49, permutation p 0.493. Planted control, share of draws the product test flags a constant Thursday miss: 1 pt 0.16, 2 pt 0.54, 3 pt 0.88, 4 pt 0.99, 6 pt 1.00.",
+      "effect": 0.0,
+      "effect_units": "correlation",
+      "family": "mkt24_slot_opener_residual",
+      "interval": [
+        -0.9977691597267047,
+        0.9976438336981361
+      ],
+      "league": "nfl",
+      "notes": "MKT-24 unit 2; 113 looks declared before computing; nothing served.",
+      "plain_summary": "Asks whether the Thursday night home-team result against the opening line in one half of the seasons shows up again in the other half.",
+      "probability_positive": 0.495,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.0,
+      "sample_blocks": 15,
+      "sample_games": 210,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt24_slot_residual/reliability.json",
+      "standard_error": null
     }
   }
 }
