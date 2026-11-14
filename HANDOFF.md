@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T19:47:03.408764+00:00`
+Refreshed at: `2026-11-14T20:00:28.265959+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T19:47:03.408764+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3cb52b0a2ade` — Show time-zone change and away streaks on each game; alarm when the pool panel goes stale
-- Pending change set: 49 paths
+- Baseline commit: `f944c1add019` — Bring 100 roadmap rows up to their lane verdicts; clear the scheduler's stale missed windows
+- Pending change set: 68 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/full-steam-2026-11-14.md`
-  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g1.md`
-  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g2.md`
-  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g3.md`
-  - `A  docs/lanes/roadmap-reconcile-2026-11-14-g4.md`
-  - `A  docs/lanes/scheduler-missed-window-triage-2026-11-14.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/best-pick-chain-audit-2026-11-08.md`
+  - `M  docs/lanes/eng-48-eng48-anytime-valid-monitor.md`
+  - `M  docs/lanes/eng-49-eng49-matched-forward-ledger.md`
+  - `M  docs/lanes/eng-50-online-forward-stacker.md`
+  - `M  docs/lanes/eng-served-terms-liveness-check.md`
+  - `M  docs/lanes/fix-picks-2026-11-10.md`
+  - `M  docs/lanes/lead-105-tiebreak-total-read.md`
+  - ` M docs/lanes/mod-47-short-week-confidence-slope.md`
+  - `M  docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - ` M docs/lanes/xlg-12-xlg12-cfb-shadow-forward.md`
   - ` M docs/lead64_freshness_audit.md`
-  - ` M src/nfl_ats/card_ledger_check.py`
-  - ` M src/nfl_ats/cli_commands/publishing.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 29 more
+  - `A  registry/weak_signals/eng49_forward_ledger_vs_card.json`
+  - `M  registry/weak_signals/eng50_online_stacker.json`
+  - `A  registry/weak_signals/per16_habit_availability_addone.json`
+  - ` M scripts/capture_cfbd_lines.py`
+  - ...and 48 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

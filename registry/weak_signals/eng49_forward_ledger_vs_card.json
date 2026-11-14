@@ -1,0 +1,481 @@
+{
+  "family": "eng49_forward_ledger_vs_card",
+  "signals": {
+    "eng49_forward_draftcap_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate draftcap: frozen pregame probability against the played card on the same games, Weeks 7-9 (29 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 7-2; sequential evidence value 1.734; a no-information 0.5 beats the card by +0.0433 on these games and the candidate beats 0.5 by +0.0005",
+      "effect": 0.0438,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0237,
+        0.1097
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: a draft-capital roster measure, logged before kickoff, was compared with the card's own probabilities on 29 finished games. It took the other side from the card in 9 games and went 7-2 there. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9012,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_lead99_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate lead99: frozen pregame probability against the played card on the same games, Weeks 7-9 (43 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 13-3; sequential evidence value 7.737; a no-information 0.5 beats the card by +0.0373 on these games and the candidate beats 0.5 by +0.0259",
+      "effect": 0.0632,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        0.0192,
+        0.1101
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's written read of each game, logged before kickoff, was compared with the card's own probabilities on 43 finished games. It took the other side from the card in 16 games and went 13-3 there. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9981,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_mod24_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate mod24: frozen pregame probability against the played card on the same games, Weeks 4-9 (88 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 19-15; sequential evidence value 0.092; a no-information 0.5 beats the card by +0.0150 on these games and the candidate beats 0.5 by -0.0151; against its own record-time base -0.0058 (probability_positive 0.119), term nonzero on 88 of 88 games, base side differs from the card on 32",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0344,
+        0.0338
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 88 finished games. It took the other side from the card in 34 games and went 19-15 there. Against the forecast it adjusts, it changed the side in 8 of 88 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.5007,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_mod25_combined_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate mod25_combined: frozen pregame probability against the played card on the same games, Weeks 4-9 (87 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 18-14; sequential evidence value 0.162; a no-information 0.5 beats the card by +0.0119 on these games and the candidate beats 0.5 by -0.0019; against its own record-time base +0.0046 (probability_positive 0.893), term nonzero on 87 of 87 games, base side differs from the card on 32",
+      "effect": 0.01,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.022,
+        0.0428
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 87 finished games. It took the other side from the card in 32 games and went 18-14 there. Against the forecast it adjusts, it changed the side in 4 of 87 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.7265,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 87,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_mod25_wfj_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate mod25_wfj: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 7-1; sequential evidence value 4.317; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by +0.0397",
+      "effect": 0.0986,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        0.0282,
+        0.1656
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 8 games and went 7-1 there. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9968,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_mod27_pool_move_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate mod27_pool_move: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 5-2; sequential evidence value 1.799; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0083; against its own record-time base -0.0104 (probability_positive 0.337), term nonzero on 12 of 15 games, base side differs from the card on 4",
+      "effect": 0.0506,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0416,
+        0.1431
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: a forecast that leans on how far the pool's line moved, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 7 games and went 5-2 there. Against the forecast it adjusts, it changed the side in 3 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.8593,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_mod54_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate mod54: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 5-4; sequential evidence value 0.703; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0325; against its own record-time base +0.0145 (probability_positive 0.734), term nonzero on 15 of 15 games, base side differs from the card on 5",
+      "effect": 0.0264,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0721,
+        0.1221
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 9 games and went 5-4 there. Against the forecast it adjusts, it changed the side in 4 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.7025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_env02_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_env02: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 4-1; sequential evidence value 1.503; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0474; against its own record-time base +0.0000 (probability_positive 0.743), term nonzero on 4 of 15 games, base side differs from the card on 5",
+      "effect": 0.0115,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0808,
+        0.0944
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an adjustment for whether a retractable roof is likely open, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 5 games and went 4-1 there. Against the forecast it adjusts, it changed the side in 0 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6108,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_mod35_cold_exposure_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_mod35_cold_exposure: frozen pregame probability against the played card on the same games, Weeks 9-9 (7 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 1-1; sequential evidence value 0.262; a no-information 0.5 beats the card by +0.0637 on these games and the candidate beats 0.5 by -0.1211; against its own record-time base +0.0000 (probability_positive 0.905), term nonzero on 2 of 7 games, base side differs from the card on 2",
+      "effect": -0.0574,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.2048,
+        0.0694
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an adjustment for cold-weather exposure, logged before kickoff, was compared with the card's own probabilities on 7 finished games. It took the other side from the card in 2 games and went 1-1 there. Against the forecast it adjusts, it changed the side in 0 of 7 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.2188,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 7,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_mod41_avgwin_served_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_mod41_avgwin_served: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 3-1; sequential evidence value 0.997; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0081; against its own record-time base -0.0102 (probability_positive 0.323), term nonzero on 15 of 15 games, base side differs from the card on 4",
+      "effect": 0.0509,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0128,
+        0.1196
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 4 games and went 3-1 there. Against the forecast it adjusts, it changed the side in 4 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9368,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_mod41_residual_load_served_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_mod41_residual_load_served: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 2-2; sequential evidence value 0.401; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0314; against its own record-time base -0.0335 (probability_positive 0.179), term nonzero on 15 of 15 games, base side differs from the card on 4",
+      "effect": 0.0276,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0519,
+        0.114
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 4 games and went 2-2 there. Against the forecast it adjusts, it changed the side in 6 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.7404,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_mod41_residual_load_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_mod41_residual_load: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 5-3; sequential evidence value 0.095; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0894; against its own record-time base -0.0423 (probability_positive 0.135), term nonzero on 15 of 15 games, base side differs from the card on 5",
+      "effect": -0.0304,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.1637,
+        0.0934
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 8 games and went 5-3 there. Against the forecast it adjusts, it changed the side in 5 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.332,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_sky01_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_sky01: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 4-1; sequential evidence value 1.592; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0466; against its own record-time base +0.0009 (probability_positive 0.774), term nonzero on 8 of 15 games, base side differs from the card on 5",
+      "effect": 0.0124,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0805,
+        0.0951
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 5 games and went 4-1 there. Against the forecast it adjusts, it changed the side in 0 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6179,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_sky01snap_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_sky01snap: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 4-1; sequential evidence value 1.253; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0507; against its own record-time base -0.0033 (probability_positive 0.120), term nonzero on 7 of 15 games, base side differs from the card on 5",
+      "effect": 0.0082,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.083,
+        0.0917
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 5 games and went 4-1 there. Against the forecast it adjusts, it changed the side in 0 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.5785,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_sky03_separated_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_sky03_separated: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 4-1; sequential evidence value 1.119; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0482; against its own record-time base -0.0008 (probability_positive 0.460), term nonzero on 15 of 15 games, base side differs from the card on 5",
+      "effect": 0.0108,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0785,
+        0.0889
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 5 games and went 4-1 there. Against the forecast it adjusts, it changed the side in 0 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6132,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_sky03_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_sky03: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 4-1; sequential evidence value 1.504; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0474; against its own record-time base +0.0001 (probability_positive 0.567), term nonzero on 15 of 15 games, base side differs from the card on 5",
+      "effect": 0.0116,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.081,
+        0.0946
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an alternative research forecast, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 5 games and went 4-1 there. Against the forecast it adjusts, it changed the side in 0 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6109,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_term_surface_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate term_surface: frozen pregame probability against the played card on the same games, Weeks 9-9 (15 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 4-1; sequential evidence value 0.791; a no-information 0.5 beats the card by +0.0590 on these games and the candidate beats 0.5 by -0.0585; against its own record-time base -0.0111 (probability_positive 0.217), term nonzero on 6 of 15 games, base side differs from the card on 5",
+      "effect": 0.0004,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        -0.0977,
+        0.0939
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an adjustment for the playing surface, logged before kickoff, was compared with the card's own probabilities on 15 finished games. It took the other side from the card in 5 games and went 4-1 there. Against the forecast it adjusts, it changed the side in 0 of 15 games. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.506,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    }
+  }
+}

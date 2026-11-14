@@ -767,6 +767,55 @@ SCHEDULE: tuple[Job, ...] = (
         "lock has run.",
         added_on="2026-11-14",
     ),
+    Job(
+        "forward_ledger_tue",
+        "tue",
+        "13:15",
+        105,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "forward_weekly.py"),
+        ],
+        True,
+        "Rebuild the matched forward ledger over fully settled weeks, then rerun the "
+        "evidence monitor and the online stacker on it, once the weekly lock has loaded "
+        "the Monday result. Research only, never served. A partly settled week is skipped.",
+        requires=("weekly_lock",),
+        added_on="2026-11-14",
+    ),
+    *(
+        Job(
+            f"lead105_tiebreak_total_read_{label}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead105_tiebreak_total_read.py"),
+                "run",
+                *flags,
+            ],
+            True,
+            "LEAD-105 forward log: a blind language read of the total points in the week's "
+            "last game, the pool tiebreak game, frozen prompt and model, recorded with the "
+            "market total and the served tiebreaker total. The game-day reads follow the "
+            "19:00 odds capture and run only when the last game kicks off that day; the "
+            "Sunday 15:05 read precedes the 16:00 pool deadline. Nothing is recorded after "
+            "kickoff.",
+            added_on="2026-11-14",
+        )
+        for label, day, at, flags in (
+            ("gameday", "mon", "19:10", ("--game-day-only",)),
+            ("gameday", "sun", "19:10", ("--game-day-only",)),
+            ("deadline", "sun", "15:05", ()),
+        )
+    ),
     *(
         Job(
             f"schedule_snapshot_{day}",

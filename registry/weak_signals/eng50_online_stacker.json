@@ -1,6 +1,34 @@
 {
   "family": "eng50_online_stacker",
   "signals": {
+    "eng50_online_stacker_cumulative_replay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Online ridge-logistic stacker (played-card logit offset plus lead99, mod24, mod25_combined deltas), refit on prior weeks only, predicting Weeks 8-9 (29 games); paired log loss against the played card; decisive games stacker 10-5",
+      "effect": 0.0493,
+      "effect_units": "log_loss_improvement",
+      "family": "eng50_online_stacker",
+      "interval": [
+        -0.0144,
+        0.1184
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: a weekly blend of the card with logged alternative forecasts, refit after each finished week, was replayed on 29 games. It took the other side from the card in 15 games and went 10-5 there. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9338,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/eng50_online_stacker/summary.json",
+      "standard_error": null
+    },
     "eng50_online_stacker_week8_dry_replay": {
       "category": "modeling",
       "classification": "unresolved_below_power",

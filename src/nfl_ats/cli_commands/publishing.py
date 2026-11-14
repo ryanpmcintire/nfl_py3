@@ -1083,7 +1083,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
     else:
         try:
             check = check_card_ledger_consistency(
-                _artifacts_root(), data_root=_data_root(), now=publish_instant
+                _artifacts_root(),
+                data_root=_data_root(),
+                now=publish_instant,
+                card_path=request.destination,
             )
         except Exception as error:
             check = {"evaluated": False, "ok": False, "reason": f"{type(error).__name__}: {error}"}
@@ -1617,7 +1620,9 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
             except Exception as error:
                 result["board"] = {"written": False, "error": f"{type(error).__name__}: {error}"}
     try:
-        check = check_card_ledger_consistency(_artifacts_root(), data_root=_data_root())
+        check = check_card_ledger_consistency(
+            _artifacts_root(), data_root=_data_root(), card_path=args.destination
+        )
     except Exception as error:
         check = {
             "evaluated": False,

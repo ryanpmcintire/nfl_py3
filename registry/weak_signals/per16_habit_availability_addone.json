@@ -1,0 +1,845 @@
+{
+  "family": "per16_habit_availability_addone",
+  "signals": {
+    "per16_u4_habit_adj_vs_intercept_only_accuracy_points_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus intercept-only refit (constant home lean control); accuracy_points.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -1.5302727877578177,
+        0.0665335994677312
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 37 games: new right 13, base right 24. In-sample -0.26613, out-of-season -0.73187, gap +0.46574. Fold coefficient positive in 1 of 6 folds. Within-season shuffled term: mean -0.35968, 5th to 95th percentile -1.33067 to +0.53227; 0.764 of shuffles at or above the real value.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.0342,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_intercept_only_accuracy_points_stamped": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-24 leave-one-season-out, report timestamps verified before game day: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus intercept-only refit (constant home lean control); accuracy_points.",
+      "effect": -0.4045307443365696,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -1.2135922330097086,
+        0.4045307443365696
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 25 games: new right 10, base right 15. In-sample +0.00000, out-of-season -0.40453, gap +0.40453. Subset where every listed row carries a timestamp; 2025 and 2026 rows carry none.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.16399999999999998,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 5,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_intercept_only_brier_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus intercept-only refit (constant home lean control); brier_improvement.",
+      "effect": -0.00013279472891031556,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0004595264452776546,
+        0.00019544154166282614
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 37 games: new right 13, base right 24. In-sample +0.00002, out-of-season -0.00013, gap +0.00016. Fold coefficient positive in 1 of 6 folds. Within-season shuffled term: mean -0.00020, 5th to 95th percentile -0.00073 to +0.00033; 0.378 of shuffles at or above the real value.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.2236,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_intercept_only_brier_improvement_stamped": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-24 leave-one-season-out, report timestamps verified before game day: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus intercept-only refit (constant home lean control); brier_improvement.",
+      "effect": -0.00015386017267394363,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0004144829814447333,
+        9.753439263350571e-05
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 25 games: new right 10, base right 15. In-sample -0.00000, out-of-season -0.00015, gap +0.00015. Subset where every listed row carries a timestamp; 2025 and 2026 rows carry none.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1162,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 5,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_intercept_only_log_loss_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus intercept-only refit (constant home lean control); log_loss_improvement.",
+      "effect": -0.00028220478956482475,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0009566140473005318,
+        0.00039484980818355953
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 37 games: new right 13, base right 24. In-sample +0.00004, out-of-season -0.00028, gap +0.00033. Fold coefficient positive in 1 of 6 folds. Within-season shuffled term: mean -0.00041, 5th to 95th percentile -0.00147 to +0.00069; 0.388 of shuffles at or above the real value.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.2172,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_intercept_only_log_loss_improvement_stamped": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-24 leave-one-season-out, report timestamps verified before game day: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus intercept-only refit (constant home lean control); log_loss_improvement.",
+      "effect": -0.0003233789457180197,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0008617576702647614,
+        0.00018775624170105673
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 25 games: new right 10, base right 15. In-sample +0.00000, out-of-season -0.00032, gap +0.00032. Subset where every listed row carries a timestamp; 2025 and 2026 rows carry none.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1102,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 5,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_accuracy_points_forward2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2026 weeks 4-9 forward read, coefficients frozen on 2020-25: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -3.409090909090909,
+        3.409090909090909
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 2 games: new right 1, base right 1. Frozen intercept-only control on the same games: log loss -0.00034, Brier -0.00016. The frozen habit_adj coefficient is negative while the 2026 association is positive, so a loss here contradicts the 2020-25 fitted sign, not the availability mechanism. One of 33 declared looks; 2026 report rows carry no timestamps.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.49670000000000003,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 1,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_accuracy_points_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": -0.5988023952095808,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -1.4637391882900865,
+        0.2661343978709248
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 43 games: new right 17, base right 26. In-sample -0.26613, out-of-season -0.59880, gap +0.33267. Fold coefficient positive in 1 of 6 folds. Within-season shuffled term: mean -0.22661, 5th to 95th percentile -1.19760 to +0.66534; 0.764 of shuffles at or above the real value.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.086,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_accuracy_points_stamped": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-24 leave-one-season-out, report timestamps verified before game day: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": 0.4045307443365696,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.6472491909385113,
+        1.4563106796116505
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 45 games: new right 25, base right 20. In-sample +0.64725, out-of-season +0.40453, gap +0.24272. Subset where every listed row carries a timestamp; 2025 and 2026 rows carry none.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.7687,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 5,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_brier_improvement_forward2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2026 weeks 4-9 forward read, coefficients frozen on 2020-25: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": -0.001085499871036536,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.001985543584587789,
+        -0.00024248622199041095
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 2 games: new right 1, base right 1. Frozen intercept-only control on the same games: log loss -0.00034, Brier -0.00016. The frozen habit_adj coefficient is negative while the 2026 association is positive, so a loss here contradicts the 2020-25 fitted sign, not the availability mechanism. One of 33 declared looks; 2026 report rows carry no timestamps.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.0058,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 1,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_brier_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": -0.0001559449016096482,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.00048681854807053164,
+        0.00017858448268929231
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 43 games: new right 17, base right 26. In-sample +0.00002, out-of-season -0.00016, gap +0.00018. Fold coefficient positive in 1 of 6 folds. Within-season shuffled term: mean -0.00022, 5th to 95th percentile -0.00075 to +0.00031; 0.378 of shuffles at or above the real value.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1934,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_brier_improvement_stamped": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-24 leave-one-season-out, report timestamps verified before game day: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": -0.00016836728077668955,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0004845037458988215,
+        0.00013024710848277965
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 45 games: new right 25, base right 20. In-sample +0.00001, out-of-season -0.00017, gap +0.00017. Subset where every listed row carries a timestamp; 2025 and 2026 rows carry none.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1414,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 5,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_log_loss_improvement_forward2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2026 weeks 4-9 forward read, coefficients frozen on 2020-25: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": -0.002204868211364372,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.004038169239551663,
+        -0.0004886850022154341
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 2 games: new right 1, base right 1. Frozen intercept-only control on the same games: log loss -0.00034, Brier -0.00016. The frozen habit_adj coefficient is negative while the 2026 association is positive, so a loss here contradicts the 2020-25 fitted sign, not the availability mechanism. One of 33 declared looks; 2026 report rows carry no timestamps.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.0056,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 1,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_log_loss_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": -0.0003274809612012408,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0010123864884367204,
+        0.00035858822981367863
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 43 games: new right 17, base right 26. In-sample +0.00004, out-of-season -0.00033, gap +0.00037. Fold coefficient positive in 1 of 6 folds. Within-season shuffled term: mean -0.00045, 5th to 95th percentile -0.00151 to +0.00064; 0.388 of shuffles at or above the real value.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1882,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_adj_vs_served_log_loss_improvement_stamped": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-24 leave-one-season-out, report timestamps verified before game day: coach Questionable play-habit adjustment (listed players' coach-shrunk play probability minus the league position-by-practice probability, summed, home minus away) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": -0.0003481327437890204,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0009918639121724079,
+        0.0002615579752438683
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 45 games: new right 25, base right 20. In-sample +0.00002, out-of-season -0.00035, gap +0.00036. Subset where every listed row carries a timestamp; 2025 and 2026 rows carry none.",
+      "plain_summary": "Some coaches put their questionable players on the field more often than the league as a whole. We tested whether knowing that habit for both teams makes the pick better. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1378,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 5,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_league_avail_accuracy_points_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus expected Questionable absences difference using the league position-by-practice play probability; accuracy_points.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.5988023952095808,
+        0.7318695941450433
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 25 games: new right 13, base right 12. In-sample +0.39920, out-of-season +0.06653, gap +0.33267. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We compared two ways of guessing how many questionable players will sit out: the league-wide rate, or each coach's own track record. The picks came out about the same either way, so nothing changes.",
+      "probability_positive": 0.5858,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_league_avail_brier_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus expected Questionable absences difference using the league position-by-practice play probability; brier_improvement.",
+      "effect": -8.459930358480886e-06,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.00020641957930204037,
+        0.0001850974910365401
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 25 games: new right 13, base right 12. In-sample -0.00003, out-of-season -0.00001, gap -0.00002. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We compared two ways of guessing how many questionable players will sit out: the league-wide rate, or each coach's own track record. The picks came out about the same either way, so nothing changes.",
+      "probability_positive": 0.4586,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_league_avail_log_loss_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus expected Questionable absences difference using the league position-by-practice play probability; log_loss_improvement.",
+      "effect": -6.6376956646824285e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.00041259674464788745,
+        0.0003887688880956336
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 25 games: new right 13, base right 12. In-sample -0.00005, out-of-season -0.00001, gap -0.00005. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We compared two ways of guessing how many questionable players will sit out: the league-wide rate, or each coach's own track record. The picks came out about the same either way, so nothing changes.",
+      "probability_positive": 0.4794,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.501,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_served_accuracy_points_forward2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2026 weeks 4-9 forward read, coefficients frozen on 2020-25: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": 3.409090909090909,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -1.1363636363636365,
+        7.954545454545454
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 5 games: new right 4, base right 1. Frozen intercept-only control on the same games: log loss -0.00034, Brier -0.00016. The frozen habit_adj coefficient is negative while the 2026 association is positive, so a loss here contradicts the 2020-25 fitted sign, not the availability mechanism. One of 33 declared looks; 2026 report rows carry no timestamps.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.9134,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_served_accuracy_points_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -1.8629407850964737,
+        0.7984031936127745
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 106 games: new right 49, base right 57. In-sample -0.33267, out-of-season -0.53227, gap +0.19960. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.2237,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_served_brier_improvement_forward2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2026 weeks 4-9 forward read, coefficients frozen on 2020-25: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": 0.0002806729691168103,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0016681716993245058,
+        0.0022422724608019175
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 5 games: new right 4, base right 1. Frozen intercept-only control on the same games: log loss -0.00034, Brier -0.00016. The frozen habit_adj coefficient is negative while the 2026 association is positive, so a loss here contradicts the 2020-25 fitted sign, not the availability mechanism. One of 33 declared looks; 2026 report rows carry no timestamps.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.6146,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_served_brier_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": 9.76626784145084e-06,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0005815058063380435,
+        0.0006184510067734086
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 106 games: new right 49, base right 57. In-sample +0.00014, out-of-season +0.00001, gap +0.00013. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.5132,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_served_log_loss_improvement_forward2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2026 weeks 4-9 forward read, coefficients frozen on 2020-25: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": 0.0005825452931112322,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0034370658723314918,
+        0.00458024527453645
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 5 games: new right 4, base right 1. Frozen intercept-only control on the same games: log loss -0.00034, Brier -0.00016. The frozen habit_adj coefficient is negative while the 2026 association is positive, so a loss here contradicts the 2020-25 fitted sign, not the availability mechanism. One of 33 declared looks; 2026 report rows carry no timestamps.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.6162,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 88,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_habit_avail_vs_served_log_loss_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the coach-shrunk play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": -1.987843355192066e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0012102393166067002,
+        0.0012470424971673156
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 106 games: new right 49, base right 57. In-sample +0.00027, out-of-season -0.00000, gap +0.00027. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.4984,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_intercept_only_vs_served_accuracy_points_loso": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: intercept-only refit (constant home lean control) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.33266799733865604,
+        0.5988023952095808
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 12 games: new right 7, base right 5. In-sample +0.00000, out-of-season +0.13307, gap -0.13307.",
+      "plain_summary": "A check that leans every pick a hair toward the home team, used to make sure other tests are not simply picking up a home lean. It is not used for picks.",
+      "probability_positive": 0.7106,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_intercept_only_vs_served_brier_improvement_loso": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: intercept-only refit (constant home lean control) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": -2.3150172699332635e-05,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.00010437878223858084,
+        6.0383056818835e-05
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 12 games: new right 7, base right 5. In-sample -0.00000, out-of-season -0.00002, gap +0.00002.",
+      "plain_summary": "A check that leans every pick a hair toward the home team, used to make sure other tests are not simply picking up a home lean. It is not used for picks.",
+      "probability_positive": 0.2836,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_intercept_only_vs_served_log_loss_improvement_loso": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: intercept-only refit (constant home lean control) as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": -4.527617163641607e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.00021052172173436498,
+        0.00012418399684254076
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 12 games: new right 7, base right 5. In-sample +0.00000, out-of-season -0.00005, gap +0.00005.",
+      "plain_summary": "A check that leans every pick a hair toward the home team, used to make sure other tests are not simply picking up a home lean. It is not used for picks.",
+      "probability_positive": 0.2924,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_league_avail_vs_served_accuracy_points_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the league position-by-practice play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; accuracy_points.",
+      "effect": -0.5988023952095808,
+      "effect_units": "accuracy_points",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -1.996007984031936,
+        0.7984031936127745
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 113 games: new right 52, base right 61. In-sample -0.73187, out-of-season -0.59880, gap -0.13307. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.1996,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_league_avail_vs_served_brier_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the league position-by-practice play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; brier_improvement.",
+      "effect": 1.8226198199931715e-05,
+      "effect_units": "brier_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.0006493109282457413,
+        0.0007016646507069784
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 113 games: new right 52, base right 61. In-sample +0.00017, out-of-season +0.00002, gap +0.00015. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.5268,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    },
+    "per16_u4_league_avail_vs_served_log_loss_improvement_loso": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the coach habit has split-half reliability 0.50 (unit 3), no positive control of this size was run, and no cell is a resolved wrong sign of the availability mechanism. 33 declared looks in this family.",
+      "closing_ground": null,
+      "description": "PER-16 unit 4, 2020-25 leave-one-season-out: expected Questionable absences difference using the league position-by-practice play probability as one fitted term on the served out-of-season probability (opener grade), versus the served out-of-season probability; log_loss_improvement.",
+      "effect": 4.6498523094903625e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_habit_availability_addone",
+      "interval": [
+        -0.001342368298424305,
+        0.0013978467783792702
+      ],
+      "league": "nfl",
+      "notes": "Side changed on 113 games: new right 52, base right 61. In-sample +0.00032, out-of-season +0.00000, gap +0.00032. Fold coefficient positive in 6 of 6 folds.",
+      "plain_summary": "We tested whether the team expected to have more of its questionable players available covers more often than the pick already assumes. No clear gain showed up, so the picks do not use it.",
+      "probability_positive": 0.507,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per16/unit4_addone.json (scripts/per16_unit4_availability_addone.py)",
+      "standard_error": null
+    }
+  }
+}

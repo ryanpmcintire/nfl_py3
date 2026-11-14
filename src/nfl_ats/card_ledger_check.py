@@ -8,7 +8,21 @@ import pandas as pd
 
 from nfl_ats.board_content import load_board_content
 from nfl_ats.clv import current_played_card_view, load_paper_decisions
-from nfl_ats.pick_refresh import load_pick_revisions, pick_deadline, sunday_pick_lock
+from nfl_ats.pick_refresh import (
+    load_pick_revisions,
+    pick_deadline,
+    served_best_pick,
+    sunday_pick_lock,
+)
+from nfl_ats.publishing import BEST_PICK_MARK
+
+DEFAULT_CARD_PATH = Path("CURRENT_PREDICTIONS.md")
+CARD_CELL_SEPARATOR = "|"
+CARD_MATCHUP_CELL = 2
+CARD_PICK_CELL = 3
+BEST_PICK_FIELD = "best_pick"
+BOARD_STAR_SURFACE = "best_pick_ledger_vs_board"
+CARD_FILE_STAR_SURFACE = "best_pick_ledger_vs_card_file"
 
 
 def _matchup(away: str, home: str) -> str:
@@ -28,11 +42,34 @@ def _latest_revision_side_by_game(revisions: pd.DataFrame) -> dict[str, str]:
     return latest_side
 
 
+def _flagged_best_pick(paper_week: pd.DataFrame) -> str:
+    flagged = paper_week.loc[paper_week["is_best_pick"].fillna(False).astype(bool), "game_id"]
+    return str(flagged.iloc[0]) if len(flagged) == 1 else ""
+
+
+def _card_file_best_pick(card_path: Path, game_id_by_matchup: dict[str, str]) -> str:
+    mark = BEST_PICK_MARK.strip()
+    starred: list[str] = []
+    for line in card_path.read_text(encoding="utf-8").split("\n"):
+        if not line.startswith(CARD_CELL_SEPARATOR):
+            continue
+        cells = line.split(CARD_CELL_SEPARATOR)
+        if len(cells) <= CARD_PICK_CELL:
+            continue
+        game_id = game_id_by_matchup.get(cells[CARD_MATCHUP_CELL].strip())
+        if game_id is None or not cells[CARD_PICK_CELL].strip().startswith(mark):
+            continue
+        if game_id not in starred:
+            starred.append(game_id)
+    return ", ".join(starred)
+
+
 def check_card_ledger_consistency(
     artifacts_root: Path,
     *,
     data_root: Path | None = None,
     now: datetime | None = None,
+    card_path: Path | None = DEFAULT_CARD_PATH,
 ) -> dict[str, Any]:
 
     instant = pd.Timestamp(now if now is not None else datetime.now(UTC))
@@ -91,6 +128,14 @@ def check_card_ledger_consistency(
         revisions_week["revision_recorded_at_utc"] = recorded_at.loc[revisions_week.index]
     latest_revision_side = _latest_revision_side_by_game(revisions_week)
 
+    paper_flag = _flagged_best_pick(paper_week)
+    revision_star = served_best_pick(artifacts_root, season=season, week=week) or ""
+    ledger_star = revision_star or paper_flag
+    ledger_star_source = (
+        "pick_revision_ledger" if revision_star else "paper_ledger_flag" if paper_flag else ""
+    )
+    star_compared = ledger_star in pre_kickoff_ids
+
     disagreements: list[dict[str, Any]] = []
     for _, row in paper_week.iterrows():
         game_id = str(row["game_id"])
@@ -126,6 +171,7 @@ def check_card_ledger_consistency(
             )
 
     board_side_by_game: dict[str, str] = {}
+    board_star: str | None = None
     board_content_error = ""
     try:
         board = load_board_content(
@@ -138,6 +184,7 @@ def check_card_ledger_consistency(
             game.game_id: ("HOME" if game.pick_team == game.home else "AWAY")
             for game in board.games
         }
+        board_star = next((game.game_id for game in board.games if game.is_best), "")
     except Exception as error:
         board_content_error = f"{type(error).__name__}: {error}"
 
@@ -160,6 +207,34 @@ def check_card_ledger_consistency(
                 }
             )
 
+    card_star: str | None = None
+    card_file_error = ""
+    if card_path is not None and card_path.is_file():
+        try:
+            card_star = _card_file_best_pick(
+                card_path, {matchup: game_id for game_id, matchup in served_matchup.items()}
+            )
+        except (OSError, ValueError) as error:
+            card_file_error = f"{type(error).__name__}: {error}"
+
+    if star_compared:
+        for surface, surface_star in (
+            (BOARD_STAR_SURFACE, board_star),
+            (CARD_FILE_STAR_SURFACE, card_star),
+        ):
+            if surface_star is None or surface_star == ledger_star:
+                continue
+            disagreements.append(
+                {
+                    "game_id": ledger_star,
+                    "matchup": served_matchup.get(ledger_star, ledger_star),
+                    "surface": surface,
+                    "field": BEST_PICK_FIELD,
+                    "ledger_value": ledger_star,
+                    "served_value": surface_star,
+                }
+            )
+
     return {
         "checked_at_utc": checked_at.isoformat(),
         "season": season,
@@ -168,8 +243,18 @@ def check_card_ledger_consistency(
         "paper_ledger_rows_checked": len(paper_week),
         "pick_revision_rows_checked": pick_revision_rows_checked,
         "board_content_error": board_content_error,
+        "card_file_error": card_file_error,
+        "best_pick": {
+            "ledger": ledger_star,
+            "ledger_source": ledger_star_source,
+            "board": board_star,
+            "card_file": card_star,
+            "paper_ledger_flag": paper_flag,
+            "tuesday_card_view": str(played.view.nomination.active_game_id or ""),
+            "compared": star_compared,
+        },
         "evaluated": True,
-        "ok": len(disagreements) == 0 and not board_content_error,
+        "ok": len(disagreements) == 0 and not board_content_error and not card_file_error,
         "disagreements": disagreements,
     }
 
@@ -184,12 +269,28 @@ def render_report(report: dict[str, Any]) -> str:
         f"  paper ledger rows checked: {report['paper_ledger_rows_checked']}"
         f"   pick-revision rows checked: {report['pick_revision_rows_checked']}"
     )
+    stars = report.get("best_pick")
+    if stars:
+        lines.append(
+            f"  best pick: ledger={stars['ledger']!r} ({stars['ledger_source']})"
+            f"   board={stars['board']!r}   card file={stars['card_file']!r}"
+            f"   compared: {stars['compared']}"
+        )
+        lines.append(
+            f"  Tuesday nominee, not compared: paper flag={stars['paper_ledger_flag']!r}"
+            f"   served card view={stars['tuesday_card_view']!r}"
+        )
     if report.get("board_content_error"):
         lines.append(f"  board content could not be loaded: {report['board_content_error']}")
+    if report.get("card_file_error"):
+        lines.append(f"  card file could not be read: {report['card_file_error']}")
     disagreements = report.get("disagreements") or []
     if not disagreements:
         if report.get("board_content_error"):
             lines.append("  consistency check incomplete: board comparison unavailable")
+            return "\n".join(lines)
+        if report.get("card_file_error"):
+            lines.append("  consistency check incomplete: card file comparison unavailable")
             return "\n".join(lines)
         lines.append(
             "  no disagreements: paper ledger, pick-revision ledger and the served card agree"

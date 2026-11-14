@@ -8,6 +8,8 @@ Fail loudly when a served probability term goes silent (offset anchor collapse 2
 - scripts/capture_scheduler.py: jobs served_terms_check_tue 12:50 (requires weekly_lock), _thu 18:30, _sun 09:15. Daemon needs one restart to load them.
 - Verified: Week 10 exit 0 (14 anchors, 9 differ, 9 nonzero); MANUAL-RUN OK; demo tests/scratch/fixpicks/demo_served_terms.py (hook zeroed) exits 1 with the problem; ruff clean; test_capture_scheduler 57 passed.
 
+- 2026-11-14 14:55 ET: the script also reports each game's anchor book count, cross-book range and crossed mass against its room, and exits 1 on a one-book anchor, a range above 2.0, or mass above room; `--as-of` replays an earlier instant; problems also go to stderr. Measurement, derivations and verification: fix-picks-2026-11-10.md State. Uncommitted.
+
 ## Tried
 - Nothing rejected.
 

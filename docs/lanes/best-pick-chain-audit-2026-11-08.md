@@ -23,6 +23,11 @@ Measured 2026-11-08 22:13Z, scratch script `bp_audit.py` (session scratchpad; re
 - C measured (MOD-55, lane mod-55-move-anchor-at-pool-line.md): Tuesday-noon anchor is a dead heat on held-out 2023-25 (log loss diff -1.3e-5, P+ 0.497; weekly top pick 32 of 54 vs 33 of 54). Anchor is not the lever; CLE_NO's served move was 2.5 from 2 leader books. Week 5 2026 had 0 leader books at serve time.
 - Test `test_played_card_expectation` was failing since 7ec3b8f7 (plain-English rewrite dropped "reused data"); assertion updated to the new wording.
 
+- ENG-61 2026-11-14, in tree, uncommitted (`src/nfl_ats/card_ledger_check.py`, two call sites in `cli_commands/publishing.py`). Star map (read): board (`board_content.py:4059-4077,4122`) and card render (`publishing.py:194-220`) pass `served_best_pick` into `card_view.resolve_nomination` (:364-368), so they equal the ledger unless a fallback fires (ledger star absent from the forecast); the card file on disk is a persisted copy that `apply_star_to_card` rewrites from the plan object, not the ledger (`best_pick_renomination.py:422-466`), a real comparison; the served card view (`clv.py:1690-1698`) never receives the ledger star and holds the Tuesday paper flag (`card_view.py:273-289,595`); the paper flag is written once on Tuesday (`clv.py:1846-1850,1896`). The last two legitimately differ after a Sunday move: reported, not compared.
+- Check now: ledger star = `served_best_pick`, else the Tuesday paper flag (precedence of `locked_best_pick`). While that game has not kicked off it adds a `best_pick` row for `best_pick_ledger_vs_board` (board game with `is_best`) and `best_pick_ledger_vs_card_file` (starred table row of the card the caller published; default `CURRENT_PREDICTIONS.md`). Report gains `best_pick` and `card_file_error` (unreadable card = incomplete).
+- Sunday sequence (read, `cli_commands/publishing.py` after the edit): `refresh_sun` runs `record_plan` ledger write (:1488) -> `append_refresh_to_card` + `apply_star_to_card` (:1598-1613) -> `_write_public_site` (:1619) -> check (:1623), and the check rebuilds the board star from the same ledger, so a star row needs a failed ledger or card write (both caught; a true divergence). The check blocks nothing: refresh-picks appends a warning (:1633-1642), publish-predictions prints to stderr (:1100-1111), `refresh_lineup_forecast.py:67-71` ignores the CLI exit code, `capture_scheduler.py` never reads it.
+- Measured 2026-11-14: `nfl-ats card-ledger-check` exit 0, 14 paper rows, 5 revision rows, ledger (paper flag; no Week 10 star revision), board, card file, paper flag and card view all `2026_10_PIT_CIN`, no disagreements. Ledger star forced in memory to `2026_10_SF_DAL`: two `best_pick` rows (board, card file), ok False. ruff check, ruff format --check and mypy clean on both files. pytest `-k card_ledger`: 144 scratch collection errors, no test ran; no file under `tests/` names this module.
+
 ## Tried
 - Grading `market_spread` as pick-side was wrong: it is home-favoured-positive; fixed in the script.
 
@@ -32,7 +37,7 @@ Measured 2026-11-08 22:13Z, scratch script `bp_audit.py` (session scratchpad; re
 
 ## Next
 1. ENG-62 committed 6b776751 (Monday private-odds job). Daemon pid 5428 still runs 11-04 code (no Monday job, no ESPN jobs) until the owner restarts it; Tuesday 11-10 check: williamhill_us present Mon/Tue, leader_books 3 at serve time.
-2. card-ledger-check compares sides only; extend it to the star (ENG-61 open item).
+2. ~~card-ledger-check compares sides only; extend it to the star (ENG-61 open item).~~ Done in tree 2026-11-14 (State). Root: review the diff, commit, and read `card_ledger_check.best_pick` in the Sunday 10:00 ET `refresh_sun` output.
 3. POL-13 open: add the cross-book dispersion screen to arm (c).
 
 ## Open
