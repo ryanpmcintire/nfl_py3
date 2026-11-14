@@ -163,7 +163,7 @@ def games_frame(s, w):
     sp = consensus(series, ts)
     g["hs0"] = g.game_id.map(lambda i: sp.get(i, [np.nan, np.nan])[0])
     g["hs1"] = g.game_id.map(lambda i: sp.get(i, [np.nan, np.nan])[1])
-    g["move"] = g.hs0 - g.hs1
+    g["move"] = g.hs1 - g.hs0
     return g.dropna(subset=["move"]).reset_index(drop=True)
 
 
@@ -206,7 +206,7 @@ def residual_look(d, xcol, ccol, rng):
     X = np.column_stack([d.move.to_numpy(float), d[ccol].to_numpy(float)])
     b = ols_fit(X, d[xcol].to_numpy(float))
     r = d[xcol].to_numpy(float) - np.column_stack([np.ones(len(d)), X]) @ b
-    cov = (d.result + d.hs1).to_numpy(float)
+    cov = (d.result - d.hs1).to_numpy(float)
     side = np.sign(r)
     live = (cov != 0) & (side != 0)
     out = {}
