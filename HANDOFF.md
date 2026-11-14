@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T23:05:05.750967+00:00`
+Refreshed at: `2026-11-14T23:08:27.464028+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T23:05:05.750967+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8997a4d88e69` — Label the raw probability raw in the student model's forward records and record its served-base history
-- Pending change set: 56 paths
+- Baseline commit: `57af24ff3dc0` — Fix inverted favourite and prior-move signs in the opener-transfer scripts
+- Pending change set: 47 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/done/opener-error-transfer.md`
+  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
+  - `M  docs/lanes/eng-57-registry-base-tag.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  registry/weak_signals/opener_error_transfer_v1.json`
-  - `M  registry/weak_signals/opener_error_transfer_v2.json`
-  - `M  registry/weak_signals/opener_error_transfer_v3.json`
-  - `M  registry/weak_signals/opener_error_transfer_v4.json`
-  - `M  registry/weak_signals/opener_error_transfer_v5.json`
-  - `M  registry/weak_signals/xlg09_unit6_nested_pooled.json`
+  - `M  registry/weak_signals_base_tags.csv`
+  - `M  scripts/eng57_base_tags.py`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M scripts/forward_ledger.py`
-  - `M  scripts/opener_error_transfer_eval.py`
-  - `M  scripts/opener_error_transfer_unit2.py`
-  - `M  scripts/opener_error_transfer_unit3.py`
-  - `M  scripts/opener_error_transfer_unit4.py`
-  - `M  scripts/sim05_whatif.py`
   - `?? an.csv`
-  - ...and 36 more
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - ...and 27 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

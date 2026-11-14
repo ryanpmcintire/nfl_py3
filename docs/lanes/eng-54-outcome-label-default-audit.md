@@ -34,3 +34,5 @@ Unit 3: (a) done 2026-11-14; the orchestrator applies the corrected SIM-16 sente
 
 ## Open
 Whether the 23 served-label scripts not verified by line mean the served mapping rather than the pick probability. Four flag tables unmeasured.
+
+Unit 3c (2026-11-14 18:07, date; ENG-57 table refresh). registry/weak_signals_base_tags.csv rebuilt by scripts/eng57_base_tags.py with the audit's raw-only scripts as a correction table: 0 served-tagged cells needed correction to raw (families citing them were already raw); 330 cells tagged unknown, listed in docs/lanes/eng-57-registry-base-tag.md.

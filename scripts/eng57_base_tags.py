@@ -93,13 +93,162 @@ FAMILY_BASE = [
 ]
 
 
+NEW_RULES = [
+    ("eng49_forward_ledger_vs_card", "served_card", "scripts/forward_ledger.py:129", "read"),
+    (
+        "eng62_",
+        "served_card",
+        "scripts/eng62_reference_system_arms.py:413;scripts/eng62_tuesday_reference_oos.py:232",
+        "read",
+    ),
+    ("flag_gate_evaluation", "served_card", "scripts/flag_gate_evaluation.py:545", "read"),
+    ("flag_set_freeze", "served_card", "docs/lanes/flag-gate-evaluation-2026-11-14.md", "inferred"),
+    ("flip_attribution_audit", "served_card", "scripts/flip_attribution_audit.py:278", "inferred"),
+    ("lead100", "not_applicable", "scripts/lead100_analyze.py", "inferred"),
+    ("lead101", "not_applicable", "scripts/lead101_delta_read.py", "inferred"),
+    ("lead102", "not_applicable", "scripts/lead102_blinded_read.py", "inferred"),
+    ("lead104_revision_path", "raw_model", "scripts/lead104_revision_path.py:188;201", "inferred"),
+    (
+        "lead106",
+        "unknown",
+        "scripts/lead106_forward_score.py names no probability column",
+        "inferred",
+    ),
+    (
+        "lead110_market_absorption",
+        "served_card",
+        "scripts/lead110_market_absorption.py:432",
+        "read",
+    ),
+    (
+        "lead99_forward_decision_read",
+        "unknown",
+        "scripts/lead99_forward_decision_read.py:116,176 reads recommendations probability",
+        "inferred",
+    ),
+    ("mod22_qb_input_repair", "raw_model", "scripts/mod22_qb_input_repair.py:584", "read"),
+    (
+        "mod25_distillation_walkforward",
+        "served_card",
+        "scripts/mod25_wfj_served_freeze.py",
+        "read",
+    ),
+    ("mod36_addone_noise_floor", "served_card", "scripts/mod36_addone_noise_floor.py:19", "read"),
+    (
+        "mod36_metric_power",
+        "unknown",
+        "scripts/mod36_metric_power.py:308 mixes served and intercept-only comparators",
+        "inferred",
+    ),
+    ("mod39_playoff_leverage", "served_card", "scripts/mod39_freeze_levdiff_served.py:23", "read"),
+    (
+        "mod47_short_week_side_term",
+        "served_card",
+        "scripts/mod47_short_week_side_term.py:218",
+        "read",
+    ),
+    ("mod52_", "served_card", "scripts/mod52_stability.py:87", "read"),
+    (
+        "mod57_uncorrected_error_model",
+        "raw_model",
+        "scripts/mod57_p2c_uncorrected_error_model.py",
+        "inferred",
+    ),
+    (
+        "mod57_availability_ceiling",
+        "raw_model",
+        "scripts/mod57_p2l_availability_ceiling.py",
+        "inferred",
+    ),
+    (
+        "mod57_how_wrong_is_the_line",
+        "raw_model",
+        "scripts/mod57_p2o_how_wrong_is_the_line.py",
+        "inferred",
+    ),
+    (
+        "opener_error_transfer",
+        "unknown",
+        "scripts/opener_error_transfer_eval.py grades its own fitted base",
+        "inferred",
+    ),
+    ("per14", "not_applicable", "scripts/per14_mover_portability.py", "inferred"),
+    (
+        "per16_habit_availability_addone",
+        "served_card",
+        "scripts/per16_unit4_availability_addone.py:18",
+        "read",
+    ),
+    (
+        "sim30_margin_distribution_challenger",
+        "raw_model",
+        "scripts/sim30_margin_mass.py",
+        "inferred",
+    ),
+    ("xlg09_unit6", "unknown", "scripts/xlg09_unit6.py grades its own fitted base", "inferred"),
+    ("xlg_early_overreaction_cfb", "cfb_base", "scripts/xlg_early_overreaction_cfb.py", "inferred"),
+    (
+        "xlg_harness_power",
+        "unknown",
+        "docs/lanes/xlg-harness-power-2026-11-14.md mixes harnesses",
+        "inferred",
+    ),
+]
+
+NOT_APPLICABLE_UNITS = {
+    "lead110_market_absorption": {"slope_difference"},
+    "mod22_qb_input_repair": {"mae_improvement"},
+}
+
+AUDIT_NOTE = "corrected 2026-11-14 from the label audit"
+AUDIT_EXCLUDED_SHARDS = {"mkt28_served_base_retest.json"}
+RAW_ONLY_SHARDS = {
+    "base_model_recency_v1.json": "base_model_recency.py",
+    "lead76_rule_prior.json": "lead76_rule_prior.py",
+    "mkt24_slot_opener_residual.json": "mkt24_slot_residual.py",
+    "mkt25_opener_revision.json": "mkt25_opener_revision.py",
+    "mkt25_opener_revision_unit2.json": "mkt25_unit2.py",
+    "mkt25_opener_revision_unit3.json": "mkt25_unit3.py",
+    "mkt27_total_lattice.json": "mkt27_total_lattice.py",
+    "mod22_qb_input_repair.json": "mod22_qb_input_repair.py",
+    "mod24_finer_grade.json": "mod24_finer_grade.py",
+    "mod24_pre2009_extension.json": "mod24_pre2009_extension.py",
+    "mod42_ol_continuity.json": "mod42_ol_continuity.py",
+    "mod43_qb_learning_curve.json": "mod43_qb_learning_curve.py",
+    "mod44_coach_tenure.json": "mod44_coach_tenure.py",
+    "mod47_short_week_slope.json": "mod47_short_week_slope.py",
+    "per15_return_ramp.json": "per15_return_ramp.py",
+    "line_move_target_v1.json": "line_move_target.py",
+    "refresh_timing_policy.json": "refresh_timing_policy.py",
+    "sharp_book_weighted_movement.json": "sharp_book_weighted_movement.py",
+    "sim04_play_simulator.json": "sim04_loso.py",
+    "sim30_margin_distribution_challenger.json": "sim30_margin_mass.py",
+    "spread_size_calibration.json": "spread_size_calibration.py",
+}
+RAW_ONLY_FAMILIES = {
+    "mod40": "mod40_ngs_fit.py",
+    "mod41_cumulative_workload_u2": "mod41_unit2_components.py",
+    "mod45": "mod45_tempo_spread.py",
+    "mod46": "mod46_favourite_skew.py",
+    "mod57_uncorrected_error_model": "mod57_p2c_uncorrected_error_model.py",
+    "mod57_availability_ceiling": "mod57_p2l_availability_ceiling.py",
+    "mod57_how_wrong_is_the_line": "mod57_p2o_how_wrong_is_the_line.py",
+    "sim08": "sim08_evaluate.py",
+}
+
+
 def tag(family, name, units):
-    match = next((row for row in FAMILY_BASE if family.startswith(row[0])), None)
+    match = next(
+        (row for row in NEW_RULES + FAMILY_BASE if family.startswith(row[0])),
+        None,
+    )
     if match is None:
-        return "unread", "", "unread"
-    _prefix, base, evidence, confidence = match
+        if units in NO_BASE_UNITS:
+            return "not_applicable", "unit carries no pick-probability base", "inferred"
+        return "unknown", "no family rule and no script evidence", "unread"
+    prefix, base, evidence, confidence = match
     lowered = name.lower()
-    if units in NO_BASE_UNITS:
+    if units in NO_BASE_UNITS or units in NOT_APPLICABLE_UNITS.get(prefix, ()):
         return "not_applicable", evidence, confidence
     if "cfb" in lowered and base in {"raw_model", "served_card"}:
         return "cfb_base", evidence, "inferred"
@@ -108,6 +257,19 @@ def tag(family, name, units):
             return "served_card", evidence, confidence
         return "raw_model", "scripts/mod47_unit2_global_calibration.py:69", confidence
     return base, evidence, confidence
+
+
+def audit_correction(shard, family, units, base):
+    if base != "served_card" or units in NO_BASE_UNITS:
+        return None
+    if shard in AUDIT_EXCLUDED_SHARDS:
+        return None
+    if shard in RAW_ONLY_SHARDS:
+        return RAW_ONLY_SHARDS[shard]
+    for prefix, script in RAW_ONLY_FAMILIES.items():
+        if family.startswith(prefix):
+            return script
+    return None
 
 
 def main():
@@ -121,13 +283,22 @@ def main():
             if signal.get("recorded_at", "") < CUTOFF:
                 continue
             base, evidence, confidence = tag(signal["family"], name, signal["effect_units"])
+            note = ""
+            script = audit_correction(
+                Path(path).name, signal["family"], signal["effect_units"], base
+            )
+            if script:
+                base, evidence, confidence = "raw_model", f"scripts/{script}", "read"
+                note = AUDIT_NOTE
             rows.append(
-                [name, signal["family"], signal["effect_units"], base, evidence, confidence]
+                [name, signal["family"], signal["effect_units"], base, evidence, confidence, note]
             )
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", newline="", encoding="utf8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["signal", "family", "effect_units", "base", "evidence", "confidence"])
+        writer.writerow(
+            ["signal", "family", "effect_units", "base", "evidence", "confidence", "note"]
+        )
         writer.writerows(rows)
     print(len(rows), dict(Counter(r[3] for r in rows)), dict(Counter(r[5] for r in rows)))
 
