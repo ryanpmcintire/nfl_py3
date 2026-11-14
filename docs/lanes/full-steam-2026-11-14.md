@@ -16,6 +16,8 @@ Owner 2026-11-14 (Saturday): maximum parallel work. Done = the simulator's final
 - FINDING, flip audit Weeks 7-10 (lane flip-attribution-audit-2026-11-14.md): 14 of 18 flips came from the line-move term; settled flips final side 6-9, Tuesday side 9-6; all 44 settled games Tuesday card 21-23, final card 18-26; 12 flips rested on one or two leader books, 8 of 14 line-move flips on half a point or less (4-4).
 - FINDING, quote age (lanes eng-62, tuesday-reference-bundle-2026-11-14.md): both Tuesday-line terms run on a different quote age than their fit.
 
+- Later the same afternoon (clock 16:17 ET), pushed through b8afed59: pool panel states both first-place chances (6 in 100 at the stated win rate, under 1 in 100 at the realised one) with the replay bias; served-terms check reports leader-book depth and fails on a one-book move or a late-written quote file; failed served-terms and pool-standing checks now push a notification (delivery proven 16:10, id 2YMGOdrHwSTM; MIN at GB will alert again at 09:15 Sunday); daemon restarted 16:11 (pid 15840). Dry runs OK on today's code: refresh_last_call_sun_1535 (16:02) and refresh_sun with the Best Pick re-nomination (16:16), no push, card untouched. Serve-time finding: 17 Week 7-8 move values do not reproduce because the Tuesday parser then kept one game per book and a 10-31 re-parse back-filled the store; Weeks 9-10 are clean; never back-fill data/market/raw while a week is live. Harness reconcile: the 757-565 against 729-593 gap is the counted flag set (division flag admitted 11-03 on a 3-0 record); correct served level 754-568. Simulator: grading rehearsed, three script bugs fixed, launchers tierb_terminal.ps1 and control_amend6.ps1 ready in tests/scratch/sim_finish_queue (both still owed for SIM-08 after the grade).
+
 ## Decisions (root)
 - LEAD-99 language read: not served; declared row is the term of record.
 - No more one-term add-on units on the NFL opener harness; packets quote the matched-null percentile and the detectable size (MOD-36 lane, "Use in future packets").
@@ -24,7 +26,7 @@ Owner 2026-11-14 (Saturday): maximum parallel work. Done = the simulator's final
 - MOD-30 and UI-33 stay not started, not blocked on the owner.
 
 ## Running (six agents)
-Pool panel wording (lane pool-standing-refresh.md; root reviews and publishes); serve-time move reproduction (17 Week 7-8 move values that today's quotes do not reproduce; flip-audit lane); college and pooled harness detectable effect (lane xlg-harness-power-2026-11-14.md); two-stage harness level reconcile 757-565 against 729-593 (lane harness-level-reconcile-2026-11-14.md); simulator grade rehearsal and runbook; one slot free.
+College and pooled harness detectable effect (lane xlg-harness-power-2026-11-14.md); counted-flag gate evaluation (lane flag-gate-evaluation-2026-11-14.md); neutral-site check on NE at DET (lane eng-60); flexed-games input audit (lane eng-58); two slots free. Owed at session end: one ROADMAP pass for today's results with tests/scratch/reconcile_2026_11_14/apply.py (give it a new stamp so rows stamped this morning are not skipped).
 
 ## Next
 1. Simulator marker appears: follow the runbook block in sim-finish-2026-11-11.md (evaluate, grade stage 2, sim30 margin mass), record, close SIM-08 and SIM-30, fill the PENDING line in docs/sim_engine_summary.md, move sim lanes to done/.
