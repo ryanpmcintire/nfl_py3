@@ -1,0 +1,425 @@
+{
+  "family": "lead101_news_delta_read",
+  "signals": {
+    "lead101_delta_read_pooled_direction_remaining": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday and Sunday reads together: direction of the move from the latest quote shown to the deadline line, right calls minus wrong calls per moved game, in percentage points; record 1-2 with 13 no call, within-week permutation p 0.804",
+      "effect": -6.25,
+      "effect_units": "rate_pp",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -29.411764705882355,
+        14.285714285714285
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses which way each line will move by the pick deadline. This counts right guesses minus wrong guesses on the games that moved.",
+      "probability_positive": 0.28715,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 16,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_pooled_direction_total": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday and Sunday reads together: direction of the move from the frozen pool line to the deadline line, right calls minus wrong calls per moved game, in percentage points; record 14-2 with 6 no call, within-week permutation p 0.002",
+      "effect": 54.54545454545454,
+      "effect_units": "rate_pp",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        27.27272727272727,
+        81.48148148148148
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses which way each line will move by the pick deadline. This counts right guesses minus wrong guesses on the games that moved.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 22,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_pooled_error_gain_vs_momentum": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday and Sunday reads together: mean absolute error of a guess that the move so far keeps going at the same pace minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": 0.5616162522330956,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        0.2082723864756311,
+        1.0276773601107816
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the move so far keeps going at the same pace.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_pooled_error_gain_vs_nochange": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday and Sunday reads together: mean absolute error of a guess that the line stays at the latest quote the model was shown minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": -0.09821428571428571,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -0.25892857142857145,
+        0.008928571428571428
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the line stays at the latest quote the model was shown.",
+      "probability_positive": 0.05045,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_pooled_error_gain_vs_zero": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday and Sunday reads together: mean absolute error of a guess that the line ends where the pool line froze minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": 0.16964285714285715,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -0.025,
+        0.3620689655172414
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the line ends where the pool line froze.",
+      "probability_positive": 0.956,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_sunday_direction_remaining": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "1 forward week(s), 13 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Sunday morning reads: direction of the move from the latest quote shown to the deadline line, right calls minus wrong calls per moved game, in percentage points; record 0-0 with 5 no call, within-week permutation p 1.000",
+      "effect": 0.0,
+      "effect_units": "rate_pp",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses which way each line will move by the pick deadline. This counts right guesses minus wrong guesses on the games that moved.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 5,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_sunday_direction_total": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "1 forward week(s), 13 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Sunday morning reads: direction of the move from the frozen pool line to the deadline line, right calls minus wrong calls per moved game, in percentage points; record 8-0 with 2 no call, within-week permutation p 0.000",
+      "effect": 80.0,
+      "effect_units": "rate_pp",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        50.0,
+        100.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses which way each line will move by the pick deadline. This counts right guesses minus wrong guesses on the games that moved.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 10,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_sunday_error_gain_vs_momentum": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "1 forward week(s), 13 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Sunday morning reads: mean absolute error of a guess that the move so far keeps going at the same pace minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": 0.032487613307544676,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        0.00949555856936445,
+        0.06022744733040713
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the move so far keeps going at the same pace.",
+      "probability_positive": 0.99915,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_sunday_error_gain_vs_nochange": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "1 forward week(s), 13 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Sunday morning reads: mean absolute error of a guess that the line stays at the latest quote the model was shown minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": 0.0,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the line stays at the latest quote the model was shown.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_sunday_error_gain_vs_zero": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "1 forward week(s), 13 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Sunday morning reads: mean absolute error of a guess that the line ends where the pool line froze minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": 0.38461538461538464,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        0.19230769230769232,
+        0.5769230769230769
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the line ends where the pool line froze.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_thursday_direction_remaining": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday evening reads: direction of the move from the latest quote shown to the deadline line, right calls minus wrong calls per moved game, in percentage points; record 1-2 with 8 no call, within-week permutation p 0.797",
+      "effect": -9.090909090909092,
+      "effect_units": "rate_pp",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -40.0,
+        20.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses which way each line will move by the pick deadline. This counts right guesses minus wrong guesses on the games that moved.",
+      "probability_positive": 0.289,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 11,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_thursday_direction_total": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday evening reads: direction of the move from the frozen pool line to the deadline line, right calls minus wrong calls per moved game, in percentage points; record 6-2 with 4 no call, within-week permutation p 0.124",
+      "effect": 33.33333333333333,
+      "effect_units": "rate_pp",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -9.090909090909092,
+        72.72727272727273
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses which way each line will move by the pick deadline. This counts right guesses minus wrong guesses on the games that moved.",
+      "probability_positive": 0.93175,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_thursday_error_gain_vs_momentum": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday evening reads: mean absolute error of a guess that the move so far keeps going at the same pace minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": 1.020194405968573,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        0.3764048203562367,
+        1.850514823647395
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the move so far keeps going at the same pace.",
+      "probability_positive": 0.9998,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_thursday_error_gain_vs_nochange": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday evening reads: mean absolute error of a guess that the line stays at the latest quote the model was shown minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": -0.18333333333333332,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -0.48333333333333334,
+        0.016666666666666666
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the line stays at the latest quote the model was shown.",
+      "probability_positive": 0.0501,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    },
+    "lead101_delta_read_thursday_error_gain_vs_zero": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2 forward week(s), 15 games, game bootstrap; no split-half reliability and no positive control exist yet, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-101 news-delta read, Thursday evening reads: mean absolute error of a guess that the line ends where the pool line froze minus the read's error, in line points, target = deadline line minus frozen pool line; positive means the read is closer",
+      "effect": -0.016666666666666666,
+      "effect_units": "mae_improvement",
+      "family": "lead101_news_delta_read",
+      "interval": [
+        -0.3333333333333333,
+        0.25
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model sees only the news that arrived after the pool line froze and guesses how far each line will move by the pick deadline. This compares the size of its misses with a guess that the line ends where the pool line froze.",
+      "probability_positive": 0.46875,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead101/score/scores.json",
+      "standard_error": null
+    }
+  }
+}

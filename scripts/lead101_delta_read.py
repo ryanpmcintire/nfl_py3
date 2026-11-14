@@ -6,6 +6,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
@@ -18,6 +19,29 @@ ART = L99.ROOT / "artifacts" / "lead101"
 PROMPT = HERE / "lead101_prompt.md"
 FROZEN = ART / "frozen.json"
 TUESDAY_RUNS = L99.ART / "runs"
+SCORE = ART / "score"
+FAMILY = "lead101_news_delta_read"
+VIEW_WEEKDAY = {"thursday": 3, "sunday": 6}
+BASELINES = ("zero", "nochange", "momentum")
+BOOTSTRAP_DRAWS = 10000
+PERMUTATION_DRAWS = 10000
+INTERVAL_PERCENTILES = (2.5, 97.5)
+ROUND_DIGITS = 9
+SEED = 101
+VIEW_WORDS = {
+    "thursday": "Thursday evening reads",
+    "sunday": "Sunday morning reads",
+    "pooled": "Thursday and Sunday reads together",
+}
+BASELINE_WORDS = {
+    "zero": "a guess that the line ends where the pool line froze",
+    "nochange": "a guess that the line stays at the latest quote the model was shown",
+    "momentum": "a guess that the move so far keeps going at the same pace",
+}
+DIRECTION_WORDS = {
+    "total": "direction of the move from the frozen pool line to the deadline line",
+    "remaining": "direction of the move from the latest quote shown to the deadline line",
+}
 
 
 def prompt_sha():
@@ -228,10 +252,317 @@ def cmd_run(args):
     print("rows", len(out["parsed_rows"]), "model_called", bool(ids))
 
 
+def served_quotes():
+    from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes
+    from nfl_ats.sharp_book_movement_features import LEADERSHIP_WEIGHTS
+
+    q = load_decision_quotes(L99.ROOT / "data" / "market" / "raw", capture_kind=LIVE_CAPTURE_KIND)
+    q = q.loc[q["market"].eq("spreads") & q["bookmaker_key"].isin(LEADERSHIP_WEIGHTS)]
+    blank = pd.Series(pd.NA, index=q.index, dtype="object")
+    seen = pd.to_datetime(q["observed_at_utc"], utc=True, errors="coerce")
+    updated = pd.to_datetime(q["bookmaker_last_update_utc"], utc=True, errors="coerce")
+    scan = pd.to_datetime(q.get("source_scan_at_utc", blank), utc=True, errors="coerce")
+    basis = q.get("quote_timestamp_basis", blank).astype("string")
+    line = pd.to_numeric(q["home_spread_line"], errors="coerce")
+    valid = (
+        seen.notna()
+        & np.isfinite(line)
+        & (scan.isna() | scan.le(seen))
+        & (updated.le(seen) | (updated.isna() & basis.eq("capture_observed_utc").fillna(False)))
+    )
+    out = pd.DataFrame(
+        {
+            "game_id": q["nflverse_game_id"].astype(str),
+            "book": q["bookmaker_key"],
+            "seen": seen,
+            "line": line,
+        }
+    ).loc[valid]
+    return out.drop_duplicates(["game_id", "book", "seen"])
+
+
+def declared_records():
+    fz = json.loads(FROZEN.read_text())
+    kept, excluded = [], []
+    for f in sorted((ART / "runs").glob("*.json")):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        view = d["view"]
+        weekday = utc(d["recorded_at_utc"]).tz_convert("America/New_York").weekday()
+        if view not in VIEW_WEEKDAY:
+            reason = "view is not a declared forward view"
+        elif weekday != VIEW_WEEKDAY[view]:
+            reason = "recorded on another weekday than its view"
+        elif d["prompt_sha256"] != fz["prompt_sha256"] or d["model"] != fz["model"]:
+            reason = "prompt or model differs from the frozen enrollment"
+        else:
+            kept.append((f.name, d))
+            continue
+        excluded.append(
+            {
+                "file": f.name,
+                "view": view,
+                "recorded_at_utc": d["recorded_at_utc"],
+                "reason": reason,
+            }
+        )
+    return kept, excluded
+
+
+def score_rows(kept, quotes, now):
+    by_game = {gid: g.sort_values("seen") for gid, g in quotes.groupby("game_id")}
+    rows, skipped = [], []
+    for name, d in kept:
+        run_at = utc(d["run_at_utc"])
+        recorded = utc(d["recorded_at_utc"])
+        games = {g["game_id"]: g for g in d["packet"]["games"]}
+        for r in d["parsed_rows"]:
+            g = games[r["game_id"]]
+            deadline = utc(g["deadline_et"])
+            base = {"file": name, "week": d["week"], "view": d["view"], "game_id": r["game_id"]}
+            q = by_game.get(r["game_id"])
+            if recorded >= deadline:
+                skipped.append({**base, "reason": "recorded at or after the deadline"})
+                continue
+            if deadline >= now:
+                skipped.append({**base, "reason": "deadline not reached"})
+                continue
+            window = None if q is None else q.loc[q["seen"].gt(run_at) & q["seen"].lt(deadline)]
+            if window is None or window.empty:
+                skipped.append({**base, "reason": "no quote between the record and the deadline"})
+                continue
+            last = window.groupby("book").tail(1)
+            pool = float(g["frozen_pool_line"]["home_spread"])
+            pooled_at = utc(g["frozen_pool_line"]["captured_at_et"])
+            market = g["items_after_freeze"].get("market")
+            so_far, momentum = 0.0, 0.0
+            if market:
+                quoted_at = utc(market["latest_capture_at_utc"])
+                so_far = float(market["home_spread_latest"]) - pool
+                momentum = so_far * float((deadline - pooled_at) / (quoted_at - pooled_at))
+            closing = float(last["line"].median())
+            rows.append(
+                {
+                    **base,
+                    "recorded_at_utc": d["recorded_at_utc"],
+                    "deadline_utc": deadline.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "deadline_line_seen_utc": last["seen"].max().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "deadline_books": len(last),
+                    "pool_line": pool,
+                    "deadline_line": closing,
+                    "realised": closing - pool,
+                    "read": float(r["expected_home_spread_move"]),
+                    "zero": 0.0,
+                    "nochange": so_far,
+                    "momentum": momentum,
+                }
+            )
+    return pd.DataFrame(rows), skipped
+
+
+def direction(call, target, grid):
+    moved = np.abs(target) >= grid
+    agree = np.sign(np.round(call, ROUND_DIGITS)) * np.sign(np.round(target, ROUND_DIGITS))
+    return moved, np.where(moved, agree, 0.0)
+
+
+def spread(draws):
+    d = draws[np.isfinite(draws)]
+    low, high = np.percentile(d, INTERVAL_PERCENTILES)
+    return {
+        "interval_low": float(low),
+        "interval_high": float(high),
+        "probability_positive": float((d > 0).mean() + (d == 0).mean() / 2),
+    }
+
+
+def cell_scores(frame, grid, rng):
+    target = frame["realised"].to_numpy()
+    read = frame["read"].to_numpy()
+    so_far = frame["nochange"].to_numpy()
+    err = np.abs(read - target)
+    rival_err = {b: np.abs(frame[b].to_numpy() - target) for b in BASELINES}
+    calls = {"total": (read, target), "remaining": (read - so_far, target - so_far)}
+    marks = {k: direction(c, t, grid) for k, (c, t) in calls.items()}
+    game_ids = frame["game_id"].to_numpy()
+    uniq = np.unique(game_ids)
+    members = [np.flatnonzero(game_ids == g) for g in uniq]
+    draws = {k: np.full(BOOTSTRAP_DRAWS, np.nan) for k in (*BASELINES, *calls)}
+    for i in range(BOOTSTRAP_DRAWS):
+        idx = np.concatenate([members[j] for j in rng.integers(0, len(uniq), len(uniq))])
+        for b in BASELINES:
+            draws[b][i] = (rival_err[b][idx] - err[idx]).mean()
+        for k, (moved, agree) in marks.items():
+            n = moved[idx].sum()
+            if n:
+                draws[k][i] = agree[idx].sum() / n
+    keys = frame["week"].astype(str).to_numpy() + frame["view"].to_numpy()
+    strata = [np.flatnonzero(keys == k) for k in np.unique(keys)]
+    out = {
+        "rows": len(frame),
+        "games": len(uniq),
+        "weeks": int(frame["week"].nunique()),
+        "mae_read": float(err.mean()),
+        "errors": {},
+        "direction": {},
+    }
+    for b in BASELINES:
+        out["errors"][b] = {
+            "mae_baseline": float(rival_err[b].mean()),
+            "gain": float((rival_err[b] - err).mean()),
+            **spread(draws[b]),
+        }
+    for k, (call, goal) in calls.items():
+        moved, agree = marks[k]
+        rival = direction(so_far, goal, grid)[1]
+        cell = {
+            "moved": int(moved.sum()),
+            "hits": int((agree > 0).sum()),
+            "misses": int((agree < 0).sum()),
+            "baseline_hits": int((rival > 0).sum()),
+            "baseline_misses": int((rival < 0).sum()),
+        }
+        cell["no_call"] = cell["moved"] - cell["hits"] - cell["misses"]
+        if cell["moved"]:
+            cell["net_rate"] = float(agree.sum() / cell["moved"])
+            cell.update(spread(draws[k]))
+            beat = 0
+            for _ in range(PERMUTATION_DRAWS):
+                shuffled = call.copy()
+                for s in strata:
+                    shuffled[s] = call[rng.permutation(s)]
+                beat += int(direction(shuffled, goal, grid)[1].sum() >= agree.sum())
+            cell["permutation_p"] = (1 + beat) / (1 + PERMUTATION_DRAWS)
+        out["direction"][k] = cell
+    return out
+
+
+def batch_payload(cells):
+    shared = {
+        "source": "artifacts/lead101/score/scores.json",
+        "league": "nfl",
+        "season_start": L99.SEASON,
+        "season_end": L99.SEASON,
+        "classification": "unresolved_below_power",
+        "category": "market",
+        "family": FAMILY,
+    }
+    out = []
+    for name, c in cells.items():
+        evidence = (
+            f"{c['weeks']} forward week(s), {c['games']} games, game bootstrap; no split-half "
+            "reliability and no positive control exist yet, so no closing ground applies"
+        )
+        for b in BASELINES:
+            e = c["errors"][b]
+            out.append(
+                {
+                    **shared,
+                    "name": f"lead101_delta_read_{name}_error_gain_vs_{b}",
+                    "description": (
+                        f"LEAD-101 news-delta read, {VIEW_WORDS[name]}: mean absolute error of "
+                        f"{BASELINE_WORDS[b]} minus the read's error, in line points, target = "
+                        "deadline line minus frozen pool line; positive means the read is closer"
+                    ),
+                    "plain_summary": (
+                        "A language model sees only the news that arrived after the pool line "
+                        "froze and guesses how far each line will move by the pick deadline. "
+                        f"This compares the size of its misses with {BASELINE_WORDS[b]}."
+                    ),
+                    "effect": e["gain"],
+                    "effect_units": "mae_improvement",
+                    "interval_low": e["interval_low"],
+                    "interval_high": e["interval_high"],
+                    "probability_positive": e["probability_positive"],
+                    "sample_games": c["games"],
+                    "sample_blocks": c["weeks"],
+                    "classification_evidence": evidence,
+                }
+            )
+        for k, d in c["direction"].items():
+            if not d["moved"]:
+                continue
+            out.append(
+                {
+                    **shared,
+                    "name": f"lead101_delta_read_{name}_direction_{k}",
+                    "description": (
+                        f"LEAD-101 news-delta read, {VIEW_WORDS[name]}: {DIRECTION_WORDS[k]}, "
+                        "right calls minus wrong calls per moved game, in percentage points; "
+                        f"record {d['hits']}-{d['misses']} with {d['no_call']} no call, "
+                        f"within-week permutation p {d['permutation_p']:.3f}"
+                    ),
+                    "plain_summary": (
+                        "A language model sees only the news that arrived after the pool line "
+                        "froze and guesses which way each line will move by the pick deadline. "
+                        "This counts right guesses minus wrong guesses on the games that moved."
+                    ),
+                    "effect": 100 * d["net_rate"],
+                    "effect_units": "rate_pp",
+                    "interval_low": 100 * d["interval_low"],
+                    "interval_high": 100 * d["interval_high"],
+                    "probability_positive": d["probability_positive"],
+                    "sample_games": d["moved"],
+                    "sample_blocks": c["weeks"],
+                    "classification_evidence": evidence,
+                }
+            )
+    return {"family": FAMILY, "cells": out}
+
+
+def cmd_score(args):
+    kept, excluded = declared_records()
+    quotes = served_quotes()
+    grid = float(np.diff(np.unique(quotes["line"].to_numpy())).min())
+    now = pd.Timestamp.now(tz="UTC")
+    frame, skipped = score_rows(kept, quotes, now)
+    if frame.empty:
+        raise SystemExit("no settled row with a quote between the record and the deadline")
+    rng = np.random.default_rng(SEED)
+    views = [v for v in VIEW_WEEKDAY if frame["view"].eq(v).any()]
+    cells = {v: cell_scores(frame.loc[frame["view"].eq(v)], grid, rng) for v in views}
+    cells["pooled"] = cell_scores(frame, grid, rng)
+    SCORE.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(SCORE / "rows.csv", index=False)
+    payload = {
+        "scored_at_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "quote_grid_measured": grid,
+        "bootstrap_draws": BOOTSTRAP_DRAWS,
+        "permutation_draws": PERMUTATION_DRAWS,
+        "records_scored": [name for name, _ in kept],
+        "records_excluded": excluded,
+        "rows_skipped": skipped,
+        "cells": cells,
+    }
+    (SCORE / "scores.json").write_text(json.dumps(payload, indent=1), encoding="utf-8")
+    (SCORE / "weak_signals_batch.json").write_text(
+        json.dumps(batch_payload(cells), indent=1), encoding="utf-8"
+    )
+    print("excluded", [(e["file"], e["reason"]) for e in excluded])
+    reasons = pd.DataFrame(skipped)
+    if not reasons.empty:
+        print(reasons.groupby(["week", "view", "reason"]).size().to_string())
+        print(reasons.loc[~reasons["reason"].eq("deadline not reached")].to_string(index=False))
+    print("quote grid measured", grid)
+    shown = ["week", "view", "game_id", "deadline_books", "deadline_line_seen_utc", "pool_line"]
+    print(frame[[*shown, "deadline_line", "realised", "read", *BASELINES]].to_string(index=False))
+    for name, c in cells.items():
+        print(name, "rows", c["rows"], "games", c["games"], "weeks", c["weeks"])
+        print(" mae read", round(c["mae_read"], 4))
+        for b, e in c["errors"].items():
+            print(
+                f" vs {b}: baseline mae {e['mae_baseline']:.4f} gain {e['gain']:+.4f} "
+                f"[{e['interval_low']:+.4f}, {e['interval_high']:+.4f}] "
+                f"probability_positive {e['probability_positive']:.3f}"
+            )
+        for k, d in c["direction"].items():
+            print(f" direction {k}:", json.dumps(d))
+
+
 def main():
     ap = argparse.ArgumentParser(description="LEAD-101 news-delta read")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("enroll").set_defaults(fn=cmd_enroll)
+    sub.add_parser("score").set_defaults(fn=cmd_score)
     s = sub.add_parser("run")
     s.add_argument("--week", type=int)
     s.add_argument("--view", choices=["thursday", "sunday", "dry"], required=True)

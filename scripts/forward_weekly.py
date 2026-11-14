@@ -5,6 +5,7 @@ from pathlib import Path
 import eng50_online_stacker
 import forward_ledger
 import forward_monitor
+import lead101_delta_read
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +48,7 @@ def main():
     )
     _run(forward_monitor)
     _run(eng50_online_stacker)
+    _run(lead101_delta_read, "score")
 
 
 if __name__ == "__main__":
