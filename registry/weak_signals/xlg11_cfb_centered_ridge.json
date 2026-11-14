@@ -169,6 +169,286 @@
       "source": "artifacts/xlg11_cfb_centered/report_u3.json",
       "standard_error": 1.3006914048974376
     },
+    "xlg11_h14_int_only_minus_base_11_19_u4": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "int_only 867-880 versus base 904-843, changed picks 401-438; accuracy difference, paired week-block bootstrap.",
+      "effect": -2.117916428162564,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -5.0120188824160214,
+        0.9754423209511569
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "A no-information comparison model, used to show what the test can and cannot see.",
+      "probability_positive": 0.086,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_int_only_minus_base_20_25_u4": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "int_only 757-746 versus base 754-749, changed picks 314-311; accuracy difference, paired week-block bootstrap.",
+      "effect": 0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -2.761564449064449,
+        3.1168990320815912
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "A no-information comparison model, used to show what the test can and cannot see.",
+      "probability_positive": 0.524,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_line_only_minus_base_11_19_u4": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "line_only 872-875 versus base 904-843, changed picks 336-368; accuracy difference, paired week-block bootstrap.",
+      "effect": -1.8317115054378936,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -4.462306418718456,
+        0.8527936703008671
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "A no-information comparison model, used to show what the test can and cannot see.",
+      "probability_positive": 0.085,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_line_only_minus_base_20_25_u4": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "line_only 764-739 versus base 754-749, changed picks 276-266; accuracy difference, paired week-block bootstrap.",
+      "effect": 0.6653359946773121,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -2.145393446177113,
+        3.4506213147850975
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "A no-information comparison model, used to show what the test can and cannot see.",
+      "probability_positive": 0.6845,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_real_minus_placebo_mean_11_19_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit. Interval lies wholly on one side of zero; adjudication left to the orchestrator.",
+      "closing_ground": null,
+      "description": "College centre 883 wins versus 100 permuted centres mean 897.9 (sd 7.7); 98 placebos at or above the real centre; interval is the placebo distribution.",
+      "effect": -0.8517458500286206,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.659988551803091,
+        -0.02718946765884422
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "College weights assigned to the right stats did about as well against the opening line as the same weights shuffled onto the wrong stats, within chance.",
+      "probability_positive": 0.025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_real_minus_placebo_mean_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "College centre 771 wins versus 100 permuted centres mean 760.7 (sd 6.7); 8 placebos at or above the real centre; interval is the placebo distribution.",
+      "effect": 0.6826347305389221,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.1679973386560213,
+        1.3972055888223553
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "College weights assigned to the right stats did about as well against the opening line as the same weights shuffled onto the wrong stats, within chance.",
+      "probability_positive": 0.93,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_real_minus_zero_same_11_19_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "variant 883-864 versus zero_same 902-845, changed picks 117-136; accuracy difference, paired week-block bootstrap.",
+      "effect": -1.0875787063537492,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -2.926073704846464,
+        0.7986765805706918
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "The part of the college-start change that comes from the college information itself, rather than from the heavier shrinking, is too small to tell from chance.",
+      "probability_positive": 0.1215,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_real_minus_zero_same_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "variant 771-732 versus zero_same 768-735, changed picks 110-107; accuracy difference, paired week-block bootstrap.",
+      "effect": 0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.8755130204938482,
+        2.2194902267741172
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "The part of the college-start change that comes from the college information itself, rather than from the heavier shrinking, is too small to tell from chance.",
+      "probability_positive": 0.573,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_zero_same_minus_base_11_19_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "zero_same 902-845 versus base 904-843, changed picks 68-70; accuracy difference, paired week-block bootstrap.",
+      "effect": -0.11448196908986835,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.3105413105413106,
+        1.0945174120687864
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "Shrinking the pro model's weights harder toward nothing, with no college information, changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.409,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 1747,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
+    "xlg11_h14_zero_same_minus_base_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "zero_same 768-735 versus base 754-749, changed picks 56-42; accuracy difference, paired week-block bootstrap.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.2014842763091634,
+        2.1771060031200027
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, pooled 14-input opener-input harness, weekly walk-forward; strength chosen by inner leave-one-season-out; 20 declared looks in the unit.",
+      "plain_summary": "Shrinking the pro model's weights harder toward nothing, with no college information, changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.9365,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h14.json",
+      "standard_error": null
+    },
     "xlg11_h2h_base14_accuracy_u2": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -420,6 +700,286 @@
       ],
       "source": "artifacts/xlg11_cfb_centered/report_u2.json",
       "standard_error": 0.0039188491032949935
+    },
+    "xlg11_h88_c10_minus_served_20_25_brier_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit. Interval lies wholly on one side of zero; adjudication left to the orchestrator.",
+      "closing_ground": null,
+      "description": "C10 803-700 versus served base 802-701, changed picks 3-2; brier difference, paired week-block bootstrap.",
+      "effect": 4.217351514939086e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        2.5586692477696286e-06,
+        8.217075376898792e-05
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Starting the pro model's weights from what the same stats say in college football changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.981,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_c10_minus_served_20_25_ll_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit. Interval lies wholly on one side of zero; adjudication left to the orchestrator.",
+      "closing_ground": null,
+      "description": "C10 803-700 versus served base 802-701, changed picks 3-2; log_loss difference, paired week-block bootstrap.",
+      "effect": 8.686224691435711e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        1.0805332572054804e-05,
+        0.00016406679977166752
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Starting the pro model's weights from what the same stats say in college football changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.991,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_c10_minus_served_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "C10 803-700 versus served base 802-701, changed picks 3-2; accuracy difference, paired week-block bootstrap.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.20148088671764985,
+        0.3483520002180012
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Starting the pro model's weights from what the same stats say in college football changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.5955,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_market_inputs_only_minus_served_20_25_u4": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "L 776-727 versus served base 802-701, changed picks 208-234; accuracy difference, paired week-block bootstrap.",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -4.717607973421927,
+        1.33255637061923
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "A no-information comparison model, used to show what the test can and cannot see.",
+      "probability_positive": 0.1345,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_real_minus_placebo_mean_signrule_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "College centre 749 wins versus 100 permuted centres mean 774.0 (sd 16.5); 94 placebos at or above the real centre; interval is the placebo distribution.",
+      "effect": -1.6666666666666665,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -3.396540252827678,
+        0.5139720558882184
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit. Placebo graded by the median_shift sign rule, which matches the production pick on 68.5% of games. The sign rule failed its check, so this cell is not graded on the production mapping and is indicative only.",
+      "plain_summary": "College weights assigned to the right stats did about as well against the opening line as the same weights shuffled onto the wrong stats, within chance.",
+      "probability_positive": 0.06,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_real_minus_served_20_25_brier_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "R 784-719 versus served base 802-701, changed picks 181-199; brier difference, paired week-block bootstrap.",
+      "effect": 0.000591934166305645,
+      "effect_units": "brier_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.0020306388101898657,
+        0.003341272304453636
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Starting the pro model's weights from what the same stats say in college football changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.6965,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_real_minus_served_20_25_ll_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "R 784-719 versus served base 802-701, changed picks 181-199; log_loss difference, paired week-block bootstrap.",
+      "effect": 0.001464886077941907,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -0.003675434647811144,
+        0.0064094443180362035
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Starting the pro model's weights from what the same stats say in college football changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.714,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_real_minus_served_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "R 784-719 versus served base 802-701, changed picks 181-199; accuracy difference, paired week-block bootstrap.",
+      "effect": -1.1976047904191616,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -4.046140863319164,
+        1.422631585546273
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Starting the pro model's weights from what the same stats say in college football changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.1925,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_real_minus_zero_same_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "R_vs_Z 784-719 versus Z 785-718, changed picks 99-100; accuracy difference, paired week-block bootstrap.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -1.950371275083755,
+        1.7557701272508592
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "The part of the college-start change that comes from the college information itself, rather than from the heavier shrinking, is too small to tell from chance.",
+      "probability_positive": 0.445,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
+    },
+    "xlg11_h88_zero_same_minus_served_20_25_u4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block paired bootstrap interval reported; no positive control of this size; no closing ground claimed by this unit.",
+      "closing_ground": null,
+      "description": "Z 785-718 versus served base 802-701, changed picks 151-168; accuracy difference, paired week-block bootstrap.",
+      "effect": -1.1310711909514304,
+      "effect_units": "accuracy_points",
+      "family": "xlg11_cfb_centered_ridge",
+      "interval": [
+        -3.3490741277313356,
+        1.2658650070511142
+      ],
+      "league": "nfl",
+      "notes": "Unit 4, production opener evaluator on the 88-input base with an in-memory estimator swap; college centre on the 14 analogue inputs and zero elsewhere; 20 declared looks in the unit.",
+      "plain_summary": "Shrinking the pro model's weights harder toward nothing, with no college information, changed its picks against the opening line by an amount too small to tell from chance.",
+      "probability_positive": 0.1855,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg11/report_h88.json",
+      "standard_error": null
     },
     "xlg11_opener_accuracy": {
       "category": "modeling",
