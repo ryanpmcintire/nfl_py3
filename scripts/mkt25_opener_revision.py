@@ -50,12 +50,13 @@ def team_side(g, team_col, sign):
     )
 
 
-def build():
+def build(o=None, seasons=SEASONS):
     g = pd.read_parquet("data/processed/game_features.parquet")
     g = g[(g.game_type == "REG") & g.spread_line.notna() & g.result.notna()].copy()
     g["slot"] = [slot(s, w) for s, w in zip(g.season, g.week, strict=True)]
-    o = pd.read_parquet(sorted(glob.glob("artifacts/opener_evaluation/*/per_game.parquet"))[-1])
-    o = o[o.season.isin(SEASONS)]
+    if o is None:
+        o = pd.read_parquet(sorted(glob.glob("artifacts/opener_evaluation/*/per_game.parquet"))[-1])
+    o = o[o.season.isin(seasons)]
     inj = injury_counts()
     long = pd.concat([team_side(g, "home_team", 1), team_side(g, "away_team", -1)])
     mv = o.set_index("game_id")

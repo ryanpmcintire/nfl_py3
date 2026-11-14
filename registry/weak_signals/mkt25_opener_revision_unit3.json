@@ -1,0 +1,789 @@
+{
+  "family": "mkt25_opener_revision_unit3",
+  "signals": {
+    "mkt25u3_alone_coef_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; logit coefficient per point of opener revision on an intercept-only base (no model logit); season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.0299,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.04762,
+        -0.01586
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_alone_coef_2020_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2020-25 true Tuesday opener; n 1325; logit coefficient per point of opener revision on an intercept-only base (no model logit); season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00643,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.0142,
+        0.02148
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.747,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1325,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_alone_dLL_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); LOSO n 1517; opener revision alone against an intercept-only pick; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00111,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00045,
+        0.00251
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.922,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_alone_dLL_2020_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2020-25 true Tuesday opener; LOSO n 1325; opener revision alone against an intercept-only pick; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.00041,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00147,
+        0.00014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.258,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1325,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_bridge_slope_cm_proxy_minus_true_2020_21": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "same 362 games 2020-21; slope of opener revision on prior cover margin with the SBR proxy open (0.0115) minus with the true Tuesday opener (0.0552); week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.0437,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.05477,
+        -0.03319
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 362,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_control_served_vs_intercept_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); LOSO n 1517; at-open model logit against an intercept-only pick; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.00065,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00246,
+        0.00043
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.315,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_era_diff_outcome_coef_2013_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open pooled with 2020-25 true Tuesday opener; 2013-19 minus 2020-25 logit coef per point; n 2842",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.03899,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.06298,
+        -0.01397
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2842,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_era_diff_slope_cm_2013_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open pooled with 2020-25 true Tuesday opener; 2013-19 minus 2020-25 slope of revision on prior cover; n 2842",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.002,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.02688,
+        0.02231
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.452,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2842,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_follow_all_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); follow-the-revision side wins 729-788 vs the opener; win rate minus 50; seasons above half 2/7; within-season permutation p one-sided 0.9354; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -1.94463,
+      "effect_units": "rate_pp",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -3.85659,
+        -0.30059
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.007,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_follow_all_2020_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2020-25 true Tuesday opener; follow-the-revision side wins 673-652 vs the opener; win rate minus 50; seasons above half 3/6; within-season permutation p one-sided 0.3005; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.79245,
+      "effect_units": "rate_pp",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.60449,
+        1.97588
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.872,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1325,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_follow_vs_served_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); games where the follow side differs from the model side at the opener; follow wins 391-441; seasons above half 2/7; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -3.00481,
+      "effect_units": "rate_pp",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -5.59475,
+        -0.53483
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.006,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_follow_vs_served_2020_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2020-25 true Tuesday opener; games where the follow side differs from the model side at the opener; follow wins 339-382; seasons above half 1/6; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -2.98197,
+      "effect_units": "rate_pp",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -6.10599,
+        -0.54054
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.006,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1325,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_frozen_2020_25_term_dLL_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); coefficients fitted on 2020-25 true openers and applied unchanged; flips 118 new side 56-62; seasons positive 0/7; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.00125,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00196,
+        -0.00063
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_outcome_coef_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; logit coefficient per point of opener revision beside the at-open model logit; per SD -0.1052; seasons positive 0/7; within-season permutation p one-sided 0.9830; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.02939,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.04719,
+        -0.01285
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_outcome_coef_2020_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2020-25 true Tuesday opener; n 1325; logit coefficient per point of opener revision beside the at-open model logit; per SD 0.0373; seasons positive 4/6; within-season permutation p one-sided 0.2480; season-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00959,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.01078,
+        0.02449
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.839,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1325,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_pooled_outcome_coef_2013_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open pooled with 2020-25 true Tuesday opener; pooled logit coef per point beside z; n 2842",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.01045,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.02354,
+        0.00213
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.059,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2842,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_pooled_slope_cm_2013_25": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open pooled with 2020-25 true Tuesday opener; pooled slope of revision on prior cover; n 2842",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.04811,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        0.03528,
+        0.06077
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2842,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_posthoc_gap_coef_2020_21": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "post hoc, declared after the 2013-19 sign was seen; same 352 games 2020-21; logit coefficient per point, proxy minus true opener part; intercept-only base; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.12274,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.25589,
+        -0.00922
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.018,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 352,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_posthoc_proxy_graded_coef_2020_21": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "post hoc, declared after the 2013-19 sign was seen; same 352 games 2020-21; logit coefficient per point, SBR proxy, graded at it; intercept-only base; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00601,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.04223,
+        0.0562
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.592,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 352,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_slope_cm_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; slope of opener revision on cm; season-block bootstrap; week-block CI [0.0375,0.0579]; seasons positive 7/7",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.04717,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        0.02931,
+        0.06497
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_slope_cm_neg_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; slope of opener revision on cm_neg; season-block bootstrap; week-block CI [0.0528,0.0897]; seasons positive 7/7",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.07095,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        0.0391,
+        0.10844
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_slope_cm_pos_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; slope of opener revision on cm_pos; season-block bootstrap; week-block CI [0.0488,0.0793]; seasons positive 7/7",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.06439,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        0.04223,
+        0.08443
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_slope_inj_level_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; slope of opener revision on inj_level; season-block bootstrap; week-block CI [-0.2423,-0.1055]; seasons positive 0/7",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.17657,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.29752,
+        -0.08695
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_slope_inj_news_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; slope of opener revision on inj_news; season-block bootstrap; week-block CI [-0.1103,0.0616]; seasons positive 3/7",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": -0.02411,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.10196,
+        0.05193
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.282,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_slope_move_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); n 1517; slope of opener revision on move; season-block bootstrap; week-block CI [0.1205,0.2430]; seasons positive 6/7",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.18162,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        0.11465,
+        0.24079
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_term_R_raw_dLL_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); LOSO n 1517; flips 444 new side 234-210; seasons positive 5/7; week-block bootstrap; season-block CI [-0.00041,0.00280] P+ 0.923",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00122,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00137,
+        0.0039
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.805,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_term_e_cm_dLL_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); LOSO n 1517; flips 471 new side 245-226; seasons positive 5/7; week-block bootstrap; season-block CI [-0.00055,0.00345] P+ 0.907",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00141,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00149,
+        0.00423
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.823,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    },
+    "mkt25u3_term_e_full_dLL_2013_19": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2013-19 SBR proxy open (not a timestamped opener); LOSO n 1517; flips 473 new side 249-224; seasons positive 5/7; week-block bootstrap; season-block CI [-0.00060,0.00324] P+ 0.904",
+      "closing_ground": null,
+      "description": "Unit 3 replication of the opener-revision slopes and terms on 2013-19 with the SBR Open column as a proxy opener, direction fixed from 2020-25, plus a 2020-21 bridge on the same games and the pooled 2013-25 figures",
+      "effect": 0.00129,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit3",
+      "interval": [
+        -0.00162,
+        0.00409
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the opening line's habit of chasing a team's last result against the spread, and any edge from siding with that revision, also shows in 2013-19 on an older and rougher record of opening lines.",
+      "probability_positive": 0.805,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1517,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "scripts/mkt25_unit3.py; tests/scratch/mkt25_unit3_out.txt",
+      "standard_error": null
+    }
+  }
+}
