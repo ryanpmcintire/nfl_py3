@@ -327,21 +327,26 @@ def stage_two(run):
                 "sample_blocks": nb,
             }
         )
+    if run == "main":
+        tail = "third conditioning examined on the saved 2026-11-03 draws under Amendment 6"
+        engine = "2026-11-03 engine without Amendment 4 terminal transitions"
+    else:
+        tail = f"Amendment 6 cells on the draws and saved balance weights of run {run}"
+        engine = f"draws of run {run}, tilted in the driver with the shared solver"
     batch = {
         "family": "sim08_market_anchored",
         "source": f"artifacts/sim08_amendment6/{'' if run == 'main' else run + '/'}grade.json",
         "classification": "unresolved_below_power",
         "classification_evidence": (
-            "No admissible closing ground; zero crossing closes nothing; third conditioning "
-            "examined on the saved 2026-11-03 draws under Amendment 6"
+            f"No admissible closing ground; zero crossing closes nothing; {tail}"
         ),
         "league": "nfl",
         "season_start": 2020,
         "season_end": 2025,
         "category": "modeling",
         "notes": (
-            "Exponential tilt to cover share one half at the opener; 2026-11-03 engine without "
-            "Amendment 4 terminal transitions. Improvement cells: positive means simulated read "
+            f"Exponential tilt to cover share one half at the opener; {engine}. "
+            "Improvement cells: positive means simulated read "
             "better; K cells simulated minus real mass, percentage points"
         ),
         "cells": batch_cells,

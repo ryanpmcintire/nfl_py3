@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import sys
@@ -75,7 +76,11 @@ def gboot(d, rng, mask):
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--run", default="main")
+    run = ap.parse_args().run
+    out_dir = OUT if run == "main" else OUT / run
+    out_dir.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
     frame = base.load_games()
     g = pd.read_parquet(base.GAME_FEATURES_PATH)
@@ -83,7 +88,7 @@ def main():
     pool = g.loc[
         g["spread_line"].notna() & g["result"].notna(), ["season", "spread_line", "result"]
     ]
-    S = ev.load_arm("main", "primary", frame)
+    S = ev.load_arm(run, "primary", frame)
     line = frame["line"].to_numpy(float)
     result = frame["result"].to_numpy(float)
     outcome = frame["outcome"].to_numpy()
@@ -229,8 +234,9 @@ def main():
         "push_mass_whole_lines": pushcell,
         "grade": grade,
         "n_games_total": len(frame),
+        "run": run,
     }
-    (OUT / "sim30_margin_mass.json").write_text(json.dumps(res, indent=1))
+    (out_dir / "sim30_margin_mass.json").write_text(json.dumps(res, indent=1))
     for name, cell in shape.items():
         for k in KEYS:
             c_ = cell[str(k)]

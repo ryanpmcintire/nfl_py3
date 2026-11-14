@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:04:49.257175+00:00`
+Refreshed at: `2026-11-14T21:06:25.201981+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T21:04:49.257175+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e9be2b52e4a2` — Compact the session lane and note Sunday readiness
-- Pending change set: 56 paths
+- Baseline commit: `3ad93f4c4e7c` — Explain the 28-game gap between two grades of the served two-stage probability
+- Pending change set: 57 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/fix-picks-2026-11-10.md`
-  - ` M docs/lanes/flip-attribution-audit-2026-11-14.md`
-  - `A  docs/lanes/harness-level-reconcile-2026-11-14.md`
+  - ` M docs/findings.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/flip-attribution-audit-2026-11-14.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - ` M docs/lanes/sim-finish-2026-11-11.md`
+  - `M  docs/lanes/sim-finish-2026-11-11.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
   - ` M scripts/check_pool_standing.py`
+  - ` M scripts/check_served_terms.py`
   - ` M scripts/pool01_forward_sim.py`
-  - ` M scripts/sim08_amendment6_grade.py`
-  - ` M scripts/sim08_evaluate.py`
-  - ` M scripts/sim30_margin_mass.py`
+  - `M  scripts/sim08_amendment6_grade.py`
+  - `M  scripts/sim08_evaluate.py`
+  - `M  scripts/sim30_margin_mass.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 36 more
+  - ...and 37 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

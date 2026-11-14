@@ -107,6 +107,11 @@ def load_arm(run, arm, frame):
         "ot": np.concatenate([p["ot"] for p in parts]).astype(float),
         "x_diff": np.concatenate([p["x_diff"] for p in parts]),
         "x_env": np.concatenate([p["x_env"] for p in parts]),
+        "total_target": (
+            np.concatenate([p["total_target"] for p in parts]).astype(float)
+            if all("total_target" in p for p in parts)
+            else None
+        ),
         "draws": int(parts[0]["draws"]),
         "seconds": [float(p["seconds"]) for p in parts],
     }
@@ -241,6 +246,11 @@ def arm_looks(label, S, frame, ctx, rng):
         "anchor_check": {
             "mean_margin_err": float((S["margins"].mean(1) - line).mean()),
             "mean_total_err": float(np.nanmean(S["totals"].mean(1) - ctx["total"])),
+            "mean_total_target_err": (
+                None
+                if S["total_target"] is None
+                else float(np.nanmean(S["totals"].mean(1) - S["total_target"]))
+            ),
         },
     }
 
