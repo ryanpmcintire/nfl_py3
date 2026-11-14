@@ -2,8 +2,9 @@ import argparse
 import json
 import math
 import sys
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -16,6 +17,9 @@ LEDGER = ART / "forward_ledger.jsonl"
 LEDGER_OPEN = ART / "forward_ledger_open.jsonl"
 RETRO = ART / "retro2026_predictions.csv"
 RETRO_OPEN = ART / "retro2026_openinput_predictions.csv"
+FREEZE_JOB = "xlg12_freeze_tue"
+SCHEDULER_DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
+ET = ZoneInfo("America/New_York")
 
 
 def phi(z):
@@ -115,21 +119,68 @@ def build(week, feats, frozen, open_input=False):
         g = g.dropna(subset=["spread_open", "total_open"]).copy()
         g["spread_line"] = g["spread_open"]
         g["total_line"] = g["total_open"]
+    g = g.sort_values(
+        "observed_at_utc", key=lambda c: pd.to_datetime(c, utc=True, format="ISO8601")
+    ).drop_duplicates(["game_id", "provider"], keep="first")
     pr = predict(g, frozen)
     return g.merge(pr, on=["game_id", "provider"], how="inner")
 
 
-def forward(week, open_input=False):
-    ledger = LEDGER_OPEN if open_input else LEDGER
+def freeze_job():
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from capture_scheduler import SCHEDULE
+
+    return next(j for j in SCHEDULE if j.name == FREEZE_JOB)
+
+
+def freeze_deadline(kickoff, job):
+    k = kickoff.to_pydatetime().astimezone(ET)
+    hh, mm = (int(x) for x in job.at.split(":"))
+    slot = k.replace(hour=hh, minute=mm, second=0, microsecond=0)
+    slot -= timedelta(days=(k.weekday() - SCHEDULER_DAYS[job.day]) % 7)
+    if slot > k:
+        slot -= timedelta(days=7)
+    return pd.Timestamp(slot + timedelta(minutes=job.grace_minutes)).tz_convert("UTC")
+
+
+def opener_rows(week, open_input=True):
     feats = pd.read_parquet(ART / "features_2026.parquet")
-    frozen = load_frozen()
-    now = datetime.now(UTC)
-    d = build(week, feats, frozen, open_input)
+    d = build(week, feats, load_frozen(), open_input)
     d["kickoff"] = pd.to_datetime(d["kickoff"], utc=True)
     d["observed"] = pd.to_datetime(d["observed_at_utc"], utc=True)
+    job = freeze_job()
+    deadline = d["kickoff"].map(lambda t: freeze_deadline(t, job))
+    d["opener_capture"] = d["observed"].le(deadline)
+    return d
+
+
+def late_games(week):
+    d = opener_rows(week)
+    ok = d.groupby("game_id")["opener_capture"].any()
+    return {int(g) for g in ok.index[~ok]}
+
+
+def forward(week, open_input=False):
+    ledger = LEDGER_OPEN if open_input else LEDGER
+    frozen = load_frozen()
+    now = datetime.now(UTC)
+    d = opener_rows(week, open_input)
     unkicked = d["kickoff"].gt(pd.Timestamp(now)) & d["observed"].lt(d["kickoff"])
     skipped = int((~unkicked).sum())
     d = d.loc[unkicked]
+    if open_input:
+        non_opener = ~d["opener_capture"]
+        print(
+            "week",
+            week,
+            "skipped_non_opener_rows",
+            int(non_opener.sum()),
+            "games",
+            int(d.loc[non_opener, "game_id"].nunique()),
+            "reason: earliest capture observed after the freeze window of the weekly job",
+            FREEZE_JOB,
+        )
+        d = d.loc[~non_opener]
     seen = set()
     if ledger.exists():
         for ln in ledger.read_text().splitlines():
@@ -164,6 +215,7 @@ def forward(week, open_input=False):
                 "frozen_created_at": frozen[r.variant]["created_at"],
             }
             fh.write(json.dumps(rec) + "\n")
+            seen.add(key)
             written += 1
     print("week", week, "written", written, "skipped_kicked_or_late", skipped)
 

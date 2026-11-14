@@ -20,6 +20,12 @@ KEY_ENV = "CFBD_API_KEY"
 VERSIONS = ("v1", "v2")
 PY = sys.executable
 SCRIPTS = ROOT / "scripts"
+EXIT_NO_KEY = 2
+EXIT_NOTHING_DONE = 3
+SPAN = ["--start-season", str(SEASON), "--end-season", str(SEASON)]
+INGEST_SCHEDULES = [PY, "-m", "nfl_ats.cli", "cfb-ingest", "--source", "schedules", *SPAN]
+INGEST_PBP = [PY, "-m", "nfl_ats.cli", "cfb-ingest", "--source", "pbp", *SPAN]
+FEATURES = [PY, str(SCRIPTS / "xlg12_features_2026.py")]
 
 
 def ensure_key():
@@ -40,8 +46,12 @@ def ensure_key():
     return False
 
 
+def shown(argv):
+    return " ".join(Path(a).name if os.sep in a else a for a in argv)
+
+
 def run(argv):
-    print("run", " ".join(Path(a).name if os.sep in a else a for a in argv), flush=True)
+    print("run", shown(argv), flush=True)
     done = subprocess.run(argv, cwd=ROOT, check=False)
     if done.returncode != 0:
         print("failed", done.returncode, flush=True)
@@ -53,12 +63,15 @@ def ledger_path(version):
     return base / "forward_ledger_open.jsonl"
 
 
-def frozen_games(version, week):
+def ledger_rows(version):
     path = ledger_path(version)
     if not path.exists():
-        return set()
-    rows = [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
-    return {r["game_id"] for r in rows if r["week"] == week}
+        return []
+    return [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
+
+
+def frozen_games(version, week):
+    return {r["game_id"] for r in ledger_rows(version) if r["week"] == week}
 
 
 def schedule():
@@ -81,8 +94,47 @@ def resolve_weeks(s, now):
     return current, following
 
 
-def score(_args):
+def score_report():
     run([PY, str(SCRIPTS / "xlg12_score.py")])
+    import xlg12_score
+
+    now = pd.Timestamp(datetime.now(UTC))
+    s = schedule()
+    final = {int(g) for g in s.loc[s["completed"].eq(True), "game_id"]}
+    kicked = {int(g) for g in s.loc[s["kickoff"].le(now), "game_id"]}
+    unscored = 0
+    lines = []
+    for v in VERSIONS:
+        frozen = {int(r["game_id"]) for r in ledger_rows(v)}
+        scored = {int(g) for g in xlg12_score.load(v)["game_id"]} if frozen else set()
+        missing = (frozen & final) - scored
+        unscored = max(unscored, len(missing))
+        lines.append(
+            f"{v} scored {len(scored)} of {len(frozen)} frozen games, "
+            f"{len((frozen & kicked) - final)} kicked off without a final score yet, "
+            f"{len(frozen - kicked)} not kicked off"
+        )
+        if missing:
+            print(v, "final in the schedule but not scored", sorted(missing))
+    return "; ".join(lines), unscored
+
+
+def fail_unscored(unscored):
+    print(
+        f"xlg12 score FAILED: {unscored} frozen games are final in the schedule "
+        "but were not scored",
+        flush=True,
+    )
+    sys.exit(EXIT_NOTHING_DONE)
+
+
+def score(_args):
+    for st in (INGEST_SCHEDULES, INGEST_PBP, FEATURES):
+        run(st)
+    text, unscored = score_report()
+    print(text, flush=True)
+    if unscored:
+        fail_unscored(unscored)
 
 
 def predict_argv(week, version):
@@ -98,18 +150,25 @@ def predict_argv(week, version):
 
 
 def freeze(args):
+    if not args.dry:
+        if not ensure_key():
+            print(f"{KEY_ENV} not found in environment or HKCU Environment")
+            sys.exit(EXIT_NO_KEY)
+        run(INGEST_SCHEDULES)
     now = pd.Timestamp(datetime.now(UTC))
-    current, following = resolve_weeks(schedule(), now)
-    if current is None:
-        print("no unplayed week in the 2026 schedule")
-        return
     s = schedule()
+    current, following = resolve_weeks(s, now)
+    if current is None:
+        print(
+            f"no regular-season game left to kick off in the {SEASON} schedule; nothing to freeze"
+        )
+        return
     wk = s.loc[s["week"].eq(current)]
-    unkicked = wk.loc[wk["kickoff"].gt(now), "game_id"].nunique()
-    print("current_week", current, "next_week", following, "unkicked_games", unkicked)
+    unkicked = {int(g) for g in wk.loc[wk["kickoff"].gt(now), "game_id"]}
+    print("current_week", current, "next_week", following, "unkicked_games", len(unkicked))
+    before = {v: len(ledger_rows(v)) for v in VERSIONS}
     for v in VERSIONS:
         print(v, "already_frozen_games_week", current, len(frozen_games(v, current)))
-    span = ["--start-season", str(SEASON), "--end-season", str(SEASON)]
     steps = [
         [
             PY,
@@ -119,21 +178,54 @@ def freeze(args):
             "--weeks",
             str(current),
             str(following),
+            "--refresh",
         ],
-        [PY, "-m", "nfl_ats.cli", "cfb-ingest", "--source", "schedules", *span],
-        [PY, "-m", "nfl_ats.cli", "cfb-ingest", "--source", "pbp", *span],
-        [PY, str(SCRIPTS / "xlg12_features_2026.py")],
+        INGEST_PBP,
+        FEATURES,
         *[predict_argv(current, v) for v in VERSIONS],
     ]
     if args.dry:
-        for st in steps:
-            print("would run", " ".join(Path(a).name if os.sep in a else a for a in st))
+        for st in (INGEST_SCHEDULES, *steps):
+            print("would run", shown(st))
         return
-    if not ensure_key():
-        print(f"{KEY_ENV} not found in environment or HKCU Environment")
-        sys.exit(2)
     for st in steps:
         run(st)
+    scored_text, unscored = score_report()
+    print(scored_text, flush=True)
+    feats = pd.read_parquet(ART / "features_2026.parquet", columns=["game_id", "week"])
+    import xlg12_predict
+
+    late = unkicked & xlg12_predict.late_games(current)
+    freezable = (
+        unkicked & {int(g) for g in feats.loc[feats["week"].eq(current), "game_id"]}
+    ) - late
+    if late:
+        print(
+            f"week {current} skipped {len(late)} games as non-opener: their earliest line "
+            f"capture came after the freeze window of {xlg12_predict.FREEZE_JOB}",
+            flush=True,
+        )
+    silent = 0
+    lines = []
+    for v in VERSIONS:
+        written = len(ledger_rows(v)) - before[v]
+        left = freezable - frozen_games(v, current)
+        lines.append(
+            f"{v} week {current} wrote {written} rows, "
+            f"{len(freezable) - len(left)} of {len(freezable)} games not yet kicked off are frozen"
+        )
+        if written == 0 and left:
+            silent = max(silent, len(left))
+    print("; ".join(lines), flush=True)
+    if silent:
+        print(
+            f"xlg12 freeze FAILED: wrote 0 rows for week {current} of the regular season "
+            f"while {silent} games that had not kicked off have no frozen prediction",
+            flush=True,
+        )
+        sys.exit(EXIT_NOTHING_DONE)
+    if unscored:
+        fail_unscored(unscored)
 
 
 def main():

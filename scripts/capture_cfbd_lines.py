@@ -34,11 +34,16 @@ def main():
     ap.add_argument("--season", type=int, required=True)
     ap.add_argument("--weeks", type=int, nargs="+", required=True)
     ap.add_argument("--season-type", default="regular")
+    ap.add_argument(
+        "--refresh",
+        action="store_true",
+        help="fetch again even when an earlier capture of the week exists",
+    )
     args = ap.parse_args()
     key = cfb.cfbd_api_key()
     first = True
     for week in args.weeks:
-        hit = cached(args.season, week, args.season_type)
+        hit = None if args.refresh else cached(args.season, week, args.season_type)
         if hit is not None:
             print("cached", week, hit)
             continue
