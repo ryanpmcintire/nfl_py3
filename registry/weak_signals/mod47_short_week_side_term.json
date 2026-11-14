@@ -1,0 +1,257 @@
+{
+  "family": "mod47_short_week_side_term",
+  "signals": {
+    "mod47_u3_control_intercept_only_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Control: one fitted intercept added to the served out-of-season logit, LOSO 2020-2025, versus served; decisive 7-5 of 12.",
+      "effect": -4.5e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.000202,
+        0.000124
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "A check that adds nothing but a constant home lean to the served pick probability, to show how much a meaningless extra term moves the score.",
+      "probability_positive": 0.296,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_control_permuted_short_diff_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Control: the short-week differential shuffled among games within each season (1000 draws) through the offset arm; effect is the mean and the interval the central 95 percent of shuffled runs; share of shuffles at or above the real arm 0.553.",
+      "effect": -0.000378,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.001741,
+        0.001219
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "A check that scrambles which games had a rushed team, to show what the short-week term scores when it carries no information.",
+      "probability_positive": 0.198,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_frozen_2026_wk1_9_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Offset coefficient frozen on 2020-25 (+0.0682) applied to the published 2026 Weeks 1-9 home probability; 15 games with a nonzero differential; decisive 1-0 of 1.",
+      "effect": -0.00181,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.003716,
+        5e-06
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.0255,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_joint_short_diff_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Home-short minus away-short added to a LOSO refit of the four served inputs (no pool-hook stage), 2020-2025, versus the same refit without it; decisive 14-16 of 30; fold coefficients [0.0545, -0.0393, 0.1354, 0.0778, 0.0964, 0.1179].",
+      "effect": -0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.864937,
+        0.598802
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.3427,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_joint_short_diff_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Home-short minus away-short added to a LOSO refit of the four served inputs (no pool-hook stage), 2020-2025, versus the same refit without it; decisive 14-16 of 30; fold coefficients [0.0545, -0.0393, 0.1354, 0.0778, 0.0964, 0.1179].",
+      "effect": -0.000239,
+      "effect_units": "brier_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.000672,
+        0.000159
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.1225,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_joint_short_diff_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Home-short minus away-short added to a LOSO refit of the four served inputs (no pool-hook stage), 2020-2025, versus the same refit without it; decisive 14-16 of 30; fold coefficients [0.0545, -0.0393, 0.1354, 0.0778, 0.0964, 0.1179].",
+      "effect": -0.000469,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.001341,
+        0.000334
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.131,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_offset_short_diff_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Home-short minus away-short as one fitted coefficient added to the served out-of-season logit, LOSO 2020-2025, versus served; decisive 11-13 of 24; fold coefficients [0.0529, -0.0441, 0.1282, 0.0754, 0.0924, 0.1155].",
+      "effect": -0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.733533,
+        0.532269
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.3695,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_offset_short_diff_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Home-short minus away-short as one fitted coefficient added to the served out-of-season logit, LOSO 2020-2025, versus served; decisive 11-13 of 24; fold coefficients [0.0529, -0.0441, 0.1282, 0.0754, 0.0924, 0.1155].",
+      "effect": -0.000234,
+      "effect_units": "brier_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.00063,
+        0.000175
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.1335,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_u3_offset_short_diff_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no split-half reliability measured and no positive control proven at this size; paired game bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Home-short minus away-short as one fitted coefficient added to the served out-of-season logit, LOSO 2020-2025, versus served; decisive 11-13 of 24; fold coefficients [0.0529, -0.0441, 0.1282, 0.0754, 0.0924, 0.1155].",
+      "effect": -0.000459,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_side_term",
+      "interval": [
+        -0.001261,
+        0.000367
+      ],
+      "league": "nfl",
+      "notes": "Family mod47_short_week_side_term declared before the outcome join: 6 graded contrasts (2 arms x 3 metrics), 2 controls, in-sample versus out-of-sample per arm, 1 frozen read on 2026 Weeks 1-9, 1 raw short-side cover count. Opener grade, pushes excluded, leave-one-season-out, served out-of-season probability as base.",
+      "plain_summary": "When one team has had less than a full week since its last game and its opponent has not, leaning away from the more rushed team has not yet shown a clear gain against the opening line.",
+      "probability_positive": 0.1395,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    }
+  }
+}

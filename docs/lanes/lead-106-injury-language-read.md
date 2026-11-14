@@ -1,49 +1,45 @@
 # LEAD-106
 
 ## Goal
-Injury-report language read: an LLM maps designation text and practice notes to expected snap fraction per starter (ROADMAP LEAD-106).
+Injury-report language read: a frozen language-model prompt maps each listed player's designation, practice note and headlines to P(plays) and expected snap share (ROADMAP LEAD-106). Availability input only; one fitted probability selects every side, so nothing here changes a pick.
 
-## State
-Added 2026-11-03 (backlog expansion 5), unmeasured, nothing run. Mechanism: Designations like questionable carry different meanings by player and note; free text may encode more than the ordinal ladder. Fitted term: expected-availability difference replacing the ordinal injury input, frozen prompt and forward capture.
+## State (2026-11-14 15:04 ET, forward Week 9 scored; all numbers measured this session)
+Command: `scripts/lead106_forward_score.py --week 9` -> `artifacts/lead106_injury_language/forward_score/2026_week09.json` and `2026_week09_scored.parquet`. Same id-join scorer as Unit 2 (gsis -> pfr, verified rows only), expanding prior-week ladders with add-one smoothing, team-week bootstrap 2000 reps. Reads scored as frozen, no model calls. Positive = read better than the ladder.
+- Timing: 360 Week 9 reads (28 Thursday, 332 Sunday/Monday), every one recorded at least 164 minutes before its kickoff, file modified time equals recorded time, enrolled prompt hash and model match. 0 excluded. 309 verified (Out 100%, Questionable 86%, none 82%, Doubtful 4 of 6), 30 team-week clusters, 15 games.
+
+| metric, baseline | Weeks 2-8 (294 rows, 143 clusters) | Forward Week 9 (309, 30) | Pooled 2-9 (603, 173) |
+|---|---|---|---|
+| log loss, designation ladder | .065 [.014, .130] P+ .9985 | .083 [.019, .161] P+ .9975 | .067 [.022, .126] P+ .999 |
+| log loss, designation x practice | .036 [-.003, .083] P+ .959 | .036 [-.002, .080] P+ .967 | .036 [.002, .077] P+ .980 |
+| Brier, designation | .020 [.005, .041] P+ 1.0 | .021 [.004, .043] P+ .993 | .020 [.007, .036] P+ 1.0 |
+| Brier, designation x practice | .012 [-.001, .027] P+ .964 | .012 [-.002, .028] P+ .963 | .012 [.001, .025] P+ .987 |
+| snap-share MAE, designation | .035 [.014, .055] P+ .999 | .026 [.011, .040] P+ .9995 | .034 [.016, .053] P+ .9995 |
+| snap-share MAE, designation x practice | .036 [.017, .056] P+ 1.0 | .025 [.011, .038] P+ .9995 | .035 [.018, .053] P+ .9995 |
+
+- Forward by designation, log loss vs designation / vs practice ladder: Out 63 rows -.011 [-.013, -.008] P+ 0 / -.008 [-.010, -.005] P+ 0 (nobody Out played; read floor .014 vs ladder .004); Doubtful 4 rows in 2 clusters -.079 / -.050 (0 of 4 played, read .10); Questionable 62 rows -.036 [-.125, .052] P+ .24 / -.061 [-.120, -.003] P+ .019; none 180 rows +.161 [.057, .282] P+ .9995 / +.087 [.030, .148] P+ .9995.
+- Pooled by designation: Questionable +.055 [-.006, .116] P+ .96 / -.001 [-.057, .057] P+ .50; none +.105 [.025, .206] P+ .999 / +.069 [.011, .138] P+ .994; Doubtful -.033 [-.055, -.008] P+ .006 / +.024 [-.008, .062] P+ .93; Out -.001 P+ .29 / -.007 P+ .36.
+- Concentration: three games carry 93% of the summed forward gain vs the designation ladder (BUF@MIN 12.6, JAX@BAL 7.1, HOU@LAC 4.4 of 25.8 nats); the other 12 games sum to +1.7 (vs the practice ladder -2.2). The gain sits in no-tag players who did not practise (26 rows, 46% played; read .69, ladders .95 and .85). BUF@MIN had no game designation in the capture: Monday teams file after the Saturday capture. Without that game (284 rows, 28 clusters): .047 [.002, .104] P+ .981 vs designation, .016 [-.013, .050] P+ .84 vs practice.
+- Reading: one forward week is a small sample, neither a confirmation nor a negative. Headline cells match Weeks 2-8 in sign and size; inside them the read's edge is in no-tag non-practising players, and in Week 9 it trailed the ladders on Questionable, Doubtful and Out rows. Implication (inferred): enter the read as a fitted term beside the ladder, not as a replacement.
+- Looks: 66, family lead106 (forward 36 = 3 metrics x 2 ladders x 6 subsets; pooled 30). 18 recorded as unresolved_below_power in `registry/weak_signals/lead106.json`: 16 `lead106_forward_wk9_*` and `lead106_pooled_wk2_9_ll_{des,desprac}_all`. `weak-signals pool --league nfl --effect-units accuracy_points` loads (exit 0, no coherence problems).
 
 ## Tried
-Novelty check only. Nearest: PER-03, PER-10, LEAD-99 (verbal read), LEAD-64 (capture integrity); grep 'injury text' found none. Differs: Language to availability, not language to cover.
+- Unit 1 (11-03): `scripts/lead106_injury_language.py` (freeze/run/score) and `scripts/lead106_prompt.md` (sha256 08170f6d...3d2c). Population 2459 player-weeks, weeks 1-8; sample 331 (all 228 headline rows plus up to 100 per designation). Name-join score .075 was not trusted (33.5% unmatched rows labelled not played).
+- Unit 2: `ids` command, gsis -> pfr join, 87.4% verified, 294 rows: the Weeks 2-8 column above; halves even/odd .030/.108 and .032/.041; Questionable +.068 P+ .979 (vs practice +.009 P+ .62), none +.095, Doubtful -.026 [-.051, -.002].
+- Unit 4: gsis-keyed outcome (`artifacts/per03/played_by_gsis.parquet`, 282 rows): .066 [.013, .133] P+ .997 and .036 [-.003, .085] P+ .955; these are registry cells `lead106_injury_language_p_plays*`. Not rerun for Week 9 (that parquet ends at Week 8 and belongs to PER-03).
+- Unit 3: `forward --week N --view thursday|sunday`; scheduler jobs `lead106_forward_*` write `artifacts/lead106_injury_language/forward/` (on disk: Week 9 Thursday and Sunday, Week 10 Thursday).
+- Unit 5 (11-14, this): new `scripts/lead106_forward_score.py`; imports the lane script unchanged; its outcome rule reproduces `id_outcomes` exactly on weeks 1-8 (parity true); recomputed Weeks 2-8 match the stored `score_ids.json` within .0002; ruff check and format clean. Practice status for forward rows comes from the capture-time injuries snapshot (designation equals the frozen row in 360 of 360). Week 10 Thursday (20 reads, WAS@NYG) not scored: `--week 10` exits on missing `data/players/forward_snaps/snap_counts_2026_before_week_11.parquet`, which the forward-log jobs write at their first Week 11 run; no capture was missed.
 
 ## Next
-First unit: Run a frozen prompt over the stored captures, compare Brier on realised snaps with the ordinal ladder, then pass to the four-term probability only if it adds out of week.
+1. Score Week 10 once `snap_counts_2026_before_week_11.parquet` exists: `scripts/lead106_forward_score.py --week 10`, then record the same cell set (all x 3 metrics x 2 ladders, log loss by designation and status-filed games, pooled log loss) by `weak-signals record --batch`.
+2. LEAD-108 can start now: Week 9 is the first full-population week (`forward_score/2026_week09_scored.parquet`, 309 verified of 360; raw reads `forward/2026_week09_*.json`), weeks 2-8 are the sampled 294 (`sample.parquet`, `raw/batch_*.json`). No `scripts/lead108*` yet; PER-10 kernel and PER-09 rating paths not checked here. Use the read as a fitted weight beside the ladder.
+3. LEAD-109 can start its rerun now: `scripts/lead109_position_weights.py` on the Week 9 scored parquet (has position, read and ladder probabilities, outcome), which gives every QB and OL row without sampling; one week, so group coefficients stay below power.
+4. LEAD-110 can start its rerun now for Week 9 only: `scripts/lead110_absorption.py` needs full team sums, and Week 9 is the first census (15 games; BUF@MIN was read before designations); weeks 2-8 sums stay partial.
+5. Root (scheduler-owned): add a Monday view to the forward capture so Monday teams are read after their designations are filed.
 
 ## Open
-Data: Official injury report text captured (free). Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
-
-## Unit 1 progress (2026-11-03 ~16:50 local)
-Built scripts/lead106_injury_language.py (freeze/run/score) and scripts/lead106_prompt.md (sha256 08170f6d8428c4b31db2b67062172140f3b45a999d05bafa70eb6008061b3d2c). Population 2459 player-weeks (nflverse injuries 2026 wk1-8, outcome from forward_snaps; unmatched names count as not played, matched rate .66; Out/Doubtful never appear in snaps). Sample 331 rows weeks 2-8: all 228 headline-bearing rows plus up to 100 per designation (budget declared, seed from prompt hash). Read model claude-opus-5-5, no tools, 40 rows per batch, outputs in artifacts/lead106_injury_language/raw. Ladder baselines: designation, designation x practice, expanding prior weeks, add-one smoothing; bootstrap over team-week clusters, 2000 reps, stratum-weighted.
-State: run launched in background (task bd4w5zxgi, log artifacts/lead106_injury_language/run.log), not yet confirmed finished. Do not rerun finished batches (script skips them).
-Next: when raw/ has 9 batch files, run `scripts/lead106_injury_language.py score`, record log_loss_improvement via nfl-ats weak-signals record (unresolved_below_power unless refuted), fill results here.
-Mechanism if positive: expected-availability term in player availability features only, never a side rule.
-Open: wording signal limited (only practice phrase, body part, headlines since late Sept).
-- 2026-11-03 16:43 ET (root review): 33.5% of player-weeks did not match the snap counts and were labelled "not played"; a name-match miss is not a missed game. The scoring unit must score matched rows only (report the unmatched rate by designation) or fix the join before reading Brier or log loss.
-
-## Unit 1 result (2026-11-03)
-Read vs designation ladder, log_loss_improvement on P(plays) 0.075 [0.019, 0.137] P+ .9995; Brier +0.026 [0.009, 0.047]; snap-share MAE +0.061 [0.039, 0.082]. Headline rows (228) 0.110 [0.032, 0.206]. Vs designation x practice ladder: 0.048 [0.003, 0.093] P+ .98. Halves even/odd weeks both positive (.027/.134). Caveats: Out/Doubtful trivial (nobody played); gain comes from Questionable/none; unmatched names counted as not played. Recorded as lead106_injury_language_p_plays. Next: forward capture of the same read for Week 9+, then test as availability input.
-- 2026-11-03 16:44 ET (root): the 0.075 gain is NOT trusted until rescored: outcomes label unmatched names as not played (33.5% of rows). Next unit: join injuries to snap counts by player id (nflverse players crosswalk gsis_id <-> pfr_id), rescore matched rows, report by designation.
-
-## Unit 2 result (2026-11-03 16:49 ET)
-Outcome join rebuilt by id (script cmd `ids`: injuries gsis_id -> weekly_rosters pfr_id -> snap counts pfr_player_id; stored reads reused, no LLM rerun). Verified rate 87.4% (was 66.5% name-matched). By designation: Out 100%, Doubtful 86.5%, Questionable 85.5%, none 83.5%. Unverified: no pfr id (Q 75, none 229, Doubtful 5; mostly practice-squad/new signings absent from the rosters crosswalk). Absent-and-rostered counted not played (INA/RES/ACT/CUT). Sample 294 of 331 verified.
-Vs designation ladder (log loss, stratum weighted): all 0.065 [0.014, 0.130] P+ .9985; Brier 0.020 [0.005, 0.041]; MAE snap share 0.035 [0.014, 0.055]. By designation: Out 0.000 (P+ .43), Doubtful -0.026 [-0.051, -0.002] (27 rows), Questionable 0.068 [0.002, 0.135] P+ .979, none 0.095 [0.004, 0.219] P+ .981. Halves even/odd .030/.108.
-Vs designation x practice ladder: all 0.036 [-0.002, 0.083] P+ .959; Brier 0.012 [-0.001, 0.027]; MAE 0.036 [0.017, 0.056]; Questionable 0.009 [-0.053, 0.074] P+ .62; none 0.066 [-0.003, 0.150] P+ .967; halves .032/.041.
-Verdict: gain survives vs the designation ladder (slightly smaller); vs the practice ladder it is weaker and the Questionable gain is mostly practice information. Registry cells replaced/recorded (unresolved_below_power).
-Next: forward capture Week 9+ of the same read, then test as player-availability input; consider the bigger sample for Questionable.
-
-## Unit 4 gsis-keyed outcome rescore (2026-11-03 18:40 ET)
-Outcome from artifacts/per03/played_by_gsis.parquet (scripts/played_by_gsis.py lead106; artifacts/per03/lead106_complete/score_ids.json): 282 of 331 sampled rows (crosswalk or skill position through wk7), stored reads reused, no LLM calls, 142 team-week clusters.
-Read vs designation ladder LL .066 [.013,.133] P+ .997 (verified-only .065); Brier .021; Questionable .068 P+ .98; none .093 P+ .976. Vs designation x practice ladder LL .036 [-.003,.085] P+ .955 (was .036); Questionable .009 P+ .62; none .063 P+ .97. Survives unchanged. Snap-share MAE not rescored.
-Registry: both lead106 p_plays cells replaced, same ids.
-
-## Unit 3 forward capture (2026-11-03 17:53 ET)
-Added `forward --week N --view thursday|sunday [--dry]` to scripts/lead106_injury_language.py. Reads newest data/raw/nflverse_injuries snapshot (all designations, week N rows) plus injury_news headlines (7 days before kickoff, lastmod <= capture), verifies frozen prompt hash and model, batches 40 rows, writes artifacts/lead106_injury_language/forward/2026_weekNN_<view>_<capture utc>.json (per player: gsis_id, team, game_id, designation, p_plays, snap_share, capture_utc, kickoff_utc). Games already kicked off are excluded before the model call and again at write; existing file for same (week, view, capture) is not rewritten. thursday = ET-Thursday games, sunday = all others.
-Dry run Week 9 (latest snapshot 20261103T192549Z): 0 players in every game (Thursday JAX@BAL 0; 14 Sunday/Monday games 0). Week 9 reports are not filed yet (first 2026 week-9 rows expected Wed). Reference Week 8 same code: Thursday 17 players, Sunday/Monday 303 (15-34 per game, 13 games).
-Proposed scheduler entries (root adds; same shape as lead101_delta_read_*, enrolled prompt unchanged, argv `lead106_injury_language.py forward --week <current> --view <view>`; needs a current-week resolver like L99.current_week, or root passes the week):
- - lead106_forward_thursday_thu_1730: day thu, 17:30 ET, timeout 30, view thursday. After nflverse_injuries_thu_pm (16:30, capture_scheduler.py ~270) and injury_news_thu 16:00; the final Thursday-game report is filed Wed/Thu before the 20:15 ET kickoff.
- - lead106_forward_sunday_sat_1800: day sat, 18:00 ET, timeout 30, view sunday. After nflverse_injuries_sat_0900 and sat_pm 16:30 (final Friday-report designations) and injury_news_sat 16:00 / 12:00; before the earliest Sunday kickoff (14:30Z = 09:30 ET).
-Reads per week: about 320-380 player rows (2026 weeks 5-8: 376/350/320 rows), i.e. 9 batches of 40 on the read model, plus 1 batch on Thursday.
-Next: root adds the two jobs; a fresh unit scores the forward log against forward_snaps after Week 9 (join by gsis_id->pfr_id as in `ids`).
+- Sub-cells with the whole interval below zero, not closed here, for the orchestrator to adjudicate (one week, 66 looks): forward Out (both ladders), forward Doubtful (4 rows), forward Questionable vs the practice ladder, pooled Doubtful vs the designation ladder (31 rows; +.024 P+ .93 vs the practice ladder).
+- Forward rows carry no headline flag, so there is no headline subset; no split-half on one forward week (reliability left empty).
+- 51 of 360 forward rows are unverified (no pfr id in the roster crosswalk); the Unit 4 gsis-keyed outcome would recover some.
+- Weeks 2-8 reads saw final designations; the forward Saturday capture precedes Monday teams' designations, so forward "none" is a wider population for those teams.
+- The registry batch builder was a scratch file; rebuild it with the week as a parameter.
+- Rules: zero crossing closes nothing; one fitted probability selects the side; parameters leave-one-season-out; every cell a look; opener grade with opener input once this reaches a game-level term.

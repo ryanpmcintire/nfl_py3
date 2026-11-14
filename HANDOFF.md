@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:03:18.089607+00:00`
+Refreshed at: `2026-11-14T20:07:32.792266+00:00`
 
 ## Start here
 
@@ -21,14 +21,18 @@ Refreshed at: `2026-11-14T20:03:18.089607+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3711324bacf8` — Repair the college shadow forward ledger and keep late lines out of the opener grade
-- Pending change set: 46 paths
+- Baseline commit: `93c8e141f526` — Refresh the handoff after new research records
+- Pending change set: 49 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/mod-47-short-week-confidence-slope.md`
+  - ` M docs/lanes/eng-62-leader-book-quote-capture.md`
+  - `M  docs/lanes/lead-106-injury-language-read.md`
+  - `M  docs/lanes/mod-47-short-week-confidence-slope.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/lead106.json`
+  - `A  registry/weak_signals/mod47_short_week_side_term.json`
+  - `A  scripts/lead106_forward_score.py`
+  - `A  scripts/mod47_short_week_side_term.py`
+  - ` M scripts/pool08_hook_field_share.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-11-14T20:03:18.089607+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
-  - ...and 26 more
+  - ...and 29 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
