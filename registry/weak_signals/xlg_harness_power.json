@@ -1,0 +1,509 @@
+{
+  "family": "xlg_harness_power",
+  "signals": {
+    "xlghp_null_addone_cfb_rest_difference_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the college add-one harness (one offset-logistic coefficient on a leave-one-season-out ridge cover probability at the opener, 13 seasons): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 227, median record 112-114.",
+      "effect": -0.008291,
+      "effect_units": "accuracy_points",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.258263,
+        0.336134
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.4125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_addone_cfb_rest_difference_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the college add-one harness (one offset-logistic coefficient on a leave-one-season-out ridge cover probability at the opener, 13 seasons): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 227, median record 112-114.",
+      "effect": -2.8e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -9.1e-05,
+        6.2e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.225,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_addone_cfb_rest_difference_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the college add-one harness (one offset-logistic coefficient on a leave-one-season-out ridge cover probability at the opener, 13 seasons): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 227, median record 112-114.",
+      "effect": -5.6e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000182,
+        0.000123
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.225,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_addone_cfb_short_week_side_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the college add-one harness (one offset-logistic coefficient on a leave-one-season-out ridge cover probability at the opener, 13 seasons): the real short_week column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 158, median record 80-80.",
+      "effect": -0.006162,
+      "effect_units": "accuracy_points",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.22409,
+        0.258263
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_addone_cfb_short_week_side_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the college add-one harness (one offset-logistic coefficient on a leave-one-season-out ridge cover probability at the opener, 13 seasons): the real short_week column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 158, median record 80-80.",
+      "effect": -3.1e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -8.6e-05,
+        5.1e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.19,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_addone_cfb_short_week_side_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the college add-one harness (one offset-logistic coefficient on a leave-one-season-out ridge cover probability at the opener, 13 seasons): the real short_week column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 158, median record 80-80.",
+      "effect": -6.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000172,
+        0.0001
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.185,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_cfb_rest_difference_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, cfb arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 137, median record 69-65.",
+      "effect": 0.0906,
+      "effect_units": "accuracy_points",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.298809,
+        0.447682
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.6575,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_cfb_rest_difference_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, cfb arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 137, median record 69-65.",
+      "effect": -9.6e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.00026,
+        4.2e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.115,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_cfb_rest_difference_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, cfb arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 137, median record 69-65.",
+      "effect": -0.000198,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000534,
+        7.8e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.115,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_cfb_short_week_side_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, cfb arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real short_week_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 93, median record 48-46.",
+      "effect": 0.078477,
+      "effect_units": "accuracy_points",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.233943,
+        0.425351
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.6425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_cfb_short_week_side_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, cfb arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real short_week_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 93, median record 48-46.",
+      "effect": -6.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000222,
+        6.3e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.155,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_cfb_short_week_side_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, cfb arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real short_week_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 93, median record 48-46.",
+      "effect": -0.000142,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000451,
+        0.000128
+      ],
+      "league": "cfb",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in college games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.155,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 4702,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_nfl_rest_difference_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, nfl arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 49, median record 26-23.",
+      "effect": 0.129741,
+      "effect_units": "accuracy_points",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.598802,
+        1.064538
+      ],
+      "league": "nfl",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in pro games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.59,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_nfl_rest_difference_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, nfl arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 49, median record 26-23.",
+      "effect": -4.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000325,
+        0.000222
+      ],
+      "league": "nfl",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in pro games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.305,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_nfl_rest_difference_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, nfl arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real rest_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 49, median record 26-23.",
+      "effect": -0.0001,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000653,
+        0.000444
+      ],
+      "league": "nfl",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles the gap in rest days between the two teams in pro games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.305,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_nfl_short_week_side_accuracy_points": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, nfl arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real short_week_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 35, median record 19-17.",
+      "effect": 0.11976,
+      "effect_units": "accuracy_points",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.465735,
+        0.864937
+      ],
+      "league": "nfl",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in pro games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.59,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_nfl_short_week_side_brier_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, nfl arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real short_week_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 35, median record 19-17.",
+      "effect": -5.5e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000365,
+        0.000168
+      ],
+      "league": "nfl",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in pro games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.27,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    },
+    "xlghp_null_shared14_nfl_short_week_side_log_loss_improvement": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution of a term with no game link; it is an instrument reading, closes nothing and is no closing ground.",
+      "closing_ground": null,
+      "description": "Matched-marginal null on the shared 14-input ridge harness, nfl arm (the column refit as a 15th input, walk-forward by week, graded at the opener): the real short_week_diff column shuffled among games within each season, 200 draws (seed 36); effect is the mean of draws, interval the 5th to 95th percentile, probability_positive the share of draws above zero; median changed picks 35, median record 19-17.",
+      "effect": -0.000111,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg_harness_power",
+      "interval": [
+        -0.000735,
+        0.000337
+      ],
+      "league": "nfl",
+      "notes": "Family xlg_harness_power: 2 templates x 3 metrics x 3 recorded arms (college add-one, shared-harness college arm, shared-harness pro arm); planted-effect cells, detection shares and the cross-league pooled null stay in the lane.",
+      "plain_summary": "A check that scrambles which games had one team on a short week and the other not in pro games, to show how much a meaningless extra ingredient moves a test model's score.",
+      "probability_positive": 0.275,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-harness-power-2026-11-14.md",
+      "standard_error": null
+    }
+  }
+}
