@@ -67,7 +67,7 @@ FORECAST_ROOT = ROOT / "artifacts" / "margin_predictions"
 SEASON = 2026
 PROBABILITY_METHOD = "gaussian_median"
 MIN_EDGE = 0.02
-SCHEMA = "mod54_forward_log/1"
+SCHEMA = "mod54_forward_log/2"
 
 
 def sha256_file(path):
@@ -104,7 +104,7 @@ def score(features, week, arm, alpha):
     return predictions.loc[predictions["method"].eq("market_residual")].set_index("game_id")
 
 
-def served_forecast(week):
+def raw_forecast(week):
     candidates = sorted(FORECAST_ROOT.glob(f"{SEASON}-week-{week:02d}-*"))
     if not candidates:
         return None, None
@@ -154,7 +154,7 @@ def record(week):
         return
     base = score(features, week, "B", BASE_ALPHA)
     mirrored = score(features, week, "M", MIRROR_ALPHA)
-    folder, served = served_forecast(week)
+    folder, raw = raw_forecast(week)
     recorded = pd.Timestamp(datetime.now(UTC))
     rows = []
     for game_id in eligible:
@@ -179,13 +179,13 @@ def record(week):
             "arm_home_cover_probability": pm,
             "arm_side": side_of(pm),
         }
-        if served is not None and game_id in served.index:
-            sp = float(served.loc[game_id, "home_cover_probability"])
-            row["served_home_cover_probability"] = sp
-            row["served_side"] = side_of(sp)
-            pool_side = served.loc[game_id, "pool_side"]
-            row["served_pool_side"] = None if pd.isna(pool_side) else str(pool_side)
-            row["served_line"] = float(served.loc[game_id, "spread_line"])
+        if raw is not None and game_id in raw.index:
+            rp = float(raw.loc[game_id, "home_cover_probability"])
+            row["raw_home_cover_probability"] = rp
+            row["raw_side"] = side_of(rp)
+            pool_side = raw.loc[game_id, "pool_side"]
+            row["raw_pool_side"] = None if pd.isna(pool_side) else str(pool_side)
+            row["raw_line"] = float(raw.loc[game_id, "spread_line"])
         rows.append(row)
     if not rows:
         print(json.dumps({"week": week, "logged": [], "refused": refused}, indent=1))
@@ -198,7 +198,7 @@ def record(week):
         "recorded_at_utc": recorded.isoformat(),
         "script_sha256": sha256_file(__file__),
         "feature_table_sha256": sha256_file(u3.FEATURES),
-        "served_forecast_dir": None if folder is None else folder.name,
+        "raw_forecast_dir": None if folder is None else folder.name,
         "frozen": {
             "base_ridge_alpha": BASE_ALPHA,
             "mirrored_ridge_alpha": MIRROR_ALPHA,

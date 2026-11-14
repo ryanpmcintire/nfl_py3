@@ -10,6 +10,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import forward_terms_week
 import live_kickoff
 import mod25_forward_q as mfq
 import mod25_wf_forward as mwf
@@ -20,6 +21,11 @@ REPO = mwf.REPO
 PIPE = REPO / "artifacts" / "sim10_wf" / "pipeline_joint"
 OUT_DIR = REPO / "artifacts" / "sim10_wf" / "forward_2026_joint"
 RUNS_DIR = REPO / "artifacts" / "mod25_wfj_forward" / "runs"
+SERVED_DIR = REPO / "artifacts" / "mod25_wfj_served_forward"
+SERVED_RUNS_DIR = SERVED_DIR / "runs"
+SERVED_FROZEN = SERVED_DIR / "frozen_coefficients.json"
+SERVED_SCHEMA = "mod25_wfj_served_forward/1"
+SERVED_FIRST_WEEK = 11
 FORECASTS = REPO / "artifacts" / "margin_predictions"
 ARM = "hgb_nomkt"
 STUDENT_T = 2025
@@ -90,7 +96,7 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def locked_served(game_ids, deadlines):
+def locked_raw_card(game_ids, deadlines):
     rows = {}
     folders = sorted(FORECASTS.glob(f"{SEASON}-week-*"))
     by_week = {}
@@ -112,8 +118,8 @@ def locked_served(game_ids, deadlines):
                     "folder": f.name,
                     "folder_stamp": stamp_of(f).isoformat(),
                     "deadline": dl.isoformat(),
-                    "served_side": p["pool_side"],
-                    "served_home_p": float(r["home_cover_probability"]),
+                    "raw_pool_side": p["pool_side"],
+                    "raw_home_p": float(r["home_cover_probability"]),
                     "locked_line": float(p["pick_line"]),
                     "locked_features": {c: r[c] for c in STUDENT_COLS if c in r.index},
                 }
@@ -159,15 +165,15 @@ def boot(delta):
     return mwf.boot_pos(delta)
 
 
-def vs_served(tab, locked, graded_line_col):
+def vs_raw_card(tab, locked, graded_line_col):
     t = tab.loc[tab["game_id"].isin(locked.keys())].copy()
-    t["served_side"] = t["game_id"].map(lambda g: locked[g]["served_side"])
-    t["served_home_p"] = t["game_id"].map(lambda g: locked[g]["served_home_p"])
-    t = t.loc[t["served_side"].isin(["HOME", "AWAY"])].copy()
+    t["raw_pool_side"] = t["game_id"].map(lambda g: locked[g]["raw_pool_side"])
+    t["raw_home_p"] = t["game_id"].map(lambda g: locked[g]["raw_home_p"])
+    t = t.loc[t["raw_pool_side"].isin(["HOME", "AWAY"])].copy()
     y = t["y_home"].to_numpy(float)
     arm_home = t["p_arm"].to_numpy(float) > 0.5
     base_home = t["p_base"].to_numpy(float) > 0.5
-    srv_home = (t["served_side"] == "HOME").to_numpy()
+    srv_home = (t["raw_pool_side"] == "HOME").to_numpy()
     ca = (arm_home == (y == 1)).astype(float)
     cb = (base_home == (y == 1)).astype(float)
     cs = (srv_home == (y == 1)).astype(float)
@@ -176,15 +182,15 @@ def vs_served(tab, locked, graded_line_col):
         "n": len(t),
         "arm_record": f"{int(ca.sum())}-{int(len(t) - ca.sum())}",
         "rebuilt_base_record": f"{int(cb.sum())}-{int(len(t) - cb.sum())}",
-        "served_record": f"{int(cs.sum())}-{int(len(t) - cs.sum())}",
-        "decisive_games_arm_v_served": int(dec.sum()),
+        "raw_pool_card_record": f"{int(cs.sum())}-{int(len(t) - cs.sum())}",
+        "decisive_games_arm_v_raw_pool_card": int(dec.sum()),
         "decisive_arm_W_L": f"{int(ca[dec].sum())}-{int(dec.sum() - ca[dec].sum())}",
-        "decisive_served_W_L": f"{int(cs[dec].sum())}-{int(dec.sum() - cs[dec].sum())}",
-        "acc_diff_points_arm_minus_served": boot(100 * (ca - cs)),
+        "decisive_raw_pool_card_W_L": f"{int(cs[dec].sum())}-{int(dec.sum() - cs[dec].sum())}",
+        "acc_diff_points_arm_minus_raw_pool_card": boot(100 * (ca - cs)),
     }
     pa = np.clip(t["p_arm"].to_numpy(float), 1e-6, 1 - 1e-6)
     pb = np.clip(t["p_base"].to_numpy(float), 1e-6, 1 - 1e-6)
-    ps = np.clip(t["served_home_p"].to_numpy(float), 1e-6, 1 - 1e-6)
+    ps = np.clip(t["raw_home_p"].to_numpy(float), 1e-6, 1 - 1e-6)
 
     def ll(p):
         return -(y * np.log(p) + (1 - y) * np.log(1 - p))
@@ -195,20 +201,20 @@ def vs_served(tab, locked, graded_line_col):
     half = np.full(len(y), 0.5)
     out["logloss"] = {
         "market_half": float(ll(half).mean()),
-        "served": float(ll(ps).mean()),
+        "raw_model": float(ll(ps).mean()),
         "rebuilt_base": float(ll(pb).mean()),
         "arm": float(ll(pa).mean()),
     }
     out["brier"] = {
         "market_half": float(br(half).mean()),
-        "served": float(br(ps).mean()),
+        "raw_model": float(br(ps).mean()),
         "rebuilt_base": float(br(pb).mean()),
         "arm": float(br(pa).mean()),
     }
-    out["logloss_gain_arm_v_served"] = boot(ll(ps) - ll(pa))
+    out["logloss_gain_arm_v_raw_model"] = boot(ll(ps) - ll(pa))
     out["logloss_gain_arm_v_rebuilt_base"] = boot(ll(pb) - ll(pa))
     out["logloss_gain_arm_v_market_half"] = boot(ll(half) - ll(pa))
-    out["brier_gain_arm_v_served"] = boot(br(ps) - br(pa))
+    out["brier_gain_arm_v_raw_model"] = boot(br(ps) - br(pa))
     out["brier_gain_arm_v_market_half"] = boot(br(half) - br(pa))
     return out
 
@@ -245,7 +251,7 @@ def run_read():
         "prospective": False,
     }
     d = dist[["game_id", ARM]].rename(columns={ARM: "distilled_margin"})
-    all_locked = locked_served(list(now26["game_id"]), dl)
+    all_locked = locked_raw_card(list(now26["game_id"]), dl)
     lock_pred, reproduction = locked_student(features, all_locked, d)
     report["refit_student_reproduces_saved_2026_max_abs_diff"] = reproduction
     report["locked_games_with_student_from_locked_features"] = len(lock_pred)
@@ -263,15 +269,15 @@ def run_read():
         tab = tab.loc[tab["game_id"].isin(variants[name].keys())]
         tab = tab.loc[tab["result"].notna() & (tab["result"] != tab["spread_line"])].copy()
         tab["y_home"] = (tab["result"] - tab["spread_line"] > 0).astype(float)
-        locked = locked_served(list(tab["game_id"]), dl)
+        locked = locked_raw_card(list(tab["game_id"]), dl)
         tab.to_parquet(OUT_DIR / f"scored_{ARM}_{name}.parquet")
         entry = {
             "frozen": frozen,
             "arm_v_rebuilt_base": mwf.metrics(tab),
-            "locked_served_found": len(locked),
+            "locked_raw_card_found": len(locked),
             "games": len(tab),
         }
-        entry["vs_locked_served"] = vs_served(tab, locked, name)
+        entry["vs_locked_raw_card"] = vs_raw_card(tab, locked, name)
         entry["locked_folder_after_deadline"] = int(
             sum(
                 1
@@ -299,6 +305,63 @@ def run_read():
         report[name] = entry
         print(name, json.dumps(entry, default=float), flush=True)
     (OUT_DIR / "report.json").write_text(json.dumps(report, indent=1, default=float))
+
+
+def record_served_base(week, rows, recorded):
+    if week < SERVED_FIRST_WEEK:
+        print(json.dumps({"term": "mod25_wfj_served", "skipped_before_week": SERVED_FIRST_WEEK}))
+        return
+    coefficients = json.loads(SERVED_FROZEN.read_text(encoding="utf-8"))
+    card = forward_terms_week.served_card_probability(week)
+    out = []
+    for r in rows:
+        if r["game_id"] not in card:
+            raise SystemExit(f"MISSING INPUT: no published card probability for {r['game_id']}")
+        served = float(card[r["game_id"]])
+        ats = r["distilled_margin"] - r["pool_line"]
+        p = float(
+            forward_terms_week.sigmoid(
+                coefficients["intercept"]
+                + coefficients["served_logit_coefficient"] * forward_terms_week.logit(served)
+                + coefficients["b_logit_per_point"] * ats
+            )
+        )
+        out.append(
+            {
+                "game_id": r["game_id"],
+                "season": SEASON,
+                "week": week,
+                "deadline": r["deadline"],
+                "recorded_at_utc": recorded.isoformat(),
+                "pool_line": r["pool_line"],
+                "distilled_margin": r["distilled_margin"],
+                "student_ats_margin": ats,
+                "served_home_cover_probability": served,
+                "served_side": "HOME" if served >= 0.5 else "AWAY",
+                "combined_home_cover_probability": p,
+                "combined_side": "HOME" if p >= 0.5 else "AWAY",
+            }
+        )
+    payload = {
+        "schema": SERVED_SCHEMA,
+        "term": "mod25_wfj_served",
+        "arm": ARM,
+        "season": SEASON,
+        "week": week,
+        "recorded_at_utc": recorded.isoformat(),
+        "served_base": "published card home probability at record time",
+        "coefficient_hash": coefficients["coefficient_hash"],
+        "coefficients_sha256": sha(SERVED_FROZEN),
+        "student_file_sha256": sha(PIPE / f"T{STUDENT_T}" / "real_distilled.parquet"),
+        "script_sha256": sha(__file__),
+        "rows": out,
+    }
+    SERVED_RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = recorded.strftime("%Y%m%dT%H%M%SZ")
+    path = SERVED_RUNS_DIR / f"{SEASON}-week-{week:02d}-{stamp}.json"
+    with open(path, "x") as handle:
+        handle.write(json.dumps(payload, indent=1, default=float))
+    print(json.dumps({"path": str(path), "games": len(out), "term": "mod25_wfj_served"}))
 
 
 def record_week(week):
@@ -370,6 +433,7 @@ def record_week(week):
     with open(path, "x") as handle:
         handle.write(json.dumps(payload, indent=1, default=float))
     print(json.dumps({"path": str(path), "games": len(rows), "frozen": frozen}))
+    record_served_base(week, rows, recorded)
 
 
 def main():

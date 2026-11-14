@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T22:52:18.379853+00:00`
+Refreshed at: `2026-11-14T22:59:31.556549+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T22:52:18.379853+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `033cb91457d3` — Audit how research scripts compute a cover and which probability they call served
-- Pending change set: 52 paths
+- Baseline commit: `2b933ecf103b` — Withdraw the wrong-sign reading on pregame attrition: it came from a name join
+- Pending change set: 56 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
+  - ` M docs/lanes/done/opener-error-transfer.md`
   - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
-  - `M  docs/lanes/sim-16-sim16-attrition-expectation.md`
+  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `M  docs/lanes/mod25-v3-sim11-distill.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/sim_engine_summary.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  registry/weak_signals/sim16_pregame_attrition.json`
+  - ` M registry/weak_signals/mod25_distillation_walkforward.json`
+  - ` M scripts/forward2026_ftn_terms.py`
+  - ` M scripts/forward_ledger.py`
+  - `M  scripts/mod25_wfj_forward.py`
+  - `A  scripts/mod25_wfj_served_freeze.py`
+  - `M  scripts/mod54_forward_log.py`
   - ` M scripts/opener_error_transfer_eval.py`
   - ` M scripts/opener_error_transfer_unit2.py`
   - ` M scripts/opener_error_transfer_unit3.py`
   - ` M scripts/opener_error_transfer_unit4.py`
   - ` M scripts/sim05_whatif.py`
-  - `M  scripts/sim16_attrition.py`
   - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - ...and 32 more
+  - ...and 36 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
