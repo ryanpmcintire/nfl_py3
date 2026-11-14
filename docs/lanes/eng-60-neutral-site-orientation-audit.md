@@ -4,19 +4,23 @@
 Neutral-site and international orientation: home flag and home-field term for games without a true home team (ROADMAP ENG-60).
 
 ## State
-Unit 1 audit done 2026-11-03T23:05Z. Script scripts/eng60_neutral_audit.py (ruff clean), output artifacts/eng60/audit.log and artifacts/eng60/neutral_games.csv. Nothing recorded in the registry; no src edits.
-- measured: 83 neutral games 2011-2026 (67 REG, 15 SB, 1 WC; 80 graded; 2026 has 9 incl. wk10/11 ungraded, no line yet). 28 are in the opener-graded 2020-25 artifact.
-- Home field in features: features.py:481-482 zeroes the 55 Elo HFA when location is Neutral; features.py:700 builds neutral_site; constants.py:317/351 feed it to the model; target ats_margin = result - spread_line (features.py:49), so HFA is carried only by the market line, there is no model HFA constant. travel_geometry.py:276 and experiment_runner.py:823/929 also branch on neutral. Full HFA at neutral is NOT given.
-- Orientation: schedule home == game_id home for all games (the 209 home_team != id mismatches are relocated-franchise abbreviations); result == home_score - away_score, 0 mismatches. Splash 2026: 136 rows, 0 orientation mismatches, 7 neutral games spread identical to schedule. Provider archive (272 rows, 2025): 0 home mismatches. Grader: margin_vs_open == result - open for 28/28, correct_at_open independent recompute 0 mismatches. Served ledger: 129 graded rows, 0 outcome/settle mismatches; only 2026_04_IND_WAS (neutral) is in it (pick flipped HOME to AWAY, won).
-- Open question: opener archive vs nflverse sign disagreement at 2 neutral games: 2020_13_BUF_SF (open -2.5 vs nflverse +1.5; SBR open +1.0/close +1.5 agrees with nflverse) and 2024_06_JAX_CHI (open +2.0 vs nflverse -1.5). Original quotes not loadable locally (pairing table empty from data/market) so unresolved. Grades do not flip under either sign (both games pick/outcome same); the model pick could change since spread_line is an input.
-- SBR (2009-21) flags 31 neutral vs nflverse 51; none the reverse.
-- Neutral opener record 14-14 (probability rule 11-17) vs non-neutral 780-695; model picks nominal home 9 of 28 (0.321) vs 0.470, mean residual -0.97 vs -0.10: leans away, not toward home (inferred; p about 0.1, not tested).
+Unit 1 (2026-11-03): scripts/eng60_neutral_audit.py, artifacts/eng60/audit.log. Orientation, grader and ledger clean; Elo home edge zeroed at neutral (features.py:481-482); neutral_site built at features.py:700. The BUF_SF / JAX_CHI sign question is closed by ENG-59 (line moves, not sign errors).
+
+Unit 2, 2026 check on 2026_10_NE_DET, 2026-11-14T21:16Z. Scripts tests/scratch/eng60/neutral_2026.py and neutral_2026_sensitivity.py; output artifacts/eng60/neutral_2026.json. Nothing served was changed; nothing recorded in the registry.
+- Trace (measured unless marked): schedule snapshot 20261111T010519Z has location Neutral, home DET, away NE, spread_line +2.5 (DET favoured), rest 7 and 7, Munich. Splash 2026_week10_20261110_2005 has home DET, home_spread 2.5, NE +2.5. Market quotes: 704 rows, three providers, all home DET, last home spread 2.5. Feature row: neutral_site 1, rest_diff 0, elo_diff 38.4 with no home edge added. The served 90-feature set has no travel, time-zone or venue input. Home-side offset for this game 0.0 (bucket 0-3). Card: NE +2.5, 53.5%.
+- Served path reproduced exactly: model residual -4.256 points for DET, model cover chance DET 0.4096; calibrated DET 0.4649, NE 0.5351 with line move -0.5 toward NE, half-point term +0.096 toward DET, no flags.
+- Answer: no served input gives DET a home edge or treats the game as in Detroit. The opposite: the fitted neutral_site term is -1.51 points against the designated home team. With that term off for this game NE is 52.1%. A model made blind to the home label gives NE 51.2%. Calibration home constants are worth 0.13 points. NE stays the side in every case.
+- The -1.51 comes mostly from seven 2026 neutral games (designated home 0-7 against the closing line, mean -9.2, exact p 0.016). Refit without them: term -0.50, NE 52.4%. 2009-2025: 61 games, 30-31, mean -0.30 (SE 1.88). All 68: 30-38, exact p 0.40.
+- History: 79 neutral games 2009-2025 (61 REG, 17 SB, 1 WC). All 61 REG are kept in training with the flag set, none dropped; 68 of 4567 training rows. Four Toronto games are labelled Home. Opener record on 28 neutral games 2020-25: 14-14 (exact p 1.0), probability rule 11-17 (p 0.34); non-neutral 780-695.
+- Latent defect, not served: graph_ratings.py:241-243 adds the fitted home-field intercept to schedule_predicted_margin at neutral rows (88 rows, mean 1.95; 0.22 here), and :140-143 fits neutral games as home games. The column is not in the weak_stack served set; removing it moves the served probability by 0.
 
 ## Tried
-Novelty check; unit 1 audit above. Nearest: MKT-24, ENG-55.
+Novelty check; unit 1 audit; unit 2 trace, three counterfactuals, two sensitivities. Nearest: MKT-24, ENG-55.
 
 ## Next
-Unit 2: resolve BUF_SF / JAX_CHI sign from a third source (odds_tape, scores), then re-score the two picks with the right sign. Also check 2026 neutral games weeks 1,3,5,6,7 against the served board archive (ledger only covers IND_WAS).
+1. Decide whether the neutral_site term should be fitted on international games separately from Super Bowls, and whether seven same-season games should carry two thirds of it; test leave-one-season-out at the opener before any change (features.py is pinned).
+2. Repair graph_ratings.py:241-243 and :140-143 only if a profile that uses schedule_predicted_margin is ever served; it changes the feature table hash.
+3. Optional registry row for designated-home ATS at neutral sites (unresolved_below_power). Check 2026 neutral weeks 1, 3, 5, 6, 7, 9 against the served board archive.
 
 ## Open
-Rules: audit only, no research verdict. Whether nflverse labels the nominal home arbitrarily at SB/international games does not affect grades since lines and results share the label.
+Audit only, no research verdict. The pin status of graph_ratings.py is inferred from the naming rule, not read from the guard. The 0-7 run is graded at the closing line, not the opener.
