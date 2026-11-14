@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T21:45:30.425470+00:00`
+Refreshed at: `2026-11-14T21:47:30.466755+00:00`
 
 ## Start here
 
@@ -21,19 +21,14 @@ Refreshed at: `2026-11-14T21:45:30.425470+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b2dda8261490` — Keep the counted-flag gate after testing a frozen alternative
-- Pending change set: 49 paths
+- Baseline commit: `564b1f3d1286` — Test the early-season overreaction term in college football
+- Pending change set: 44 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/full-steam-2026-11-14.md`
-  - `M  docs/lanes/mod57-sixty-percent.md`
+  - `A  docs/lanes/wk10-qb-input-check-2026-11-14.md`
   - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
-  - `A  docs/lanes/xlg-early-overreaction-cfb-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/xlg_early_overreaction_cfb.json`
-  - `A  scripts/xlg_early_overreaction_cfb.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-11-14T21:45:30.425470+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 29 more
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
+  - ...and 24 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
