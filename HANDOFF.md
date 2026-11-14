@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T22:21:02.464135+00:00`
+Refreshed at: `2026-11-14T22:22:01.811657+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-11-14T22:21:02.464135+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1774c912bb9e` — Refresh the handoff after new research records
-- Pending change set: 48 paths
+- Baseline commit: `3225f0e8a2ef` — Try to replicate the opener-revision slope on 2013-19; the older opening line is not comparable
+- Pending change set: 45 paths
   - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mkt-25-opener-revision-size.md`
-  - ` M docs/lanes/wk10-qb-input-check-2026-11-14.md`
+  - `M  docs/lanes/full-steam-2026-11-14.md`
+  - `M  docs/lanes/wk10-qb-input-check-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/mkt25_opener_revision_unit3.json`
-  - `M  scripts/mkt25_opener_revision.py`
-  - `A  scripts/mkt25_unit3.py`
+  - `A  registry/weak_signals/mod22_qb_input_repair.json`
+  - `A  scripts/mod22_qb_input_repair.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-14T22:21:02.464135+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 28 more
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - ...and 25 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -34,7 +34,8 @@ College and pooled harness detectable effect (lane xlg-harness-power-2026-11-14.
 ## Next
 1. Simulator marker appears: follow the runbook block in sim-finish-2026-11-11.md (evaluate, grade stage 2, sim30 margin mass), record, close SIM-08 and SIM-30, fill the PENDING line in docs/sim_engine_summary.md, move sim lanes to done/.
 2. Pool panel returns: read the rendered text, publish-board, durable tests, commit, push.
-3. Sunday 11-15: scheduler lines from mod57-sixty-percent.md Next; star re-nomination 10:00; lead105 deadline read 15:05. Tuesday 11-17: pool and board read in Chrome, weekly lock, pool-standing refresh (now with the realised-rate run), POOL-08/09 at Week 10, XLG-12 freeze log line at 12:00.
+3. Sunday 11-15: scheduler lines from mod57-sixty-percent.md Next; served-terms alert at 09:15 (MIN at GB one book, expected); star re-nomination 10:00 (candidate SEA at LV); lead105 deadline read 15:05.
+   Tuesday 11-17 before the noon lock: apply the quarterback input repair (lane wk10-qb-input-check-2026-11-14.md, Root decision), durable tests, then the pool and board read in Chrome (include the leader's Weeks 9-10 picks for UI-29), weekly lock, pool-standing refresh (five commands now, lane pool-standing-refresh.md), POOL-08/09/05/10 at Week 10, XLG-12 freeze log line at 12:00, forward_ledger_tue at 13:15 (scores Week 10 including MOD-39 and lead99_first_view), served-terms check. Queued for the next FENCED change, not Tuesday: rest_diff on rescheduled games (features.py:680-694), ledger column for the served move (pick_refresh.py:629-645), ENG-51 unit 2b guard.
 4. A handoff check fails whenever an agent records cells after the refresh: rerun `nfl-ats handoff`, commit, push.
 
 ## Open

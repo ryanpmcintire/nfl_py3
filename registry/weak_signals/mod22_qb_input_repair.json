@@ -1,0 +1,509 @@
+{
+  "family": "mod22_qb_input_repair",
+  "signals": {
+    "mod22_qb_input_repair_a_affected_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_a minus served base, affected games (26 of 1503), opener pick accuracy, opener grade 2020-2025, week-block bootstrap; changed picks 2 (repair 2, base 0)",
+      "effect": 7.6923076923076925,
+      "effect_units": "accuracy_points",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        0.0,
+        17.857142857142858
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the listed starting quarterback is ruled out, the model reads the next quarterback in line instead of the one who will not play.",
+      "probability_positive": 0.86775,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 26,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_a_affected_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_a minus served base, affected games (26 of 1503), opener log loss, opener grade 2020-2025, week-block bootstrap; changed picks 2 (repair 2, base 0)",
+      "effect": -0.023907770219591527,
+      "effect_units": "log_loss_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.06220604677869789,
+        0.004710778436954188
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the listed starting quarterback is ruled out, the model reads the next quarterback in line instead of the one who will not play.",
+      "probability_positive": 0.06025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 26,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_a_affected_mae_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_a minus served base, affected games (26 of 1503), margin error against the closing line, opener grade 2020-2025, week-block bootstrap; changed picks 2 (repair 2, base 0)",
+      "effect": 0.08766696484629355,
+      "effect_units": "mae_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.4069460062973287,
+        0.5614335512714971
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the listed starting quarterback is ruled out, the model reads the next quarterback in line instead of the one who will not play.",
+      "probability_positive": 0.64275,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 26,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_a_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_a minus served base, all games (1503 of 1503), opener pick accuracy, opener grade 2020-2025, week-block bootstrap; changed picks 21 (repair 12, base 9)",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.4629629629629629,
+        0.8474991420252634
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the listed starting quarterback is ruled out, the model reads the next quarterback in line instead of the one who will not play.",
+      "probability_positive": 0.70175,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_a_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_a minus served base, all games (1503 of 1503), opener log loss, opener grade 2020-2025, week-block bootstrap; changed picks 21 (repair 12, base 9)",
+      "effect": -0.0002467946217534005,
+      "effect_units": "log_loss_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.0009659351338291733,
+        0.00038758620376082607
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the listed starting quarterback is ruled out, the model reads the next quarterback in line instead of the one who will not play.",
+      "probability_positive": 0.23275,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_a_all_mae_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_a minus served base, all games (1503 of 1503), margin error against the closing line, opener grade 2020-2025, week-block bootstrap; changed picks 21 (repair 12, base 9)",
+      "effect": 0.007075548869755021,
+      "effect_units": "mae_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.003190693758392098,
+        0.016580225948900115
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the listed starting quarterback is ruled out, the model reads the next quarterback in line instead of the one who will not play.",
+      "probability_positive": 0.91575,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_ab_affected_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_ab minus served base, affected games (33 of 1503), opener pick accuracy, opener grade 2020-2025, week-block bootstrap; changed picks 3 (repair 2, base 1)",
+      "effect": 3.0303030303030303,
+      "effect_units": "accuracy_points",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -6.451612903225806,
+        12.903225806451612
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both quarterback input fixes together: read the next quarterback when the starter is ruled out, and fill a first-time starter's numbers with the earlier-season average for first-time starters.",
+      "probability_positive": 0.61775,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 33,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_ab_affected_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_ab minus served base, affected games (33 of 1503), opener log loss, opener grade 2020-2025, week-block bootstrap; changed picks 3 (repair 2, base 1)",
+      "effect": -0.000591655567703311,
+      "effect_units": "log_loss_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.028817717564747904,
+        0.02957307926807703
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both quarterback input fixes together: read the next quarterback when the starter is ruled out, and fill a first-time starter's numbers with the earlier-season average for first-time starters.",
+      "probability_positive": 0.46825,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 33,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_ab_affected_mae_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_ab minus served base, affected games (33 of 1503), margin error against the closing line, opener grade 2020-2025, week-block bootstrap; changed picks 3 (repair 2, base 1)",
+      "effect": 0.492053400834029,
+      "effect_units": "mae_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        0.13897443958988628,
+        0.8909393768418085
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both quarterback input fixes together: read the next quarterback when the starter is ruled out, and fill a first-time starter's numbers with the earlier-season average for first-time starters.",
+      "probability_positive": 0.99825,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 33,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_ab_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_ab minus served base, all games (1503 of 1503), opener pick accuracy, opener grade 2020-2025, week-block bootstrap; changed picks 28 (repair 15, base 13)",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.5453399063154752,
+        0.7984031936127743
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both quarterback input fixes together: read the next quarterback when the starter is ruled out, and fill a first-time starter's numbers with the earlier-season average for first-time starters.",
+      "probability_positive": 0.6165,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_ab_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_ab minus served base, all games (1503 of 1503), opener log loss, opener grade 2020-2025, week-block bootstrap; changed picks 28 (repair 15, base 13)",
+      "effect": 0.00017960552403489176,
+      "effect_units": "log_loss_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.0005462703643362485,
+        0.0009178097840221419
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both quarterback input fixes together: read the next quarterback when the starter is ruled out, and fill a first-time starter's numbers with the earlier-season average for first-time starters.",
+      "probability_positive": 0.68425,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_ab_all_mae_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_ab minus served base, all games (1503 of 1503), margin error against the closing line, opener grade 2020-2025, week-block bootstrap; changed picks 28 (repair 15, base 13)",
+      "effect": 0.017040224976327383,
+      "effect_units": "mae_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        0.007182982546440759,
+        0.027524321087898807
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both quarterback input fixes together: read the next quarterback when the starter is ruled out, and fill a first-time starter's numbers with the earlier-season average for first-time starters.",
+      "probability_positive": 0.99975,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_b_affected_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_b minus served base, affected games (8 of 1503), opener pick accuracy, opener grade 2020-2025, week-block bootstrap; changed picks 1 (repair 0, base 1)",
+      "effect": -12.5,
+      "effect_units": "accuracy_points",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -30.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a quarterback has never started before, the model fills his numbers with what first-time starters averaged in earlier seasons instead of leaving them blank.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_b_affected_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_b minus served base, affected games (8 of 1503), opener log loss, opener grade 2020-2025, week-block bootstrap; changed picks 1 (repair 0, base 1)",
+      "effect": 0.009386246323185125,
+      "effect_units": "log_loss_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.06502020956141732,
+        0.10504235839202775
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a quarterback has never started before, the model fills his numbers with what first-time starters averaged in earlier seasons instead of leaving them blank.",
+      "probability_positive": 0.54625,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_b_affected_mae_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_b minus served base, affected games (8 of 1503), margin error against the closing line, opener grade 2020-2025, week-block bootstrap; changed picks 1 (repair 0, base 1)",
+      "effect": 1.0340810188850207,
+      "effect_units": "mae_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        0.09509347822220411,
+        1.7287072815490303
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a quarterback has never started before, the model fills his numbers with what first-time starters averaged in earlier seasons instead of leaving them blank.",
+      "probability_positive": 0.98775,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_b_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_b minus served base, all games (1503 of 1503), opener pick accuracy, opener grade 2020-2025, week-block bootstrap; changed picks 10 (repair 6, base 4)",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.2688217237564267,
+        0.5434874974137676
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a quarterback has never started before, the model fills his numbers with what first-time starters averaged in earlier seasons instead of leaving them blank.",
+      "probability_positive": 0.68075,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_b_all_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_b minus served base, all games (1503 of 1503), opener log loss, opener grade 2020-2025, week-block bootstrap; changed picks 10 (repair 6, base 4)",
+      "effect": 0.00011228413239270175,
+      "effect_units": "log_loss_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        -0.0003112825925415482,
+        0.0006315711997485466
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a quarterback has never started before, the model fills his numbers with what first-time starters averaged in earlier seasons instead of leaving them blank.",
+      "probability_positive": 0.645,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    },
+    "mod22_qb_input_repair_b_all_mae_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Input-definition repair touching a small share of games; interval and probability_positive reported; no refuted mechanism and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served base ridge refit with quarterback input repair_b minus served base, all games (1503 of 1503), margin error against the closing line, opener grade 2020-2025, week-block bootstrap; changed picks 10 (repair 6, base 4)",
+      "effect": 0.008676124234121915,
+      "effect_units": "mae_improvement",
+      "family": "mod22_qb_input_repair",
+      "interval": [
+        0.002674603088285609,
+        0.01650935649705258
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a quarterback has never started before, the model fills his numbers with what first-time starters averaged in earlier seasons instead of leaving them blank.",
+      "probability_positive": 0.99925,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_qb_input_repair/results.json",
+      "standard_error": null
+    }
+  }
+}
