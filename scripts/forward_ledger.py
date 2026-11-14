@@ -14,6 +14,10 @@ RUN_FAMILIES = {
     "mod24": ("artifacts/mod24_forward/runs/*.json", "arm_home_cover_probability"),
     "mod25_combined": ("artifacts/mod25_forward/runs/*.json", "combined_home_cover_probability"),
     "mod25_wfj": ("artifacts/mod25_wfj_forward/runs/*.json", "student_home_cover_probability"),
+    "mod25_wfj_served": (
+        "artifacts/mod25_wfj_served_forward/runs/*.json",
+        "combined_home_cover_probability",
+    ),
     "mod54": ("artifacts/mod54_forward/runs/*.json", "arm_home_cover_probability"),
     "draftcap": ("artifacts/draftcap_forward/runs/*.json", "arm_home_cover_probability"),
 }
@@ -30,6 +34,8 @@ TERM_DIRS = [
     "mod41_residual_load_served",
     "mod41_avgwin_served",
     "mod39_levdiff_served",
+    "sky01snap_idjoin",
+    "xlg09_cfb_opener_served",
 ]
 CFB_EXCLUDED = ["xlg12_cfb_v1", "xlg12_cfb_v2"]
 LEAD99_DECLARED = "lead99"
@@ -61,7 +67,9 @@ def _records():
                         "p": row.get(column),
                         "written_at": row["recorded_at_utc"],
                         "row_deadline": row.get("deadline"),
-                        "served_p": row.get("served_home_cover_probability"),
+                        "served_p": row.get(
+                            "served_home_cover_probability", row.get("raw_home_cover_probability")
+                        ),
                         "frozen_at": None,
                     }
                 )

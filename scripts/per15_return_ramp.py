@@ -14,6 +14,7 @@ from sklearn.linear_model import LogisticRegression
 REPO = Path(__file__).resolve().parents[1]
 SNAP = sorted(glob.glob(str(REPO / "data/players/raw/*/snap_counts.parquet")))[-1]
 ROST = sorted(glob.glob(str(REPO / "data/players/raw/*/weekly_rosters.parquet")))[-1]
+PLAY = sorted(glob.glob(str(REPO / "data/players/raw/*/players.parquet")))[-1]
 INJ = sorted(glob.glob(str(REPO / "data/raw/nflverse_injuries/*/injuries.parquet")))[-1]
 SCHED = sorted(glob.glob(str(REPO / "data/raw/*/schedules.parquet")))[-1]
 OPEN = REPO / "artifacts/opener_evaluation/20261103T195331Z/per_game.parquet"
@@ -37,7 +38,7 @@ DRAWS = 2000
 SEED = 20261103
 
 
-def build():
+def build(xwalk="roster"):
     s = pd.read_parquet(SNAP)
     s = s[(s["game_type"] == "REG") & s["pfr_player_id"].notna()].copy()
     s["grp"] = s["position"].map(POS)
@@ -52,6 +53,16 @@ def build():
     )
     r = pd.read_parquet(ROST, columns=["gsis_id", "pfr_id"]).dropna().drop_duplicates()
     pfr2gsis = dict(zip(r["pfr_id"], r["gsis_id"], strict=False))
+    if xwalk == "players":
+        from nfl_ats.players import attach_snap_player_ids
+
+        ids = attach_snap_player_ids(
+            s[["season", "team", "player", "pfr_player_id"]].drop_duplicates(),
+            pd.read_parquet(ROST),
+            pd.read_parquet(PLAY),
+        ).dropna(subset=["gsis_id"])
+        pfr2gsis = dict(zip(ids["pfr_player_id"], ids["gsis_id"], strict=False))
+    id_share = float(s["pfr_player_id"].isin(pfr2gsis).mean())
     inj = pd.read_parquet(INJ, columns=["season", "week", "gsis_id", "report_status"])
     inj = inj[inj["gsis_id"].notna()]
     ik = {
@@ -118,7 +129,9 @@ def build():
         "listed",
         "status",
     ]
-    return pd.DataFrame(rows, columns=cols)
+    pg = pd.DataFrame(rows, columns=cols)
+    pg.attrs["snap_rows_with_gsis_share"] = id_share
+    return pg
 
 
 def cutoffs(pg):
@@ -166,10 +179,12 @@ def side_sum(o, agg, col, side):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(REPO / "tests/scratch/per15"))
-    out = Path(ap.parse_args().out)
+    ap.add_argument("--xwalk", default="roster", choices=("roster", "players"))
+    a = ap.parse_args()
+    out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
-    pg = build()
+    pg = build(a.xwalk)
     cut = cutoffs(pg)
     pg["cut"] = [cut[s].get(g, np.nan) for s, g in zip(pg["season"], pg["grp"], strict=True)]
     pg["starter"] = pg["base"] >= pg["cut"]
@@ -181,6 +196,8 @@ def main():
     ctrl = pg[pg["starter"] & (pg["m"] == 0) & late & pg["base"].notna()]
     cand = pg[pg["cand"]].copy()
     res = {"snap_file": SNAP, "candidates": len(cand), "cells": {}}
+    res["crosswalk"] = a.xwalk
+    res["snap_rows_with_gsis_share"] = pg.attrs["snap_rows_with_gsis_share"]
     res["control_loss_starters_after_playing"] = boot(ctrl["loss"].to_numpy(), key(ctrl), rng)
     res["played_rate_candidates"] = float(cand["played"].mean())
     for g in ["ALL", *GROUPS]:

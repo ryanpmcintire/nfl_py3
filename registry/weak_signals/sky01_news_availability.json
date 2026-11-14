@@ -393,6 +393,90 @@
       "source": "artifacts/sky01/drift_weighted.json",
       "standard_error": null
     },
+    "sky01_weighted_term_idjoin_accuracy_oos": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "decisive 21 games: term 12, base 9; interval -1.13 to +2.25 points spans zero; no refuted mechanism, no positive control",
+      "closing_ground": null,
+      "description": "History of the forward term sky01snap_idjoin (declared 2026-11-14, first scored week 11 of 2026): snap-share weighted pre-opener beat out-signal term with the players-table id join, LOSO 2024-2025, opener grade, accuracy points gain. Same look as sky01_weighted_term_idjoin_logloss_oos.",
+      "effect": 0.562851782,
+      "effect_units": "accuracy_points",
+      "family": "sky01_news_availability",
+      "interval": [
+        -1.125703565,
+        2.251407129
+      ],
+      "league": "nfl",
+      "notes": "same look as the log loss cell; standard_error is interval width / 3.92",
+      "plain_summary": "Picks changed by the playing-time-weighted out-news term, with nearly every player matched, were right 12 times and wrong 9 times over two seasons.",
+      "probability_positive": 0.726,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/drift_weighted_idjoin.json",
+      "standard_error": 0.8615
+    },
+    "sky01_weighted_term_idjoin_brier_oos": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval -0.002946 to +0.001994 spans zero; in-sample +0.000061, gap 0.000378; no refuted mechanism, no positive control",
+      "closing_ground": null,
+      "description": "History of the forward term sky01snap_idjoin (declared 2026-11-14, first scored week 11 of 2026): snap-share weighted pre-opener beat out-signal term with the players-table id join, LOSO 2024-2025, opener grade, Brier gain. Same look as sky01_weighted_term_idjoin_logloss_oos.",
+      "effect": -0.000317109,
+      "effect_units": "brier_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.002945533,
+        0.001993523
+      ],
+      "league": "nfl",
+      "notes": "same look as the log loss cell; standard_error is interval width / 3.92",
+      "plain_summary": "Weighting early reporter out-news by playing time, with nearly every player matched, left the probabilities about as accurate as before over two seasons.",
+      "probability_positive": 0.432,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/drift_weighted_idjoin.json",
+      "standard_error": 0.00126
+    },
+    "sky01_weighted_term_idjoin_logloss_oos": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval -0.006698 to +0.003990 spans zero; 21 decisive games 12-9 for the term; fold coefficients +0.0090 (2024) and +0.0505 (2025) same sign; in-sample +0.000097; no refuted mechanism, no positive control",
+      "closing_ground": null,
+      "description": "History of the forward term sky01snap_idjoin (declared 2026-11-14, first scored week 11 of 2026): snap-share weighted home minus away pre-opener beat out-signal term on the four-term probability, LOSO 2024-2025, opener grade, log loss gain. Same procedure as sky01_weighted_term_logloss_oos but snap rows reach players through the players-table PFR id with a roster-name fallback; out-rows with a positive weight 69.2% to 82.6%; term value changes on 73 of 533 games. The weekly-roster crosswalk version stays recorded as the history of the live sky01snap term. 1 look.",
+      "effect": -0.001001856,
+      "effect_units": "log_loss_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.006698076,
+        0.00399037
+      ],
+      "league": "nfl",
+      "notes": "roster-join rerun reproduces the stored sky01snap numbers exactly (+0.0000158, 16 decisive 8-8); standard_error is interval width / 3.92",
+      "plain_summary": "Weighting early reporter out-news by how much each player normally plays, with nearly every player matched to his playing time, did not improve the probabilities over two seasons; too few games to settle it.",
+      "probability_positive": 0.3805,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/drift_weighted_idjoin.json",
+      "standard_error": 0.002727
+    },
     "sky01_weighted_term_logloss_oos": {
       "category": "health",
       "classification": "unresolved_below_power",

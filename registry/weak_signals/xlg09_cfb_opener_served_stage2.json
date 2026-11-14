@@ -1,0 +1,89 @@
+{
+  "family": "xlg09_cfb_opener_served_stage2",
+  "signals": {
+    "xlg09_cfb_opener_served_loso_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "-0.53 [-2.33, +1.20] P+ 0.273 accuracy points, n 1503, 6 seasons; decisive games 180: term 86, control 94. The interval is not wholly below zero, so wrong_sign_resolved does not apply, and no positive control bounds it.",
+      "closing_ground": null,
+      "description": "Same leave-one-season-out fit as xlg09_cfb_opener_served_loso_logloss (college-only opener-error rule on the served probability offset, 2020-2025, true Tuesday opener, against intercept-only). Held-out accuracy difference in points, game-level bootstrap. The corrected v3 cell on its own refit base read +0.67 on the same games; this cell uses the served probability as the base.",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "xlg09_cfb_opener_served_stage2",
+      "interval": [
+        -2.3286759813705924,
+        1.1976047904191618
+      ],
+      "league": "nfl",
+      "notes": "Reliability reused from the transfer predictor class, not re-measured. Bootstrap is over games, not season blocks.",
+      "plain_summary": "Counting picks instead of probabilities, adding the college-line pattern to the card's own probability got 86 of the 180 games right where it changed the side and the plain card got 94. That gap is well inside what chance produces, so nothing is decided and no pick changes.",
+      "probability_positive": 0.2726,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/forward_terms/xlg09_cfb_opener_served/frozen_coefficients.json",
+      "standard_error": null
+    },
+    "xlg09_cfb_opener_served_loso_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "+0.000067 [-0.00080, +0.00097] P+ 0.566 Brier gain, n 1503, 6 seasons. No closing ground is met.",
+      "closing_ground": null,
+      "description": "Same leave-one-season-out fit as xlg09_cfb_opener_served_loso_logloss (college-only opener-error rule on the served probability offset, 2020-2025, true Tuesday opener, against intercept-only). Held-out Brier gain, game-level bootstrap.",
+      "effect": 6.692674231927841e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg09_cfb_opener_served_stage2",
+      "interval": [
+        -0.0008019726473924135,
+        0.000973616085547848
+      ],
+      "league": "nfl",
+      "notes": "Reliability reused from the transfer predictor class, not re-measured. Bootstrap is over games, not season blocks.",
+      "plain_summary": "The same college-line pattern test scored a second way (how far the stated chances sat from what happened). The change is tiny and could easily be nothing, so no pick changes.",
+      "probability_positive": 0.5662,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/forward_terms/xlg09_cfb_opener_served/frozen_coefficients.json",
+      "standard_error": null
+    },
+    "xlg09_cfb_opener_served_loso_logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "+0.00011 [-0.00167, +0.00196] P+ 0.550 log loss gain, n 1503, 6 seasons. No closing ground is met: no resolved wrong sign and no positive control sized for this effect. Decisive games 180: term 86, control 94. In-sample gain +0.00045, gap 0.00034.",
+      "closing_ground": null,
+      "description": "College-only opener-error rule (point-in-time college fit before each NFL season) added with an intercept to the logit of the served out-of-season home probability as an offset, leave-one-season-out on 2020-2025 at the true Tuesday opener, against an intercept-only control on the same offset. Held-out log loss gain, game-level bootstrap. Fold coefficient on the rule is negative in all six folds (-0.295 to -0.616). Fit made to freeze the forward term xlg09_cfb_opener_served; 3 metric looks in this family.",
+      "effect": 0.00011019994911090508,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg09_cfb_opener_served_stage2",
+      "interval": [
+        -0.0016675733236355419,
+        0.0019589758784571442
+      ],
+      "league": "nfl",
+      "notes": "Reliability is the split-half value recorded for the college-to-NFL transfer predictor class (13-season pool), reused, not re-measured. Bootstrap is over games, not season blocks.",
+      "plain_summary": "We checked whether a pattern in college football opening lines says anything about which side covers the NFL's Tuesday line once the card's own probability is already known. Over the last six seasons the NFL leaned slightly against the college pattern and the gain from using it is too small to tell apart from nothing, so no pick changes; it is being logged on future games instead.",
+      "probability_positive": 0.5496,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/forward_terms/xlg09_cfb_opener_served/frozen_coefficients.json",
+      "standard_error": null
+    }
+  }
+}

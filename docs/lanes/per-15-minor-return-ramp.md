@@ -16,3 +16,10 @@ Position values are noisy (OL/TE/RB negative, WR/DL positive): try snap-weighted
 
 ## Open
 Does not duplicate LEAD-106 ramp (played-only loss equals control).
+
+## Unit 2 (2026-11-14 18:21 ET, Get-Date; ENG-54 crosswalk repair)
+The injury-listing lookup used the weekly-roster PFR crosswalk (64.7% of snap rows mapped; an unmapped player defaulted to never listed). scripts/per15_return_ramp.py --xwalk players maps through nfl_ats.players.attach_snap_player_ids with the players table (99.98%); --xwalk roster (default) reproduces Unit 1 exactly. Outputs tests/scratch/per15/xwalk_roster and xwalk_players (result.json). Measured, old v new: candidates 5267 v 7302; played rate 50.6% v 50.4%; snap cells 28 v 32; games with feature 1155 v 1210 of 1503.
+- per15_x_value: -0.000066 [-0.001159, +0.000935] P+ .432, flips 78-76 -> -0.000641 [-0.001447, +0.000148] P+ .064, flips 52-45, 807-696 v base 800-703, positive in 3 of 6 seasons.
+- per15_x_unweighted: -0.001151 [-0.003741, +0.001525] P+ .198, flips 129-147 -> -0.001675 [-0.003691, +0.000333] P+ .053, flips 108-124.
+- shuffled control: +0.000181 P+ .574 -> +0.000066 [-0.001443, +0.001513] P+ .527.
+Both cells re-recorded with replace (batch tests/scratch/eng54/per15_xwalk_rerecord_batch.json), unresolved_below_power: both intervals reach above zero, so wrong_sign_resolved is not admissible. 35 looks (32 snap cells, 3 arms). The base in this script is home_cover_probability_at_open (model-only), not the served probability; a served-base retest is still owed (ENG-54 list). Nothing served.

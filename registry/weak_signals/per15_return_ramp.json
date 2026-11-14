@@ -4,21 +4,21 @@
     "per15_x_unweighted": {
       "category": "health",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval -0.003691 to +0.000333 reaches above zero so wrong_sign_resolved is inadmissible; no positive control of this size; probability_positive 0.053; shuffled control +0.000066 P+ 0.5265",
       "closing_ground": null,
-      "description": "served plus unweighted expected snap shortfall of returning starters, LOSO 2020-25, opener grade; 276 flips 129-147. Deadline-view term: Friday report is after the opener.",
-      "effect": -0.0011511,
+      "description": "Corrected 2026-11-14: snap rows are now mapped to injury-report players through the players-table PFR id with a roster-name fallback (99.98% of snap rows matched) instead of the weekly-roster crosswalk, which matched 64.7% and silently treated every other player as never listed; candidates 5267 to 7302. Model-only opener probability (home_cover_probability_at_open) plus unweighted expected snap shortfall of returning starters, LOSO 2020-25, opener grade; 232 flips 108-124. Before the correction: -0.001151 [-0.003741, +0.001525] P+ 0.198, 276 flips 129-147. Deadline-view term: Friday report is after the opener.",
+      "effect": -0.001674842,
       "effect_units": "log_loss_improvement",
       "family": "per15_return_ramp",
       "interval": [
-        -0.003741,
-        0.001525
+        -0.00369068,
+        0.000333108
       ],
       "league": "nfl",
-      "notes": "31 looks in family (28 snap cells, 3 arms)",
-      "plain_summary": null,
-      "probability_positive": 0.198,
-      "recorded_at": "2026-11-03",
+      "notes": "35 looks in family (32 snap cells, 3 arms); old join reproduces the earlier numbers exactly with --xwalk roster; standard_error is interval width / 3.92",
+      "plain_summary": "Counting every returning starter the same, the expected lighter workload changed 232 picks, 108 right and 124 wrong, and made the probabilities slightly worse; too few games to settle it.",
+      "probability_positive": 0.053,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": 1503,
@@ -26,27 +26,27 @@
         2020,
         2025
       ],
-      "source": "tests/scratch/per15/result.json",
-      "standard_error": null
+      "source": "tests/scratch/per15/xwalk_players/result.json",
+      "standard_error": 0.001027
     },
     "per15_x_value": {
       "category": "health",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval -0.001447 to +0.000148 reaches above zero so wrong_sign_resolved is inadmissible; no positive control of this size; probability_positive 0.0635; shuffled control +0.000066 P+ 0.5265; x coefficient by held-out season -0.065 -0.023 -0.023 +0.007 -0.020 -0.003",
       "closing_ground": null,
-      "description": "served plus position-value-weighted expected snap shortfall of returning starters (Friday not-Out), LOSO 2020-25, opener grade; 154 flips 78-76; 1155 of 1503 games carry feature. Deadline-view term: Friday report is after the opener.",
-      "effect": -6.6e-05,
+      "description": "Corrected 2026-11-14: snap rows are now mapped to injury-report players through the players-table PFR id with a roster-name fallback (99.98% of snap rows matched) instead of the weekly-roster crosswalk, which matched 64.7% and silently treated every other player as never listed; candidates 5267 to 7302. Model-only opener probability (home_cover_probability_at_open) plus position-value-weighted expected snap shortfall of returning starters (Friday not-Out), LOSO 2020-25, opener grade; 97 flips 52-45; 1210 of 1503 games carry the feature. Before the correction: -0.000066 [-0.001159, +0.000935] P+ 0.4315, 154 flips 78-76. Deadline-view term: Friday report is after the opener.",
+      "effect": -0.000640548,
       "effect_units": "log_loss_improvement",
       "family": "per15_return_ramp",
       "interval": [
-        -0.001159,
-        0.000935
+        -0.001447361,
+        0.000148054
       ],
       "league": "nfl",
-      "notes": "31 looks in family (28 snap cells, 3 arms)",
-      "plain_summary": null,
-      "probability_positive": 0.4315,
-      "recorded_at": "2026-11-03",
+      "notes": "35 looks in family (32 snap cells, 3 arms); old join reproduces the earlier numbers exactly with --xwalk roster; standard_error is interval width / 3.92",
+      "plain_summary": "A starter coming back from a short injury absence usually plays less. Adjusting picks for that changed 97 of them, 52 right and 45 wrong, and made the probabilities slightly worse; too few games to settle it.",
+      "probability_positive": 0.0635,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": 1503,
@@ -54,8 +54,8 @@
         2020,
         2025
       ],
-      "source": "tests/scratch/per15/result.json",
-      "standard_error": null
+      "source": "tests/scratch/per15/xwalk_players/result.json",
+      "standard_error": 0.000407
     }
   }
 }

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T23:10:34.831545+00:00`
+Refreshed at: `2026-11-14T23:22:19.615348+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T23:10:34.831545+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7c6d476541e9` — Rebuild the table that says which probability each research cell was graded against
-- Pending change set: 46 paths
+- Baseline commit: `f21df94cfeeb` — Tag 206 more research cells with the probability they were graded against
+- Pending change set: 56 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-57-registry-base-tag.md`
+  - `M  docs/lanes/done/opener-error-transfer.md`
+  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
+  - `M  docs/lanes/per-15-minor-return-ramp.md`
+  - `M  docs/lanes/sky01-news-availability.md`
+  - `A  docs/lanes/xlg09-cfb-opener-error-forward-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  registry/weak_signals_base_tags.csv`
-  - `M  scripts/eng57_base_tags.py`
+  - `M  registry/weak_signals/per15_return_ramp.json`
+  - `M  registry/weak_signals/sky01_news_availability.json`
+  - `A  registry/weak_signals/xlg09_cfb_opener_served_stage2.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - ` M scripts/forward_ledger.py`
+  - `M  scripts/forward_ledger.py`
+  - `M  scripts/forward_terms_week.py`
+  - `M  scripts/per15_return_ramp.py`
+  - `M  scripts/sky01_drift_weighted.py`
+  - `A  scripts/xlg09_freeze_cfb_opener_served.py`
   - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 26 more
+  - ...and 36 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

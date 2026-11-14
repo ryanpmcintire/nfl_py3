@@ -33,7 +33,10 @@ TERMS = (
     "mod41_residual_load_served",
     "mod41_avgwin_served",
     "mod39_levdiff_served",
+    "sky01snap_idjoin",
 )
+SKY01_IDJOIN_TERM = "sky01snap_idjoin"
+SKY01_IDJOIN_FIRST_WEEK = 11
 
 
 def sha_file(path):
@@ -626,6 +629,11 @@ def sky01_frozen(term):
         b = json.loads(src.read_text())["pooled_coefficient"]
         name = "sky01_beat_out_count_differential"
         seasons = [2024, 2025]
+    elif term == SKY01_IDJOIN_TERM:
+        src = ROOT / "artifacts" / "sky01" / "drift_weighted_idjoin.json"
+        b = json.loads(src.read_text())["players"]["weighted_term"]["pooled_coefficient"]
+        name = "sky01_snap_share_weighted_beat_out_differential_id_join"
+        seasons = [2024, 2025]
     else:
         src = ROOT / "artifacts" / "sky01" / "drift_weighted.json"
         b = json.loads(src.read_text())["weighted_term"]["pooled_coefficient"]
@@ -641,6 +649,9 @@ def sky01_frozen(term):
         "no_2026_outcomes": True,
     }
     body["coefficient_hash"] = sha_obj({"b_logit_per_point": b})
+    if term == SKY01_IDJOIN_TERM:
+        body["first_week"] = SKY01_IDJOIN_FIRST_WEEK
+        body["snap_join"] = "nfl_ats.players.attach_snap_player_ids with the players table"
     body["created_at_utc"] = now_utc().isoformat()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(body, indent=1))
@@ -675,7 +686,10 @@ def sky01_week(week, games, now, term):
         snap_dir = newest("data/players/raw/*/snap_counts.parquet").parent
         dw.SNAPS = snap_dir / "snap_counts.parquet"
         dw.ROSTERS = snap_dir / "weekly_rosters.parquet"
-        ps, sm = dw.prior_share()
+        join = "players" if term == SKY01_IDJOIN_TERM else "roster"
+        if join == "players":
+            dw.PLAYERS = newest("data/players/raw/*/players.parquet")
+        ps, sm = dw.prior_share(join)
         v, src, cov = dw.weighted_feature(p, g, ps, sm)
         snap_info = {
             "snap_counts_file": str(dw.SNAPS.relative_to(ROOT)),
@@ -684,6 +698,9 @@ def sky01_week(week, games, now, term):
             "weight_positive_share": cov,
             "weight_rule": "in-season mean snap share through the prior week, else prior-season mean share, else 0",  # noqa: E501
         }
+        if join == "players":
+            snap_info["players_file"] = str(dw.PLAYERS.relative_to(ROOT))
+            snap_info["snap_join"] = fr["snap_join"]
     x = pd.Series(np.asarray(v, dtype=float), index=games.game_id.values)
     posts = ROOT / "data" / "processed" / "beat_reporter_posts.parquet"
     pre = p[p.opener_ts.isin(g_openers(s, games)) & (p.created_at < p.opener_ts)]
@@ -1020,6 +1037,45 @@ def served_card_probability(week):
 
 
 SERVED_BASE_TERMS = ("mod41_residual_load_served", "mod41_avgwin_served", MOD39_TERM)
+XLG09_TERM = "xlg09_cfb_opener_served"
+TERMS = (*TERMS, XLG09_TERM)
+SERVED_BASE_TERMS = (*SERVED_BASE_TERMS, XLG09_TERM)
+
+
+def xlg09_frozen():
+    import xlg09_freeze_cfb_opener_served as fx
+
+    body = json.loads((OUT / XLG09_TERM / "frozen_coefficients.json").read_text())
+    assert body["no_2026_outcomes"] is True
+    assert body["coefficient_hash"] == sha_obj({k: body[k] for k in fx.HASH_KEYS})
+    body["b_logit_per_point"] = body["b_logit_per_unit"]
+    return body
+
+
+def xlg09_in_domain(week):
+    first, last = xlg09_frozen()["domain_weeks"]
+    return first <= week <= last
+
+
+def xlg09_week(week, games, now):
+    import xlg09_freeze_cfb_opener_served as fx
+
+    from nfl_ats.snapshots import latest_snapshot, load_snapshot
+
+    fr = xlg09_frozen()
+    snap = latest_snapshot(ROOT / "data" / "raw")
+    sc, _ = load_snapshot(snap)
+    pub = pd.read_parquet(ROOT / "artifacts" / "clv_ledger" / "published_picks.parquet")
+    rule = fr["college_rule"]
+    rows, missing, meta = fx.week_terms(sc, pub, SEASON, week, rule, pd.Timestamp(now))
+    x = {g: rows[g][fx.TERM_COLUMN] for g in games.game_id if g in rows}
+    ts = {
+        "schedule_snapshot": snap.snapshot_id,
+        **meta,
+        "per_game": {g: rows[g] for g in x},
+        "missing": missing,
+    }
+    return pd.Series(x, dtype=float), fr, ts
 
 
 def combine(term, games, x, fr, week):
@@ -1109,6 +1165,12 @@ def main():
         if term == MOD39_TERM and not mod39_in_domain(week):
             status[term] = "outside the declared weeks; nothing to freeze"
             continue
+        if term == XLG09_TERM and not a.dry and not xlg09_in_domain(week):
+            status[term] = "outside the declared weeks; nothing to freeze"
+            continue
+        if term == SKY01_IDJOIN_TERM and week < SKY01_IDJOIN_FIRST_WEEK:
+            status[term] = "before the declared first week; nothing to freeze"
+            continue
         try:
             if term == "sky03":
                 x, fr, ts = sky03_week(week, games, not a.no_fetch)
@@ -1126,6 +1188,8 @@ def main():
                 x, fr, ts = avgwin_week(week, games, now, term)
             elif term == MOD39_TERM:
                 x, fr, ts = mod39_week(week, games)
+            elif term == XLG09_TERM:
+                x, fr, ts = xlg09_week(week, games, now)
             elif term in ("mod41_residual_load", "mod41_residual_load_served"):
                 x, fr, ts = mod41_week(week, games, now, term)
             else:

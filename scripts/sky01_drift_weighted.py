@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -12,6 +13,7 @@ ROOT = base.ROOT
 OUT = base.OUT
 SNAPS = ROOT / "data" / "players" / "raw" / "20261101T141534Z" / "snap_counts.parquet"
 ROSTERS = ROOT / "data" / "players" / "raw" / "20261101T141534Z" / "weekly_rosters.parquet"
+PLAYERS = ROOT / "data" / "players" / "raw" / "20260911T020107Z" / "players.parquet"
 BOOT = base.BOOT
 NS_H = 3.6e12
 
@@ -137,15 +139,25 @@ def drift_summary(d, rng):
     return res
 
 
-def prior_share():
-    s = pd.read_parquet(
-        SNAPS,
-        columns=["season", "week", "game_type", "pfr_player_id", "offense_pct", "defense_pct"],
-    )
+def prior_share(join="roster"):
+    cols = ["season", "week", "game_type", "pfr_player_id", "offense_pct", "defense_pct"]
+    if join == "players":
+        cols = [*cols, "player", "team"]
+    s = pd.read_parquet(SNAPS, columns=cols)
     s = s[s.game_type == "REG"].copy()
     s["share"] = s[["offense_pct", "defense_pct"]].max(axis=1)
-    r = pd.read_parquet(ROSTERS, columns=["gsis_id", "pfr_id"]).dropna().drop_duplicates("pfr_id")
-    s = s.merge(r, left_on="pfr_player_id", right_on="pfr_id", how="inner")
+    if join == "players":
+        from nfl_ats.players import attach_snap_player_ids
+
+        s = attach_snap_player_ids(s, pd.read_parquet(ROSTERS), pd.read_parquet(PLAYERS))
+        s = s[s.gsis_id.notna()].copy()
+    else:
+        r = (
+            pd.read_parquet(ROSTERS, columns=["gsis_id", "pfr_id"])
+            .dropna()
+            .drop_duplicates("pfr_id")
+        )
+        s = s.merge(r, left_on="pfr_player_id", right_on="pfr_id", how="inner")
     s["season"] = s.season.astype("int64")
     s["key"] = (s.season * 100 + s.week).astype("int64")
     s = s.sort_values(["gsis_id", "season", "key"])
@@ -283,7 +295,36 @@ def inactive_join(lt):
     return out
 
 
+def idjoin_main():
+    p = base.build_table()[1]
+    g = pd.read_parquet(base.PERGAME)
+    sub = g[g.margin_vs_open != 0].copy().reset_index(drop=True)
+    res = {
+        "snap_counts_file": str(SNAPS.relative_to(ROOT)),
+        "weekly_rosters_file": str(ROSTERS.relative_to(ROOT)),
+        "players_file": str(PLAYERS.relative_to(ROOT)),
+    }
+    xs = {}
+    for join in ("roster", "players"):
+        ps, sm = prior_share(join)
+        xw, src, cov = weighted_feature(p, sub, ps, sm)
+        xs[join] = xw
+        res[join] = {
+            "weight_source_counts": {k: int(v) for k, v in src.items()},
+            "weight_positive_share": cov,
+            "weighted_term": score(sub, xw, base.SEED + 1),
+        }
+    changed = pd.Series(xs["roster"] != xs["players"]).groupby(sub.season.values).sum()
+    res["games_term_value_changed_by_season"] = {int(k): int(v) for k, v in changed.items()}
+    (OUT / "drift_weighted_idjoin.json").write_text(json.dumps(res, indent=1, default=str))
+    print(json.dumps(res, indent=1, default=str))
+
+
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--join", default="roster", choices=("roster", "players"))
+    if ap.parse_args().join == "players":
+        return idjoin_main()
     OUT.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(base.SEED)
     t, p, s = base.build_table()
