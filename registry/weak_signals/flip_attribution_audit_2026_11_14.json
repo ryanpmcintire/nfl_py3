@@ -1,0 +1,201 @@
+{
+  "family": "flip_attribution_audit_2026_11_14",
+  "signals": {
+    "flipaudit_final_side_driver_flags_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "Changed-side games of 2026 Weeks 7-10 where the fitted term contributing most to the served logit crossing even was flags; effect is the final side's cover rate at the pool Tuesday line minus an even split",
+      "effect": -50.0,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -50.0,
+        47.5
+      ],
+      "league": "nfl",
+      "notes": "final sides 0-1; exact two-sided p 1.000; driver is the largest signed term change between the Tuesday record and the last ledger revision",
+      "plain_summary": "Among games where the card changed teams during the week, this counts the ones where one input did most of the pushing and how the new team did.",
+      "probability_positive": 0.25,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 1,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    },
+    "flipaudit_final_side_driver_line_move_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "Changed-side games of 2026 Weeks 7-10 where the fitted term contributing most to the served logit crossing even was line_move; effect is the final side's cover rate at the pool Tuesday line minus an even split",
+      "effect": -8.33,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -34.83,
+        22.33
+      ],
+      "league": "nfl",
+      "notes": "final sides 5-7; exact two-sided p 0.774; driver is the largest signed term change between the Tuesday record and the last ledger revision",
+      "plain_summary": "Among games where the card changed teams during the week, this counts the ones where one input did most of the pushing and how the new team did.",
+      "probability_positive": 0.291,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    },
+    "flipaudit_final_side_driver_model_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "Changed-side games of 2026 Weeks 7-10 where the fitted term contributing most to the served logit crossing even was model; effect is the final side's cover rate at the pool Tuesday line minus an even split",
+      "effect": 50.0,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -47.5,
+        50.0
+      ],
+      "league": "nfl",
+      "notes": "final sides 1-0; exact two-sided p 1.000; driver is the largest signed term change between the Tuesday record and the last ledger revision",
+      "plain_summary": "Among games where the card changed teams during the week, this counts the ones where one input did most of the pushing and how the new team did.",
+      "probability_positive": 0.75,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 1,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    },
+    "flipaudit_final_side_driver_pool_line_offset_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "Changed-side games of 2026 Weeks 7-10 where the fitted term contributing most to the served logit crossing even was pool_line_offset; effect is the final side's cover rate at the pool Tuesday line minus an even split",
+      "effect": -50.0,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -50.0,
+        47.5
+      ],
+      "league": "nfl",
+      "notes": "final sides 0-1; exact two-sided p 1.000; driver is the largest signed term change between the Tuesday record and the last ledger revision",
+      "plain_summary": "Among games where the card changed teams during the week, this counts the ones where one input did most of the pushing and how the new team did.",
+      "probability_positive": 0.25,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 1,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    },
+    "flipaudit_final_side_on_changed_games_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "Games of 2026 Weeks 7-10 whose final card side differs from the Tuesday card side; effect is the final side's cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": -10.0,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -33.66,
+        17.71
+      ],
+      "league": "nfl",
+      "notes": "final sides 6-9, Tuesday sides the mirror; exact two-sided p 0.607",
+      "plain_summary": "When the card ended the week on a different team than it started on, this counts how often the team it ended on covered the pool number.",
+      "probability_positive": 0.227,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    },
+    "flipaudit_flip_back_left_side_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "2026 Weeks 7-10 games where the card left its Tuesday side and came back; effect is the cover rate of the side it visited and left; cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": -25.0,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -49.37,
+        30.59
+      ],
+      "league": "nfl",
+      "notes": "1-3; exact two-sided p 0.625",
+      "plain_summary": "A count of how a small group of changed picks did against the pool number.",
+      "probability_positive": 0.188,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 4,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    },
+    "flipaudit_thin_leader_depth_2026_w7_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign and no positive control; a diagnosis of which served term moved picks, recorded as measured, not a rule.",
+      "closing_ground": null,
+      "description": "2026 Weeks 7-10 games where the card changed side and the served line-move input rested on one or two of the three leader books at the final revision; cover rate at the pool Tuesday line minus an even split, exact binomial interval",
+      "effect": -4.55,
+      "effect_units": "accuracy_points",
+      "family": "flip_attribution_audit_2026_11_14",
+      "interval": [
+        -33.25,
+        26.62
+      ],
+      "league": "nfl",
+      "notes": "5-6; exact two-sided p 1.000",
+      "plain_summary": "A count of how a small group of changed picks did against the pool number.",
+      "probability_positive": 0.387,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 11,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/flip_attribution_audit/summary.json",
+      "standard_error": null
+    }
+  }
+}

@@ -9,9 +9,11 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 EASTERN = ZoneInfo("America/New_York")
-OUT_CLASSES = frozenset({"ruled_out", "did_not_practice", "absent"})
-LIMITED_CLASSES = frozenset({"limited", "questionable", "boot_brace"})
-OFFICIAL_OUT = frozenset({"Out", "Doubtful"})
+STATUS_WORDS = {"Out": "out", "Doubtful": "doubtful", "Questionable": "questionable"}
+SNAPSHOT_STAMP = "%Y%m%dT%H%M%SZ"
+INJURY_COLUMNS = ["season", "week", "team", "gsis_id", "full_name", "report_status"]
+MAJORITY_SNAP_SHARE = 0.5
+NEWS_RULE = "team_the_line_moved_away_from_then_largest_snap_share_then_latest_change"
 TEAM_ALIAS = {"LAR": "LA", "STL": "LA", "SD": "LAC", "OAK": "LV", "LVR": "LV"}
 POSITION_WORDS = {
     "QB": "quarterback",
@@ -47,6 +49,80 @@ class MoveReason:
     sentence: str
     evidence: tuple[str, ...]
     toward_pick_points: float = 0.0
+
+
+@dataclass(frozen=True)
+class DesignationChange:
+    team: str
+    gsis_id: str
+    full_name: str
+    status: str
+    previous_status: str
+    observed_at: pd.Timestamp
+    source: str
+
+
+def _snapshot_time(path: Path) -> pd.Timestamp | None:
+    try:
+        stamp = datetime.strptime(path.parent.name, SNAPSHOT_STAMP)
+    except ValueError:
+        return None
+    return pd.Timestamp(stamp, tz="UTC")
+
+
+def _week_statuses(path: Path, season: int, week: int) -> dict[tuple[str, str], tuple[str, str]]:
+    try:
+        frame = pd.read_parquet(path, columns=INJURY_COLUMNS)
+    except (OSError, ValueError, KeyError):
+        return {}
+    frame = frame.loc[frame["season"].eq(season) & frame["week"].eq(week)]
+    frame = frame.dropna(subset=["gsis_id", "team"])
+    return {
+        (TEAM_ALIAS.get(str(team), str(team)), str(gsis)): (
+            "" if pd.isna(status) else str(status),
+            str(name),
+        )
+        for team, gsis, status, name in zip(
+            frame["team"],
+            frame["gsis_id"],
+            frame["report_status"],
+            frame["full_name"],
+            strict=True,
+        )
+    }
+
+
+def designation_changes(
+    data_root: Path, *, season: int, week: int, start: pd.Timestamp
+) -> list[DesignationChange]:
+    stamped = sorted(
+        (when, path)
+        for path in (data_root / "raw" / "nflverse_injuries").glob("*/injuries.parquet")
+        if (when := _snapshot_time(path)) is not None
+    )
+    earlier = [path for when, path in stamped if when <= start]
+    known = _week_statuses(earlier[-1], season, week) if earlier else {}
+    changes: list[DesignationChange] = []
+    for when, path in stamped:
+        if when <= start:
+            continue
+        statuses = _week_statuses(path, season, week)
+        for (team, gsis), (status, name) in statuses.items():
+            previous = known.get((team, gsis), ("", ""))[0]
+            if status != previous and status in STATUS_WORDS:
+                changes.append(
+                    DesignationChange(
+                        team=team,
+                        gsis_id=gsis,
+                        full_name=name,
+                        status=status,
+                        previous_status=previous,
+                        observed_at=when,
+                        source=path.relative_to(data_root).as_posix(),
+                    )
+                )
+        known.update(statuses)
+    return changes
 
 
 def window_start_utc(first_gameday: date) -> pd.Timestamp:
@@ -117,6 +193,14 @@ def _regulars(data_root: Path, season: int, week: int) -> pd.DataFrame:
     return info.set_index("gsis_id")
 
 
+def news_sentence(change: DesignationChange, position_word: str) -> str:
+    day = change.observed_at.tz_convert(EASTERN).day_name()
+    return (
+        f"Injury news since Tuesday: {change.team} {position_word} {change.full_name} was listed "
+        f"as {STATUS_WORDS[change.status]} as of {day}."
+    )
+
+
 def build_move_reasons(
     data_root: Path,
     *,
@@ -139,47 +223,29 @@ def build_move_reasons(
     if not quotes.empty:
         quotes = quotes.loc[quotes["market"].eq("spreads")].dropna(subset=["home_spread_line"])
         quotes = quotes.loc[pd.to_datetime(quotes["observed_at_utc"], utc=True).ge(start)]
+    step = quote_step(quotes) if not quotes.empty else 0.0
+    if step <= 0:
+        return {}
 
-    posts_path = data_root / "processed" / "beat_reporter_posts.parquet"
-    posts = pd.DataFrame()
-    if posts_path.is_file():
-        posts = pd.read_parquet(
-            posts_path,
-            columns=["team", "created_at", "is_repost", "player_gsis", "avail_classes", "uri"],
-        )
-        posts = posts.loc[~posts["is_repost"] & posts["avail_classes"].map(len).gt(0)]
-        posts = posts.loc[posts["player_gsis"].map(len).gt(0)].copy()
-        posts["team"] = posts["team"].map(lambda t: TEAM_ALIAS.get(t, t))
-        posts["created_at"] = pd.to_datetime(posts["created_at"], utc=True)
-        posts = posts.loc[posts["created_at"].ge(start)]
+    changes = designation_changes(data_root, season=season, week=week, start=start)
+    info = _regulars(data_root, season, week) if changes else pd.DataFrame()
 
-    revisions_path = data_root / "processed" / "injury_revisions_2026.parquet"
-    revisions = pd.DataFrame()
-    if revisions_path.is_file():
-        revisions = pd.read_parquet(revisions_path)
-        revisions = revisions.loc[revisions["season"].eq(season) & revisions["week"].eq(week)]
-        revisions = revisions.loc[~revisions["baseline_snapshot"].astype(bool)].copy()
-        revisions["observed_at"] = pd.to_datetime(revisions["observed_at"], utc=True)
-        revisions["team"] = revisions["team"].map(lambda t: TEAM_ALIAS.get(t, t))
-        revisions = revisions.loc[revisions["observed_at"].ge(start)]
+    shares: dict[str, float] = {}
+    positions: dict[str, str] = {}
+    if not info.empty:
+        measured = info["snap_share"].dropna().astype(float)
+        shares = {str(gsis): float(share) for gsis, share in measured.items()}
+        positions = {str(gsis): str(position) for gsis, position in info["position"].items()}
 
-    info = _regulars(data_root, season, week)
-
-    def regular(gsis: str) -> tuple[str, str] | None:
-        if info.empty or gsis not in info.index:
+    def starter(gsis: str) -> tuple[float, str] | None:
+        share = shares.get(gsis)
+        word = POSITION_WORDS.get(positions.get(gsis, ""))
+        if share is None or share <= MAJORITY_SNAP_SHARE or word is None:
             return None
-        row = info.loc[gsis]
-        share = row["snap_share"]
-        if pd.isna(share) or share <= 0.5:
-            return None
-        word = POSITION_WORDS.get(str(row["position"]))
-        return (str(row["position"]), word) if word else None
+        return (share, word)
 
     result: dict[str, MoveReason] = {}
-    step = quote_step(quotes) if not quotes.empty else 0.0
     for game_id, (home, away, pick_team, now_line) in moves.items():
-        if step <= 0:
-            continue
         series = _consensus_series(quotes, game_id)
         if series.empty:
             continue
@@ -190,75 +256,30 @@ def build_move_reasons(
         move_text = _move_text(delta, step, pick_team, home)
         toward_pick = _toward_pick_points(delta, step, pick_team, home)
         onset = _move_onset(series, start_line=tuesday_line, now_line=now_line, step=step)
-        found: dict[tuple[str, str], tuple[str, pd.Timestamp, str, str]] = {}
-        if onset is not None:
-            if not posts.empty:
-                sel = posts.loc[posts["team"].isin([home, away]) & posts["created_at"].le(onset)]
-                for _, post in sel.iterrows():
-                    classes = set(post["avail_classes"])
-                    level = (
-                        "out"
-                        if classes & OUT_CLASSES
-                        else "limited"
-                        if classes & LIMITED_CLASSES
-                        else ""
-                    )
-                    if not level:
-                        continue
-                    for gsis in post["player_gsis"]:
-                        reg = regular(str(gsis))
-                        if reg is None:
-                            continue
-                        key = (str(post["team"]), str(gsis))
-                        if key not in found or (level == "out" and found[key][0] != "out"):
-                            found[key] = (
-                                level,
-                                post["created_at"],
-                                f"beat_post {post['uri']} {sorted(classes)}",
-                                reg[1],
-                            )
-            if not revisions.empty:
-                sel = revisions.loc[
-                    revisions["team"].isin([home, away]) & revisions["observed_at"].le(onset)
-                ]
-                for _, rev in sel.iterrows():
-                    status = str(rev["report_status"])
-                    if status not in OFFICIAL_OUT and status != "Questionable":
-                        continue
-                    reg = regular(str(rev["gsis_id"]))
-                    if reg is None:
-                        continue
-                    level = "out" if status in OFFICIAL_OUT else "limited"
-                    key = (str(rev["team"]), str(rev["gsis_id"]))
-                    if key not in found or (level == "out" and found[key][0] != "out"):
-                        found[key] = (level, rev["observed_at"], f"injury_report {status}", reg[1])
-        out_items = [(k, v) for k, v in found.items() if v[0] == "out"]
-        limited_items = [(k, v) for k, v in found.items() if v[0] == "limited"]
-        chosen = out_items if out_items else limited_items
-        level_word = "ruled out or out of practice" if out_items else "limited or questionable"
-        evidence = tuple(
-            f"{game_id} {move_text}; move onset {onset}; {team} {gsis} {v[0]} at {v[1]}"
-            f" via {v[2]}; position {v[3]}"
-            for (team, gsis), v in chosen
-        ) or (f"{game_id} {move_text}; move onset {onset}; no qualifying news",)
-        if not chosen:
+        lead = f"{game_id} {move_text}; move onset {onset}"
+        moved_away_from = away if delta > 0 else home
+        ranked = [
+            (rank, change)
+            for change in changes
+            if change.team == moved_away_from and (rank := starter(change.gsis_id)) is not None
+        ]
+        if not ranked:
             result[game_id] = MoveReason(
-                f"The line moved {move_text}. {NO_NEWS_SENTENCE}", evidence, toward_pick
+                f"The line moved {move_text}. {NO_NEWS_SENTENCE}",
+                (f"{lead}; no qualifying news",),
+                toward_pick,
             )
             continue
-        groups: dict[tuple[str, str], int] = {}
-        for (team, _gsis), v in chosen:
-            groups[(team, v[3])] = groups.get((team, v[3]), 0) + 1
-        parts = []
-        for (team, word), count in list(groups.items())[:3]:
-            noun = word if count == 1 else f"{word}s"
-            lead = "a" if count == 1 else str(count)
-            parts.append(f"{lead} {team} {noun}")
-        listed = parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + f" and {parts[-1]}"
+        (share, word), top = max(ranked, key=lambda item: (item[0][0], item[1].observed_at))
+        players = len({change.gsis_id for _, change in ranked})
+        evidence = (
+            f"{lead}; shown {top.team} {top.gsis_id} {top.full_name}"
+            f" {top.previous_status or 'no designation'} to {top.status}"
+            f" first captured {top.observed_at} in {top.source}; position {word};"
+            f" mean snap share {share:.3f}; rule {NEWS_RULE};"
+            f" {players} regular players with a designation change since {start}",
+        )
         result[game_id] = MoveReason(
-            f"The line moved {move_text}. Earlier captured news: {listed} who plays most of the "
-            f"snaps was reported {level_word}.",
-            evidence,
-            toward_pick,
+            f"The line moved {move_text}. {news_sentence(top, word)}", evidence, toward_pick
         )
     return result
