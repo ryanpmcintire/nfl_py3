@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:11:58.406923+00:00`
+Refreshed at: `2026-11-14T20:19:34.306636+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T20:11:58.406923+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `106128f6c2b1` — Record the short-week side term and the Week 9 forward score of the injury wording read
-- Pending change set: 51 paths
+- Baseline commit: `58b13f6af9da` — Enrol the playoff-leverage term as a frozen forward log from Week 10
+- Pending change set: 74 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/eng-62-leader-book-quote-capture.md`
-  - `M  docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
+  - `M  docs/lanes/full-steam-2026-11-14.md`
+  - `M  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
+  - `M  docs/lanes/lead-102-name-blinded-control-read.md`
+  - `M  docs/lanes/lead-103-read-block-ablation.md`
+  - ` M docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
+  - `M  docs/lanes/mod-52-mod41-season-and-week-stability.md`
+  - `M  docs/lanes/per-14-coordinator-mover-portability.md`
+  - `M  docs/lanes/pool-06-tiebreak-field-guess.md`
+  - `M  docs/lanes/pool-07-standings-variance-policy.md`
+  - ` M docs/lanes/pool-08-hook-side-field-share.md`
+  - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
+  - `A  docs/lanes/registry-catchup-2026-11-14.md`
+  - `M  docs/lanes/xlg-13-xlg13-screen-transfer.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/mod39_playoff_leverage.json`
-  - `M  scripts/forward_ledger.py`
-  - `M  scripts/forward_terms_week.py`
-  - `A  scripts/mod39_freeze_levdiff_served.py`
-  - `M  scripts/mod39_leverage.py`
-  - ` M scripts/pool08_hook_field_share.py`
-  - ` M scripts/pool09_hook_value_slope.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - ...and 31 more
+  - `A  registry/weak_signals/lead100_repeat_read_ensemble.json`
+  - `A  registry/weak_signals/lead102_name_blinded_control_read.json`
+  - ...and 54 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

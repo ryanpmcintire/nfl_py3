@@ -1,0 +1,481 @@
+{
+  "family": "mod52_mod41_stability_u1",
+  "signals": {
+    "mod52_u1_direction_away_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on games where the term favours the away side; decisive 64-51 of 115.",
+      "effect": 0.0025523357912161787,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.0057293107274647825,
+        0.010879611841110406
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games where it leans toward the road team.",
+      "probability_positive": 0.7075,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 580,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_direction_home_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on games where the term favours the home side; decisive 92-79 of 171.",
+      "effect": 0.0082790609692689,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.0008823011658241976,
+        0.017119037809768027
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games where it leans toward the home team.",
+      "probability_positive": 0.961,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 562,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_season_2020_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on 2020 games only; decisive 27-20 of 47.",
+      "effect": 0.005429231060690768,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.014574260231619245,
+        0.02360446489372593
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on 2020 games alone to see whether its help holds season by season.",
+      "probability_positive": 0.715,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 162,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_season_2021_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on 2021 games only; decisive 31-34 of 65.",
+      "effect": 0.005703541275516508,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.01274465218229959,
+        0.02407304899623955
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on 2021 games alone to see whether its help holds season by season.",
+      "probability_positive": 0.731,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 182,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_season_2022_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on 2022 games only; decisive 27-25 of 52.",
+      "effect": 0.010431878769600885,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.005930441983209966,
+        0.02537911746870121
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on 2022 games alone to see whether its help holds season by season.",
+      "probability_positive": 0.8915,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 186,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_season_2023_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on 2023 games only; decisive 26-23 of 49.",
+      "effect": -0.0012599531866397302,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.017429783366286644,
+        0.012940150418781616
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on 2023 games alone to see whether its help holds season by season.",
+      "probability_positive": 0.4215,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 203,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_season_2024_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on 2024 games only; decisive 20-14 of 34.",
+      "effect": 0.0037102936300001197,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.012942748981229359,
+        0.018792337854879
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on 2024 games alone to see whether its help holds season by season.",
+      "probability_positive": 0.686,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 205,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_season_2025_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on 2025 games only; decisive 25-14 of 39.",
+      "effect": 0.008678617310052324,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.003115761880938893,
+        0.020599799986500265
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on 2025 games alone to see whether its help holds season by season.",
+      "probability_positive": 0.92,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 204,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_spread_large_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on the largest third of games by absolute opening spread (tercile edges 3.0 / 6.5 / 19.5); decisive 54-39 of 93. One of 24 looks, not a best-cell finding.",
+      "effect": 0.013920604945412326,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        0.0029846067466119544,
+        0.024965147451976415
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games with the largest opening spreads.",
+      "probability_positive": 0.996,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 381,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_spread_mid_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on the middle third of games by absolute opening spread (tercile edges 3.0 / 6.5 / 19.5); decisive 56-37 of 93.",
+      "effect": 0.006627733597220673,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.004387562198915015,
+        0.01697305064121336
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games with middle-sized opening spreads.",
+      "probability_positive": 0.8765,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 380,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_spread_small_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on the smallest third of games by absolute opening spread (tercile edges 3.0 / 6.5 / 19.5); decisive 46-54 of 100.",
+      "effect": -0.004433339179820066,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.016803613001767182,
+        0.008247717198122928
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games with the smallest opening spreads.",
+      "probability_positive": 0.2485,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 381,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_term_high_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on the highest third of games by absolute term size (tercile edges 1.98 / 4.67 / 18.7); decisive 80-72 of 152.",
+      "effect": 0.013488269317928927,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.003735136881439488,
+        0.03205427091024587
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games where the workload gap between the teams is largest.",
+      "probability_positive": 0.933,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 381,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_term_low_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on the lowest third of games by absolute term size (tercile edges 1.98 / 4.67 / 18.7); decisive 16-16 of 32.",
+      "effect": -0.0001967380417411023,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.002596235126657633,
+        0.0025084263294611908
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games where the workload gap between the teams is smallest.",
+      "probability_positive": 0.426,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 381,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_term_mid_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on the middle third of games by absolute term size (tercile edges 1.98 / 4.67 / 18.7); decisive 60-42 of 102.",
+      "effect": 0.002813456861597226,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.00551109541551445,
+        0.011447643824999956
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored only on games where the workload gap between the teams is middle-sized.",
+      "probability_positive": 0.751,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 380,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_weeks_13_18_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on Weeks 13-18 games, 2020-25; decisive 66-60 of 126.",
+      "effect": 0.00414233122746609,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.007933716655185169,
+        0.015587696052841922
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on Weeks 13 to 18 alone to see whether its help depends on the part of the season.",
+      "probability_positive": 0.7555,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_weeks_5_8_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on Weeks 5-8 games, 2020-25; decisive 47-33 of 80.",
+      "effect": 0.0069384496091846135,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.002452944095444976,
+        0.016775443937031842
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on Weeks 5 to 8 alone to see whether its help depends on the part of the season.",
+      "probability_positive": 0.9145,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 327,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    },
+    "mod52_u1_weeks_9_12_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No cell has an interval wholly below zero, no split-half reliability was measured and no positive control was proven at this size; week-block bootstrap interval reported (2000 draws).",
+      "closing_ground": null,
+      "description": "MOD-41 recent-workload term added to the served out-of-season probability (unit 6 leave-one-season-out harness, opener grade): log-loss gain on Weeks 9-12 games, 2020-25; decisive 43-37 of 80.",
+      "effect": 0.005673096277767893,
+      "effect_units": "log_loss_improvement",
+      "family": "mod52_mod41_stability_u1",
+      "interval": [
+        -0.00648929702365516,
+        0.016969269952926885
+      ],
+      "league": "nfl",
+      "notes": "Family mod52_mod41_stability_u1 declared before signs: 24 looks = 17 gain cells + 5 homogeneity tests + 2 slopes. Gain is the log-loss improvement of the MOD-41 recent-workload term over the served out-of-season probability on the MOD-41 unit 6 leave-one-season-out harness, opener grade, usable 1142 games, weeks 5-18. Overall usable gain +0.0054 [-0.0013, 0.0118], probability positive 0.947, decisive 156-130. Homogeneity p: season 0.91, week block 0.93, spread tercile 0.063, direction 0.37, term tercile 0.17; these and the two slopes have no admissible effect unit and stay in docs/lanes/mod-52-mod41-season-and-week-stability.md. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Recent workload added to the pick probability, scored on Weeks 9 to 12 alone to see whether its help depends on the part of the season.",
+      "probability_positive": 0.8375,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 319,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod52/unit1_stability.json",
+      "standard_error": null
+    }
+  }
+}

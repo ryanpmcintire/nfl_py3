@@ -1,0 +1,33 @@
+{
+  "family": "lead100_repeat_read_ensemble",
+  "signals": {
+    "lead100_u1_split_half_read1_vs_mean_reads2_4_correlation": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games, one declared look; bootstrap interval -0.39 to 0.96 (10000 resamples); not a resolved wrong sign, the measured split-half correlation is not zero and no positive control was proven; the lane reads it as unresolved below power.",
+      "closing_ground": null,
+      "description": "Split-half correlation of the LEAD-99 language read on the stored Week 9 Tuesday packet under the frozen prompt: read 1 versus the mean of reads 2-4, 15 games, logit scale; Spearman-Brown 0.38.",
+      "effect": 0.237,
+      "effect_units": "correlation",
+      "family": "lead100_repeat_read_ensemble",
+      "interval": [
+        -0.39,
+        0.96
+      ],
+      "league": "nfl",
+      "notes": "Family lead100_repeat_read_ensemble, one declared look, no outcomes read. Reads are stored under artifacts/lead99_llm_read/repeats/. Not recorded because they are dispersion statistics with no effect unit: mean between-read SD 0.052 logit, between-game SD of the mean 0.093 logit, across-view SD 0.078 logit over 27 games. Transcribed 2026-11-14 from the lane; no new measurement.",
+      "plain_summary": "Checks whether the written read of a game gives the same lean when the same question is asked again, using four reads of fifteen Week 9 games.",
+      "probability_positive": 0.77,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-100-lead99-repeat-read-ensemble.md",
+      "standard_error": null
+    }
+  }
+}

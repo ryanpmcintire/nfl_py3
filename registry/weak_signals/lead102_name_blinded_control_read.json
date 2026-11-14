@@ -1,0 +1,33 @@
+{
+  "family": "lead102_name_blinded_control_read",
+  "signals": {
+    "lead102_u1_named_vs_blinded_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games, one family; the named-minus-blinded mean logit gap -0.009 has bootstrap interval -0.034 to +0.015 with probability positive 0.224, which is not a resolved wrong sign; no split-half reliability measured for the gap and no positive control proven.",
+      "closing_ground": null,
+      "description": "Correlation across 15 Week 9 games between the named LEAD-99 read (mean of 4 reads) and the name-blinded read (mean of 3 reads), logit scale, frozen prompt; bootstrap 95 percent interval.",
+      "effect": 0.856,
+      "effect_units": "correlation",
+      "family": "lead102_name_blinded_control_read",
+      "interval": [
+        0.725,
+        0.96
+      ],
+      "league": "nfl",
+      "notes": "Family lead102_name_blinded_control_read, 15 games, one family. Reads are stored under artifacts/lead99_llm_read/blinded/reads/. The stored analysis gives no probability_positive for the correlation, so none is recorded. Not recorded because a mean logit gap has no admissible effect unit: named-minus-blinded mean -0.009 logit [-0.034, +0.015], probability positive 0.224; SD of game gaps 0.050 against a noise standard error of 0.040; 2 of 15 games beyond two noise standard errors. Transcribed 2026-11-14 from the lane; no new measurement.",
+      "plain_summary": "Checks whether the written read of a game leans the same way once team and player names are hidden, to see how much of the read is reputation and how much is the facts.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-102-name-blinded-control-read.md",
+      "standard_error": null
+    }
+  }
+}

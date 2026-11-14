@@ -4,10 +4,10 @@
     "xlg13_screen_transfer_pearson_nfl_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "4 candidates, bootstrap interval spans -1 to 1; no resolved sign, no split-half reliability measured and no positive control proven.",
       "closing_ground": null,
-      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain vs 88-input served gain (pearson)",
-      "effect": -0.84,
+      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain (fixed opener-input harness) vs 88-input served gain (pearson); sign agreement 1 of 4.",
+      "effect": 0.2785301369707205,
       "effect_units": "correlation",
       "family": "xlg13_screen_transfer",
       "interval": [
@@ -15,10 +15,10 @@
         1.0
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "With four candidates the screen-to-served rank agreement is negative and unresolved",
-      "probability_positive": 0.208,
-      "recorded_at": "2026-11-03",
+      "notes": "Replaces the 2026-11-03 pre-fix values (spearman -0.40, pearson -0.84), which the lane struck: the pooled harness had used the closing spread as model input while grading at the opener. Screen gains now come from the fixed opener-input harness (artifacts/pooled_sweep_fixed, NFL opener 2020-25, n 1503, base 754-749): ridgecv +0.93, enet +0.60, accalpha -0.40, huber +0.73 accuracy points. Served gains (-0.73, -3.19, -1.80, -0.87) are unchanged from the MOD-23 units and were not re-verified after the fix. Family xlg13_screen_transfer, 2 looks. Transcribed 2026-11-14 from the artifact and lane; no new measurement.",
+      "plain_summary": "Whether a quick test on a small model predicts what the same change does to the full model: with only four examples the agreement leans positive and is not settled.",
+      "probability_positive": 0.8459975619666802,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": null,
@@ -26,16 +26,16 @@
         2020,
         2025
       ],
-      "source": "docs/lanes/xlg-13-xlg13-screen-transfer.md",
+      "source": "artifacts/xlg13_screen_transfer/report_fixed.json",
       "standard_error": null
     },
     "xlg13_screen_transfer_spearman_nfl_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "4 candidates, bootstrap interval spans -1 to 1; no resolved sign, no split-half reliability measured and no positive control proven.",
       "closing_ground": null,
-      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain vs 88-input served gain (spearman)",
-      "effect": -0.4,
+      "description": "Correlation across 4 candidates of pooled 14-input NFL opener accuracy gain (fixed opener-input harness) vs 88-input served gain (spearman); sign agreement 1 of 4; exact permutation P(rho>=obs) 4/24.",
+      "effect": 0.8,
       "effect_units": "correlation",
       "family": "xlg13_screen_transfer",
       "interval": [
@@ -43,10 +43,10 @@
         1.0
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "With four candidates the screen-to-served rank agreement is negative and unresolved",
-      "probability_positive": 0.252,
-      "recorded_at": "2026-11-03",
+      "notes": "Replaces the 2026-11-03 pre-fix values (spearman -0.40, pearson -0.84), which the lane struck: the pooled harness had used the closing spread as model input while grading at the opener. Screen gains now come from the fixed opener-input harness (artifacts/pooled_sweep_fixed, NFL opener 2020-25, n 1503, base 754-749): ridgecv +0.93, enet +0.60, accalpha -0.40, huber +0.73 accuracy points. Served gains (-0.73, -3.19, -1.80, -0.87) are unchanged from the MOD-23 units and were not re-verified after the fix. Family xlg13_screen_transfer, 2 looks. Transcribed 2026-11-14 from the artifact and lane; no new measurement.",
+      "plain_summary": "Whether a quick test on a small model predicts what the same change does to the full model: with only four examples the agreement leans positive and is not settled.",
+      "probability_positive": 0.9413982878108439,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": null,
@@ -54,7 +54,7 @@
         2020,
         2025
       ],
-      "source": "docs/lanes/xlg-13-xlg13-screen-transfer.md",
+      "source": "artifacts/xlg13_screen_transfer/report_fixed.json",
       "standard_error": null
     }
   }

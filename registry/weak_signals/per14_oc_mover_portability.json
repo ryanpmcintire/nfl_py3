@@ -1,0 +1,565 @@
+{
+  "family": "per14_oc_mover_portability",
+  "signals": {
+    "per14_u1_partial_halftime_off_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Partial correlation of the mover's second-stint halftime offence trait on his first-stint trait given the new team's prior coordinator trait; 74 events.",
+      "effect": 0.004280948878656847,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.22986832236068186,
+        0.18681634640527045
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Whether a coordinator's second-half adjustment habit shows up at his new team beyond what that team was already doing.",
+      "probability_positive": 0.49725,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.3230976789113517,
+      "sample_blocks": null,
+      "sample_games": 74,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_partial_lead_run_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Partial correlation of the mover's second-stint lead-protection run-rate trait on his first-stint trait given the new team's prior coordinator trait; 52 events.",
+      "effect": 0.0006231762893090706,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.2355579753541507,
+        0.23727745151074994
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Whether a coordinator's habit of running when protecting a lead shows up at his new team beyond what that team was already doing.",
+      "probability_positive": 0.52875,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7831315445678146,
+      "sample_blocks": null,
+      "sample_games": 52,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_partial_lead_sec_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Partial correlation of the mover's second-stint lead-protection clock trait on his first-stint trait given the new team's prior coordinator trait; 48 events.",
+      "effect": 0.05835882006416231,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.20648496674082673,
+        0.32665125012062096
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Whether a coordinator's clock use when protecting a lead shows up at his new team beyond what that team was already doing.",
+      "probability_positive": 0.70275,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6923988885353272,
+      "sample_blocks": null,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_partial_trail_pass_incl_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Partial correlation of the mover's second-stint trailing pass-rate trait (team style included) on his first-stint trait given the new team's prior coordinator trait; 74 events.",
+      "effect": 0.0051669087774654935,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.2789541658221543,
+        0.2665726412594436
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Whether a coordinator's habit of passing when trailing shows up at his new team beyond what that team was already doing.",
+      "probability_positive": 0.521,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7360541516809911,
+      "sample_blocks": null,
+      "sample_games": 74,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_partial_trail_pass_shift_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Partial correlation of the mover's second-stint style-adjusted trailing pass-rate shift on his first-stint trait given the new team's prior coordinator trait; 72 events.",
+      "effect": 0.15955682778252397,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.06855282832081412,
+        0.4029403464287037
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Whether a coordinator's habit of passing more than usual when trailing shows up at his new team beyond what that team was already doing.",
+      "probability_positive": 0.91,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6529167298210872,
+      "sample_blocks": null,
+      "sample_games": 72,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_halftime_off_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Person portability: correlation of an offensive coordinator's shrunk halftime offence trait in one stint with the same person's next stint at a different team; 77 mover events, 52 persons; permutation p 0.370.",
+      "effect": 0.034014995386565966,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.18875793522424103,
+        0.20573563901282738
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator changes teams, does his old offence's second-half adjustment habit show up at the new team?",
+      "probability_positive": 0.615,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.3230976789113517,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_lead_run_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Person portability: correlation of an offensive coordinator's shrunk lead-protection run-rate trait in one stint with the same person's next stint at a different team; 59 mover events, 37 persons; permutation p 0.518.",
+      "effect": -0.003885963195871947,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.22212657231553992,
+        0.18572407968040308
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator changes teams, does his old offence's habit of running when protecting a lead show up at the new team?",
+      "probability_positive": 0.477,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7831315445678146,
+      "sample_blocks": null,
+      "sample_games": 59,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_lead_sec_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Person portability: correlation of an offensive coordinator's shrunk lead-protection clock trait in one stint with the same person's next stint at a different team; 57 mover events, 35 persons; permutation p 0.514.",
+      "effect": -0.004946856421810571,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.2825276497838394,
+        0.2710135684633658
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator changes teams, does his old offence's clock use when protecting a lead show up at the new team?",
+      "probability_positive": 0.51425,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6923988885353272,
+      "sample_blocks": null,
+      "sample_games": 57,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_minus_team_halftime_off_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Paired difference of two correlations on the same 77 events, person portability (0.034) minus team persistence (0.094), halftime offence trait.",
+      "effect": -0.05980278992577456,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.35929947337869933,
+        0.21202659740116225
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Compares whether the second-half adjustment habit follows the coordinator to his new team or stays with the team he left.",
+      "probability_positive": 0.32925,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.3230976789113517,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_minus_team_lead_run_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Paired difference of two correlations on the same 49 events, person portability (0.083) minus team persistence (0.171), lead-protection run-rate trait.",
+      "effect": -0.087494304426396,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.4189544566477042,
+        0.20039649956367087
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Compares whether running when protecting a lead follows the coordinator to his new team or stays with the team he left.",
+      "probability_positive": 0.28925,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7831315445678146,
+      "sample_blocks": null,
+      "sample_games": 49,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_minus_team_lead_sec_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Paired difference of two correlations on the same 47 events, person portability (-0.034) minus team persistence (0.088), lead-protection clock trait.",
+      "effect": -0.12181453725853393,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.5255721116159375,
+        0.25463521616513046
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Compares whether clock use when protecting a lead follows the coordinator to his new team or stays with the team he left.",
+      "probability_positive": 0.27525,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6923988885353272,
+      "sample_blocks": null,
+      "sample_games": 47,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_minus_team_trail_pass_incl_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Paired difference of two correlations on the same 77 events, person portability (-0.019) minus team persistence (0.008), trailing pass-rate trait (team style included).",
+      "effect": -0.02636757533430708,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.3885343141107994,
+        0.3275644942126483
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Compares whether passing when trailing follows the coordinator to his new team or stays with the team he left.",
+      "probability_positive": 0.423,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7360541516809911,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_minus_team_trail_pass_shift_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Paired difference of two correlations on the same 75 events, person portability (0.158) minus team persistence (0.353), style-adjusted trailing pass-rate shift.",
+      "effect": -0.19462748059133483,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.4658220942534278,
+        0.11999337708342711
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "Compares whether passing more than usual when trailing follows the coordinator to his new team or stays with the team he left.",
+      "probability_positive": 0.10275,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6529167298210872,
+      "sample_blocks": null,
+      "sample_games": 75,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_trail_pass_incl_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Person portability: correlation of an offensive coordinator's shrunk trailing pass-rate trait (team style included) in one stint with the same person's next stint at a different team; 77 mover events, 52 persons; permutation p 0.559.",
+      "effect": -0.018592944642321568,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.2727908071823469,
+        0.22669884089199271
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator changes teams, does his old offence's habit of passing when trailing show up at the new team?",
+      "probability_positive": 0.434,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7360541516809911,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_person_trail_pass_shift_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Person portability: correlation of an offensive coordinator's shrunk style-adjusted trailing pass-rate shift in one stint with the same person's next stint at a different team; 76 mover events, 51 persons; permutation p 0.071.",
+      "effect": 0.16761258730841583,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.05838381026549637,
+        0.40222956439792495
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator changes teams, does his old offence's habit of passing more than usual when trailing show up at the new team?",
+      "probability_positive": 0.92525,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6529167298210872,
+      "sample_blocks": null,
+      "sample_games": 76,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_team_halftime_off_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Team persistence: correlation of the departing coordinator's shrunk halftime offence trait with the immediate successor's stint at the same team; 77 events; permutation p 0.199.",
+      "effect": 0.09381778531234053,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.10334131426360234,
+        0.2940579084951478
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator leaves, does the team keep the same second-half adjustment habit under the next coordinator?",
+      "probability_positive": 0.82875,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.3230976789113517,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_team_lead_run_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Team persistence: correlation of the departing coordinator's shrunk lead-protection run-rate trait with the immediate successor's stint at the same team; 49 events; permutation p 0.117.",
+      "effect": 0.17066129015749018,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.06641562350260166,
+        0.40269512526804574
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator leaves, does the team keep the same habit of running when protecting a lead under the next coordinator?",
+      "probability_positive": 0.912,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7831315445678146,
+      "sample_blocks": null,
+      "sample_games": 49,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_team_lead_sec_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Team persistence: correlation of the departing coordinator's shrunk lead-protection clock trait with the immediate successor's stint at the same team; 47 events; permutation p 0.277.",
+      "effect": 0.08763362775172674,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.1829117181983531,
+        0.37644827736324515
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator leaves, does the team keep the same clock use when protecting a lead under the next coordinator?",
+      "probability_positive": 0.74975,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6923988885353272,
+      "sample_blocks": null,
+      "sample_games": 47,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_team_trail_pass_incl_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Team persistence: correlation of the departing coordinator's shrunk trailing pass-rate trait (team style included) with the immediate successor's stint at the same team; 77 events; permutation p 0.484.",
+      "effect": 0.00777463069198551,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        -0.2184070872583837,
+        0.24795261431585644
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator leaves, does the team keep the same habit of passing when trailing under the next coordinator?",
+      "probability_positive": 0.53125,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.7360541516809911,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    },
+    "per14_u1_team_trail_pass_shift_correlation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Every trait has measured split-half reliability above zero (0.32 to 0.78), so no reliability ground; no interval lies wholly below zero; no positive control proven; 47 to 77 mover events per cell with interval half-width about 0.2 to 0.3.",
+      "closing_ground": null,
+      "description": "Team persistence: correlation of the departing coordinator's shrunk style-adjusted trailing pass-rate shift with the immediate successor's stint at the same team; 75 events; permutation p 0.001. One of 25 looks, not a best-cell finding.",
+      "effect": 0.3528848233915061,
+      "effect_units": "correlation",
+      "family": "per14_oc_mover_portability",
+      "interval": [
+        0.14746818091379518,
+        0.5249343984481493
+      ],
+      "league": "nfl",
+      "notes": "Family per14_oc_mover_portability (OC mover portability, declared before any sign seen): 25 looks = 5 traits x 5 correlations, no best-cell claim. Traits are offensive-coordinator stint means of at least 8 games, shrunk by method-of-moments variance components; reliability is the median long-spell reliability of the trait. Cluster-by-person bootstrap 4000, permutation null 5000. The season span 2009-2025 is read from the lane's staff-history description and is not stored in the artifact. Not recorded: the 5 coordinator-to-head-coach correlations, which the artifact stores with a permutation p only (no interval or probability_positive) and with play-calling identity unknown. Transcribed 2026-11-14 from the artifact; no new measurement.",
+      "plain_summary": "When an offensive coordinator leaves, does the team keep the same habit of passing more than usual when trailing under the next coordinator?",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-14",
+      "reliability": 0.6529167298210872,
+      "sample_blocks": null,
+      "sample_games": 75,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per14/mover_portability.json",
+      "standard_error": null
+    }
+  }
+}
