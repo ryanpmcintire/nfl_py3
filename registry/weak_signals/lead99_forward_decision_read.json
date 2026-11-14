@@ -1,0 +1,285 @@
+{
+  "family": "lead99_forward_decision_read",
+  "signals": {
+    "lead99_dr_canonical_view_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 declared canonical row (latest read before each game's deadline) against the played card on 43 graded games, Weeks 7-9; paired log-loss improvement, game bootstrap; the forward ledger scores the earliest record instead",
+      "effect": 0.0432,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        0.0101,
+        0.0793
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: the last AI read made before each game's pick deadline was compared with the card's own probabilities on 43 finished games. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9959,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_canonical_view_vs_no_information_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 declared canonical row (latest read before each game's deadline) against a constant 0.5 on 43 graded games, Weeks 7-9; paired log-loss improvement, game bootstrap",
+      "effect": 0.0059,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        -0.0227,
+        0.0351
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: the last AI read made before each game's pick deadline was compared with a coin flip on 43 finished games. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6595,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_logit_vs_later_line_move_correlation": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Correlation between the LEAD-99 read logit (ledger view) and the market line move toward the home team from the read time to the pick deadline (median of books), Weeks 7-9; game bootstrap",
+      "effect": 0.1627,
+      "effect_units": "correlation",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        -0.0402,
+        0.3376
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: this checks whether an AI model's written read of a game points the same way the betting line later moves. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9472,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_minus_card_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 read side (ledger view) minus the played card side, pick accuracy in points at the pool line on 43 graded games, Weeks 7-9; game bootstrap; decisive games 13-3; within-week permutation p 0.146",
+      "effect": 23.2558,
+      "effect_units": "accuracy_points",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        6.9767,
+        39.5349
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's written read of each game picked more winners than the card over 43 finished games, in three weeks when the card itself ran cold. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_vs_card_at_read_time_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 read (ledger view) against the card's published probability at the moment the read was made, Weeks 7-9; paired log-loss improvement, game bootstrap; removes the card's later line-move changes from the comparison",
+      "effect": 0.0212,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        -0.0125,
+        0.0576
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's written read of each game was compared with what the card said at the same moment, before the card's later changes. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.8869,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_vs_market_move_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 read (ledger view) against the deadline market offset from the pool line mapped through the served card's own fitted move coefficients (no refit), Weeks 7-9; paired log-loss improvement, game bootstrap",
+      "effect": 0.0229,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        -0.0113,
+        0.0574
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's written read of each game was compared with simply following the way the betting line had moved by the pick deadline. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9047,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_vs_no_information_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 read as scored by the forward ledger (earliest pregame record, raw read probability, no fitted coefficient) against a constant 0.5 on 43 graded games, Weeks 7-9; paired log-loss improvement, game bootstrap",
+      "effect": 0.0259,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        0.0046,
+        0.0472
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's written read of each game was compared with a coin flip on 43 finished games. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9917,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_vs_raw_model_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 read (ledger view) against the raw margin model's home cover probability at the pool line from the last forecast before each deadline, 43 graded games, Weeks 7-9; paired log-loss improvement, game bootstrap",
+      "effect": 0.0544,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        0.0166,
+        0.0948
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's written read of each game was compared with the football model's own probability on 43 finished games. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_read_vs_week_lean_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-99 read (ledger view) against a constant equal to its own mean probability in that week, Weeks 7-9; paired log-loss improvement, game bootstrap; isolates the game-by-game part of the read from its weekly lean; within-week permutation p for the gain against the card 0.036",
+      "effect": 0.0142,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        -0.0055,
+        0.0339
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's game-by-game read was compared with its own average lean for the week, to see whether it sorts games or only leans one way. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9217,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    },
+    "lead99_dr_stack_held_out_week_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only, three weeks; interval and probability_positive from a game bootstrap; no wrong-sign interval, no zero reliability and no positive control bound applies, so no admissible closing ground exists and the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Card logit as offset plus one coefficient on the LEAD-99 read logit, coefficient fitted on two of Weeks 7-9 and scored on the third; held-out paired log-loss improvement against the card, game bootstrap; in-sample gain +0.0641, gap +0.0026",
+      "effect": 0.0615,
+      "effect_units": "log_loss_improvement",
+      "family": "lead99_forward_decision_read",
+      "interval": [
+        -0.041,
+        0.1586
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: the card's probability was blended with an AI model's written read, with the blend set on two weeks and checked on the third. Three weeks is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.8873,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead99_decision_read/summary.json",
+      "standard_error": null
+    }
+  }
+}

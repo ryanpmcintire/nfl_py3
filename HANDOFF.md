@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:22:52.142620+00:00`
+Refreshed at: `2026-11-14T20:24:27.144362+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T20:22:52.142620+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `68d55e14c09d` — Rerun the pool field's half-point lean through Week 9 and record it
-- Pending change set: 58 paths
+- Baseline commit: `da344136ce39` — Measure quote ages behind the two Tuesday-line terms; test whether the market absorbs the injury wording read
+- Pending change set: 60 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-62-leader-book-quote-capture.md`
-  - `M  docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
-  - ` M docs/lanes/lead99-llm-read.md`
+  - ` M docs/findings.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/eng-49-eng49-matched-forward-ledger.md`
+  - `M  docs/lanes/full-steam-2026-11-14.md`
+  - `A  docs/lanes/lead99-forward-decision-read-2026-11-14.md`
+  - `M  docs/lanes/lead99-llm-read.md`
   - ` M docs/lead64_freshness_audit.md`
-  - ` M registry/weak_signals/eng49_forward_ledger_vs_card.json`
-  - ` M registry/weak_signals/eng50_online_stacker.json`
-  - `A  registry/weak_signals/lead110_market_absorption.json`
-  - ` M scripts/eng50_online_stacker.py`
-  - ` M scripts/forward_ledger.py`
-  - ` M scripts/forward_monitor.py`
-  - `A  scripts/lead110_market_absorption.py`
+  - `M  registry/weak_signals/eng49_forward_ledger_vs_card.json`
+  - `M  registry/weak_signals/eng50_online_stacker.json`
+  - `A  registry/weak_signals/lead99_forward_decision_read.json`
+  - `M  scripts/eng50_online_stacker.py`
+  - `M  scripts/forward_ledger.py`
+  - `M  scripts/forward_monitor.py`
+  - ` M scripts/lead110_absorption.py`
+  - `A  scripts/lead99_forward_decision_read.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_move_reason.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 38 more
+  - ...and 40 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

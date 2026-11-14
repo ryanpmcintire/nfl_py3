@@ -29,12 +29,12 @@
       "source": "artifacts/forward_monitor/per_term.json",
       "standard_error": null
     },
-    "eng49_forward_lead99_vs_card_log_loss": {
+    "eng49_forward_lead99_first_view_vs_card_log_loss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
       "closing_ground": null,
-      "description": "Forward candidate lead99: frozen pregame probability against the played card on the same games, Weeks 7-9 (43 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 13-3; sequential evidence value 7.737; a no-information 0.5 beats the card by +0.0373 on these games and the candidate beats 0.5 by +0.0259",
+      "description": "Forward candidate lead99_first_view: frozen pregame probability against the played card on the same games, Weeks 7-9 (43 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 13-3; sequential evidence value 7.737; a no-information 0.5 beats the card by +0.0373 on these games and the candidate beats 0.5 by +0.0259; separately named term declared 2026-11-14 after its results were seen: the earliest read written before each game's pick deadline; Weeks 7-9 are exploratory and its forward sample starts with Week 10; monitor only, not a stacker input; forward games from Week 10: 0",
       "effect": 0.0632,
       "effect_units": "log_loss_improvement",
       "family": "eng49_forward_ledger_vs_card",
@@ -44,8 +44,36 @@
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: an AI model's written read of each game, logged before kickoff, was compared with the card's own probabilities on 43 finished games. It took the other side from the card in 16 games and went 13-3 there. That is too few games to tell luck from skill, so it changes no pick.",
+      "plain_summary": "Research only: an AI model's first written read of each game that week, logged before kickoff, was compared with the card's own probabilities on 43 finished games. It took the other side from the card in 16 games and went 13-3 there. This version was named only after these early weeks were seen, so they are a first look and its real test starts with the games that follow. That is too few games to tell luck from skill, so it changes no pick.",
       "probability_positive": 0.9981,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_monitor/per_term.json",
+      "standard_error": null
+    },
+    "eng49_forward_lead99_vs_card_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward log only; interval and probability_positive from a game bootstrap; the sequential evidence value is below its threshold; no admissible closing ground exists, so the cell stays unresolved.",
+      "closing_ground": null,
+      "description": "Forward candidate lead99: frozen pregame probability against the played card on the same games, Weeks 7-9 (43 graded games); paired log-loss improvement (card minus candidate), game bootstrap; decisive games 6-1; sequential evidence value 11.597; a no-information 0.5 beats the card by +0.0373 on these games and the candidate beats 0.5 by +0.0059; LEAD-99 row of record as declared 2026-10-20: the latest read written before each game's pick deadline, any view",
+      "effect": 0.0432,
+      "effect_units": "log_loss_improvement",
+      "family": "eng49_forward_ledger_vs_card",
+      "interval": [
+        0.0102,
+        0.0782
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Research only: an AI model's last written read of each game before the pick deadline, logged before kickoff, was compared with the card's own probabilities on 43 finished games. It took the other side from the card in 7 games and went 6-1 there. That is too few games to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.9953,
       "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": 3,

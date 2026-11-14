@@ -6,6 +6,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from nfl_ats.published_picks import game_deadlines
+
 ROOT = Path(__file__).resolve().parents[1]
 SEASON = 2026
 RUN_FAMILIES = {
@@ -30,6 +32,14 @@ TERM_DIRS = [
     "mod39_levdiff_served",
 ]
 CFB_EXCLUDED = ["xlg12_cfb_v1", "xlg12_cfb_v2"]
+LEAD99_DECLARED = "lead99"
+LEAD99_FIRST_VIEW = "lead99_first_view"
+PICK_DEADLINE_CANDIDATES = [LEAD99_DECLARED, LEAD99_FIRST_VIEW]
+LATEST_BEFORE_DEADLINE = [LEAD99_DECLARED]
+RECORD_RULES = {
+    LEAD99_DECLARED: "latest record written before the game's pick deadline, any view",
+    LEAD99_FIRST_VIEW: "earliest record written before the game's pick deadline, any view",
+}
 
 
 def _load(path):
@@ -75,17 +85,18 @@ def _records():
     for path in sorted(glob.glob(str(ROOT / "artifacts/lead99_llm_read/runs/*.json"))):
         doc = _load(path)
         for row in doc.get("parsed_rows", []):
-            rows.append(
-                {
-                    "candidate": "lead99",
-                    "game_id": row["game_id"],
-                    "p": row.get("home_cover_probability"),
-                    "written_at": doc["recorded_at_utc"],
-                    "row_deadline": None,
-                    "served_p": None,
-                    "frozen_at": None,
-                }
-            )
+            for name in PICK_DEADLINE_CANDIDATES:
+                rows.append(
+                    {
+                        "candidate": name,
+                        "game_id": row["game_id"],
+                        "p": row.get("home_cover_probability"),
+                        "written_at": doc["recorded_at_utc"],
+                        "row_deadline": None,
+                        "served_p": None,
+                        "frozen_at": None,
+                    }
+                )
     pool = pd.read_parquet(ROOT / "artifacts/pool_relative_forward_log/log.parquet")
     for row in pool.loc[~pool["backfill"].astype(bool)].itertuples():
         rows.append(
@@ -140,6 +151,13 @@ def _utc(series):
     return pd.to_datetime(series, utc=True, format="ISO8601")
 
 
+def _pick_deadlines(games):
+    deadlines = {}
+    for _, week in games.groupby("week"):
+        deadlines.update(game_deadlines(week[["game_id"]].assign(kickoff=week["kickoff_utc"])))
+    return deadlines
+
+
 def _build(weeks, pol_ids, require):
     games = pd.read_parquet(ROOT / "data/processed/game_features.parquet")
     games = games.loc[games["season"].eq(SEASON) & games["week"].isin(weeks)].copy()
@@ -154,14 +172,22 @@ def _build(weeks, pol_ids, require):
     deadline = records.groupby("game_id")["row_deadline"].min()
     games["deadline_utc"] = games["game_id"].map(deadline)
     games["deadline_utc"] = games[["deadline_utc", "kickoff_utc"]].min(axis=1)
-    records = records.merge(games[["game_id", "deadline_utc"]], on="game_id")
-    records["verified"] = records["written_at"].lt(records["deadline_utc"]) & (
+    games["pick_deadline_utc"] = games["game_id"].map(_pick_deadlines(games))
+    records = records.merge(games[["game_id", "deadline_utc", "pick_deadline_utc"]], on="game_id")
+    records["cutoff_utc"] = records["deadline_utc"].where(
+        ~records["candidate"].isin(PICK_DEADLINE_CANDIDATES),
+        records[["deadline_utc", "pick_deadline_utc"]].min(axis=1),
+    )
+    records["verified"] = records["written_at"].lt(records["cutoff_utc"]) & (
         records["frozen_at"].isna() | records["written_at"].ge(records["frozen_at"])
     )
-    kept = (
-        records.loc[records["verified"]]
-        .sort_values("written_at")
-        .drop_duplicates(["candidate", "game_id"])
+    ordered = records.loc[records["verified"]].sort_values("written_at")
+    latest = ordered["candidate"].isin(LATEST_BEFORE_DEADLINE)
+    kept = pd.concat(
+        [
+            ordered.loc[~latest].drop_duplicates(["candidate", "game_id"], keep="first"),
+            ordered.loc[latest].drop_duplicates(["candidate", "game_id"], keep="last"),
+        ]
     )
     kept["p_side"] = np.where(
         kept["p"].notna(), np.where(kept["p"].ge(0.5), "HOME", "AWAY"), kept["side"]
@@ -277,6 +303,8 @@ def main():
             for k, v in records.loc[~records["verified"]].groupby("candidate").size().items()
         },
         "excluded_cfb_ledgers": CFB_EXCLUDED,
+        "record_rule_default": "earliest verified record",
+        "record_rule_by_candidate": RECORD_RULES,
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     print(json.dumps(manifest, indent=1))

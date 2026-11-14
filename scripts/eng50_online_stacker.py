@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
+import forward_monitor
 import numpy as np
 import pandas as pd
 
@@ -63,6 +64,7 @@ def _terms(matched):
         for c in matched.columns
         if c.endswith("__p")
         and not c.startswith("served")
+        and c[: -len("__p")] not in forward_monitor.MONITOR_ONLY
         and matched[c].notna().all()
         and c[: -len("__p")] + "__written_at" in matched
         and (matched[c[: -len("__p")] + "__written_at"] < matched["deadline_utc"]).all()

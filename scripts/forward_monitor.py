@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LEDGER = ROOT / "artifacts" / "forward_ledger_core" / "ledger.parquet"
 DEFAULT_OUT = ROOT / "artifacts" / "forward_monitor" / "monitor.json"
 CANDIDATES = ["mod24", "mod25_combined", "lead99"]
+MONITOR_ONLY = ["lead99_first_view"]
+FORWARD_FROM_WEEK = {"lead99_first_view": 10}
 TRUNCATION = 0.5
 
 
@@ -73,7 +75,15 @@ def run(ledger_path, candidates, alpha):
         proc = e_process(frame, alpha)
         weekly = proc.groupby("week").tail(1).set_index("week")
         need = games_needed(proc, alpha)
+        start = FORWARD_FROM_WEEK.get(name)
+        forward = frame[frame["week"].ge(start)] if start is not None else frame.iloc[0:0]
         out["candidates"][name] = {
+            "monitor_only": name in MONITOR_ONLY,
+            "forward_from_week": start,
+            "forward_games": len(forward) if start is not None else len(proc),
+            "forward_final_e": float(e_process(forward, alpha)["e"].iloc[-1])
+            if len(forward)
+            else None,
             "games": len(proc),
             "mean_log_loss_gain": float(proc["diff"].mean()),
             "weekly_e": {int(w): float(r["e"]) for w, r in weekly.iterrows()},
@@ -96,7 +106,7 @@ def main():
         )
     )
     parser.add_argument("--ledger", type=Path, default=DEFAULT_LEDGER)
-    parser.add_argument("--candidates", nargs="+", default=CANDIDATES)
+    parser.add_argument("--candidates", nargs="+", default=[*CANDIDATES, *MONITOR_ONLY])
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = parser.parse_args()
