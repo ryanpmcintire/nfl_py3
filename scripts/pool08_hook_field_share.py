@@ -1,4 +1,6 @@
+import argparse
 import json
+from math import comb
 from pathlib import Path
 
 import numpy as np
@@ -6,14 +8,16 @@ import pandas as pd
 from scipy.special import expit
 
 from nfl_ats.evidence_conventions import probability_positive_from_draws
+from nfl_ats.forecast_cold_visitor_tilt_overlay import tuesday_noon_et_cutoff_utc
+from nfl_ats.market_data import load_quote_history
 from nfl_ats.pool_hook import POOL_OFFSET, is_whole, tuesday_market_lines
+from nfl_ats.splash_lines import load_splash_capture
 
 FAMILY = "pool08_hook_field_share"
-FIELD_FILE = Path("data/splash/field/2026_field_best_picks_w01-08.parquet")
+FIELD = Path("data/splash/field")
 DATA_ROOT = Path("data")
 OUT = Path("artifacts/pool_rank_replay/pool08_hook_field_share.json")
 SEASON = 2026
-WEEKS = range(1, 9)
 BOOT_DRAWS = 4000
 PERM_DRAWS = 20000
 SEED = 8
@@ -35,8 +39,76 @@ def fit_logit(X, n1, n0):
     return b
 
 
-def load():
-    raw = pd.read_parquet(FIELD_FILE)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--last-week", type=int, default=None)
+    parser.add_argument("--subset", action="append", default=[])
+    parser.add_argument("--out", type=Path, default=OUT)
+    parser.add_argument("--anchor", choices=("served", "first_snapshot"), default="served")
+    return parser.parse_args()
+
+
+def first_snapshot_lines(week, game_ids):
+    capture = load_splash_capture(DATA_ROOT, SEASON, week)
+    if capture is None:
+        return {}
+    opened = tuesday_noon_et_cutoff_utc(pd.Timestamp(capture.captured_at_et).tz_convert("UTC"))
+    quotes = load_quote_history(DATA_ROOT / "market" / "raw", since=opened)
+    if quotes.empty:
+        return {}
+    quotes = quotes.loc[quotes["market"].eq("spreads") & quotes["nflverse_game_id"].isin(game_ids)]
+    observed = pd.to_datetime(quotes["observed_at_utc"], utc=True)
+    commence = pd.to_datetime(quotes["commence_time_utc"], utc=True)
+    quotes = quotes.loc[observed.ge(opened) & observed.lt(commence)]
+    if quotes.empty:
+        return {}
+    snapshots = (
+        quotes.groupby(["nflverse_game_id", "observed_at_utc"])["home_spread_line"]
+        .median()
+        .reset_index()
+        .sort_values("observed_at_utc")
+    )
+    first = snapshots.groupby("nflverse_game_id").first()["home_spread_line"]
+    return {str(game): float(value) for game, value in first.items()}
+
+
+def field_file(last_week):
+    if last_week is None:
+        return sorted(FIELD.glob(f"{SEASON}_field_best_picks_w01-*.parquet"))[-1]
+    return FIELD / f"{SEASON}_field_best_picks_w01-{last_week:02d}.parquet"
+
+
+def subset_cell(s, resid, weeks, lo, hi, rng):
+    m = (weeks >= lo) & (weeks <= hi)
+    sm, rm, wm = s[m], resid[m], weeks[m]
+    n = int(m.sum())
+    stat = float(np.mean(sm * rm))
+    boots = np.array([np.mean((sm * rm)[i]) for i in rng.integers(0, n, (BOOT_DRAWS, n))])
+    perm = np.empty(PERM_DRAWS)
+    arrangements = 1
+    for w in np.unique(wm):
+        g = wm == w
+        arrangements *= comb(int(g.sum()), int((sm[g] > 0).sum()))
+    for k in range(PERM_DRAWS):
+        sp = sm.copy()
+        for w in np.unique(wm):
+            g = wm == w
+            sp[g] = rng.permutation(sm[g])
+        perm[k] = np.mean(sp * rm)
+    return {
+        "weeks": [lo, hi],
+        "games_hook": n,
+        "hook_side_home": int((sm > 0).sum()),
+        "share_resid_pp": 100 * stat,
+        "share_resid_ci_pp": [100 * v for v in ci(boots)],
+        "share_resid_prob_positive": probability_positive_from_draws(boots),
+        "share_resid_perm_two_sided_p": float((np.abs(perm) >= abs(stat)).mean()),
+        "perm_distinct_arrangements": arrangements,
+    }
+
+
+def load(path, anchor):
+    raw = pd.read_parquet(path)
     rows = []
     for gid, g in raw.groupby("game_id"):
         h = g[g["home"]].iloc[0]
@@ -56,9 +128,12 @@ def load():
         )
     df = pd.DataFrame(rows)
     market = {}
-    for w in WEEKS:
+    for w in sorted(df["week"].unique()):
         ids = df.loc[df["week"] == w, "game_id"].tolist()
-        market.update(tuesday_market_lines(DATA_ROOT, SEASON, w, ids))
+        if anchor == "first_snapshot":
+            market.update(first_snapshot_lines(int(w), ids))
+        else:
+            market.update(tuesday_market_lines(DATA_ROOT, SEASON, int(w), ids))
     df["market"] = df["game_id"].map(market)
     off = df["x_home"] - df["market"]
     df["hook_home"] = np.where(
@@ -101,8 +176,10 @@ def ci(x):
 
 
 def main():
+    args = parse_args()
     rng = np.random.default_rng(SEED)
-    df = load()
+    path = field_file(args.last_week)
+    df = load(path, args.anchor)
     p0, c0 = lowo(df, False)
     p1, c1 = lowo(df, True)
     df["pred_home"] = p0
@@ -148,8 +225,34 @@ def main():
     pnull = np.array(pnull)
     obs = float(hook_cov.mean() - hook_p.mean())
     p_cov_perm = float((np.abs(pnull) >= abs(obs)).mean())
+    subsets = []
+    for spec in args.subset:
+        lo, hi = (int(v) for v in spec.split("-"))
+        subsets.append(subset_cell(s, resid_home, weeks, lo, hi, rng))
+    X = np.column_stack([np.ones(len(df)), df["x_home"].to_numpy(), df["hook_home"].to_numpy()])
+    n1 = df["n_home"].to_numpy()
+    n0 = df["n_away"].to_numpy()
+    full = fit_logit(X, n1, n0)
+    cboot = np.array(
+        [fit_logit(X[i], n1[i], n0[i])[2] for i in rng.integers(0, len(df), (BOOT_DRAWS, len(df)))]
+    )
     out = {
         "family": FAMILY,
+        "field_file": path.as_posix(),
+        "anchor": args.anchor,
+        "weeks": [int(df["week"].min()), int(df["week"].max())],
+        "hook_games": {
+            str(g): [float(a), float(p), float(h)]
+            for g, a, p, h in zip(
+                hk["game_id"], hk["market"], hk["x_home"], hk["hook_home"], strict=True
+            )
+        },
+        "subsets": subsets,
+        "hook_coef_full_fit": float(full[2]),
+        "hook_coef_ci": ci(cboot),
+        "hook_coef_prob_positive": probability_positive_from_draws(cboot),
+        "hook_coef_share_shift_at_even_pp": float(100 * (expit(full[2]) - 0.5)),
+        "full_fit_coef_with_hook": full.tolist(),
         "games_total": len(df),
         "games_hook": len(hk),
         "hook_by_week": hk.groupby("week").size().to_dict(),
@@ -177,9 +280,15 @@ def main():
         "all_games_improvement_prob_positive": probability_positive_from_draws(gains),
         "fold_coef_proxy": c0,
         "fold_coef_with_hook": c1,
-        "looks": {"share_resid": 1, "logloss_hook_term": 1, "cover_vs_model_p": 1},
+        "looks": {
+            "share_resid": 1,
+            "share_resid_subsets": len(subsets),
+            "logloss_hook_term": 1,
+            "hook_coefficient": 1,
+            "cover_vs_model_p": 1,
+        },
     }
-    OUT.write_text(json.dumps(out, indent=1), encoding="utf-8")
+    args.out.write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(json.dumps({k: v for k, v in out.items() if not k.startswith("fold")}, indent=1))
     print("hook coefs by fold", [round(c[2], 3) for c in c1])
 

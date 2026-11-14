@@ -1,33 +1,173 @@
 {
   "family": "pool09_hook_value_slope",
   "signals": {
-    "pool09_hook_value_slope": {
+    "pool09_hook_push_mass_slope": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "Nine weeks of one season; no closing ground applies. Pool-standing context only, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Slope of the field's hook-side share residual (pp over POOL-05 proxy) on the served half-point effect on cover chance (pp), 33 hook games Weeks 3-8",
-      "effect": -1.2667,
+      "description": "Field over-pick (pp) per pp of served discrete push mass at the market whole number, 52 hook games Weeks 1-9; centred within-week permutation p 0.133",
+      "effect": 0.402,
       "effect_units": "slope_difference",
       "family": "pool09_hook_value_slope",
       "interval": [
-        -5.073,
-        3.063
+        -0.881,
+        1.757
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "The field's extra pick of the half-point side does not visibly grow with the half point's worth; the slope is negative but the interval is wide.",
-      "probability_positive": 0.283,
-      "recorded_at": "2026-11-03",
+      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool09_hook_value_slope.py --covariate push_mass (52 hook games W1-9, declared served discrete push mass) and served_effect (41 games W3-9). Within-week slope added after the pooled slope and its off-centre permutation null were seen; disclosed, not pre-declared. 10 looks: 2 covariates x (pooled slope, within-week slope, Spearman, 2 half-split slopes).",
+      "plain_summary": "The field's lean toward the half-point side is not shown to grow with what the half point is worth.",
+      "probability_positive": 0.72925,
+      "recorded_at": "2026-11-14",
       "reliability": null,
-      "sample_blocks": null,
-      "sample_games": 33,
+      "sample_blocks": 9,
+      "sample_games": 52,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool09_hook_push_mass_slope.json",
+      "standard_error": null
+    },
+    "pool09_hook_push_mass_slope_within_week": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nine weeks of one season; no closing ground applies. Pool-standing context only, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Week-demeaned slope of field over-pick on served push mass, 52 hook games Weeks 1-9; permutation p 0.133",
+      "effect": 1.073,
+      "effect_units": "slope_difference",
+      "family": "pool09_hook_value_slope",
+      "interval": [
+        -0.411,
+        2.526
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool09_hook_value_slope.py --covariate push_mass (52 hook games W1-9, declared served discrete push mass) and served_effect (41 games W3-9). Within-week slope added after the pooled slope and its off-centre permutation null were seen; disclosed, not pre-declared. 10 looks: 2 covariates x (pooled slope, within-week slope, Spearman, 2 half-split slopes).",
+      "plain_summary": "Within a week, games where the half point is worth more drew a slightly bigger lean, but the gap is within chance.",
+      "probability_positive": 0.93125,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 52,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool09_hook_push_mass_slope.json",
+      "standard_error": null
+    },
+    "pool09_hook_push_mass_spearman": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nine weeks of one season; no closing ground applies. Pool-standing context only, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Spearman correlation of field over-pick with served push mass, 52 hook games Weeks 1-9",
+      "effect": 0.057,
+      "effect_units": "correlation",
+      "family": "pool09_hook_value_slope",
+      "interval": [
+        -0.22,
+        0.323
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool09_hook_value_slope.py --covariate push_mass (52 hook games W1-9, declared served discrete push mass) and served_effect (41 games W3-9). Within-week slope added after the pooled slope and its off-centre permutation null were seen; disclosed, not pre-declared. 10 looks: 2 covariates x (pooled slope, within-week slope, Spearman, 2 half-split slopes).",
+      "plain_summary": "Rank order of the lean barely tracks the half point's worth.",
+      "probability_positive": 0.66025,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 52,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool09_hook_push_mass_slope.json",
+      "standard_error": null
+    },
+    "pool09_hook_value_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nine weeks of one season; no closing ground applies. Pool-standing context only, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Served-effect covariate rerun: field over-pick slope on the half point's cover value, 41 hook games Weeks 3-9; centred permutation p 0.298",
+      "effect": 1.344,
+      "effect_units": "slope_difference",
+      "family": "pool09_hook_value_slope",
+      "interval": [
+        -2.452,
+        5.665
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool09_hook_value_slope.py --covariate push_mass (52 hook games W1-9, declared served discrete push mass) and served_effect (41 games W3-9). Within-week slope added after the pooled slope and its off-centre permutation null were seen; disclosed, not pre-declared. 10 looks: 2 covariates x (pooled slope, within-week slope, Spearman, 2 half-split slopes).",
+      "plain_summary": "The field's lean is not shown to scale with the half point's cover value.",
+      "probability_positive": 0.743,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 41,
       "seasons": [
         2026,
         2026
       ],
       "source": "artifacts/pool_rank_replay/pool09_hook_value_slope.json",
-      "standard_error": 2.07
+      "standard_error": null
+    },
+    "pool09_hook_value_slope_within_week": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nine weeks of one season; no closing ground applies. Pool-standing context only, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Week-demeaned slope on the served-effect covariate, 41 hook games Weeks 3-9; permutation p 0.292",
+      "effect": 2.219,
+      "effect_units": "slope_difference",
+      "family": "pool09_hook_value_slope",
+      "interval": [
+        -2.274,
+        6.744
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool09_hook_value_slope.py --covariate push_mass (52 hook games W1-9, declared served discrete push mass) and served_effect (41 games W3-9). Within-week slope added after the pooled slope and its off-centre permutation null were seen; disclosed, not pre-declared. 10 looks: 2 covariates x (pooled slope, within-week slope, Spearman, 2 half-split slopes).",
+      "plain_summary": "Within a week the lean is slightly larger where the half point is worth more, within chance.",
+      "probability_positive": 0.854,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 41,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool09_hook_value_slope.json",
+      "standard_error": null
+    },
+    "pool09_hook_value_spearman": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nine weeks of one season; no closing ground applies. Pool-standing context only, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Spearman correlation of field over-pick with served-effect covariate, 41 hook games Weeks 3-9",
+      "effect": 0.07,
+      "effect_units": "correlation",
+      "family": "pool09_hook_value_slope",
+      "interval": [
+        -0.229,
+        0.374
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool09_hook_value_slope.py --covariate push_mass (52 hook games W1-9, declared served discrete push mass) and served_effect (41 games W3-9). Within-week slope added after the pooled slope and its off-centre permutation null were seen; disclosed, not pre-declared. 10 looks: 2 covariates x (pooled slope, within-week slope, Spearman, 2 half-split slopes).",
+      "plain_summary": "Rank order of the lean barely tracks the half point's cover value.",
+      "probability_positive": 0.669,
+      "recorded_at": "2026-11-14",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 41,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool09_hook_value_slope.json",
+      "standard_error": null
     }
   }
 }

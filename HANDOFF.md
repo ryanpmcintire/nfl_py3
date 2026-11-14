@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T20:19:34.306636+00:00`
+Refreshed at: `2026-11-14T20:21:10.902789+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T20:19:34.306636+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `58b13f6af9da` — Enrol the playoff-leverage term as a frozen forward log from Week 10
-- Pending change set: 74 paths
+- Baseline commit: `4bc7b3d0b06c` — Record measured results that never reached the registry
+- Pending change set: 58 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/eng-62-leader-book-quote-capture.md`
-  - `M  docs/lanes/full-steam-2026-11-14.md`
-  - `M  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
-  - `M  docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/lead-103-read-block-ablation.md`
   - ` M docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
-  - `M  docs/lanes/mod-52-mod41-season-and-week-stability.md`
-  - `M  docs/lanes/per-14-coordinator-mover-portability.md`
-  - `M  docs/lanes/pool-06-tiebreak-field-guess.md`
-  - `M  docs/lanes/pool-07-standings-variance-policy.md`
-  - ` M docs/lanes/pool-08-hook-side-field-share.md`
-  - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
-  - `A  docs/lanes/registry-catchup-2026-11-14.md`
-  - `M  docs/lanes/xlg-13-xlg13-screen-transfer.md`
+  - `M  docs/lanes/pool-08-hook-side-field-share.md`
+  - `M  docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/lead100_repeat_read_ensemble.json`
-  - `A  registry/weak_signals/lead102_name_blinded_control_read.json`
-  - ...and 54 more
+  - `M  registry/weak_signals/pool08_hook_field_share.json`
+  - `M  registry/weak_signals/pool09_hook_value_slope.json`
+  - ` M scripts/eng50_online_stacker.py`
+  - ` M scripts/forward_ledger.py`
+  - ` M scripts/forward_monitor.py`
+  - `M  scripts/pool08_hook_field_share.py`
+  - `M  scripts/pool09_hook_value_slope.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
