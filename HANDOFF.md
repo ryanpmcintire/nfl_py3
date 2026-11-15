@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-15T13:19:26.538708+00:00`
+Refreshed at: `2026-11-15T13:38:11.063682+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-11-15T13:19:26.538708+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d7f3bc78df6d` — Record the Sunday Week 10 readiness check in the session lane
+- Baseline commit: `c2619b136c61` — Refresh the handoff after the Sunday readiness check
 - Pending change set: 49 paths
-  - `M  HANDOFF.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lead64_freshness_audit.md`
-  - ` M docs/model.html`
+  - `M  docs/model.html`
   - ` M registry/weak_signals/lead110_absorption.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - ` M tiebreaker.json`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`

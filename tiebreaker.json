@@ -3,7 +3,7 @@
   "blended_total": 37.689938792176804,
   "comparison_total_blend_k01": 38.519420062587635,
   "consistency_note": "consistent with the LAC +5.5 pick",
-  "current_median_total": 38.5,
+  "current_median_total": 39.0,
   "forecast_artifact": "margin_predictions/2026-week-10-20261114T184227Z",
   "game_id": "2026_10_LAC_BAL",
   "generated_at_utc": "2026-11-14T18:50:26.161933+00:00",
@@ -26,7 +26,7 @@
   "served_total_method": "joint_residual",
   "total_low_side_shade_points": -1.0,
   "total_low_side_shade_source": "docs/tiebreaker_low_side_shading.md",
-  "total_move_adjustment": 0.0,
+  "total_move_adjustment": 0.4,
   "total_move_applied_adjustment": 0.0,
   "total_move_baseline": {
     "blended_total": 37.689938792176804,
@@ -49,13 +49,13 @@
   },
   "total_move_quote": {
     "books": 1,
-    "observed_at_utc": "2026-11-14T17:24:39.674613+00:00",
-    "path": "data\\market\\raw\\20261114T172439Z\\quotes.parquet",
-    "sha256": "12e5a059744be2c80ad04a352c131d5b1f56c185ecd888183bf4ff3150dfd984"
+    "observed_at_utc": "2026-11-15T13:15:51.798397+00:00",
+    "path": "data\\market\\raw\\20261115T131551Z\\quotes.parquet",
+    "sha256": "874fda3f27d10b806d09780b6c96f5b1c4341e7b6377470f8eb634b2a16acc5c"
   },
-  "total_move_refreshed_at_utc": "2026-11-14T20:50:54.533199+00:00",
+  "total_move_refreshed_at_utc": "2026-11-15T13:30:57.211469+00:00",
   "total_move_slope": 0.8,
-  "total_move_status": "zero_adjustment",
+  "total_move_status": "same_cell",
   "tuesday_total": 38.5,
   "week": 10
 }
