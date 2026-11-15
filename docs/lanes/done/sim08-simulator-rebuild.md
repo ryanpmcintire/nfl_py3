@@ -1,5 +1,8 @@
 # SIM-08 simulator rebuild
 
+## CLOSED 2026-11-14 (measured)
+Final run (Amendments 4, 4a, 6) graded: declared bar not met; the simulator serves nothing. Blend against served-only recalibration -0.0012 [-0.0021, -0.0004], recorded refuted on wrong_sign_resolved; raw simulator against served -0.0047 [-0.0140, +0.0045]; gates with terminal transitions on 10/11/11 against 13/14/13; control detects 0.008, not 0.001. Full numbers: ROADMAP SIM-08, done/sim-finish-2026-11-11.md, docs/sim_engine_summary.md section 4. Push and half-point mass continues as a forward-logged challenger in the SIM-29 lane.
+
 ## Goal
 Repair transition and terminal-state behavior, then diagnose late-game bias
 without fitting weights or changing served probabilities from these diagnostics.

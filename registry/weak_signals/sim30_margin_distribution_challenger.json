@@ -1,6 +1,174 @@
 {
   "family": "sim30_margin_distribution_challenger",
   "signals": {
+    "sim30_a6run_served_vs_market_2way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final forecaster run amend6 (finished 2026-11-14): raw draws, no re-centring; week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied in this batch; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Served discrete read vs market histogram, 2-way decisive log loss (final run amend6)",
+      "effect": -0.002865,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.010917,
+        0.004761
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the final run amend6: iterated anchor, terminal transitions, total target fitted on the other five seasons, 372 draws a game.",
+      "plain_summary": null,
+      "probability_positive": 0.249,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/amend6/sim30_margin_mass.json",
+      "standard_error": 0.004024
+    },
+    "sim30_a6run_served_vs_market_3way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final forecaster run amend6 (finished 2026-11-14): raw draws, no re-centring; week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied in this batch; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Served discrete read vs market histogram, 3-way log loss (positive = served better) (final run amend6)",
+      "effect": -0.006244,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.014321,
+        0.001583
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the final run amend6: iterated anchor, terminal transitions, total target fitted on the other five seasons, 372 draws a game.",
+      "plain_summary": null,
+      "probability_positive": 0.057,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/amend6/sim30_margin_mass.json",
+      "standard_error": 0.004125
+    },
+    "sim30_a6run_sim_vs_market_2way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final forecaster run amend6 (finished 2026-11-14): raw draws, no re-centring; week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied in this batch; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated vs market histogram, 2-way decisive log loss (final run amend6)",
+      "effect": -0.006579,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.011515,
+        -0.001704
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the final run amend6: iterated anchor, terminal transitions, total target fitted on the other five seasons, 372 draws a game.",
+      "plain_summary": null,
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/amend6/sim30_margin_mass.json",
+      "standard_error": 0.002465
+    },
+    "sim30_a6run_sim_vs_market_3way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final forecaster run amend6 (finished 2026-11-14): raw draws, no re-centring; week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied in this batch; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated vs market histogram, 3-way log loss (final run amend6)",
+      "effect": -0.009287,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.014095,
+        -0.004573
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the final run amend6: iterated anchor, terminal transitions, total target fitted on the other five seasons, 372 draws a game.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/amend6/sim30_margin_mass.json",
+      "standard_error": 0.002422
+    },
+    "sim30_a6run_sim_vs_served_2way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final forecaster run amend6 (finished 2026-11-14): raw draws, no re-centring; week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied in this batch; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated vs served discrete read, 2-way decisive log loss (final run amend6)",
+      "effect": -0.003714,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.012877,
+        0.005548
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the final run amend6: iterated anchor, terminal transitions, total target fitted on the other five seasons, 372 draws a game.",
+      "plain_summary": null,
+      "probability_positive": 0.2335,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/amend6/sim30_margin_mass.json",
+      "standard_error": 0.004865
+    },
+    "sim30_a6run_sim_vs_served_3way_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final forecaster run amend6 (finished 2026-11-14): raw draws, no re-centring; week-block bootstrap on 1,503 games with a served read; no admissible closing ground applied in this batch; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated margin distribution minus served discrete read, 3-way log loss at opener, positive = sim better (final run amend6)",
+      "effect": -0.003043,
+      "effect_units": "log_loss_improvement",
+      "family": "sim30_margin_distribution_challenger",
+      "interval": [
+        -0.012444,
+        0.007063
+      ],
+      "league": "nfl",
+      "notes": "Positive favours the first-named candidate. Sim margins come from the final run amend6: iterated anchor, terminal transitions, total target fitted on the other five seasons, 372 draws a game.",
+      "plain_summary": null,
+      "probability_positive": 0.2875,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim30/amend6/sim30_margin_mass.json",
+      "standard_error": 0.005
+    },
     "sim30_served_vs_market_2way_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",

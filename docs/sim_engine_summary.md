@@ -1,4 +1,4 @@
-# The simulator: what the engine is and what each mechanism did (2026-11-11)
+# The simulator: what the engine is and what each mechanism did (2026-11-11; forecaster result added 2026-11-14)
 
 All numbers below are read from the lanes named in each line, not re-run for this page. Gate counts are of 14 realism gates, shown as three single seeds. The default is 13/14/13 (read, sim-finish lane, S2); on the six-seed mean it passes 14 of 14 (read, sim11 lane).
 
@@ -18,7 +18,7 @@ Rule for adoption (Tier B): gate count not lower on any seed, no passing gate lo
 |---|---|---|---|---|
 | SIM-06 | Learned drive head | Beats the plain draw held-out by +0.0577 per drive [0.0456, 0.0701] | 12 of 14 on the 3-seed mean v 13; lost 7-point mass and late-season R2 (engine-patch-queue) | Not adopted |
 | SIM-07 | Personnel matchups | Team-game shift SD 0.107 points; no reliable personnel cell | Score moves with the table shift 0.764 [0.214, 1.295] hook on, -0.122 [-0.683, 0.402] off | Hook built and delivers its table; not made a default (the table is too small for any gate or forecaster cell and covers 2022-25 only) |
-| SIM-08 | Forecaster | See section 4 | See section 4 | Waiting |
+| SIM-08 | Forecaster | See section 4 | See section 4 | Declared bar not met; serves nothing |
 | SIM-09 | No-huddle, urgency, fatigue, stakes | Real-play measure: not in the sources read | No-huddle 6/6/7 (+3.8 points a game); urgency 10/12/12; fatigue 9/12/12; stakes 10/14/11 | Not adopted (all four) |
 | SIM-10 | Drive resampler | n/a | 12 of 14 at lock on the 3-seed mean | Adopted |
 | SIM-11 | Strength transmission | n/a | Six-seed mean 14 of 14 v 13 | Adopted |
@@ -40,15 +40,16 @@ Rule for adoption (Tier B): gate count not lower on any seed, no passing gate lo
 | SIM-27 | Adaptive neighbour counts | n/a | Alone 13/12/12 (points 44.47); joint 13/13/13 (points 45.44) | Not adopted |
 | SIM-28 | Timeouts at end of half | Held-out log likelihood +.0128 per drive [.0102, .0153] | Timeouts 10/10/12; with score bandwidths 11/14/11 | Not adopted |
 | SIM-29 | Lineup from injury wording | Missing-starter error .362 v .400 ladder, gain .038 [.012, .067], 151 team-weeks | Not built | Waiting (needs forward weeks, about Week 12) |
-| SIM-30 | Key-number mass and grade | See section 4 | See section 4 | Waiting |
+| SIM-30 | Key-number mass and grade | See section 4 | See section 4 | Measured; does not beat the served read; serves nothing |
 
 ## 3. What is still wrong with it (all read from the sim-finish lane)
 
 - Late-game tempo by score is under-responsive. Leaders run 29.14 v real 30.60 seconds a play (-1.46 [-1.60, -1.32]); leaders with 9 or more in the last five minutes run 19.80 v 25.45. The two mechanisms acting there (SIM-25, SIM-18) lost gates, so no repair was adopted.
 - The truncation fix raises scoring by 0.6 points a game, so the default's scoring match rests partly on truncation; the offsetting excess is not located.
-- Mass at 3 is short in the forecaster margins: .0727 v real .0859 (3.5 percentage points short on lines of 3 to 3.5).
+- Mass at 3 is short in the forecaster margins: .0715 v real .0859 on the final run (3.5 percentage points short on lines of 3 to 3.5, [-6.9, -0.5]); terminal transitions did not move it (measured 2026-11-14, artifacts\sim08_amendment6\amend6\grade.json).
 - On single seeds the default misses one gate each on two of three: overtime share on seed 11 and late-season fit on seed 13 (read, patch-queue lane). Strength variance sits low but inside its interval, 53.5 v real 58.0 [51.4, 64.9].
 - Trailing drives hold too few plays: 5.52 v real 5.78 (-0.26 [-0.31, -0.21]).
+- Terminal transitions (the end-of-game repair used in the final forecaster run) cut strength variance by 5.4, three times the default's seed spread, and lose two to four gates a seed; why is not identified (measured 2026-11-14, artifacts\terminal_cmp.log).
 
 ## 4. The forecaster test
 
@@ -59,10 +60,16 @@ Learned so far (read, sim-finish lane and ROADMAP SIM-08):
 - Why balance at the line, not the mean: on real games the favourite's mean margin sits above the line on 3.5 (+0.99) and 7 (+1.86) while the cover share stays near half. A spread is a balance point; with mass at 3 and 7, mean and balance differ most on half-point lines (inferred).
 - What remains as product: push and half-point mass. Stage-1 plus simulated push mass beat stage-1 plus the empirical table by +.0005 [-.0002, +.0012] (P+ .92); three-way log loss on whole lines, served minus simulated, +.0014 [-.0086, +.0119] (P+ .61).
 
-PENDING: the final run started 2026-11-11 15:12 ET (balance conditioning, terminal transitions, total target fitted on the other five seasons under Amendment 4a, about 8 hours). Results to be filled in from artifacts\sim08_market_anchored\amend6 after evaluation: ______
+Final run finished 2026-11-14 19:44 ET (1,537 games, 372 draws; balance conditioning, terminal transitions, total target fitted on the other five seasons). All numbers in this paragraph are measured from artifacts\sim08_market_anchored\amend6, artifacts\sim08_amendment6\amend6 and artifacts\sim30\amend6. Where the blend and the served-only recalibration pick different sides, 124 games: blend right 66, recalibration right 58. Blend against served-only recalibration -0.0012 log loss [-0.0021, -0.0004], chance it helps 0.0015 (fitted on the same seasons it gains 0.0001; on held-out seasons it loses 0.0012; the simulator's weight runs from -0.35 to +0.02 by season); simulator alone against the served read -0.0047 [-0.0140, +0.0045], chance it helps .15. Where the simulated side differs from the served side, 720 games: simulated right 330, served right 390. Mass at 3 simulated .136 v real .151; on lines of 3 to 3.5 it is .077 v .112, the same as before terminal transitions. Total slope simulated minus real +0.080 [-0.062, +0.223] (was +0.223). With the simulated margins set to cover half the time at the opener, push pricing on whole-number lines, served minus simulated +0.0057 [-0.0036, +0.0158], chance simulated is better .89; half-point rows, stage one plus simulated push mass against the empirical table +0.0007 [+0.0001, +0.0014], chance .98, one of 25 cells graded together. The simulator serves nothing; its cover lean is closed as a term (wrong sign with the whole interval on that side), and its push and half-point mass stays a challenger to the empirical table that needs a forward log on played cards before it could replace the table.
+
+Declared bar (docs\sim08_market_anchored_declaration.md, Amendment 4 item 5): not met. The blend fails, the total slope is inside its interval but over the size limit, and mass at 3 is closer but still short; the total anchor (+0.012 points against its target) and the simulator-alone cell pass.
+
+Two checks the bar also names (measured 2026-11-14):
+- Realism gates with terminal transitions on: 10/11/11 against the default's 13/14/13 (artifacts\terminal_cmp.log). Strength variance falls from 53.5 to 48.1 against real 58.0 on all three seeds; late-season fit and fourth-quarter slope are lost on two seeds each. Margin spread, mass at 14 and overtime share move toward real. Terminal transitions are not adopted. So the final run graded a variant that fails the gates, not the 14-of-14 default; the gate check should have come before the long run. No second long run was made: the blend already fails, nothing in either run would serve, and the push-mass reading exists on both variants (default engine +0.0005 [-0.0002, +0.0012]; terminal variant +0.0007 [+0.0001, +0.0014]).
+- Planted control: the evaluator detects a planted gain of 0.008 log loss in 84% of replicates and a gain of 0.001 in 32% (artifacts\sim08_market_anchored\amend6\control.json). It can see 0.008 and cannot bound 0.001.
 
 ## 5. What it is good for now
 
-It is a realistic generator of whole games and margin shapes, passing 14 of 14 gates on the six-seed mean, with every mechanism tried recorded and none changing the default. It is not yet a better cover forecaster than the served read; its candidate use is push and half-point mass inside that read, pending the run above.
+It is a realistic generator of whole games and margin shapes, passing 14 of 14 gates on the six-seed mean, with every mechanism tried recorded and none changing the default. It is not a better cover forecaster than the served read and adds nothing to the served probability as a blended term; its one candidate use is push and half-point mass inside that read, which the final run supports by a small amount and which is not served.
 
-Where the detail lives: docs\lanes\sim-finish-2026-11-11.md, docs\sim_finish_inventory.md, docs\sim08_market_anchored_declaration.md, ROADMAP.md rows SIM-06 to SIM-30.
+Where the detail lives: docs\lanes\done\sim-finish-2026-11-11.md, docs\sim_finish_inventory.md, docs\sim08_market_anchored_declaration.md, ROADMAP.md rows SIM-06 to SIM-30.

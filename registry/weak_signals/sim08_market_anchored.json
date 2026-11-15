@@ -1,6 +1,678 @@
 {
   "family": "sim08_market_anchored",
   "signals": {
+    "sim08_a4_b_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), opener band 10plus",
+      "effect": -0.003866,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.009077,
+        0.001493
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.08,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.00268
+    },
+    "sim08_a4_b_3p5to6p5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), opener band 3.5to6.5",
+      "effect": -0.000525,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.002348,
+        0.001062
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.2515,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 554,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.000854
+    },
+    "sim08_a4_b_7to9p5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), opener band 7to9.5",
+      "effect": -0.002247,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00538,
+        0.000822
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.0685,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.001511
+    },
+    "sim08_a4_b_le3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), opener band le3",
+      "effect": -0.000608,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.001888,
+        0.000723
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.182,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 573,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.000673
+    },
+    "sim08_a4_l1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss",
+      "effect": -0.00466,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.014029,
+        0.004513
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.1455,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.004712
+    },
+    "sim08_a4_l2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v model-only, 3-way log loss",
+      "effect": -0.004286,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.013455,
+        0.00437
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.1785,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.004603
+    },
+    "sim08_a4_l3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v market histogram, 3-way log loss",
+      "effect": -0.007111,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.012143,
+        -0.001823
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.002578
+    },
+    "sim08_a4_l4": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Final run amend6, leave-one-season-out blend of the simulated cover logit with the served logit against a served-only recalibration: -0.00119 [-0.00209, -0.00042], whole interval on the wrong side; in-sample +0.00013 against out-of-sample -0.00119; simulator coefficient by fold -0.35 to +0.02; five of six held-out seasons negative",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "blend v served-only recalibration, 3-way log loss (primary)",
+      "effect": -0.00119,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00209,
+        -0.000418
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": "Adding the game simulator's own cover lean to the pick probability made the probability slightly worse in the seasons it was not fitted on, so the simulator's cover lean is not used.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.00044
+    },
+    "sim08_a4_l5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served raw, 3-way log loss",
+      "effect": 0.003464,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.001874,
+        0.008668
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.9045,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.002633
+    },
+    "sim08_a4_o_tied_late_ot": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real overtime rate, percentage points (sim 0.0637, real 0.0605)",
+      "effect": 0.320937,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.783901,
+        1.378547
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.7235,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.559625
+    },
+    "sim08_a4_p_push_line": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss on push games",
+      "effect": -0.076126,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.165337,
+        0.011337
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.0455,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 34,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.045747
+    },
+    "sim08_a4_s_l1_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss, season 2020",
+      "effect": 0.009752,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.018597,
+        0.036886
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.7465,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.014352
+    },
+    "sim08_a4_s_l1_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss, season 2021",
+      "effect": -0.019878,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.057131,
+        0.016834
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.144,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 239,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.019146
+    },
+    "sim08_a4_s_l1_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss, season 2022",
+      "effect": -0.003188,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.019446,
+        0.016099
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.3305,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 255,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.00909
+    },
+    "sim08_a4_s_l1_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss, season 2023",
+      "effect": 0.013019,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.001094,
+        0.028589
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.9685,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.00732
+    },
+    "sim08_a4_s_l1_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss, season 2024",
+      "effect": -0.010047,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.028732,
+        0.010171
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.16,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.010078
+    },
+    "sim08_a4_s_l1_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "anchored simulator raw v served, 3-way log loss, season 2025",
+      "effect": -0.016988,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.031497,
+        -0.002767
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.007525
+    },
+    "sim08_a4_s_l4_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), season 2020",
+      "effect": -0.000289,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.00211,
+        0.001492
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.3865,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.00093
+    },
+    "sim08_a4_s_l4_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), season 2021",
+      "effect": -0.000297,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000731,
+        0.000124
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.096,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 239,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.000221
+    },
+    "sim08_a4_s_l4_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), season 2022",
+      "effect": -0.00269,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.006461,
+        0.000269
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.0425,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 255,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.001724
+    },
+    "sim08_a4_s_l4_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), season 2023",
+      "effect": -0.004007,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.007265,
+        -0.001066
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.001629
+    },
+    "sim08_a4_s_l4_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), season 2024",
+      "effect": 0.000373,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000499,
+        0.001195
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.8135,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.000436
+    },
+    "sim08_a4_s_l4_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "blend v served-only recalibration, 3-way log loss (primary), season 2025",
+      "effect": -6.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000144,
+        9e-06
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.042,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 4e-05
+    },
+    "sim08_a4_t_total_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real slope of total points on the opening total (sim 0.968, real 0.888)",
+      "effect": 0.080287,
+      "effect_units": "slope_difference",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.061942,
+        0.223426
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.8685,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1526,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.072311
+    },
     "sim08_a5_b_10plus": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -924,6 +1596,706 @@
       ],
       "source": "artifacts/sim08_amendment5/grade.json",
       "standard_error": 0.863266
+    },
+    "sim08_a6_amend6_h1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H1",
+      "effect": -0.012753,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.022267,
+        -0.003026
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.004888
+    },
+    "sim08_a6_amend6_h2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H2",
+      "effect": -0.012706,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.02219,
+        -0.003027
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0045,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.004865
+    },
+    "sim08_a6_amend6_h3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H3",
+      "effect": 4.538578,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        1.371874,
+        7.769444
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.637146
+    },
+    "sim08_a6_amend6_h4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H4",
+      "effect": 4.387292,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        1.035046,
+        7.641518
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9955,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.668598
+    },
+    "sim08_a6_amend6_h5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell H5",
+      "effect": 0.000702,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        6.7e-05,
+        0.001429
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.984,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.00035
+    },
+    "sim08_a6_amend6_k10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K10",
+      "effect": 0.179308,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.687952,
+        0.984336
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.661,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.428907
+    },
+    "sim08_a6_amend6_k14": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K14",
+      "effect": 0.472155,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.319821,
+        1.241034
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.8825,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.402051
+    },
+    "sim08_a6_amend6_k17": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K17",
+      "effect": -0.111263,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.930214,
+        0.664379
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.4055,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.408544
+    },
+    "sim08_a6_amend6_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3",
+      "effect": -1.436722,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.870194,
+        -0.033001
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0225,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.711435
+    },
+    "sim08_a6_amend6_k3_band_0_2.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_0_2.5",
+      "effect": -0.429872,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.489799,
+        2.207968
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.387,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 371,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.441035
+    },
+    "sim08_a6_amend6_k3_band_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_10plus",
+      "effect": -2.236463,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -6.277745,
+        1.504787
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.1315,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 2.045794
+    },
+    "sim08_a6_amend6_k3_band_3_3.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_3_3.5",
+      "effect": -3.515163,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -6.854186,
+        -0.521819
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 366,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.623379
+    },
+    "sim08_a6_amend6_k3_band_4_6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_4_6.5",
+      "effect": -0.924821,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -3.738886,
+        1.511451
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.2245,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.346701
+    },
+    "sim08_a6_amend6_k3_band_7_9.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K3_band_7_9.5",
+      "effect": -0.481141,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -4.078652,
+        2.75228
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.4225,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.739219
+    },
+    "sim08_a6_amend6_k7": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7",
+      "effect": 0.007892,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.092262,
+        1.128155
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.502,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.581893
+    },
+    "sim08_a6_amend6_k7_band_0_2.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_0_2.5",
+      "effect": -0.404068,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.805965,
+        1.959517
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.404,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 371,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.236309
+    },
+    "sim08_a6_amend6_k7_band_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_10plus",
+      "effect": 1.318537,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.610212,
+        3.855281
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.8115,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.450092
+    },
+    "sim08_a6_amend6_k7_band_3_3.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_3_3.5",
+      "effect": -0.357636,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.702889,
+        1.874608
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.411,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 366,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.162388
+    },
+    "sim08_a6_amend6_k7_band_4_6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_4_6.5",
+      "effect": 0.00228,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.31839,
+        2.160659
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.5205,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.142466
+    },
+    "sim08_a6_amend6_k7_band_7_9.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell K7_band_7_9.5",
+      "effect": 0.133199,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -2.536587,
+        2.827926
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.5675,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 1.405654
+    },
+    "sim08_a6_amend6_t1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell T1",
+      "effect": 0.002709,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.004962,
+        0.010028
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.7735,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.003813
+    },
+    "sim08_a6_amend6_w1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W1",
+      "effect": 0.005687,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.003637,
+        0.015754
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.8865,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.004908
+    },
+    "sim08_a6_amend6_w2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W2",
+      "effect": 0.031701,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.001788,
+        0.081154
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.9435,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.022426
+    },
+    "sim08_a6_amend6_w3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W3",
+      "effect": -1.5e-05,
+      "effect_units": "brier_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000595,
+        0.00055
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.4815,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.000295
+    },
+    "sim08_a6_amend6_w4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; zero crossing closes nothing; Amendment 6 cells on the draws and saved balance weights of run amend6",
+      "closing_ground": null,
+      "description": "Amendment 6 balance-point tilted simulator, cell W4",
+      "effect": 0.00042,
+      "effect_units": "brier_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.000291,
+        0.001096
+      ],
+      "league": "nfl",
+      "notes": "Exponential tilt to cover share one half at the opener; draws of run amend6, tilted in the driver with the shared solver. Improvement cells: positive means simulated read better; K cells simulated minus real mass, percentage points",
+      "plain_summary": null,
+      "probability_positive": 0.8835,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_amendment6/amend6/grade.json",
+      "standard_error": 0.000351
     },
     "sim08_a6_h1": {
       "category": "modeling",

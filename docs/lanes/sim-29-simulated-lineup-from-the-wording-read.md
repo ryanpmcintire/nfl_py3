@@ -11,6 +11,7 @@ Novelty check only. Nearest: LEAD-108 (read in the PER-10 mixture), SIM-12, SIM-
 
 ## Next
 First unit for one agent: For 2026 games with a stored read, run a small fixed set of simulated games per listed-starter draw, compare the simulated margin shift with the realised margin residual in games where a starter was out (replacement cost check), and report games per bucket before any score.
+Carried from SIM-30 (2026-11-14): the same forward build (current-season strength fit, anchored draws for the week's games with `--amend4 1 --amend6 1` and SIM10_TERMINAL=1) logs the simulated push and half-point mass beside the empirical push table each week. It serves nothing. Log both engine variants: terminal transitions fail the gates (10/11/11 against 13/14/13, measured 2026-11-14), so the default engine with SIM10_TERMINAL unset is the gate-passing one (its reading, balance applied afterwards: +0.0005 [-0.0002, +0.0012]). Final-run cell: stage one plus simulated push mass against the table +0.0007 log loss [+0.0001, +0.0014], P+ .98, 1,322 half-point rows, one of 25 cells (artifacts\sim08_amendment6\amend6\grade.json, A6_H5).
 
 ## Open
 Rules: measured mechanism only, never a tuned constant or offset; aggregates are checks, not targets; each stage compared with real play-by-play with game-cluster intervals; flag-off hash must equal HEAD before any flag-on run; unresolved results are reported as measured. Look count and family declared before any sign is seen. Data: LEAD-106 reads, snap counts, SIM-12 replacement costs (local).

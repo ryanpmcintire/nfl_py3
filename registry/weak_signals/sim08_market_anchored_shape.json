@@ -1,6 +1,146 @@
 {
   "family": "sim08_market_anchored_shape",
   "signals": {
+    "sim08_a4_shape_k_10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 10, percentage points (sim 0.0546, real 0.0494)",
+      "effect": 0.519445,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -0.57843,
+        1.60871
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.8185,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.553212
+    },
+    "sim08_a4_shape_k_14": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 14, percentage points (sim 0.0495, real 0.0442)",
+      "effect": 0.524342,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -0.379146,
+        1.486015
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.861,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.489415
+    },
+    "sim08_a4_shape_k_17": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 17, percentage points (sim 0.0341, real 0.0403)",
+      "effect": -0.625083,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -1.572913,
+        0.301819
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.098,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.48027
+    },
+    "sim08_a4_shape_k_3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 3, percentage points (sim 0.1360, real 0.1509)",
+      "effect": -1.491175,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -3.341577,
+        0.176409
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.038,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.89359
+    },
+    "sim08_a4_shape_k_7": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md, re-run on the raw draws under Amendments 4 and 4a; no admissible closing ground; zero crossing closes nothing",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 7, percentage points (sim 0.0872, real 0.0768)",
+      "effect": 1.043263,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -0.209661,
+        2.316374
+      ],
+      "league": "nfl",
+      "notes": "Run amend6: 372 draws per game, 1537 games, 6 leave-one-season-out folds, block bootstrap over 107 weeks. Improvement cells: positive means the first-named candidate is better",
+      "plain_summary": null,
+      "probability_positive": 0.953,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/amend6/evaluation.json",
+      "standard_error": 0.644616
+    },
     "sim08_ma_shape_k_10": {
       "category": "modeling",
       "classification": "unresolved_below_power",

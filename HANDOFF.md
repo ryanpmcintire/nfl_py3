@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-14T23:34:23.683017+00:00`
+Refreshed at: `2026-11-15T01:11:01.499926+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-14T23:34:23.683017+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `870ab37442fd` — Rewrite the session lane with the evening's findings, decisions and Tuesday list
-- Pending change set: 47 paths
+- Baseline commit: `2a1b75d3de2d` — Update the screen-to-served transfer table: none of eight positive screens stayed positive
+- Pending change set: 80 paths
   - `M  HANDOFF.md`
   - `M  README.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/xlg-13-xlg13-screen-transfer.md`
-  - `M  docs/lanes/xlg-harness-power-2026-11-14.md`
-  - ` M docs/lead64_freshness_audit.md`
-  - ` M registry/weak_signals/lead110_absorption.json`
-  - `M  registry/weak_signals/xlg13_screen_transfer.json`
-  - ` M scripts/forward2026_ftn_terms.py`
-  - `M  scripts/xlg13_screen_transfer.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 27 more
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/sim-13-sim13-defensive-load.md -> docs/lanes/done/sim-13-sim13-defensive-load.md`
+  - `R  docs/lanes/sim-15-sim15-weather-calls.md -> docs/lanes/done/sim-15-sim15-weather-calls.md`
+  - `R  docs/lanes/sim-17-halftime-adjustment.md -> docs/lanes/done/sim-17-halftime-adjustment.md`
+  - `R  docs/lanes/sim-18-lead-protection.md -> docs/lanes/done/sim-18-lead-protection.md`
+  - `R  docs/lanes/sim-19-trailing-risk.md -> docs/lanes/done/sim-19-trailing-risk.md`
+  - `R  docs/lanes/sim-20-coordinator-halftime-hook.md -> docs/lanes/done/sim-20-coordinator-halftime-hook.md`
+  - `R  docs/lanes/sim-21-drive-length-decomposition.md -> docs/lanes/done/sim-21-drive-length-decomposition.md`
+  - `R  docs/lanes/sim-22-plays-per-drive-logging-in-the-resampler.md -> docs/lanes/done/sim-22-plays-per-drive-logging-in-the-resampler.md`
+  - `R  docs/lanes/sim-23-clock-truncated-drives.md -> docs/lanes/done/sim-23-clock-truncated-drives.md`
+  - `R  docs/lanes/sim-24-next-drive-start-field-by-previous-drive.md -> docs/lanes/done/sim-24-next-drive-start-field-by-previous-drive.md`
+  - `R  docs/lanes/sim-26-prevent-defense-yardage-shape.md -> docs/lanes/done/sim-26-prevent-defense-yardage-shape.md`
+  - `R  docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md -> docs/lanes/done/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
+  - ...and 60 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
