@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-15T13:18:05.054530+00:00`
+Refreshed at: `2026-11-15T13:19:26.538708+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-15T13:18:05.054530+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0cc624583352` — Grade the simulator's final forecaster run: it does not beat the served read and serves nothing
+- Baseline commit: `d7f3bc78df6d` — Record the Sunday Week 10 readiness check in the session lane
 - Pending change set: 49 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/full-steam-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals/lead110_absorption.json`
