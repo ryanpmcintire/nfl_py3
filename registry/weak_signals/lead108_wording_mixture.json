@@ -1,0 +1,117 @@
+{
+  "family": "lead108_wording_mixture",
+  "signals": {
+    "lead108_ladder_shift_vs_served_ll_wk2_9": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "116 opener-graded 2026 games, weeks 2-9, one slope fitted leave-one-week-out on a logit(served) offset; one of 24 declared looks (family lead108_wording_mixture); week-stratified game bootstrap 2000; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Ladder-weighted expected-lineup shift as one fitted term on the served probability vs the served probability alone, log loss at the Tuesday opener, weeks 2-9 2026",
+      "effect": -0.0024,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.006,
+        0.0009
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-15 by scripts/lead108_wording_mixture.py. Expected-lineup shift = sum of LEAD-110 signed spread points per Out x (1 - P_play), home minus away. Read coverage: weeks 2-8 are LEAD-106 sampled reads (7-40% of value mass per week), week 9 full forward reads. Served base = last published card probability before the deadline because 2026 is absent from pick_probability per_game. Fitted slopes small and fold-unstable (ladder 3 of 8 folds negative, read 2 of 8).",
+      "plain_summary": "Adding a tag-weighted missing-player term to the published pick probability did not improve it this season so far.",
+      "probability_positive": 0.079,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_wording_mixture/report.json",
+      "standard_error": null
+    },
+    "lead108_read_shift_vs_served_ll_wk2_9": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "116 opener-graded 2026 games, weeks 2-9, one slope fitted leave-one-week-out on a logit(served) offset; one of 24 declared looks (family lead108_wording_mixture); week-stratified game bootstrap 2000; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Read-weighted expected-lineup shift as one fitted term on the served probability vs the served probability alone, log loss at the Tuesday opener, weeks 2-9 2026",
+      "effect": -0.0021,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.0062,
+        0.0019
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-15 by scripts/lead108_wording_mixture.py. Expected-lineup shift = sum of LEAD-110 signed spread points per Out x (1 - P_play), home minus away. Read coverage: weeks 2-8 are LEAD-106 sampled reads (7-40% of value mass per week), week 9 full forward reads. Served base = last published card probability before the deadline because 2026 is absent from pick_probability per_game. Fitted slopes small and fold-unstable (ladder 3 of 8 folds negative, read 2 of 8).",
+      "plain_summary": "Adding the wording-weighted missing-player term to the published pick probability did not improve it this season so far; the published number seems to price most of it already.",
+      "probability_positive": 0.142,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_wording_mixture/report.json",
+      "standard_error": null
+    },
+    "lead108_read_vs_ladder_brier_wk2_9": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "116 opener-graded 2026 games, weeks 2-9, one slope fitted leave-one-week-out on a logit(served) offset; one of 24 declared looks (family lead108_wording_mixture); week-stratified game bootstrap 2000; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Expected-lineup shift weighted by the LEAD-106 wording read vs the designation x practice ladder, each one fitted term on the served probability, Brier at the Tuesday opener, weeks 2-9 2026",
+      "effect": 0.0002,
+      "effect_units": "brier_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.0009,
+        0.0012
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-15 by scripts/lead108_wording_mixture.py. Expected-lineup shift = sum of LEAD-110 signed spread points per Out x (1 - P_play), home minus away. Read coverage: weeks 2-8 are LEAD-106 sampled reads (7-40% of value mass per week), week 9 full forward reads. Served base = last published card probability before the deadline because 2026 is absent from pick_probability per_game. Fitted slopes small and fold-unstable (ladder 3 of 8 folds negative, read 2 of 8).",
+      "plain_summary": "Scored a second way, the wording read and the official tag gave nearly the same pick probabilities after weighing missing players.",
+      "probability_positive": 0.601,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_wording_mixture/report.json",
+      "standard_error": null
+    },
+    "lead108_read_vs_ladder_ll_wk2_9": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "116 opener-graded 2026 games, weeks 2-9, one slope fitted leave-one-week-out on a logit(served) offset; one of 24 declared looks (family lead108_wording_mixture); week-stratified game bootstrap 2000; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Expected-lineup shift weighted by the LEAD-106 wording read vs the same shift weighted by the designation x practice ladder, each one fitted term on the served probability, log loss at the Tuesday opener, weeks 2-9 2026",
+      "effect": 0.0003,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.0018,
+        0.0024
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-15 by scripts/lead108_wording_mixture.py. Expected-lineup shift = sum of LEAD-110 signed spread points per Out x (1 - P_play), home minus away. Read coverage: weeks 2-8 are LEAD-106 sampled reads (7-40% of value mass per week), week 9 full forward reads. Served base = last published card probability before the deadline because 2026 is absent from pick_probability per_game. Fitted slopes small and fold-unstable (ladder 3 of 8 folds negative, read 2 of 8).",
+      "plain_summary": "Swapping the injury-wording read in for the official tag when weighing missing starters barely changed the pick probability; the read's lead in predicting who plays did not show up in covers yet.",
+      "probability_positive": 0.621,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_wording_mixture/report.json",
+      "standard_error": null
+    }
+  }
+}

@@ -15,22 +15,22 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CIN -3.5 in PIT at CIN. The pool scores one Best Pick per regular-season week. This pick was the Tuesday star, held until the Sunday-morning re-nomination moves it.
+**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 12 | WAS at NYG | NYG -1.5         | 50.6%          |
-| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 53.0%          |
-| Sun, Nov 15 | CAR at NO  | NO -1.5          | 55.1%          |
+| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 55.7%          |
+| Sun, Nov 15 | CAR at NO  | CAR +1.5         | 50.4%          |
 | Sun, Nov 15 | HOU at CLE | CLE +4.5         | 53.9%          |
-| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 53.7%          |
+| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 50.9%          |
 | Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.1%          |
-| Sun, Nov 15 | LA at ARI  | LA -9.5          | 57.1%          |
+| Sun, Nov 15 | LA at ARI  | LA -9.5          | 58.5%          |
 | Sun, Nov 15 | MIA at IND | IND -2.5         | 61.0%          |
-| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 51.1%          |
+| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 53.8%          |
 | Sun, Nov 15 | NE at DET  | NE +2.5          | 53.5%          |
-| Sun, Nov 15 | PIT at CIN | ★ CIN -3.5       | 55.2%          |
-| Sun, Nov 15 | SEA at LV  | SEA -3.5         | 62.4%          |
+| Sun, Nov 15 | PIT at CIN | CIN -3.5         | 55.2%          |
+| Sun, Nov 15 | SEA at LV  | ★ SEA -3.5       | 62.4%          |
 | Sun, Nov 15 | SF at DAL  | DAL +4.5         | 51.4%          |
 | Mon, Nov 16 | LAC at BAL | LAC +5.5         | 54.1%          |
 
@@ -45,7 +45,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`0f0cf81cd966fbe1`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`01e86749d895ef79`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.42%** (1,159 of 2,211 non-push games), week-blocked 95% interval [50.43%, 54.51%].
@@ -63,7 +63,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 10,384 results recorded -- 10,278 unresolved_below_power, 106 closed (94 refuted_mechanism, 12 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 10,403 results recorded -- 10,297 unresolved_below_power, 106 closed (94 refuted_mechanism, 12 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 63 of 69 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

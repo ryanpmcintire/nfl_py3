@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-15T13:38:11.063682+00:00`
+Refreshed at: `2026-11-15T23:34:59.201343+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-15T13:38:11.063682+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c2619b136c61` — Refresh the handoff after the Sunday readiness check
-- Pending change set: 49 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `1d0b23acc154` — Republish the site with the latest settled results
+- Pending change set: 68 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/lead-108-wording-read-availability-inside-the-inj.md`
+  - `M  docs/lanes/lead-112-post-opener-availability-news.md`
+  - `A  docs/lanes/model-improve-2026-11-15.md`
+  - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
+  - ` M docs/model.html`
+  - `A  registry/weak_signals/lead108_wording_mixture.json`
   - ` M registry/weak_signals/lead110_absorption.json`
+  - `A  registry/weak_signals/lead112_post_opener_availability.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `M  tiebreaker.json`
+  - `A  scripts/lead108_wording_mixture.py`
+  - `A  scripts/lead112_post_opener_availability.py`
+  - ` M tiebreaker.json`
   - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 29 more
+  - ...and 48 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `0f0cf81cd966fbe1`
+- Model ID: `01e86749d895ef79`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261114T171340Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261115T144308Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,159 / 2,211 (52.42%)**
-- Linked forecast: **2026 Week 10**, created `2026-11-14T18:42:27.444209+00:00`
+- Linked forecast: **2026 Week 10**, created `2026-11-15T17:10:07.440426+00:00`
 
 The 52.42% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `0f0cf81cd966fbe1`, published `2026-11-14T18:50:26.161933+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `01e86749d895ef79`, published `2026-11-15T17:17:52.271377+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

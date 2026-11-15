@@ -1,0 +1,341 @@
+{
+  "family": "lead112_post_opener_availability",
+  "signals": {
+    "lead112_desig_practice_all_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-by-practice ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), all games of weeks 2-4 and 6-9; brier improvement over the served card, week-block bootstrap",
+      "effect": -0.01049,
+      "effect_units": "brier_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.01819,
+        -0.0045
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.095, -0.033] SE [0.197, 0.221]; in-sample log-loss gain 0.0011, out-of-sample gap 0.0228; within-week permutation null mean -0.0166, p 0.754; decisive 10-11; fold coefs {\"2\": [-0.111, -0.081], \"3\": [-0.114, 0.109], \"4\": [-0.146, -0.128], \"6\": [-0.089, 0.041], \"7\": [-0.253, -0.163], \"8\": [0.052, 0.079], \"9\": [-0.009, -0.085]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 105,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_desig_practice_all_log_loss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-by-practice ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), all games of weeks 2-4 and 6-9; log loss improvement over the served card, week-block bootstrap",
+      "effect": -0.02172,
+      "effect_units": "log_loss_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.03794,
+        -0.00941
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.095, -0.033] SE [0.197, 0.221]; in-sample log-loss gain 0.0011, out-of-sample gap 0.0228; within-week permutation null mean -0.0166, p 0.754; decisive 10-11; fold coefs {\"2\": [-0.111, -0.081], \"3\": [-0.114, 0.109], \"4\": [-0.146, -0.128], \"6\": [-0.089, 0.041], \"7\": [-0.253, -0.163], \"8\": [0.052, 0.079], \"9\": [-0.009, -0.085]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 105,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_desig_practice_nonzero_term_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-by-practice ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), nonzero term games of weeks 2-4 and 6-9; brier improvement over the served card, week-block bootstrap",
+      "effect": -0.0108,
+      "effect_units": "brier_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.01878,
+        -0.00468
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.095, -0.033] SE [0.197, 0.221]; in-sample log-loss gain 0.0011, out-of-sample gap 0.0228; within-week permutation null mean -0.0166, p 0.754; decisive 10-11; fold coefs {\"2\": [-0.111, -0.081], \"3\": [-0.114, 0.109], \"4\": [-0.146, -0.128], \"6\": [-0.089, 0.041], \"7\": [-0.253, -0.163], \"8\": [0.052, 0.079], \"9\": [-0.009, -0.085]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_desig_practice_nonzero_term_log_loss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-by-practice ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), nonzero term games of weeks 2-4 and 6-9; log loss improvement over the served card, week-block bootstrap",
+      "effect": -0.02236,
+      "effect_units": "log_loss_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.03868,
+        -0.00968
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.095, -0.033] SE [0.197, 0.221]; in-sample log-loss gain 0.0011, out-of-sample gap 0.0228; within-week permutation null mean -0.0166, p 0.754; decisive 10-11; fold coefs {\"2\": [-0.111, -0.081], \"3\": [-0.114, 0.109], \"4\": [-0.146, -0.128], \"6\": [-0.089, 0.041], \"7\": [-0.253, -0.163], \"8\": [0.052, 0.079], \"9\": [-0.009, -0.085]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_designation_all_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), all games of weeks 2-4 and 6-9; brier improvement over the served card, week-block bootstrap",
+      "effect": -0.00968,
+      "effect_units": "brier_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.01676,
+        -0.00335
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.088, -0.012] SE [0.197, 0.203]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0210; within-week permutation null mean -0.0168, p 0.682; decisive 9-12; fold coefs {\"2\": [-0.1, -0.045], \"3\": [-0.103, 0.128], \"4\": [-0.144, -0.11], \"6\": [-0.098, 0.009], \"7\": [-0.24, -0.111], \"8\": [0.056, 0.082], \"9\": [0.009, -0.027]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 105,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_designation_all_log_loss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), all games of weeks 2-4 and 6-9; log loss improvement over the served card, week-block bootstrap",
+      "effect": -0.02001,
+      "effect_units": "log_loss_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.03442,
+        -0.00705
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.088, -0.012] SE [0.197, 0.203]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0210; within-week permutation null mean -0.0168, p 0.682; decisive 9-12; fold coefs {\"2\": [-0.1, -0.045], \"3\": [-0.103, 0.128], \"4\": [-0.144, -0.11], \"6\": [-0.098, 0.009], \"7\": [-0.24, -0.111], \"8\": [0.056, 0.082], \"9\": [0.009, -0.027]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 105,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_designation_nonzero_term_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), nonzero term games of weeks 2-4 and 6-9; brier improvement over the served card, week-block bootstrap",
+      "effect": -0.01008,
+      "effect_units": "brier_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.01712,
+        -0.00365
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.088, -0.012] SE [0.197, 0.203]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0210; within-week permutation null mean -0.0168, p 0.682; decisive 9-12; fold coefs {\"2\": [-0.1, -0.045], \"3\": [-0.103, 0.128], \"4\": [-0.144, -0.11], \"6\": [-0.098, 0.009], \"7\": [-0.24, -0.111], \"8\": [0.056, 0.082], \"9\": [0.009, -0.027]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 103,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_designation_nonzero_term_log_loss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 late designation-ladder availability change plus the move as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), nonzero term games of weeks 2-4 and 6-9; log loss improvement over the served card, week-block bootstrap",
+      "effect": -0.02083,
+      "effect_units": "log_loss_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.03564,
+        -0.00745
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.088, -0.012] SE [0.197, 0.203]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0210; within-week permutation null mean -0.0168, p 0.682; decisive 9-12; fold coefs {\"2\": [-0.1, -0.045], \"3\": [-0.103, 0.128], \"4\": [-0.144, -0.11], \"6\": [-0.098, 0.009], \"7\": [-0.24, -0.111], \"8\": [0.056, 0.082], \"9\": [0.009, -0.027]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 103,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_move_only_all_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 Tuesday-to-deadline line move only as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), all games of weeks 2-4 and 6-9; brier improvement over the served card, week-block bootstrap",
+      "effect": -0.00449,
+      "effect_units": "brier_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.00946,
+        -0.00103
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.084] SE [0.183]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0105; within-week permutation null mean -0.0062, p 0.618; decisive 5-3; fold coefs {\"2\": [-0.084], \"3\": [-0.151], \"4\": [-0.104], \"6\": [-0.101], \"7\": [-0.205], \"8\": [0.021], \"9\": [0.018]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 105,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_move_only_all_log_loss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 Tuesday-to-deadline line move only as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), all games of weeks 2-4 and 6-9; log loss improvement over the served card, week-block bootstrap",
+      "effect": -0.00949,
+      "effect_units": "log_loss_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.0201,
+        -0.00216
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.084] SE [0.183]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0105; within-week permutation null mean -0.0062, p 0.618; decisive 5-3; fold coefs {\"2\": [-0.084], \"3\": [-0.151], \"4\": [-0.104], \"6\": [-0.101], \"7\": [-0.205], \"8\": [0.021], \"9\": [0.018]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 105,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_move_only_nonzero_term_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 Tuesday-to-deadline line move only as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), nonzero term games of weeks 2-4 and 6-9; brier improvement over the served card, week-block bootstrap",
+      "effect": -0.00799,
+      "effect_units": "brier_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.01538,
+        -0.00217
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.084] SE [0.183]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0105; within-week permutation null mean -0.0062, p 0.618; decisive 5-3; fold coefs {\"2\": [-0.084], \"3\": [-0.151], \"4\": [-0.104], \"6\": [-0.101], \"7\": [-0.205], \"8\": [0.021], \"9\": [0.018]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 59,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    },
+    "lead112_move_only_nonzero_term_log_loss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Seven 2026 weeks, 105 games, leave-one-week-out fit. The out-of-sample loss against the served card matches the within-week permutation null (shuffled terms lose the same), so the negative value is the cost of fitting a coefficient on seven folds, not a resolved wrong-sign mechanism; the in-sample late-news coefficient has the expected sign with an interval spanning zero; no zero split-half reliability and no positive control bound, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-112 Tuesday-to-deadline line move only as fitted terms with the served card probability as offset, leave-one-week-out coefficients (2026 only, no other season exists), nonzero term games of weeks 2-4 and 6-9; log loss improvement over the served card, week-block bootstrap",
+      "effect": -0.01689,
+      "effect_units": "log_loss_improvement",
+      "family": "lead112_post_opener_availability",
+      "interval": [
+        -0.03213,
+        -0.00449
+      ],
+      "league": "nfl",
+      "notes": "in-sample coef [-0.084] SE [0.183]; in-sample log-loss gain 0.0010, out-of-sample gap 0.0105; within-week permutation null mean -0.0062, p 0.618; decisive 5-3; fold coefs {\"2\": [-0.084], \"3\": [-0.151], \"4\": [-0.104], \"6\": [-0.101], \"7\": [-0.205], \"8\": [0.021], \"9\": [0.018]}; week 1 (no prior ladder) and week 5 (no Tuesday quote capture) excluded; 0 games had two stored language reads.",
+      "plain_summary": "Research only: injury designations that appear after the opening line were tested as an extra input beside the card. Seven weeks cannot separate their value from noise, so no pick changes.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 59,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/lead112/result.json (scripts/lead112_post_opener_availability.py)",
+      "standard_error": null
+    }
+  }
+}
