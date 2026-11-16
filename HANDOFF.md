@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:10:50.617903+00:00`
+Refreshed at: `2026-11-16T21:11:42.965792+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-11-16T21:10:50.617903+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b958138aa5da` — Set the go/no-go rule for landing the weather and quarterback fixes at the Week 11 lock
-- Pending change set: 66 paths
+- Baseline commit: `353cef9e632c` — Freeze the prediction-market gap term on 2024-25 (no held-out gain; 2026 W1-10 changed picks 4-5 and 3-1) and log it forward from Week 11
+- Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `A  docs/lanes/nfelo-forward-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/prediction-market-gap-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/prediction_market_gap.json`
   - `M  scripts/capture_scheduler.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/prediction_market_gap.py`
+  - `A  scripts/nfelo_forward.py`
+  - ` M scripts/source_pull_2026_11_16.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-16T21:10:50.617903+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 46 more
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

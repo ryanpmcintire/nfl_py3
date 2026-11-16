@@ -805,6 +805,33 @@ SCHEDULE: tuple[Job, ...] = (
             ("deadline", "sun", "15:45"),
         )
     ),
+    *(
+        Job(
+            f"nfelo_forward_{sub}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            120,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "nfelo_forward.py"),
+                sub,
+            ],
+            True,
+            "nfelo forward log: capture nfelo's posted margins with commit time, then the "
+            "frozen term on the card probability before kickoff.",
+            added_on="2026-11-16",
+        )
+        for sub, day, at in (
+            ("capture", "wed", "09:00"),
+            ("pregame", "wed", "09:05"),
+            ("capture", "sat", "09:00"),
+            ("pregame", "sat", "09:05"),
+            ("score", "tue", "13:40"),
+        )
+    ),
     Job(
         "pm_gap_score_tue",
         "tue",
