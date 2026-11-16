@@ -1,0 +1,257 @@
+{
+  "family": "outside_model_gap_2026_11_16",
+  "signals": {
+    "outside_model_gap_nfelo_gap_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (bootstrap interval not wholly below zero), split-half reliability not measured, and no positive control bounds an effect this small at this sample (docs/lanes/xlg-harness-power-2026-11-14.md: one-term opener tests see about 1.5 points).",
+      "closing_ground": null,
+      "description": "nfelo pre-market model home margin minus the line (close line), home minus away, points; forced pick by its sign, seasons 2011-2025, 3544 decided games, record 1858-1686; r with ATS margin +0.0530 at null percentile 100.0 of 200 within-season shuffles; halves (cut 2018) r +0.0912 / +0.0109; accuracy null percentile 100.0; survivor True.",
+      "effect": 2.426637,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        0.732929,
+        4.091422
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: 6 declared screen looks (3 terms x close/opener), gate r null percentile >= 95 and positive in both halves; declared in the lane before outcomes were joined. Not served.",
+      "plain_summary": "Checks whether picking the side the nfelo model's own number likes more than the closing line beats that line. It stood out in the screen and goes to one test inside the served probability; no pick changes yet.",
+      "probability_positive": 0.9988,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3544,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_nfelo_gap_opener_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (bootstrap interval not wholly below zero), split-half reliability not measured, and no positive control bounds an effect this small at this sample (docs/lanes/xlg-harness-power-2026-11-14.md: one-term opener tests see about 1.5 points).",
+      "closing_ground": null,
+      "description": "nfelo pre-market model home margin minus the line (opener line), home minus away, points; forced pick by its sign, seasons 2020-2025, 1313 decided games, record 698-615; r with ATS margin +0.0493 at null percentile 93.5 of 200 within-season shuffles; halves (cut 2022) r +0.0848 / +0.0064; accuracy null percentile 98.5; survivor False.",
+      "effect": 3.160701,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        0.416984,
+        5.826352
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: 6 declared screen looks (3 terms x close/opener), gate r null percentile >= 95 and positive in both halves; declared in the lane before outcomes were joined. Not served.",
+      "plain_summary": "Checks whether picking the side the nfelo model's own number likes more than the opening line beats that line. It did not stand out from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.986,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1313,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_nfelo_gap_served_opener_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "nfelo pre-market model home margin minus the line (Tuesday opener), home minus away, points; the one declared served look after the close-line screen survivor: offset logistic on the two-stage out-of-season served probability, opener games 2020-2025 (served artifact excludes the opener pushes), leave-one-season-out. Games 1503, nonzero 1313; changed 55, record 28-27; coefficient per SD +0.0308 [-0.0730, +0.1406]; null percentile 72.0 of 200 within-season shuffles; in-sample minus held-out -0.133067.",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -0.8666,
+        1.064538
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: served look 1 of 1, gating read log-loss null percentile >= 95. Not served.",
+      "plain_summary": "Checks whether adding the nfelo model's own number to the card's probability improves picks against the opening line. No pick changes from this check.",
+      "probability_positive": 0.541,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_nfelo_gap_served_opener_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "nfelo pre-market model home margin minus the line (Tuesday opener), home minus away, points; the one declared served look after the close-line screen survivor: offset logistic on the two-stage out-of-season served probability, opener games 2020-2025 (served artifact excludes the opener pushes), leave-one-season-out. Games 1503, nonzero 1313; changed 55, record 28-27; coefficient per SD +0.0308 [-0.0730, +0.1406]; null percentile 39.5 of 200 within-season shuffles; in-sample minus held-out +0.000339.",
+      "effect": -0.000275,
+      "effect_units": "brier_improvement",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -0.000758,
+        0.000213
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: served look 1 of 1, gating read log-loss null percentile >= 95. Not served.",
+      "plain_summary": "Checks whether adding the nfelo model's own number to the card's probability improves picks against the opening line. No pick changes from this check.",
+      "probability_positive": 0.1255,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_nfelo_gap_served_opener_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "nfelo pre-market model home margin minus the line (Tuesday opener), home minus away, points; the one declared served look after the close-line screen survivor: offset logistic on the two-stage out-of-season served probability, opener games 2020-2025 (served artifact excludes the opener pushes), leave-one-season-out. Games 1503, nonzero 1313; changed 55, record 28-27; coefficient per SD +0.0308 [-0.0730, +0.1406]; null percentile 38.0 of 200 within-season shuffles; in-sample minus held-out +0.000698.",
+      "effect": -0.000583,
+      "effect_units": "log_loss_improvement",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -0.0016,
+        0.000417
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: served look 1 of 1, gating read log-loss null percentile >= 95. Not served.",
+      "plain_summary": "Checks whether adding the nfelo model's own number to the card's probability improves picks against the opening line. No pick changes from this check.",
+      "probability_positive": 0.1205,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_qb_adjust_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (bootstrap interval not wholly below zero), split-half reliability not measured, and no positive control bounds an effect this small at this sample (docs/lanes/xlg-harness-power-2026-11-14.md: one-term opener tests see about 1.5 points).",
+      "closing_ground": null,
+      "description": "538 quarterback adjustment alone (QB Elo minus plain Elo implied home margin) (close line), home minus away, points; forced pick by its sign, seasons 2011-2022, 3156 decided games, record 1568-1588; r with ATS margin -0.0008 at null percentile 39.5 of 200 within-season shuffles; halves (cut 2016) r +0.0199 / -0.0189; accuracy null percentile 26.5; survivor False.",
+      "effect": -0.316857,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -1.996198,
+        1.457541
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: 6 declared screen looks (3 terms x close/opener), gate r null percentile >= 95 and positive in both halves; declared in the lane before outcomes were joined. Not served.",
+      "plain_summary": "Checks whether picking the side FiveThirtyEight's starting-quarterback adjustment likes more than the closing line beats that line. It did not stand out from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.368,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 3156,
+      "seasons": [
+        2011,
+        2022
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_qb_adjust_opener_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (bootstrap interval not wholly below zero), split-half reliability not measured, and no positive control bounds an effect this small at this sample (docs/lanes/xlg-harness-power-2026-11-14.md: one-term opener tests see about 1.5 points).",
+      "closing_ground": null,
+      "description": "538 quarterback adjustment alone (QB Elo minus plain Elo implied home margin) (opener line), home minus away, points; forced pick by its sign, seasons 2020-2022, 704 decided games, record 361-343; r with ATS margin +0.0267 at null percentile 69.5 of 200 within-season shuffles; halves (cut 2021) r +0.0426 / -0.0089; accuracy null percentile 70.5; survivor False.",
+      "effect": 1.278409,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -2.414773,
+        4.829545
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: 6 declared screen looks (3 terms x close/opener), gate r null percentile >= 95 and positive in both halves; declared in the lane before outcomes were joined. Not served.",
+      "plain_summary": "Checks whether picking the side FiveThirtyEight's starting-quarterback adjustment likes more than the opening line beats that line. It did not stand out from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.7552,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 704,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_qbelo_gap_close_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (bootstrap interval not wholly below zero), split-half reliability not measured, and no positive control bounds an effect this small at this sample (docs/lanes/xlg-harness-power-2026-11-14.md: one-term opener tests see about 1.5 points).",
+      "closing_ground": null,
+      "description": "538 quarterback-adjusted Elo implied home margin minus the line (close line), home minus away, points; forced pick by its sign, seasons 2011-2022, 3156 decided games, record 1599-1557; r with ATS margin +0.0390 at null percentile 98.5 of 200 within-season shuffles; halves (cut 2016) r +0.0567 / +0.0250; accuracy null percentile 82.5; survivor True.",
+      "effect": 0.665399,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -1.013942,
+        2.439797
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: 6 declared screen looks (3 terms x close/opener), gate r null percentile >= 95 and positive in both halves; declared in the lane before outcomes were joined. Not served.",
+      "plain_summary": "Checks whether picking the side FiveThirtyEight's quarterback-adjusted rating likes more than the closing line beats that line. It stood out in the screen and goes to one test inside the served probability; no pick changes yet.",
+      "probability_positive": 0.7933,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 3156,
+      "seasons": [
+        2011,
+        2022
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "outside_model_gap_qbelo_gap_opener_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (bootstrap interval not wholly below zero), split-half reliability not measured, and no positive control bounds an effect this small at this sample (docs/lanes/xlg-harness-power-2026-11-14.md: one-term opener tests see about 1.5 points).",
+      "closing_ground": null,
+      "description": "538 quarterback-adjusted Elo implied home margin minus the line (opener line), home minus away, points; forced pick by its sign, seasons 2020-2022, 704 decided games, record 362-342; r with ATS margin +0.0525 at null percentile 91.0 of 200 within-season shuffles; halves (cut 2021) r +0.0495 / +0.0563; accuracy null percentile 85.8; survivor False.",
+      "effect": 1.420455,
+      "effect_units": "accuracy_points",
+      "family": "outside_model_gap_2026_11_16",
+      "interval": [
+        -2.276278,
+        4.829545
+      ],
+      "league": "nfl",
+      "notes": "Family outside_model_gap_2026_11_16: 6 declared screen looks (3 terms x close/opener), gate r null percentile >= 95 and positive in both halves; declared in the lane before outcomes were joined. Not served.",
+      "plain_summary": "Checks whether picking the side FiveThirtyEight's quarterback-adjusted rating likes more than the opening line beats that line. It did not stand out from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.781,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 704,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "docs/lanes/outside-model-gap-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

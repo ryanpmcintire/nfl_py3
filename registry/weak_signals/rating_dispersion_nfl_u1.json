@@ -1,0 +1,257 @@
+{
+  "family": "rating_dispersion_nfl_u1",
+  "signals": {
+    "rating_dispersion_nfl_median_open_gap_r1_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): one offset-logistic coefficient on the leave-one-season-out served logit, opener grade 2020-2025, pushes kept as half. Changed picks 57, record 30-27; coefficient per SD -0.0226, positive in 0 of 6 folds; percentile 76.0 of 200 within-season shuffles; in-sample minus held-out -0.260247.",
+      "effect": 0.195185,
+      "effect_units": "accuracy_points",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.780742,
+        1.171113
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks whether pro games where the computer ratings' middle pick sits away from the opening line beat the opener more often than the model expects. No pick changes.",
+      "probability_positive": 0.6585,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r1_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): one offset-logistic coefficient on the leave-one-season-out served logit, opener grade 2020-2025, pushes kept as half. Changed picks 57, record 30-27; coefficient per SD -0.0226, positive in 0 of 6 folds; percentile 60.0 of 200 within-season shuffles; in-sample minus held-out +0.000143.",
+      "effect": -0.000108,
+      "effect_units": "brier_improvement",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.000484,
+        0.00024
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks whether pro games where the computer ratings' middle pick sits away from the opening line beat the opener more often than the model expects. No pick changes.",
+      "probability_positive": 0.2635,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r1_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): one offset-logistic coefficient on the leave-one-season-out served logit, opener grade 2020-2025, pushes kept as half. Changed picks 57, record 30-27; coefficient per SD -0.0226, positive in 0 of 6 folds; percentile 60.5 of 200 within-season shuffles; in-sample minus held-out +0.000290.",
+      "effect": -0.000224,
+      "effect_units": "log_loss_improvement",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.001012,
+        0.000482
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks whether pro games where the computer ratings' middle pick sits away from the opening line beat the opener more often than the model expects. No pick changes.",
+      "probability_positive": 0.2615,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r2_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): fitted alongside the closing-minus-opening line move and scored against the move-only fit, 2020-2025. Changed picks 64, record 38-26; coefficient per SD -0.0347, positive in 0 of 6 folds; percentile 84.7 of 200 within-season shuffles; in-sample minus held-out -0.065062.",
+      "effect": 0.780742,
+      "effect_units": "accuracy_points",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.195185,
+        1.758295
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks whether the computer ratings add anything once the line's move to kickoff is known. No pick changes.",
+      "probability_positive": 0.9375,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r2_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): fitted alongside the closing-minus-opening line move and scored against the move-only fit, 2020-2025. Changed picks 64, record 38-26; coefficient per SD -0.0347, positive in 0 of 6 folds; percentile 71.0 of 200 within-season shuffles; in-sample minus held-out +0.000232.",
+      "effect": -8.3e-05,
+      "effect_units": "brier_improvement",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.000594,
+        0.000384
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks whether the computer ratings add anything once the line's move to kickoff is known. No pick changes.",
+      "probability_positive": 0.365,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r2_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): fitted alongside the closing-minus-opening line move and scored against the move-only fit, 2020-2025. Changed picks 64, record 38-26; coefficient per SD -0.0347, positive in 0 of 6 folds; percentile 70.5 of 200 within-season shuffles; in-sample minus held-out +0.000493.",
+      "effect": -0.000183,
+      "effect_units": "log_loss_improvement",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.001226,
+        0.000781
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks whether the computer ratings add anything once the line's move to kickoff is known. No pick changes.",
+      "probability_positive": 0.355,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r3_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): read 1 restricted to 2023-2025, when the served probability already carries a line-move term. Changed picks 28, record 17-11; coefficient per SD -0.0286, positive in 1 of 3 folds; percentile 78.8 of 200 within-season shuffles; in-sample minus held-out +0.000000.",
+      "effect": 0.735294,
+      "effect_units": "accuracy_points",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.490196,
+        2.083333
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks the computer-ratings gap on the three recent pro seasons alone. No pick changes.",
+      "probability_positive": 0.8633,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r3_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): read 1 restricted to 2023-2025, when the served probability already carries a line-move term. Changed picks 28, record 17-11; coefficient per SD -0.0286, positive in 1 of 3 folds; percentile 55.5 of 200 within-season shuffles; in-sample minus held-out +0.000300.",
+      "effect": -0.000243,
+      "effect_units": "brier_improvement",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.001063,
+        0.000585
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks the computer-ratings gap on the three recent pro seasons alone. No pick changes.",
+      "probability_positive": 0.2895,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_nfl_median_open_gap_r3_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college survivor median_open_gap (Prediction Tracker system median minus the Tuesday opener, home-margin units): read 1 restricted to 2023-2025, when the served probability already carries a line-move term. Changed picks 28, record 17-11; coefficient per SD -0.0286, positive in 1 of 3 folds; percentile 55.0 of 200 within-season shuffles; in-sample minus held-out +0.000628.",
+      "effect": -0.000523,
+      "effect_units": "log_loss_improvement",
+      "family": "rating_dispersion_nfl_u1",
+      "interval": [
+        -0.00224,
+        0.001177
+      ],
+      "league": "nfl",
+      "notes": "Family rating_dispersion_nfl_u1: 3 reads x 3 metrics = 9 cells, 3 gating log-loss reads, 2 season-half coefficients, 2 control reads; declared in the lane before the outcome join; survivor: no. Not served.",
+      "plain_summary": "Checks the computer-ratings gap on the three recent pro seasons alone. No pick changes.",
+      "probability_positive": 0.282,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

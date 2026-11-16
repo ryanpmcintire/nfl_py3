@@ -23,3 +23,17 @@ Prediction Tracker computer-rating predictions (NFL 1999-2026, college 2001-2026
 ## Open
 - Whether any PT system columns are themselves market-derived or posted after the Tuesday opener; per-system posting times are not in the archive.
 - dispersion_temper sat at pct 92 with the declared sign in every fold: a larger-sample read (more college seasons, 2001-2006 PT files exist but repo frame starts later) is the obvious next power step.
+
+## NFL confirmation
+- 2026-11-16T21:03:29Z declared before any NFL outcome join (scripts/rating_dispersion_nfl.py, artifacts/rating_dispersion_nfl/). Population: build_fit_population(keep_pushes=True) 2020-2025, offset = eng62 stage_one leave-one-season-out served logit (checked against per_game out_of_season_home_probability); opener pushes kept with y=0.5 (log loss and Brier score them, accuracy counts them wrong for both arms); inner join to PT nfl_dispersion by game_id. Term median_open_gap = PT system median minus tue_open_home_spread (home-margin units), declared sign positive. Control column close_move = close_home_spread minus tue_open_home_spread. Family rating_dispersion_nfl_u1, seed stream 42.
+  - Read 1 (gating, the declared confirmation): one offset-logistic coefficient per SD on the served logit, LOSO, 200 within-season shuffles of the gap; survivor = held-out log-loss gain above null 95th percentile and same sign in both season halves (2020-22, 2023-25). Controls reported: intercept-only, close_move alone.
+  - Read 2: gap plus close_move as two fitted terms vs close_move alone; null shuffles the gap within season with close_move fixed. Answers whether the systems' median adds beyond the move to the close.
+  - Read 3: read 1 restricted to 2023-2025 (the served stage already has a market-move term there), own 200-draw null.
+  - Looks: 3 reads x 3 metrics = 9 recorded cells; 3 gating log-loss reads; 2 season-half coefficients; 2 control reads. Correlations of gap with close_move and the served logit reported.
+- 2026-11-16T21:06:01Z NFL confirmation run (`rating_dispersion_nfl.py`, exit 0, 49 s; artifacts/rating_dispersion_nfl/{summary.json,run.log,weak_signals_batch.json}). 1537 games 2020-25, 34 pushes, PT join 100%, stage gap 0.0 vs per_game; median systems 46; corr(PT median, opener) .920.
+  - Read 1: coef -0.023/SD [-0.119,+0.080] P+ .32, folds 0/6 positive, halves -0.016/-0.026; ll -0.000224 [-0.001012,+0.000482] pp .262 null pct 60.5; changed 57 (2 pushes) 30-27; acc +0.20 pts. Not confirmed (opposite sign, unresolved; not resolved wrong sign).
+  - Read 2 (beyond close move): coef -0.035, folds 0/6; ll -0.000183 pp .355 pct 70.5; changed 64, 38-26 vs move-only. Median adds nothing measurable beyond the close.
+  - Read 3 (2023-25): coef -0.029 [-0.169,+0.106], folds 1/3; ll -0.000523 pp .282 pct 55.0; changed 28, 17-11.
+  - Correlations: gap vs close-minus-open +0.095 (2023-25 +0.115); gap vs served logit +0.008. Controls (log loss): served .686913, +intercept .686956, +close move .685603 (close move coef +0.09..+0.12/SD every fold: line-following at the opener, not admissible).
+  - Recorded 9 cells family rating_dispersion_nfl_u1 (unresolved_below_power): record exit 0 (9); pool --league nfl --effect-units accuracy_points exit 0.
+  - Inferred: the college gap survivor does not carry to the NFL; NFL PT median sits tight on the opener (r .92) and its residual gap is nearly orthogonal to the served probability.

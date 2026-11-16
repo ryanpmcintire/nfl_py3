@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:06:20.722200+00:00`
+Refreshed at: `2026-11-16T21:06:40.453185+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T21:06:20.722200+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bc284de2378d` — Pull Prediction Tracker archives and screen rating dispersion on college games: dispersion unresolved, median-minus-opener passes as likely line timing
-- Pending change set: 78 paths
+- Baseline commit: `bc027cc6f9ba` — Screen contract-year snap share on 3,322 games (no survivor, unresolved); the findings card now states the measured check
+- Pending change set: 73 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/contract-year-2026-11-16.md`
   - ` M docs/lanes/model-improve-2026-11-16.md`
+  - `A  docs/lanes/outside-model-gap-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - ` M docs/lanes/rating-dispersion-2026-11-16.md`
+  - `M  docs/lanes/rating-dispersion-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/contract_year_family_v1.json`
-  - `A  scripts/contract_year.py`
+  - `A  registry/weak_signals/outside_model_gap_2026_11_16.json`
+  - `A  registry/weak_signals/rating_dispersion_nfl_u1.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `A  scripts/outside_model_gap.py`
+  - `A  scripts/rating_dispersion_nfl.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - ...and 58 more
+  - ...and 53 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
