@@ -850,9 +850,9 @@ FINDINGS: tuple[Finding, ...] = (
             "**Essentially no** -- at least not in a way that reaches the scoreboard. "
             "It is exactly the sort of human factor a "
             "market of numbers might miss, but the research on an NFL contract-year effect is "
-            "close to nothing, and our own screen agrees. It has no place in the model and "
-            "will not get one as a "
-            "standalone idea."
+            "close to nothing. We checked it ourselves on 3,322 games from 2013 to 2025: teams "
+            "leaning on players in the last year of their deals covered no more often than "
+            "anyone else. It is not in the model."
         ),
         detail=(
             "It survives only as one weak input among several in a future combined candidate, "

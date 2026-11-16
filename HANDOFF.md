@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:02:13.147611+00:00`
+Refreshed at: `2026-11-16T21:06:20.722200+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T21:02:13.147611+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5aa27c84275b` — Screen the preseason futures anchor and coach familiarity on college games: no survivors, 12 cells unresolved
-- Pending change set: 68 paths
+- Baseline commit: `bc284de2378d` — Pull Prediction Tracker archives and screen rating dispersion on college games: dispersion unresolved, median-minus-opener passes as likely line timing
+- Pending change set: 78 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M config/source_policies.json`
+  - `M  config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `A  docs/lanes/contract-year-2026-11-16.md`
   - ` M docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/rating-dispersion-2026-11-16.md`
+  - ` M docs/lanes/rating-dispersion-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/rating_dispersion_cfb_u1.json`
+  - `A  registry/weak_signals/contract_year_family_v1.json`
+  - `A  scripts/contract_year.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/rating_dispersion.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 48 more
+  - ...and 58 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

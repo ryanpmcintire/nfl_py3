@@ -438,6 +438,21 @@
         "one_request_per_season_file",
         "minimum_delay_seconds_2"
       ]
+    },
+    "nflverse_contracts": {
+      "risk": "green",
+      "terms_url": "https://github.com/nflverse/nflverse-data/blob/master/LICENSE",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "upstream_overthecap_derived_aggregates_only",
+        "generic_user_agent",
+        "one_request_per_release_file"
+      ]
     }
   }
 }

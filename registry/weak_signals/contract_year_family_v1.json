@@ -1,0 +1,89 @@
+{
+  "family": "contract_year_family_v1",
+  "signals": {
+    "contract_year_nfl_close_contract_year_snap_share_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "Contract-year family, contract_year_snap_share_gap: home minus away share of offensive plus defensive snaps, over the team's strictly earlier regular-season games of the same season, played by players whose latest contract signed before the season's calendar year ends that season (nflverse OverTheCap contracts). One offset-logistic coefficient per SD, leave-one-season-out, graded close, 2013-2025; declared sign positive. Changed picks 1566, record 784-782; coefficient per SD -0.0140; season halves +0.0411 and -0.0709; percentile 24.5 of 200 within-season shuffles; in-sample minus held-out +0.571945.",
+      "effect": 0.060205,
+      "effect_units": "accuracy_points",
+      "family": "contract_year_family_v1",
+      "interval": [
+        -2.138019,
+        2.408188
+      ],
+      "league": "nfl",
+      "notes": "Family contract_year_family_v1: declared in docs/lanes/contract-year-2026-11-16.md before the outcome join; 1 gating log-loss read in the matched null, 3 recorded cells, 2 season-half coefficients; survivor: no.",
+      "plain_summary": "Checks whether teams leaning more on players in the last year of their contracts beat the spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.526,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3322,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/lanes/contract-year-2026-11-16.md",
+      "standard_error": null
+    },
+    "contract_year_nfl_close_contract_year_snap_share_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "Contract-year family, contract_year_snap_share_gap: home minus away share of offensive plus defensive snaps, over the team's strictly earlier regular-season games of the same season, played by players whose latest contract signed before the season's calendar year ends that season (nflverse OverTheCap contracts). One offset-logistic coefficient per SD, leave-one-season-out, graded close, 2013-2025; declared sign positive. Changed picks 1566, record 784-782; coefficient per SD -0.0140; season halves +0.0411 and -0.0709; percentile 49.0 of 200 within-season shuffles; in-sample minus held-out +0.000113.",
+      "effect": -0.000101,
+      "effect_units": "brier_improvement",
+      "family": "contract_year_family_v1",
+      "interval": [
+        -0.000242,
+        4.5e-05
+      ],
+      "league": "nfl",
+      "notes": "Family contract_year_family_v1: declared in docs/lanes/contract-year-2026-11-16.md before the outcome join; 1 gating log-loss read in the matched null, 3 recorded cells, 2 season-half coefficients; survivor: no.",
+      "plain_summary": "Checks whether teams leaning more on players in the last year of their contracts beat the spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.084,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3322,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/lanes/contract-year-2026-11-16.md",
+      "standard_error": null
+    },
+    "contract_year_nfl_close_contract_year_snap_share_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "Contract-year family, contract_year_snap_share_gap: home minus away share of offensive plus defensive snaps, over the team's strictly earlier regular-season games of the same season, played by players whose latest contract signed before the season's calendar year ends that season (nflverse OverTheCap contracts). One offset-logistic coefficient per SD, leave-one-season-out, graded close, 2013-2025; declared sign positive. Changed picks 1566, record 784-782; coefficient per SD -0.0140; season halves +0.0411 and -0.0709; percentile 49.0 of 200 within-season shuffles; in-sample minus held-out +0.000226.",
+      "effect": -0.000201,
+      "effect_units": "log_loss_improvement",
+      "family": "contract_year_family_v1",
+      "interval": [
+        -0.000485,
+        8.9e-05
+      ],
+      "league": "nfl",
+      "notes": "Family contract_year_family_v1: declared in docs/lanes/contract-year-2026-11-16.md before the outcome join; 1 gating log-loss read in the matched null, 3 recorded cells, 2 season-half coefficients; survivor: no.",
+      "plain_summary": "Checks whether teams leaning more on players in the last year of their contracts beat the spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.084,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3322,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/lanes/contract-year-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}
