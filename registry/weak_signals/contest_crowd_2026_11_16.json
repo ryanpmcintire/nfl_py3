@@ -1,0 +1,89 @@
+{
+  "family": "contest_crowd_2026_11_16",
+  "signals": {
+    "contest_crowd_supercontest_share_contest_line": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; no resolved wrong sign with the whole interval below zero, no split-half failure measured, no positive control: unresolved_below_power is the only admissible class.",
+      "closing_ground": null,
+      "description": "SuperContest consensus counts per team from archived TheSpread hub captures (Wayback, season-end capture wins), term = home entries share minus 0.5, declared POSITIVE 2026-11-16T23:22:31Z before outcomes (artifacts/contest_crowd/declaration.json). No skill-weighted version: per-entrant histories are not archived. Family contest_crowd_2026_11_16, 3 looks. Majority side v cover at the contest's own frozen line, every REG game with counts; contest-line pushes and .5 shares dropped. Record 980-965 over 141 weeks; per season {'2015': '119-94', '2016': '113-112', '2019': '112-127', '2020': '115-123', '2021': '132-125', '2022': '113-114', '2023': '128-120', '2024': '20-23', '2025': '128-127'}; above-median share 508-465; null percentile 54.5 of 200 within-season shuffles (p95 +2.03).",
+      "effect": 0.3856041131105381,
+      "effect_units": "accuracy_points",
+      "family": "contest_crowd_2026_11_16",
+      "interval": [
+        -1.6213718895498446,
+        2.3814336244856706
+      ],
+      "league": "nfl",
+      "notes": "3 looks in family contest_crowd_2026_11_16 (2 contest-line cells, 1 stage cell). Lane docs/lanes/contest-crowd-2026-11-16.md.",
+      "plain_summary": null,
+      "probability_positive": 0.624,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 141,
+      "sample_games": 1945,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/contest_crowd/results.json",
+      "standard_error": null
+    },
+    "contest_crowd_supercontest_share_contest_line_sun_mon": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; no resolved wrong sign with the whole interval below zero, no split-half failure measured, no positive control: unresolved_below_power is the only admissible class.",
+      "closing_ground": null,
+      "description": "SuperContest consensus counts per team from archived TheSpread hub captures (Wayback, season-end capture wins), term = home entries share minus 0.5, declared POSITIVE 2026-11-16T23:22:31Z before outcomes (artifacts/contest_crowd/declaration.json). No skill-weighted version: per-entrant histories are not archived. Family contest_crowd_2026_11_16, 3 looks. Cell A restricted to Sunday 1 PM ET+ and Monday games (counts posted Sunday morning: reported, not verified by capture times). Record 891-860 over 141 weeks; per season {'2015': '109-88', '2016': '96-98', '2019': '108-113', '2020': '109-108', '2021': '119-114', '2022': '100-95', '2023': '115-109', '2024': '19-21', '2025': '116-114'}; above-median share 461-415; null percentile 62.5 of 200 within-season shuffles (p95 +2.49).",
+      "effect": 0.8852084523129689,
+      "effect_units": "accuracy_points",
+      "family": "contest_crowd_2026_11_16",
+      "interval": [
+        -1.3130643449739512,
+        3.033316545448256
+      ],
+      "league": "nfl",
+      "notes": "3 looks in family contest_crowd_2026_11_16 (2 contest-line cells, 1 stage cell). Lane docs/lanes/contest-crowd-2026-11-16.md.",
+      "plain_summary": null,
+      "probability_positive": 0.792,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 141,
+      "sample_games": 1751,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/contest_crowd/results.json",
+      "standard_error": null
+    },
+    "contest_crowd_supercontest_share_qw_stage": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; no resolved wrong sign with the whole interval below zero, no split-half failure measured, no positive control: unresolved_below_power is the only admissible class.",
+      "closing_ground": null,
+      "description": "SuperContest consensus counts per team from archived TheSpread hub captures (Wayback, season-end capture wins), term = home entries share minus 0.5, declared POSITIVE 2026-11-16T23:22:31Z before outcomes (artifacts/contest_crowd/declaration.json). No skill-weighted version: per-entrant histories are not archived. Family contest_crowd_2026_11_16, 3 looks. Fifth LOSO term on FOUR (QW model logit, flag sum, served move, move available), 1,503-game opener population 2020-25 (per_game drops the opener pushes), term 0 where missing (1253 nonzero). Base 836-667 v arm 830-673; log loss 0.68673 v 0.68740 (in-sample 0.68544); changed 118 picks arm 56-62 v base 62-56; null percentile 63.5 of 200 within-season shuffles (p95 +0.27); fold coefficients {'2020': -0.23474579597162878, '2021': -0.6183884325598218, '2022': -0.3230295339858974, '2023': -0.4313037649071291, '2024': -0.28407794415270715, '2025': -0.03345852911622662}; week block {\"log_loss_gain\": {\"point\": -0.000677652461792408, \"lo\": -0.0022396065914482, \"hi\": 0.0008790603119095627, \"probability_positive\": 0.1905}, \"brier_gain\": {\"point\": -0.00032292569615570465, \"lo\": -0.001084080304845475, \"hi\": 0.00043986726861975045, \"probability_positive\": 0.19675}, \"accuracy_points_g.",
+      "effect": -0.39920159680638667,
+      "effect_units": "accuracy_points",
+      "family": "contest_crowd_2026_11_16",
+      "interval": [
+        -1.7917283616174167,
+        1.058271230685024
+      ],
+      "league": "nfl",
+      "notes": "3 looks in family contest_crowd_2026_11_16 (2 contest-line cells, 1 stage cell). Lane docs/lanes/contest-crowd-2026-11-16.md.",
+      "plain_summary": null,
+      "probability_positive": 0.27125,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/contest_crowd/results.json",
+      "standard_error": null
+    }
+  }
+}
