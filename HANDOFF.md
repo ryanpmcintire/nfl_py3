@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:23:42.068367+00:00`
+Refreshed at: `2026-11-16T21:30:58.932395+00:00`
 
 ## Start here
 
@@ -21,19 +21,13 @@ Refreshed at: `2026-11-16T21:23:42.068367+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `63bfdc45afbb` — Regrade the weather-and-quarterback candidate at the measured constant (836-667 v 829-674); keep MOS as its weather feed; re-pull Kalshi and Polymarket 2026
-- Pending change set: 64 paths
+- Baseline commit: `e9ecd82ca947` — Test a Week-1-only model weight: fitted weight stays positive, all-games log loss worse; unresolved, nothing changes
+- Pending change set: 58 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/week1-structure-2026-11-16.md`
+  - `M  docs/lanes/v4-landing-2026-11-17.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/experiments/margin-backtest/20261115T143853Z.json`
-  - `A  registry/experiments/margin-backtest/20261115T170917Z.json`
-  - `A  registry/experiments/margin-backtest/20261116T170931Z.json`
-  - `A  registry/experiments/margin-backtest/20261116T212043Z.json`
-  - `A  registry/weak_signals/week1_model_weight.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/week1_structure.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +37,13 @@ Refreshed at: `2026-11-16T21:23:42.068367+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 44 more
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
+  - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
