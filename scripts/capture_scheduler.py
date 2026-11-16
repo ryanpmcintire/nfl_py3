@@ -742,6 +742,42 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"card_terms_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "card_term_recorder.py"),
+            ],
+            True,
+            "Card-term recorder: per-game served probability split into its fitted terms for "
+            "every card game, appended after each card refresh.",
+            added_on="2026-11-16",
+            catch_up=True,
+        )
+        for day, at in (
+            ("tue", "12:45"),
+            ("wed", "18:25"),
+            ("wed", "19:25"),
+            ("thu", "12:05"),
+            ("thu", "15:35"),
+            ("thu", "19:25"),
+            ("sat", "10:40"),
+            ("sat", "16:00"),
+            ("sat", "19:25"),
+            ("sun", "10:10"),
+            ("sun", "12:05"),
+            ("sun", "12:55"),
+            ("sun", "15:10"),
+            ("sun", "15:45"),
+        )
+    ),
+    *(
+        Job(
             f"lead112_forward_pregame_{day}_{at.replace(':', '')}",
             day,
             at,
