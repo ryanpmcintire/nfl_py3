@@ -1,0 +1,61 @@
+{
+  "family": "pooled_stack_2026_11_16",
+  "signals": {
+    "pooled_stack_2026_11_16_qw_offset_opener_2020_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block intervals cross zero (accuracy [-0.336,+2.415], log loss [-0.00157,+0.00253]); not a resolved wrong sign and no positive control; unresolved_below_power is the only admissible classification.",
+      "closing_ground": null,
+      "description": "Nested-LOSO elastic-net logistic stack of 20 pregame signals (7 served flags, nfelo/538 gaps, rating dispersion x model, prediction-market Tuesday gap, schedule strength, contract year, referee trait, win-total drift, week-1 weight, as-of total) plus 7 missing indicators on the QW served offset; penalty and l1 ratio by inner LOSO; opener 2020-25, 1,537 games with 34 pushes kept; record 852-651 vs QW 836-667; week-block bootstrap (107 blocks); declared 2026-11-16T22:30:45Z before any outcome join.",
+      "effect": 1.064537591483694,
+      "effect_units": "accuracy_points",
+      "family": "pooled_stack_2026_11_16",
+      "interval": [
+        -0.3362587996078245,
+        2.414649294556849
+      ],
+      "league": "nfl",
+      "notes": "2 looks (accuracy, log loss), one stack. Season-block [0.00,+2.30] P+ 0.9755. Matched null: 200 joint within-season shuffles of all signal rows, full nested procedure each draw, observed at percentile 100 (null p95 +0.33, max +0.73). Changed picks 143 (79-63 vs 63-79), 1 push. Gain concentrated in 2023 (146-120 to 156-110) and 2025 (149-118 to 154-113); 2020 -1, 2021 0. Nonzero folds: flag_coach 6, flag_cold_visitor 5, last_opponent_strength 5, contract_year_gap 4, asof_total 2. In-sample accuracy 58.7% vs held-out 56.7%.",
+      "plain_summary": null,
+      "probability_positive": 0.93175,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_stack.py; artifacts/pooled_stack/results.json; docs/lanes/pooled-stack-2026-11-16.md",
+      "standard_error": null
+    },
+    "pooled_stack_2026_11_16_qw_offset_opener_2020_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block intervals cross zero (accuracy [-0.336,+2.415], log loss [-0.00157,+0.00253]); not a resolved wrong sign and no positive control; unresolved_below_power is the only admissible classification.",
+      "closing_ground": null,
+      "description": "Same nested-LOSO elastic-net stack on the QW served offset, mean log-loss improvement per game over QW (pushes scored with label 0.5), opener 2020-25, 1,537 games; week-block bootstrap (107 blocks); declared 2026-11-16T22:30:45Z before any outcome join.",
+      "effect": 0.0004519271263423671,
+      "effect_units": "log_loss_improvement",
+      "family": "pooled_stack_2026_11_16",
+      "interval": [
+        -0.001574790139765901,
+        0.002531306103426394
+      ],
+      "league": "nfl",
+      "notes": "Season-block [-0.00118,+0.00179] P+ 0.7445. Null percentile 91.0 (null p95 +0.00090). Decided-game log loss 0.68624 vs QW 0.68673; Brier 0.24654 vs 0.24681. In-sample log loss 0.68071 vs held-out 0.68624 (gap 0.0055). Reliability quintiles (mean p / observed): stack .410/.445 .466/.457 .490/.422 .522/.540 .589/.618.",
+      "plain_summary": null,
+      "probability_positive": 0.692,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_stack.py; artifacts/pooled_stack/results.json; docs/lanes/pooled-stack-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

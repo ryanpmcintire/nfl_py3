@@ -1,0 +1,35 @@
+# pooled-stack-2026-11-16
+
+## Goal
+Goal-65 wave G1 slot 2: every as-of per-game pregame signal value on disk for 2020-25 NFL games in one nested-LOSO regularised logistic stack on the served stage (QW served logit as offset), graded at the opener against QW 836-667. Family pooled_stack_2026_11_16.
+
+## How this differs from MOD-20 (read, docs/lanes/done/pooled-signal-model.md; mod24-pooled-sweep-2026-11-03.md)
+MOD-20 units 1-6 (2026-09-16..23) grew the four-term served fit by hand: additive columns at fixed ridge 1e-3 (units 2-3), hierarchical shrinkage of the 7 flags (unit 4, refuted), two interactions (unit 5), one reddit term (unit 6); base was the old S model. MOD-24 pooled learner levers on 14 shared features with the close as input (voided). New here: (a) the signals are today's outside values (nfelo/538 gaps, rating dispersion, prediction-market gap, schedule strength, contract year, referee trait, win-total drift, week-1 weight, as-of total) plus the counted flags, never pooled together before; (b) the offset is QW, not S; (c) penalty AND l1 ratio (which signals enter) are chosen by inner LOSO inside each outer season; (d) offsets are re-fitted excluding the outer and inner seasons (no outcome of a held season reaches its own grade); (e) a joint within-season shuffle null of the whole procedure.
+
+## Declaration (stamped 2026-11-16T22:30:45Z, before any outcome join)
+- Population: build_fit_population(keep_pushes=True) 2020-25 opener, 1,537 games; pushes excluded from fits, scored with label 0.5 in log loss, excluded from records. Model prob = artifacts/v4_candidate/opener_QW.parquet; offset = logit of the FOUR served fit (mod27 Fit) on seasons outside every held season (outer s: excludes s, reproduces QW; training row of season u: excludes s and u; inner held t: excludes s,t; inner training u: excludes s,t,u).
+- Signals (home minus away where two-sided; pregame proof in lane of each): flag_coach, flag_division, flag_arrests, flag_bye, flag_cold_visitor, flag_protection, flag_tank_zone (served, as-of by pick_probability_fit); nfelo_gap, qbelo_gap, qb_adjust vs Tuesday opener (outside-model-gap lane: pre-market model values); pt_dispersion (rating-dispersion lane; caveat: last pre-kickoff posting); pm_gap_tue 2024-25 (prediction-market-gap lane, Tuesday price vs Tuesday opener only; the deadline gap uses the close and is excluded); margin_sos_gap, last_opponent_strength (xlg-14-u6 lane, as-of check max diff 0.0); contract_year_gap (contract-year lane, deals signed before the season, as-of check 0.0); referee_trait (referee lane, prior-game crew trait, posted Tue-Wed before the deadline); wt_drift, sb_drift (win-totals lane, truncation check 0.0); model_w1 = QW model_logit x week1 (week1 lane); asof_total (hindsight-audit-team lane, Tuesday capture). Excluded: leader_median_net (as-of unverified), flag_interim_hc and flag_precip (zero in 2020-25), median_open_gap (lane infers line-following).
+- Each signal standardised on observed training rows, missing set to 0 plus a missing indicator when the column has gaps. No free intercept (offset carries it).
+- Learner: elastic-net logistic, glmnet penalty lambda(a|b|1 + (1-a)/2 b^2), a in {0, .25, .5, .75, 1}, lambda path 20 log-spaced from lambda_max down by 1e-4 (glmnet lambda.min.ratio for n>p) plus lambda=inf (QW alone). Chosen per outer season by inner LOSO mean held-out log loss over the 5 training seasons; ties to the larger lambda.
+- Grade: outer LOSO 2020-25; record vs QW 836-667; accuracy and log-loss gain with week-block and season-block bootstrap (2000 draws) probability_positive; matched null 200 draws shuffling all signal rows jointly within season, full nested procedure each draw, percentile of the observed gain; changed picks; nonzero folds per signal; reliability table; in-sample vs OOS gap.
+- Looks: 2 (accuracy_points, log_loss_improvement), one stack. Expected sign positive. Zero crossing closes nothing; whole interval negative = wrong_sign_resolved.
+
+- Amendment before any run (same stamp window, no outcome seen): pt_dispersion enters as (D centred and scaled) x QW model_logit, the tempering form the rating-dispersion lane declared; in-sample fit (hyperparameters by single-level LOSO, offset = served QW) reported for the in-sample vs held-out gap.
+
+## State
+Declared; script scripts/pooled_stack.py written (`--draws`, `--workers`); outputs artifacts/pooled_stack/{signals,per_game,null}.parquet, results.json.
+
+## Tried
+- Real fit (measured, `--draws 0`, exit 0, 72 s; artifacts/pooled_stack/results_fit0.json, fit0.log): QW offset reproduces 836-667 exactly (identity). Stack 852-651 on 1,503 decided (+1.06 acc pts; week-block [-0.34,+2.41] P+ .93, season-block [0.00,+2.30] P+ .98); log loss gain +0.00045/game (week-block [-0.0016,+0.0025] P+ .69, season-block P+ .74). Changed picks 143 (79-63 stack vs 63-79 QW, 1 push). Per season QW->stack: 2020 117-103->116-104, 2021 132-104 same, 2022 140-108->141-107, 2023 146-120->156-110, 2024 152-114->153-113, 2025 149-118->154-113. Folds chose l1 .5-1.0 at the top two lambdas; nonzero folds: flag_coach 6, flag_cold_visitor 5, last_opponent_strength 5, contract_year_gap 4, asof_total 2, others <=1 (nfelo_gap, pm_gap_tue, referee, win-total drift, model_w1 0). In-sample LL .6807 vs held-out .6862; accuracy 58.7% vs 56.7%. 20 signals, 7 missing indicators.
+- Null (measured, `--draws 200 --workers 4`, exit 0, 1,074 s; results.json, null.parquet, run.log): same real numbers; accuracy gain at null percentile 100 (null mean -0.27, p95 +0.33, max +0.73); log-loss gain percentile 91 (null p95 +0.00090). Decided log loss .68624 vs QW .68673, Brier .24654 vs .24681. Reliability is reasonable except the middle quintile (.490 predicted, .422 observed).
+- Recorded (measured, exit 0, artifacts/pooled_stack/batch.json, record.log): 2 cells, family pooled_stack_2026_11_16, unresolved_below_power; `weak-signals pool --league nfl --effect-units accuracy_points` ran clean (pool.log). Looks: 2.
+
+## State (done 2026-11-16)
+The first pooled stack of every on-disk as-of signal over QW is ahead on accuracy (+16 wins, null pct 100) and slightly ahead on log loss (P+ .69-.74). The gain sits in 2023-25 (+15 of +16; 2020-21 net -1), and only 4 signals carry weight in most folds: coach flag, cold-visitor flag, last-opponent strength and contract year. That suggests the stack mainly re-weights two served flags and adds two new terms (inferred). Nothing is served. Inferred: this is a candidate stage-two extension for the post-season QW landing, not a card change.
+
+## Next
+1. One declared confirmation look: the same frozen procedure scored on 2026 W1-10 (published-card probability as offset) and forward W11-18; no refit of the grid.
+2. Ablation (declared as looks): stack restricted to the 4 recurring signals versus the full stack, to separate flag re-weighting from new information.
+
+## Open
+- leader_median_net was excluded because its as-of time is unverified; rating dispersion uses each system's last pre-kickoff posting, which is after the deadline for late games (it carries weight in only 1 fold).
