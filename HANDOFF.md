@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:11:37.464743+00:00`
+Refreshed at: `2026-11-16T22:27:37.803496+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-11-16T22:11:37.464743+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9492a5ff8561` — Audit training-time timing of team and schedule inputs: as-of total and opener spread arms do not beat the weather-and-quarterback reference
+- Baseline commit: `1fc38a8d977e` — Opener parity (input and target against the opener): model alone 815-688, served card 831-672 v 836-667; the reference stays the weather-and-quarterback fix
 - Pending change set: 58 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/opener-parity-2026-11-16.md`
+  - `A  docs/lanes/goal-65-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/opener_parity_2026_11_16.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/opener_parity.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,6 +41,8 @@ Refreshed at: `2026-11-16T22:11:37.464743+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
   - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
