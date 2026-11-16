@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-15T23:34:59.201343+00:00`
+Refreshed at: `2026-11-16T05:31:49.137318+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-15T23:34:59.201343+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1d0b23acc154` — Republish the site with the latest settled results
-- Pending change set: 68 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
+- Baseline commit: `99362e486bae` — Test the injury-wording read as a lineup term and late injury news as a term: neither beats the card, both unresolved
+- Pending change set: 60 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `M  docs/lanes/lead-108-wording-read-availability-inside-the-inj.md`
-  - `M  docs/lanes/lead-112-post-opener-availability-news.md`
-  - `A  docs/lanes/model-improve-2026-11-15.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - ` M docs/model.html`
-  - `A  registry/weak_signals/lead108_wording_mixture.json`
+  - `M  docs/model.html`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/lead112_post_opener_availability.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/lead108_wording_mixture.py`
-  - `A  scripts/lead112_post_opener_availability.py`
-  - ` M tiebreaker.json`
+  - `M  tiebreaker.json`
   - `?? an.csv`
-  - ...and 48 more
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - ...and 40 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

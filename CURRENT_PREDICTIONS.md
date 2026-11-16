@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 10
 
-Published from the synchronized weak stack model, 2026-11-14 18:50 UTC.
+Published from the synchronized weak stack model, 2026-11-15 17:17 UTC.
 
-<!-- publication: model_id=0f0cf81cd966fbe1 published_at_utc=2026-11-14T18:50:26.161933+00:00 -->
+<!-- publication: model_id=01e86749d895ef79 published_at_utc=2026-11-15T17:17:52.271377+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -10,20 +10,20 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. The star moved here on Sunday morning: it is provisionally the highest estimated chance to cover among games still open for changes at the spread the pool locked on Tuesday. Its estimated lead over the other picks is uncertain. Tuesday's Best Pick was CIN -3.5 in PIT at CIN.
+**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 12 | WAS at NYG | NYG -1.5         | 50.6%          |
 | Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 55.7%          |
 | Sun, Nov 15 | CAR at NO  | CAR +1.5         | 50.4%          |
-| Sun, Nov 15 | HOU at CLE | CLE +4.5         | 53.9%          |
+| Sun, Nov 15 | HOU at CLE | CLE +4.5         | 52.0%          |
 | Sun, Nov 15 | JAX at TEN | TEN +10.5        | 50.9%          |
 | Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.1%          |
-| Sun, Nov 15 | LA at ARI  | LA -9.5          | 58.5%          |
+| Sun, Nov 15 | LA at ARI  | LA -9.5          | 59.8%          |
 | Sun, Nov 15 | MIA at IND | IND -2.5         | 61.0%          |
-| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 53.8%          |
-| Sun, Nov 15 | NE at DET  | NE +2.5          | 53.5%          |
+| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 50.9%          |
+| Sun, Nov 15 | NE at DET  | NE +2.5          | 52.6%          |
 | Sun, Nov 15 | PIT at CIN | CIN -3.5         | 55.2%          |
 | Sun, Nov 15 | SEA at LV  | ★ SEA -3.5       | 62.4%          |
 | Sun, Nov 15 | SF at DAL  | DAL +4.5         | 51.4%          |
@@ -31,20 +31,18 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Partial lists: inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 52% and 51%. These broad groups do not establish a large advantage for the single highest estimate.
 
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-The Best Pick moved to SEA at LV on the Sunday refresh. It provisionally has the highest estimated chance to cover among games that have not kicked off at the spread the pool locked on Tuesday. Its estimated lead over the other picks is uncertain. Tuesday's Best Pick was PIT at CIN.
-
 3 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| MIN at GB  | GB              | MIN        | 53.8%          |
+| MIN at GB  | GB              | MIN        | 50.9%          |
 | SF at DAL  | SF              | DAL        | 51.4%          |
 | WAS at NYG | WAS             | NYG        | 50.6%          |
 <!-- LATE_WEEK_REFRESH:END -->
