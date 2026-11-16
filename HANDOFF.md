@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:44:04.540296+00:00`
+Refreshed at: `2026-11-16T21:44:45.145350+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-11-16T21:44:04.540296+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5a8374f10d7b` — Screen referee home-penalty tendency against the close 2011-25: the tilt persists (+1.0 yd per SD) but moves the result by nothing measurable; unresolved
-- Pending change set: 60 paths
+- Baseline commit: `b3f3820f1569` — Screen punt-unit quality on college games: no survivor, unresolved
+- Pending change set: 58 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
+  - `M  docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/xlg-14-u8-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/xlg14_family_u8.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-16T21:44:04.540296+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 40 more
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
+  - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

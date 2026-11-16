@@ -54,6 +54,9 @@ Owner 2026-11-16: keep improving the model, no overfitting, maximum parallel thr
 - W3-D launched: reusable per-week layer attribution, Week 10 now and rerun Tue after MNF; section in picks-getting-worse-2026-11-15.md.
 - W3-C launched: T sign-rule form screened on college, lane t-signrule-2026-11-16.md.
 
+- Evening (measured, commits 63bfdc45..b3f3820f): QW at the measured -0.123 constant 836-667; rebuild rehearsal identical; bundle of three pinned patches applies; test baseline 516 passed; landing GO on all three checks Monday evening (v4-landing-2026-11-17.md). Week-1 weight, referee tendency, punt units: unresolved, nothing served.
+- Wave 5 running: hindsight-audit-team-2026-11-16.md and hindsight-audit-player-2026-11-16.md (training values knowable only after the pick deadline, the defect class that produced the weather gain), plus win-totals-2026-11-16.md.
+
 ## Post-Week-18 pinned batch (one refit, re-enrol validation)
 - Quarterback input repair (tests/scratch/qb_input_repair/repair_ab.patch), unless applied Tuesday per full-steam-2026-11-14.md.
 - Weather: pregame MOS temp/wind in serve and train (live-weather-features.md), or weather_drop.patch; forecast-trained weak_stack_v4.
