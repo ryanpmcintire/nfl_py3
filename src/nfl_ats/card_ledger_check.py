@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,9 @@ CARD_CELL_SEPARATOR = "|"
 CARD_MATCHUP_CELL = 2
 CARD_PICK_CELL = 3
 BEST_PICK_FIELD = "best_pick"
+CARD_CHANCE_CELL = 4
+CARD_CHANCE_PATTERN = re.compile(r"^\d+\.\d%$")
+CHANCE_FIELD = "displayed_cover_chance"
 BOARD_STAR_SURFACE = "best_pick_ledger_vs_board"
 CARD_FILE_STAR_SURFACE = "best_pick_ledger_vs_card_file"
 
@@ -40,6 +44,46 @@ def _latest_revision_side_by_game(revisions: pd.DataFrame) -> dict[str, str]:
         side = str(row.get("new_pick_side") or "")
         latest_side[str(row["game_id"])] = side if side in ("HOME", "AWAY") else ""
     return latest_side
+
+
+def _percent_text(value: float) -> str:
+    return f"{value * 100:.1f}%"
+
+
+def _latest_revision_chance_by_game(revisions: pd.DataFrame) -> dict[str, str]:
+    required = {
+        "game_id",
+        "revision_recorded_at_utc",
+        "new_pick_side",
+        "new_home_cover_probability",
+    }
+    if revisions.empty or not required.issubset(revisions.columns):
+        return {}
+    latest: dict[str, str] = {}
+    for _, row in revisions.sort_values("revision_recorded_at_utc").iterrows():
+        home_probability = pd.to_numeric(row["new_home_cover_probability"], errors="coerce")
+        side = str(row["new_pick_side"])
+        if pd.isna(home_probability) or side not in ("HOME", "AWAY"):
+            continue
+        pick_probability = home_probability if side == "HOME" else 1.0 - home_probability
+        latest[str(row["game_id"])] = _percent_text(float(pick_probability))
+    return latest
+
+
+def _card_file_chances(card_path: Path, game_id_by_matchup: dict[str, str]) -> dict[str, str]:
+    chances: dict[str, str] = {}
+    for line in card_path.read_text(encoding="utf-8").split("\n"):
+        if not line.startswith(CARD_CELL_SEPARATOR):
+            continue
+        cells = line.split(CARD_CELL_SEPARATOR)
+        if len(cells) <= CARD_CHANCE_CELL:
+            continue
+        game_id = game_id_by_matchup.get(cells[CARD_MATCHUP_CELL].strip())
+        chance = cells[CARD_CHANCE_CELL].strip()
+        if game_id is None or not CARD_CHANCE_PATTERN.match(chance):
+            continue
+        chances.setdefault(game_id, chance)
+    return chances
 
 
 def _flagged_best_pick(paper_week: pd.DataFrame) -> str:
@@ -171,6 +215,7 @@ def check_card_ledger_consistency(
             )
 
     board_side_by_game: dict[str, str] = {}
+    board_chance_by_game: dict[str, str] = {}
     board_star: str | None = None
     board_content_error = ""
     try:
@@ -183,6 +228,9 @@ def check_card_ledger_consistency(
         board_side_by_game = {
             game.game_id: ("HOME" if game.pick_team == game.home else "AWAY")
             for game in board.games
+        }
+        board_chance_by_game = {
+            game.game_id: _percent_text(game.pick_probability) for game in board.games
         }
         board_star = next((game.game_id for game in board.games if game.is_best), "")
     except Exception as error:
@@ -216,6 +264,39 @@ def check_card_ledger_consistency(
             )
         except (OSError, ValueError) as error:
             card_file_error = f"{type(error).__name__}: {error}"
+
+    card_chance_by_game: dict[str, str] = {}
+    if card_path is not None and card_path.is_file() and not card_file_error:
+        try:
+            card_chance_by_game = _card_file_chances(
+                card_path, {matchup: game_id for game_id, matchup in served_matchup.items()}
+            )
+        except (OSError, ValueError) as error:
+            card_file_error = f"{type(error).__name__}: {error}"
+    ledger_chance_by_game = _latest_revision_chance_by_game(revisions_week)
+    for game_id in sorted(pre_kickoff_ids | set(board_chance_by_game) & set(card_chance_by_game)):
+        shown = {
+            "board": board_chance_by_game.get(game_id),
+            "card_file": card_chance_by_game.get(game_id),
+            "pick_revision_ledger": ledger_chance_by_game.get(game_id),
+        }
+        present = {name: value for name, value in shown.items() if value is not None}
+        if len(set(present.values())) <= 1:
+            continue
+        anchor_name = "board" if "board" in present else next(iter(present))
+        for name, value in present.items():
+            if name == anchor_name or value == present[anchor_name]:
+                continue
+            disagreements.append(
+                {
+                    "game_id": game_id,
+                    "matchup": served_matchup.get(game_id, game_id),
+                    "surface": f"{anchor_name}_vs_{name}",
+                    "field": CHANCE_FIELD,
+                    "ledger_value": present[anchor_name],
+                    "served_value": value,
+                }
+            )
 
     if star_compared:
         for surface, surface_star in (
