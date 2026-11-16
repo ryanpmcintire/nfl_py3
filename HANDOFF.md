@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:14:41.416497+00:00`
+Refreshed at: `2026-11-16T20:16:41.819004+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T20:14:41.416497+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f4b37588cc6b` — Screen a scoreboard-versus-EPA family on college games; its survivor does not confirm in the NFL
-- Pending change set: 78 paths
+- Baseline commit: `0f50ada2540a` — Screen a fifth college family, freeze LEAD-108 for a forward test, count current books in the thin-move check
+- Pending change set: 68 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/lead108-forward-2026-11-16.md`
-  - `A  docs/lanes/mod30-outside-ratings-acquire-2026-11-16.md`
-  - `A  docs/lanes/model-improve-2026-11-16.md`
+  - `M  docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/served-terms-thin-move-2026-11-16.md`
-  - `A  docs/lanes/xlg-14-u5-2026-11-16.md`
+  - `A  docs/lanes/serve-parity-audit-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/xlg14_composition_family_u5.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/check_served_terms.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/lead108_forward.py`
-  - ...and 58 more
+  - ` M tiebreaker.json`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 48 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
