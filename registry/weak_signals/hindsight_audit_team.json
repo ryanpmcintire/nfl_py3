@@ -1,0 +1,173 @@
+{
+  "family": "hindsight_audit_team",
+  "signals": {
+    "hindsight_audit_team_p_accuracy_points": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval entirely below zero for this arm",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "QW base model (QB repair + forecast weather) with training spread_line at the opener (Tuesday capture, else SBR opener) while the target stays the residual against the close, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.011); record 826-677 vs 836-667; changed picks 26 (arm 8-18)",
+      "effect": -0.665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "hindsight_audit_team",
+      "interval": [
+        -1.1448653355725569,
+        -0.27100271002710025
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train-serve timing check: training spread_line at the opener (Tuesday capture, else SBR opener) while the target stays the residual against the close.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/hindsight_audit_team/results.json",
+      "standard_error": null
+    },
+    "hindsight_audit_team_p_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW base model (QB repair + forecast weather) with training spread_line at the opener (Tuesday capture, else SBR opener) while the target stays the residual against the close, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.219); record 826-677 vs 836-667; changed picks 26 (arm 8-18)",
+      "effect": -0.0001036928118567135,
+      "effect_units": "log_loss_improvement",
+      "family": "hindsight_audit_team",
+      "interval": [
+        -0.00032006829323775256,
+        8.94796520901407e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train-serve timing check: training spread_line at the opener (Tuesday capture, else SBR opener) while the target stays the residual against the close.",
+      "probability_positive": 0.159,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/hindsight_audit_team/results.json",
+      "standard_error": null
+    },
+    "hindsight_audit_team_t_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW base model (QB repair + forecast weather) with total_line as of the pick deadline (Tuesday capture 2020-25, SBR opener 2009-19, close kept on 16 rows) in training and opener scoring rows, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.150); record 834-669 vs 836-667; changed picks 6 (arm 2-4)",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "hindsight_audit_team",
+      "interval": [
+        -0.33557610395698206,
+        0.1388888888888889
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train-serve timing check: total_line as of the pick deadline (Tuesday capture 2020-25, SBR opener 2009-19, close kept on 16 rows) in training and opener scoring rows.",
+      "probability_positive": 0.09725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/hindsight_audit_team/results.json",
+      "standard_error": null
+    },
+    "hindsight_audit_team_t_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW base model (QB repair + forecast weather) with total_line as of the pick deadline (Tuesday capture 2020-25, SBR opener 2009-19, close kept on 16 rows) in training and opener scoring rows, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.071); record 834-669 vs 836-667; changed picks 6 (arm 2-4)",
+      "effect": -5.0767658189670745e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "hindsight_audit_team",
+      "interval": [
+        -0.00013949239790506636,
+        1.5581697417475433e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train-serve timing check: total_line as of the pick deadline (Tuesday capture 2020-25, SBR opener 2009-19, close kept on 16 rows) in training and opener scoring rows.",
+      "probability_positive": 0.068,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/hindsight_audit_team/results.json",
+      "standard_error": null
+    },
+    "hindsight_audit_team_tp_accuracy_points": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval entirely below zero for this arm",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "QW base model (QB repair + forecast weather) with both the as-of total and the opener training spread, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.022); record 827-676 vs 836-667; changed picks 27 (arm 9-18)",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "hindsight_audit_team",
+      "interval": [
+        -0.9536784741144414,
+        -0.26542800265428
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train-serve timing check: both the as-of total and the opener training spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/hindsight_audit_team/results.json",
+      "standard_error": null
+    },
+    "hindsight_audit_team_tp_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW base model (QB repair + forecast weather) with both the as-of total and the opener training spread, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.188); record 827-676 vs 836-667; changed picks 27 (arm 9-18)",
+      "effect": -0.00012158003270045848,
+      "effect_units": "log_loss_improvement",
+      "family": "hindsight_audit_team",
+      "interval": [
+        -0.00040670710476798776,
+        9.801605315628369e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train-serve timing check: both the as-of total and the opener training spread.",
+      "probability_positive": 0.18825,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/hindsight_audit_team/results.json",
+      "standard_error": null
+    }
+  }
+}

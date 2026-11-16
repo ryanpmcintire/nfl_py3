@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:53:05.515804+00:00`
+Refreshed at: `2026-11-16T22:02:10.021559+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-16T21:53:05.515804+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c32faa2554c0` — Audit training-time timing of the 24 player, availability and quarterback inputs: none uses post-deadline information
-- Pending change set: 60 paths
+- Baseline commit: `99baae1fd1d1` — Run the one declared served look of the weeks 7-12 preseason anchor: sign held in every fold, no gain (changed picks 22-29), unresolved
+- Pending change set: 58 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `R  docs/lanes/win-totals-2026-11-16.md -> docs/lanes/done/win-totals-2026-11-16.md`
+  - `A  docs/lanes/hindsight-audit-team-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/win_totals_anchor_2026_11_16.json`
+  - `A  registry/weak_signals/hindsight_audit_team.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/win_totals_anchor.py`
+  - `A  scripts/hindsight_audit_team.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-16T21:53:05.515804+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 40 more
+  - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
