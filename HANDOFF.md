@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T05:31:49.137318+00:00`
+Refreshed at: `2026-11-16T17:46:21.499816+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T05:31:49.137318+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `99362e486bae` — Test the injury-wording read as a lineup term and late injury news as a term: neither beats the card, both unresolved
-- Pending change set: 60 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `e4b7cfaa8bb9` — Republish the site with the latest settled results
+- Pending change set: 72 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/model-improve-2026-11-15.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
+  - ` M docs/model.html`
   - ` M registry/weak_signals/lead110_absorption.json`
+  - `A  registry/weak_signals/xlg14_scoreboard_family_u4.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `M  tiebreaker.json`
+  - `A  scripts/xlg14_family_u4.py`
+  - `A  scripts/xlg14_scoreboard_nfl_confirmation.py`
+  - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 40 more
+  - ...and 52 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `01e86749d895ef79`
+- Model ID: `f09e045fb672183f`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261115T144308Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261116T171510Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,159 / 2,211 (52.42%)**
-- Linked forecast: **2026 Week 10**, created `2026-11-15T17:10:07.440426+00:00`
+- Secondary close-grade historical classification: **1,163 / 2,220 (52.39%)**
+- Linked forecast: **2026 Week 10**, created `2026-11-16T17:11:02.509306+00:00`
 
-The 52.42% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.39% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `01e86749d895ef79`, published `2026-11-15T17:17:52.271377+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `f09e045fb672183f`, published `2026-11-16T17:20:04.366942+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

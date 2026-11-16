@@ -11,11 +11,11 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,159 of 2,211 non-push games correctly (52.42%)**. The 95% range was 50.43%-54.51%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,163 of 2,220 non-push games correctly (52.39%)**. The 95% range was 50.36%-54.47%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
@@ -25,7 +25,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 15 | HOU at CLE | CLE +4.5         | 53.9%          |
 | Sun, Nov 15 | JAX at TEN | TEN +10.5        | 50.9%          |
 | Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.1%          |
-| Sun, Nov 15 | LA at ARI  | LA -9.5          | 58.5%          |
+| Sun, Nov 15 | LA at ARI  | LA -9.5          | 59.8%          |
 | Sun, Nov 15 | MIA at IND | IND -2.5         | 61.0%          |
 | Sun, Nov 15 | MIN at GB  | MIN +4.5         | 53.8%          |
 | Sun, Nov 15 | NE at DET  | NE +2.5          | 53.5%          |
@@ -45,10 +45,10 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`01e86749d895ef79`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`f09e045fb672183f`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
-- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.42%** (1,159 of 2,211 non-push games), week-blocked 95% interval [50.43%, 54.51%].
+- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.39%** (1,163 of 2,220 non-push games), week-blocked 95% interval [50.36%, 54.47%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).
 <!-- ACTIVE_MODEL_STATE:END -->
@@ -63,7 +63,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 10,403 results recorded -- 10,297 unresolved_below_power, 106 closed (94 refuted_mechanism, 12 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 10,418 results recorded -- 10,312 unresolved_below_power, 106 closed (94 refuted_mechanism, 12 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 63 of 69 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

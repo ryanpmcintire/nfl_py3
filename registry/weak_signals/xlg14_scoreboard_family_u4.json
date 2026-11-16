@@ -1,0 +1,425 @@
+{
+  "family": "xlg14_scoreboard_family_u4",
+  "signals": {
+    "xlg14_scoreboard_cfb_last_game_epa_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_epa_gap: the previous game's points margin minus the margin its EPA margin predicts, slope and intercept fitted on team-games in strictly earlier seasons. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 485, record 244-241; coefficient per SD +0.0213; earlier and later season-half coefficients +0.0456 and -0.0039; this metric sits at percentile 74.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.190476.",
+      "effect": 0.033613,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.448179,
+        0.504202
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won their last game by more than their play-by-play quality said they should go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.552,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_epa_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_epa_gap: the previous game's points margin minus the margin its EPA margin predicts, slope and intercept fitted on team-games in strictly earlier seasons. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 485, record 244-241; coefficient per SD +0.0213; earlier and later season-half coefficients +0.0456 and -0.0039; this metric sits at percentile 7.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000118.",
+      "effect": -8.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000202,
+        2e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won their last game by more than their play-by-play quality said they should go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0515,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_epa_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_epa_gap: the previous game's points margin minus the margin its EPA margin predicts, slope and intercept fitted on team-games in strictly earlier seasons. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 485, record 244-241; coefficient per SD +0.0213; earlier and later season-half coefficients +0.0456 and -0.0039; this metric sits at percentile 7.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000238.",
+      "effect": -0.000181,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000406,
+        3.8e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won their last game by more than their play-by-play quality said they should go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.05,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_q4_margin_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_q4_margin: the previous game's points margin from the fourth period on. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 924, record 480-444; coefficient per SD +0.0376; earlier and later season-half coefficients +0.0655 and +0.0070; this metric sits at percentile 93.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.078431.",
+      "effect": 0.403361,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.257703,
+        1.053501
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won the fourth quarter of their last game by a lot go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.8807,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_q4_margin_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_q4_margin: the previous game's points margin from the fourth period on. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 924, record 480-444; coefficient per SD +0.0376; earlier and later season-half coefficients +0.0655 and +0.0070; this metric sits at percentile 93.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000041.",
+      "effect": 4.7e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000147,
+        0.000241
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won the fourth quarter of their last game by a lot go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.6615,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_q4_margin_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_q4_margin: the previous game's points margin from the fourth period on. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 924, record 480-444; coefficient per SD +0.0376; earlier and later season-half coefficients +0.0655 and +0.0070; this metric sits at percentile 93.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000084.",
+      "effect": 9.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000295,
+        0.00048
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won the fourth quarter of their last game by a lot go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.6605,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_success_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_success_gap: the previous game's points margin minus the margin its success-rate margin predicts, slope and intercept fitted on team-games in strictly earlier seasons. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 232, record 118-114; coefficient per SD -0.0097; earlier and later season-half coefficients +0.0081 and -0.0321; this metric sits at percentile 71.2 of 200 within-season shuffles of the same column; in-sample minus held-out +0.056022.",
+      "effect": 0.044818,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.291317,
+        0.380952
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won their last game by more than their share of successful plays said they should go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.6058,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_success_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_success_gap: the previous game's points margin minus the margin its success-rate margin predicts, slope and intercept fitted on team-games in strictly earlier seasons. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 232, record 118-114; coefficient per SD -0.0097; earlier and later season-half coefficients +0.0081 and -0.0321; this metric sits at percentile 7.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000092.",
+      "effect": -8.6e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000158,
+        -1.9e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won their last game by more than their share of successful plays said they should go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0045,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_last_game_success_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, last_game_success_gap: the previous game's points margin minus the margin its success-rate margin predicts, slope and intercept fitted on team-games in strictly earlier seasons. Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 232, record 118-114; coefficient per SD -0.0097; earlier and later season-half coefficients +0.0081 and -0.0321; this metric sits at percentile 7.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000185.",
+      "effect": -0.000173,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000319,
+        -3.9e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that won their last game by more than their share of successful plays said they should go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0045,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_season_epa_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, season_epa_gap: the per-game mean, over earlier weeks of the season, of points margin minus the margin the EPA margin predicts (earlier-season fit). Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 1532, record 788-744; coefficient per SD +0.0794; earlier and later season-half coefficients +0.1192 and +0.0393; this metric sits at percentile 98.0 of 200 within-season shuffles of the same column; in-sample minus held-out -0.033613.",
+      "effect": 0.492997,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.392437,
+        1.355742
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have outscored their play-by-play quality so far this season go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8665,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_season_epa_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, season_epa_gap: the per-game mean, over earlier weeks of the season, of points margin minus the margin the EPA margin predicts (earlier-season fit). Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 1532, record 788-744; coefficient per SD +0.0794; earlier and later season-half coefficients +0.1192 and +0.0393; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000114.",
+      "effect": 0.000274,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000131,
+        0.000678
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have outscored their play-by-play quality so far this season go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.909,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_cfb_season_epa_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared over-reaction mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first scoreboard-over-play-quality family, season_epa_gap: the per-game mean, over earlier weeks of the season, of points margin minus the margin the EPA margin predicts (earlier-season fit). Team value from games in strictly earlier weeks of the same season, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons. Changed picks 1532, record 788-744; coefficient per SD +0.0794; earlier and later season-half coefficients +0.1192 and +0.0393; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000230.",
+      "effect": 0.000549,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000263,
+        0.001356
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_scoreboard_family_u4: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have outscored their play-by-play quality so far this season go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.908,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_nfl_season_epa_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the negative side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor season_epa_gap: points margin minus the margin predicted from play-by-play EPA margin (least squares on team-games in strictly earlier seasons), per game over the team's games in strictly earlier weeks of the same season, regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 66, record 30-36; coefficient per SD +0.0336 [-0.0621, +0.1372], positive in 5 of 6 folds (expected positive); this metric sits at percentile 36.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.133067.",
+      "effect": -0.399202,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -1.397206,
+        0.665336
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_scoreboard_family_u4: the one pre-declared NFL confirmation of the college survivor; 1 gating read (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams that have outscored what their play-by-play efficiency would predict so far this season go on to beat the opening spread more often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.2182,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_nfl_season_epa_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the negative side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor season_epa_gap: points margin minus the margin predicted from play-by-play EPA margin (least squares on team-games in strictly earlier seasons), per game over the team's games in strictly earlier weeks of the same season, regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 66, record 30-36; coefficient per SD +0.0336 [-0.0621, +0.1372], positive in 5 of 6 folds (expected positive); this metric sits at percentile 47.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000259.",
+      "effect": -0.000189,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.000679,
+        0.0003
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_scoreboard_family_u4: the one pre-declared NFL confirmation of the college survivor; 1 gating read (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams that have outscored what their play-by-play efficiency would predict so far this season go on to beat the opening spread more often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.2165,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    },
+    "xlg14_scoreboard_nfl_season_epa_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the negative side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor season_epa_gap: points margin minus the margin predicted from play-by-play EPA margin (least squares on team-games in strictly earlier seasons), per game over the team's games in strictly earlier weeks of the same season, regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 66, record 30-36; coefficient per SD +0.0336 [-0.0621, +0.1372], positive in 5 of 6 folds (expected positive); this metric sits at percentile 47.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000521.",
+      "effect": -0.000372,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_scoreboard_family_u4",
+      "interval": [
+        -0.001364,
+        0.000627
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_scoreboard_family_u4: the one pre-declared NFL confirmation of the college survivor; 1 gating read (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams that have outscored what their play-by-play efficiency would predict so far this season go on to beat the opening spread more often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.2255,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-xlg14-cfb-first-discovery.md",
+      "standard_error": null
+    }
+  }
+}
