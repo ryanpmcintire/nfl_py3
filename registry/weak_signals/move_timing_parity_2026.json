@@ -1,0 +1,201 @@
+{
+  "family": "move_timing_parity_2026",
+  "signals": {
+    "move_timing_parity_2026_m_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. Arm 832-671 vs reference 836-667; changed picks 36 (arm 16-20, reference 20-16); season-block bootstrap; move coefficient per fold 0.186-0.223 (reference 0.187-0.244); out-of-sample minus in-sample log loss gap 0.00090 (reference 0.00103).",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -0.8541392904073587,
+        0.3369272237196766
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the move term on the same Sunday window the live card uses did not improve picks overall.",
+      "probability_positive": 0.16675,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    },
+    "move_timing_parity_2026_m_after_cap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. After-cap subset (kickoff after the Sunday 4 PM lock), 269 games, week-block bootstrap: arm 143-126 vs reference 142-127; changed picks 13 (arm 7-6).",
+      "effect": 0.37174721189591076,
+      "effect_units": "accuracy_points",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -2.482490346028621,
+        3.076923076923077
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For games kicking off after the Sunday 4 PM lock, the parity-matched move term was about even.",
+      "probability_positive": 0.5495,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 269,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    },
+    "move_timing_parity_2026_m_after_cap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. After-cap subset (kickoff after the Sunday 4 PM lock), 269 games, week-block bootstrap: arm 143-126 vs reference 142-127; changed picks 13 (arm 7-6).",
+      "effect": 0.0014384546868534377,
+      "effect_units": "log_loss_improvement",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -0.001773686753458374,
+        0.004764229635002253
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For games kicking off after the Sunday 4 PM lock, the parity-matched move term gave slightly better probabilities.",
+      "probability_positive": 0.8045,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 269,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    },
+    "move_timing_parity_2026_m_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. Arm 832-671 vs reference 836-667; changed picks 36 (arm 16-20, reference 20-16); season-block bootstrap; move coefficient per fold 0.186-0.223 (reference 0.187-0.244); out-of-sample minus in-sample log loss gap 0.00090 (reference 0.00103).",
+      "effect": -3.4881056614956335e-05,
+      "effect_units": "brier_improvement",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -0.00034336372156580484,
+        0.00018851032257911673
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the move term on the live card's Sunday window left probability quality unchanged.",
+      "probability_positive": 0.4465,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    },
+    "move_timing_parity_2026_m_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. Arm 832-671 vs reference 836-667; changed picks 36 (arm 16-20, reference 20-16); season-block bootstrap; move coefficient per fold 0.186-0.223 (reference 0.187-0.244); out-of-sample minus in-sample log loss gap 0.00090 (reference 0.00103).",
+      "effect": -6.490258719222015e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -0.0006592121554057536,
+        0.000367882210270191
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the move term on the live card's Sunday window left probability quality unchanged.",
+      "probability_positive": 0.4585,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    },
+    "move_timing_parity_2026_m_sunday_early_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. Sunday 1 PM subset, 372 games, week-block bootstrap: arm 209-163 vs reference 212-160; changed picks 19 (arm 8-11).",
+      "effect": -0.8064516129032258,
+      "effect_units": "accuracy_points",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -3.1919160314028896,
+        1.6216216216216217
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For Sunday 1 PM games, the parity-matched move term picked slightly worse.",
+      "probability_positive": 0.2235,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 372,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    },
+    "move_timing_parity_2026_m_sunday_early_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; not wrong-sign-resolved and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served market-move term rebuilt for 2023-25 with the serving construction (sharp_book_movement_features include_sunday=True, end min(kickoff, Sun 15:35 ET last call), book needs a pre-Wednesday quote, available = leader books > 0) from the 2023-25 archive, all pre-cutoff labels: effective Sunday end 12:25 ET instead of the training 10:55 ET hourly end (archive holds nothing between 12:25 and 16:10, so the late-game 12:25-15:35 stretch is not rebuilt); 159 of 799 game moves changed, mean abs 0.12 pt. Served four-term stage refit leave-one-season-out on the QW model probability, opener grade 2020-25, 1503 games (opener pushes are no-decision), reference QW 836-667 reproduced. Sunday 1 PM subset, 372 games, week-block bootstrap: arm 209-163 vs reference 212-160; changed picks 19 (arm 8-11).",
+      "effect": -0.000644642154628949,
+      "effect_units": "log_loss_improvement",
+      "family": "move_timing_parity_2026",
+      "interval": [
+        -0.003612049719618675,
+        0.0022300391421283526
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For Sunday 1 PM games, the parity-matched move term gave slightly worse probabilities.",
+      "probability_positive": 0.32975,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 372,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/move_timing_parity/20261116T230003Z/results.json",
+      "standard_error": null
+    }
+  }
+}

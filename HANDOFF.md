@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:00:15.776642+00:00`
+Refreshed at: `2026-11-16T23:01:51.090611+00:00`
 
 ## Start here
 
@@ -21,15 +21,16 @@ Refreshed at: `2026-11-16T23:00:15.776642+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1993d4e6e938` — Pooled nested-LOSO stack of 20 as-of signals on the QW offset: 852-651 v 836-667 held out (+1.06 pts, null 100th pct); inputs were chosen after earlier looks on these games, so the frozen forward weeks decide
-- Pending change set: 64 paths
+- Baseline commit: `868ae371d93d` — Flag timing parity: division and protection flags are built by the same code at the same as-of time in history and live; 9 Week 2-3 protection values differed only from a missed play-by-play capture
+- Pending change set: 65 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/done/flag-timing-parity-2026-11-16.md`
+  - `A  docs/lanes/done/move-timing-parity-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lanes/pooled-stack-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  scripts/flag_timing_parity.py`
+  - `A  registry/weak_signals/move_timing_parity_2026.json`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `A  scripts/move_timing_parity.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-16T23:00:15.776642+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 44 more
+  - ...and 45 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
