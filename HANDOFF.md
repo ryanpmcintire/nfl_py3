@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:22:06.057444+00:00`
+Refreshed at: `2026-11-16T23:27:04.864298+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-11-16T23:22:06.057444+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1a6f2d072b11` — Goal-65 lane: owner stop on new lanes; four units finishing
-- Pending change set: 70 paths
+- Baseline commit: `e93fc8f16b91` — Team-specific home edge: +1.32 pts per SD against the close 2011-25, null 93rd percentile, gate spent; queued as a later forward log
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
-  - `A  docs/lanes/done/team-hfa-2026-11-16.md`
-  - ` M docs/lanes/expert-rankings-2026-11-16.md`
+  - `A  docs/lanes/done/expert-rankings-2026-11-16.md`
+  - `D  docs/lanes/expert-rankings-2026-11-16.md`
   - `M  docs/lanes/goal-65-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/team_hfa_2026_11_16.json`
+  - `A  registry/weak_signals/expert_rankings_served_2026_11_16.json`
+  - `A  scripts/expert_rankings_forward.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/team_hfa.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-16T23:22:06.057444+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - ...and 50 more
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

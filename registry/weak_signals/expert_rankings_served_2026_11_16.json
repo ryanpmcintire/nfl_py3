@@ -1,0 +1,117 @@
+{
+  "family": "expert_rankings_served_2026_11_16",
+  "signals": {
+    "expert_rankings_gap_frozen_2026_w2_10_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; week-block interval spans both signs at this sample; no refuted mechanism and no positive control bounds an effect this size on the served stage.",
+      "closing_ground": null,
+      "description": "Frozen 2020-25 coefficient applied once to the played 2026 card, Weeks 2-10, at the card's pool line; ECR scrapes dated before each deadline, rank map and k from 2026 earlier weeks. 124 of 133 card games carry the term; record 69-64 v card 67-66; changed 6 (4-2 v 2-4).",
+      "effect": 1.503759,
+      "effect_units": "accuracy_points",
+      "family": "expert_rankings_served_2026_11_16",
+      "interval": [
+        -2.919708,
+        6.980897
+      ],
+      "league": "nfl",
+      "notes": "Family expert_rankings_served_2026_11_16: one served look at the opener 2020-25 (2 metrics) plus one frozen 2026 Weeks 2-10 score (2 metrics), declared in the lane before either ran; follows the close screen family expert_rankings_2026_11_16. Not served.",
+      "plain_summary": "The same frozen expert adjustment applied to this season's played card through Week 10.",
+      "probability_positive": 0.7015,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 133,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/expert-rankings-2026-11-16.md",
+      "standard_error": null
+    },
+    "expert_rankings_gap_frozen_2026_w2_10_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; week-block interval spans both signs at this sample; no refuted mechanism and no positive control bounds an effect this size on the served stage.",
+      "closing_ground": null,
+      "description": "Frozen 2020-25 coefficient applied once to the played 2026 card, Weeks 2-10, at the card's pool line; ECR scrapes dated before each deadline, rank map and k from 2026 earlier weeks. 124 of 133 card games carry the term; record 69-64 v card 67-66; changed 6 (4-2 v 2-4).",
+      "effect": -0.003571,
+      "effect_units": "log_loss_improvement",
+      "family": "expert_rankings_served_2026_11_16",
+      "interval": [
+        -0.009037,
+        0.001745
+      ],
+      "league": "nfl",
+      "notes": "Family expert_rankings_served_2026_11_16: one served look at the opener 2020-25 (2 metrics) plus one frozen 2026 Weeks 2-10 score (2 metrics), declared in the lane before either ran; follows the close screen family expert_rankings_2026_11_16. Not served.",
+      "plain_summary": "The same frozen expert adjustment applied to this season's played card through Week 10.",
+      "probability_positive": 0.096,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 133,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/expert-rankings-2026-11-16.md",
+      "standard_error": null
+    },
+    "expert_rankings_gap_served_opener_accuracy": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Declared positive; the whole week-block interval (and the season-block interval) lies below zero: the served-stage term changes picks that lose.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "FantasyPros ECR team expectation minus the as-of spread (gap as built in expert_rankings.py), one offset-logistic coefficient per SD on the QW served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out with nested offsets. Full coefficient +0.0649/SD, folds positive 6/6, halves +0.0752/+0.0520; record 800-703 v QW 836-667; changed 115 (38-74 v 74-38); in-sample minus held-out log loss +0.00070; intercept-only -0.00000.",
+      "effect": -2.39521,
+      "effect_units": "accuracy_points",
+      "family": "expert_rankings_served_2026_11_16",
+      "interval": [
+        -3.632851,
+        -1.070897
+      ],
+      "league": "nfl",
+      "notes": "Family expert_rankings_served_2026_11_16: one served look at the opener 2020-25 (2 metrics) plus one frozen 2026 Weeks 2-10 score (2 metrics), declared in the lane before either ran; follows the close screen family expert_rankings_2026_11_16. Not served.",
+      "plain_summary": "Adds the fantasy experts' view of each offense to the model's own pick probability for 2020-25 and checks the picks it would have changed.",
+      "probability_positive": 0.0003,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/expert-rankings-2026-11-16.md",
+      "standard_error": null
+    },
+    "expert_rankings_gap_served_opener_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; week-block interval spans both signs at this sample; no refuted mechanism and no positive control bounds an effect this size on the served stage.",
+      "closing_ground": null,
+      "description": "FantasyPros ECR team expectation minus the as-of spread (gap as built in expert_rankings.py), one offset-logistic coefficient per SD on the QW served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out with nested offsets. Full coefficient +0.0649/SD, folds positive 6/6, halves +0.0752/+0.0520; record 800-703 v QW 836-667; changed 115 (38-74 v 74-38); in-sample minus held-out log loss +0.00070; intercept-only -0.00000.",
+      "effect": -0.000328,
+      "effect_units": "log_loss_improvement",
+      "family": "expert_rankings_served_2026_11_16",
+      "interval": [
+        -0.001853,
+        0.001243
+      ],
+      "league": "nfl",
+      "notes": "Family expert_rankings_served_2026_11_16: one served look at the opener 2020-25 (2 metrics) plus one frozen 2026 Weeks 2-10 score (2 metrics), declared in the lane before either ran; follows the close screen family expert_rankings_2026_11_16. Not served.",
+      "plain_summary": "Adds the fantasy experts' view of each offense to the model's own pick probability for 2020-25 and checks the picks it would have changed.",
+      "probability_positive": 0.362,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/expert-rankings-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}
