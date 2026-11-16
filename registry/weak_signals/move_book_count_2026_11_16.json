@@ -1,0 +1,145 @@
+{
+  "family": "move_book_count_2026_11_16",
+  "signals": {
+    "movebooks_multi_book_move_decides_2026_w4_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign (the difference interval spans both signs) and no positive control; five looks, one family.",
+      "closing_ground": null,
+      "description": "Two-or-three-book nonzero-move games where removing the fitted move and availability terms changes the served side; served side cover rate minus an even split",
+      "effect": 7.14,
+      "effect_units": "accuracy_points",
+      "family": "move_book_count_2026_11_16",
+      "interval": [
+        -31.59,
+        40.1
+      ],
+      "league": "nfl",
+      "notes": "; 4-3, exact two-sided p 1.000",
+      "plain_summary": "Games where a line move agreed by two or three sportsbooks put the card on its team, and how that team did.",
+      "probability_positive": 0.6367,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 7,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/move_book_count/summary.json",
+      "standard_error": null
+    },
+    "movebooks_multi_book_move_side_2026_w4_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign (the difference interval spans both signs) and no positive control; five looks, one family.",
+      "closing_ground": null,
+      "description": "Same population and grade as the one-book cell, nonzero served moves resting on two or three leader books",
+      "effect": -1.85,
+      "effect_units": "accuracy_points",
+      "family": "move_book_count_2026_11_16",
+      "interval": [
+        -21.33,
+        18.05
+      ],
+      "league": "nfl",
+      "notes": "no pushes; 13-14, exact two-sided p 1.000",
+      "plain_summary": "When the line move came from two or three sportsbooks agreeing, this counts how often the team the line moved toward covered the pool number.",
+      "probability_positive": 0.4253,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 27,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/move_book_count/summary.json",
+      "standard_error": null
+    },
+    "movebooks_one_book_move_decides_2026_w4_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign (the difference interval spans both signs) and no positive control; five looks, one family.",
+      "closing_ground": null,
+      "description": "One-book nonzero-move games where removing the fitted move and availability terms (coefficient set in force at the capture) changes the served side; effect is the served side's cover rate at the pool Tuesday line minus an even split",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "move_book_count_2026_11_16",
+      "interval": [
+        -34.3,
+        34.3
+      ],
+      "league": "nfl",
+      "notes": "; 4-4, exact two-sided p 1.000",
+      "plain_summary": "Games where a single sportsbook's line move was what put the card on its team, and how that team did.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 8,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/move_book_count/summary.json",
+      "standard_error": null
+    },
+    "movebooks_one_book_move_side_2026_w4_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign (the difference interval spans both signs) and no positive control; five looks, one family.",
+      "closing_ground": null,
+      "description": "2026 Weeks 4-10 games whose served line move (last validation capture before kickoff) is nonzero and rests on exactly one leader book with a Tuesday baseline; effect is the cover rate at the pool Tuesday line of the side the move points to, minus an even split, exact binomial interval",
+      "effect": 8.33,
+      "effect_units": "accuracy_points",
+      "family": "move_book_count_2026_11_16",
+      "interval": [
+        -13.36,
+        27.89
+      ],
+      "league": "nfl",
+      "notes": "no pushes; book count replayed at the capture time without late re-parse files, replay equals the served move on 98 of 100 games; 14-10, exact two-sided p 0.541",
+      "plain_summary": "When the line move behind the card came from a single sportsbook, this counts how often the team the line moved toward covered the pool number.",
+      "probability_positive": 0.7878,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 24,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/move_book_count/summary.json",
+      "standard_error": null
+    },
+    "movebooks_one_minus_multi_move_side_2026_w4_w10": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground met: no resolved wrong sign (the difference interval spans both signs) and no positive control; five looks, one family.",
+      "closing_ground": null,
+      "description": "Cover rate of the move-pointed side on one-book moves minus on two-or-three-book moves, 2026 Weeks 4-10, week-block bootstrap interval; mechanism predicts negative (a single book's move is noisier)",
+      "effect": 10.19,
+      "effect_units": "accuracy_points",
+      "family": "move_book_count_2026_11_16",
+      "interval": [
+        -29.15,
+        47.73
+      ],
+      "league": "nfl",
+      "notes": "matched null (book count permuted within week, 2000 draws) percentile 0.649; 14-10 v 13-14; 2023-25 fit population has 0 one-book and 0 two-book games of 799, so the LOSO slope split is unreadable",
+      "plain_summary": "Whether line moves from one sportsbook pointed to the winning side less often than moves from several sportsbooks.",
+      "probability_positive": 0.6605,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 51,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/move_book_count/summary.json",
+      "standard_error": null
+    }
+  }
+}
