@@ -1,0 +1,33 @@
+{
+  "family": "team_hfa_2026_11_16",
+  "signals": {
+    "team_hfa_shrunk_venue_edge_close_screen": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Screen vs close REG 2011-25 n 3818: +1.32 accuracy pts per SD, season-block 95% [+0.08, +2.82], probability_positive 0.98; within-season team-label shuffle null percentile 93.0 (p95 +1.39), so the declared survivor gate was missed and the served look was not run; halves +0.61 / +1.89 both declared-positive, so split-half reliability is not zero; sign not refuted; no positive control bounds the effect.",
+      "closing_ground": null,
+      "description": "Team-and-stadium home edge: each home team's prior-season home-minus-road ATS residual against the close at its primary stadium (league season mean removed), shrunk toward zero with the shrinkage chosen by inner leave-one-season-out; neutral and secondary venues zero. Declared sign POSITIVE on home cover. Screen against the close, REG 2011-2025, pushes dropped; OLS slope of home cover per SD in accuracy points. Halves 2011-18 +0.61, 2019-25 +1.89; null percentile 93.0 of 200 within-season team-label shuffles (p95 +1.39); follow-the-edge record 1903-1785; 12 of 15 seasons in the declared direction.",
+      "effect": 1.316152,
+      "effect_units": "accuracy_points",
+      "family": "team_hfa_2026_11_16",
+      "interval": [
+        0.078102,
+        2.821151
+      ],
+      "league": "nfl",
+      "notes": "Family team_hfa_2026_11_16: one term, declared in the lane before outcomes were joined; at most 2 gating reads (screen, served look at the opener 2020-25 on QW for a survivor). Survivor: no. Prior related: mod27_home_nudge (uniform shift), cx15_denver_home, new_stadium_home, roof_state.",
+      "plain_summary": "Checks whether stadiums where the home team has beaten the spread more at home than on the road in past seasons keep doing so, once that history is pulled toward the league average.",
+      "probability_positive": 0.9815,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3818,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/team-hfa-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}
