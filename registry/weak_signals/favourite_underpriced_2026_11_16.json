@@ -1,0 +1,33 @@
+{
+  "family": "favourite_underpriced_2026_11_16",
+  "signals": {
+    "favourite_underpriced_pre_gap_close_screen": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point estimate on the wrong side (-0.32 per SD, both halves negative) but the season-block interval [-1.62, +0.76] crosses zero, so no resolved wrong sign; halves agree in sign, so split-half reliability is not zero; no positive control bounds an effect this small at the close screen.",
+      "closing_ground": null,
+      "description": "Preseason favourite underpriced: percentile rank of preseason strength (mean of win total and Super Bowl futures ranks) minus percentile rank of opener-implied rating from earlier weeks, home minus away; declared sign POSITIVE on home cover (back the preseason-favoured side). Screen against the close, REG 2011-2025 weeks 3-18, pushes dropped; OLS slope of home cover per SD in accuracy points, declared direction. Halves 2011-18 -0.22, 2019-25 -0.45; null percentile 36.5 of 200 within-season shuffles (p95 +1.42); back-preseason-side record 1608-1617; 4 of 15 seasons in the declared direction.",
+      "effect": -0.318898,
+      "effect_units": "accuracy_points",
+      "family": "favourite_underpriced_2026_11_16",
+      "interval": [
+        -1.621188,
+        0.762169
+      ],
+      "league": "nfl",
+      "notes": "Family favourite_underpriced_2026_11_16: confirmation look for a hypothesis suggested by futures_anchor (college, positive 13/13 folds), team_mispricing (popular teams lean positive) and win_totals (weeks 7-12 anchor, fitted negative at the opener). Declared in the lane before outcomes were joined; at most 2 gating reads (screen, served look for a survivor). Survivor: no.",
+      "plain_summary": "Checks whether teams the betting market rated highly before the season are priced too low by the spread later in the year, once the weekly lines have moved away from them.",
+      "probability_positive": 0.3035,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3350,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/favourite-underpriced-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

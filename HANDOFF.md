@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:41:20.069819+00:00`
+Refreshed at: `2026-11-16T22:42:45.476030+00:00`
 
 ## Start here
 
@@ -21,17 +21,15 @@ Refreshed at: `2026-11-16T22:41:20.069819+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0bd0e2ee5dda` — Goal-65 lane: wave 1 results and wave 2 units
-- Pending change set: 64 paths
+- Baseline commit: `e888153dcb58` — Price at the pool number: parameter-free market probability 66-51 on 2026 W3-10 against the played card 52-65; capture of Bovada ladders and Kalshi strikes scheduled before each deadline
+- Pending change set: 61 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  config/source_policies.json`
-  - `A  docs/lanes/pool-number-price-2026-11-16.md`
+  - `A  docs/lanes/done/favourite-underpriced-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/pool_number_price_2026.json`
-  - `M  scripts/capture_scheduler.py`
+  - `A  registry/weak_signals/favourite_underpriced_2026_11_16.json`
+  - `A  scripts/favourite_underpriced.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/pool_number_price.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-16T22:41:20.069819+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 44 more
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - ...and 41 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
