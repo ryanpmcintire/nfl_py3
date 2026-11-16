@@ -1,0 +1,173 @@
+{
+  "family": "pool_number_price_history",
+  "signals": {
+    "pool_number_price_history_blend_vs_served_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Blend of served out-of-season probability and Kalshi ladder probability, one weight cross-fit (half_season_weeks_le_9), seasons 2025-2025, 271 games, week-block bootstrap. Fitted weight sits at 0 (blend equals the base); no picks changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_history",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 271,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_history_blend_vs_served_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Blend of served out-of-season probability and Kalshi ladder probability, one weight cross-fit (half_season_weeks_le_9), seasons 2025-2025, 271 games, week-block bootstrap. Fitted weight sits at 0 (blend equals the base); no picks changed.",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_history",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.324,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 271,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_history_blend_vs_served_log": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Blend of served out-of-season probability and Kalshi ladder probability, one weight cross-fit (half_season_weeks_le_9), seasons 2025-2025, 271 games, week-block bootstrap. Fitted weight sits at 0 (blend equals the base); no picks changed.",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_history",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.3078,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 271,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_history_kalshi_vs_served_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kalshi ladder probability at the FanDuel-rebuilt pool number in place of the served out-of-season probability, seasons 2025-2025, 271 games, week-block bootstrap.",
+      "effect": -0.935003,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_history",
+      "interval": [
+        -6.583874,
+        5.234877
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.356,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 271,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_history_kalshi_vs_served_brier": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Kalshi ladder price at the FanDuel-rebuilt pool number in place of served S, 2025 (271 games, 18 week blocks): the whole 95% interval of the calibration difference is on the wrong side.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Kalshi ladder probability at the FanDuel-rebuilt pool number in place of the served out-of-season probability, seasons 2025-2025, 271 games, week-block bootstrap.",
+      "effect": -0.004455,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_history",
+      "interval": [
+        -0.008404,
+        -0.000561
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0125,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 271,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_history_kalshi_vs_served_log": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Kalshi ladder price at the FanDuel-rebuilt pool number in place of served S, 2025 (271 games, 18 week blocks): the whole 95% interval of the calibration difference is on the wrong side.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Kalshi ladder probability at the FanDuel-rebuilt pool number in place of the served out-of-season probability, seasons 2025-2025, 271 games, week-block bootstrap.",
+      "effect": -0.009317,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_history",
+      "interval": [
+        -0.017338,
+        -0.001359
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 271,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    }
+  }
+}

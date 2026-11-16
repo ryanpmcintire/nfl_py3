@@ -1,6 +1,90 @@
 {
   "family": "pool_number_price_2026",
   "signals": {
+    "pool_number_price_blend_history_weight_2026_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Blend of the current-formula replay and the market probability at the pool number, one weight fit on the Kalshi history, scored 2026 W3-10, 117 games, week-block bootstrap. Fitted weight sits at 0 (blend equals the base); no picks changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_2026",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_blend_history_weight_2026_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Blend of the current-formula replay and the market probability at the pool number, one weight fit on the Kalshi history, scored 2026 W3-10, 117 games, week-block bootstrap. Fitted weight sits at 0 (blend equals the base); no picks changed.",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1945,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_blend_history_weight_2026_log": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Blend of the current-formula replay and the market probability at the pool number, one weight fit on the Kalshi history, scored 2026 W3-10, 117 games, week-block bootstrap. Fitted weight sits at 0 (blend equals the base); no picks changed.",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1883,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
     "pool_number_price_fitted_w7_10_accuracy": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -167,6 +251,174 @@
         2026
       ],
       "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_vs_current_formula_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool number in place of the current-formula replay, 2026 W3-10, 117 games, week-block bootstrap.",
+      "effect": -3.208479,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -13.559322,
+        7.898261
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2612,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_vs_current_formula_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool number in place of the current-formula replay, 2026 W3-10, 117 games, week-block bootstrap.",
+      "effect": -0.00475,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.011223,
+        0.001515
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0737,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_vs_current_formula_log": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool number in place of the current-formula replay, 2026 W3-10, 117 games, week-block bootstrap.",
+      "effect": -0.009763,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.022967,
+        0.002996
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0712,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_vs_u5_replay_w3_9_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool number in place of the u5 harness replay, 2026 W3-9, 104 games, week-block bootstrap.",
+      "effect": -1.982346,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -10.47619,
+        5.82667
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.285,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_vs_u5_replay_w3_9_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool number in place of the u5 harness replay, 2026 W3-9, 104 games, week-block bootstrap.",
+      "effect": 0.000342,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.004327,
+        0.005354
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5397,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_vs_u5_replay_w3_9_log": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool number in place of the u5 harness replay, 2026 W3-9, 104 games, week-block bootstrap.",
+      "effect": 0.000505,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.009154,
+        0.010837
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5282,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/decisive_20261116T225202Z/results.json",
       "standard_error": null
     }
   }

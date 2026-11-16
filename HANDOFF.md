@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:53:43.353812+00:00`
+Refreshed at: `2026-11-16T22:54:17.456505+00:00`
 
 ## Start here
 
@@ -21,19 +21,17 @@ Refreshed at: `2026-11-16T22:53:43.353812+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bd71c6a6e99a` — Fit the served stage on pool-line labels: worse than the served two-stage on 2023-25 (459.5-352.5 v 451-361) and on 2026; unresolved, nothing served
-- Pending change set: 67 paths
+- Baseline commit: `e9503f87a87b` — Capture player props and team totals before each deadline and log a parameter-free prop-versus-totals diagnostic forward from Week 11
+- Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  config/source_policies.json`
-  - ` M docs/lanes/pool-number-price-2026-11-16.md`
+  - `A  docs/lanes/done/pool-number-price-2026-11-16.md`
+  - `D  docs/lanes/pool-number-price-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/prop-market-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - ` M registry/weak_signals/pool_number_price_2026.json`
-  - `M  scripts/capture_scheduler.py`
+  - `M  registry/weak_signals/pool_number_price_2026.json`
+  - `A  registry/weak_signals/pool_number_price_history.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - ` M scripts/pool_number_price.py`
-  - `A  scripts/prop_market.py`
+  - `M  scripts/pool_number_price.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-16T22:53:43.353812+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 47 more
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
