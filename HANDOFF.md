@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:08:53.502610+00:00`
+Refreshed at: `2026-11-16T21:09:28.771960+00:00`
 
 ## Start here
 
@@ -21,16 +21,13 @@ Refreshed at: `2026-11-16T21:08:53.502610+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9521b30e4e10` — NFL reads of the rating-system median and the 538/nfelo model gaps: neither adds to the served card (28-27 and 30-27 on changed picks), unresolved
-- Pending change set: 69 paths
+- Baseline commit: `ec509bdaa746` — Republish the site with the measured contract-year finding
+- Pending change set: 65 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/lanes/model-improve-2026-11-16.md`
+  - `M  docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/v4-landing-2026-11-17.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-16T21:08:53.502610+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 49 more
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - ...and 45 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
