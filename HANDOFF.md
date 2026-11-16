@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:01:51.090611+00:00`
+Refreshed at: `2026-11-16T23:03:31.709223+00:00`
 
 ## Start here
 
@@ -21,16 +21,17 @@ Refreshed at: `2026-11-16T23:01:51.090611+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `868ae371d93d` — Flag timing parity: division and protection flags are built by the same code at the same as-of time in history and live; 9 Week 2-3 protection values differed only from a missed play-by-play capture
+- Baseline commit: `ecb5170c7c52` — Move-term timing parity: training ends Sunday 10:55 ET, serving about noon; rebuilt arm 832-671 v 836-667, unresolved; the card-term recorder logs the late stretch forward
 - Pending change set: 65 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/done/move-timing-parity-2026-11-16.md`
+  - `A  docs/lanes/done/two-base-stage-2026-11-16.md`
+  - `M  docs/lanes/goal-65-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lanes/pooled-stack-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/move_timing_parity_2026.json`
+  - `A  registry/weak_signals/two_base_stage_2026_11_16.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/move_timing_parity.py`
+  - `A  scripts/two_base_stage.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-16T23:01:51.090611+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - ...and 45 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

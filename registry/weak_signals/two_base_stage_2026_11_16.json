@@ -1,0 +1,61 @@
+{
+  "family": "two_base_stage_2026_11_16",
+  "signals": {
+    "two_base_stage_tb_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "Four-term pick probability with both base logits as separate fitted terms (QW base trained at the close, OP base trained with spread and target at the as-of opener), minus the QW four-term stage; refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.121); record 828-675 vs 836-667; changed picks 70 (arm 31-39); logit correlation 0.949",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "two_base_stage_2026_11_16",
+      "interval": [
+        -1.6337644656228727,
+        0.6459948320413437
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Two-base stage: the close-trained and opener-trained model readings enter the pick probability as two separate fitted terms.",
+      "probability_positive": 0.179,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/two_base_stage/results.json",
+      "standard_error": null
+    },
+    "two_base_stage_tb_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "Four-term pick probability with both base logits as separate fitted terms (QW base trained at the close, OP base trained with spread and target at the as-of opener), minus the QW four-term stage; refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.260); record 828-675 vs 836-667; changed picks 70 (arm 31-39); logit correlation 0.949",
+      "effect": -0.0002910383176335956,
+      "effect_units": "log_loss_improvement",
+      "family": "two_base_stage_2026_11_16",
+      "interval": [
+        -0.0009550585241485775,
+        0.00021071622353307842
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Two-base stage: the close-trained and opener-trained model readings enter the pick probability as two separate fitted terms.",
+      "probability_positive": 0.1605,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/two_base_stage/results.json",
+      "standard_error": null
+    }
+  }
+}
