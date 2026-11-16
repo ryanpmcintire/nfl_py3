@@ -281,11 +281,171 @@ def summarize(frame):
     return "\n".join(lines)
 
 
+def _card_only(season, week, have):
+    card = _card(season, week)
+    card = card.loc[~card.index.isin(have)]
+    if card.empty:
+        return pd.DataFrame()
+    pool, _ = _pool(season, week)
+    schedules, _ = load_verified_snapshot(latest_snapshot(DATA / "raw"))
+    sched = schedules.set_index("game_id")
+    frame = pd.DataFrame(
+        {
+            "game_id": card.index,
+            "season": season,
+            "week": week,
+            "home_team": card["home_team"].to_numpy(),
+            "away_team": card["away_team"].to_numpy(),
+            "spread_line": [pool.get(g, np.nan) for g in card.index],
+            "card_side": card["card_side"].to_numpy(),
+            "ledger_side": card["ledger_side"].to_numpy(),
+            "result": [pd.to_numeric(sched.at[g, "result"], errors="coerce") for g in card.index],
+        }
+    )
+    frame["settle_margin"] = frame["result"] - frame["spread_line"]
+    frame["side_card"] = frame["card_side"]
+    frame["ok_card"] = _graded(frame["side_card"].eq("HOME"), frame["settle_margin"])
+    frame["status"] = np.where(
+        frame["settle_margin"].isna(), "open", np.where(frame["settle_margin"].eq(0), "push", "settled")
+    )
+    frame["replay_flag"] = "card only"
+    return frame
+
+
+def _p_positive(wins, losses):
+    from scipy.stats import beta
+
+    return float(beta.sf(0.5, wins + 1, losses + 1))
+
+
+def _wl(ok):
+    s = pd.Series(ok, dtype=float).dropna()
+    return int(s.eq(1).sum()), int(s.eq(0).sum())
+
+
+def _fmt(w, n_lost):
+    return f"{w}-{n_lost} (P+ {_p_positive(w, n_lost):.2f})" if w + n_lost else "0-0"
+
+
+def season_run(season, weeks):
+    parts = []
+    for week in weeks:
+        try:
+            frame, _, _ = build(season, week)
+            frame["replay_flag"] = np.where(
+                (frame["replay_error"] > 0.005) | frame["card_side"].ne(frame["feed_side"]), "replay mismatch", ""
+            )
+        except (SystemExit, KeyError):
+            frame = pd.DataFrame()
+        extra = _card_only(season, week, set(frame["game_id"]) if len(frame) else set())
+        parts.append(pd.concat([frame, extra], ignore_index=True))
+    return pd.concat(parts, ignore_index=True)
+
+
+def _term_rows(rep, weeks, specs):
+    rows = []
+    for name, column, values_of in specs:
+        cells = []
+        tw = tl = tn = 0
+        for w in weeks:
+            f = rep.loc[rep["week"].eq(w)]
+            if column not in f or f[column].isna().all():
+                cells.append("-")
+                continue
+            values = values_of(f)
+            mask = np.abs(f[column].to_numpy(dtype=float)) > 0
+            ok = _graded(pd.Series(values[mask] > 0, index=f.index[mask]), f.loc[mask, "settle_margin"])
+            wi, lo = _wl(ok)
+            tw += wi
+            tl += lo
+            tn += int(mask.sum())
+            cells.append(f"{int(mask.sum())}: {wi}-{lo}")
+        rows.append(f"| {name} | " + " | ".join(cells) + f" | {tn} | {_fmt(tw, tl)} |")
+    return rows
+
+
+def season_summary(frame):
+    out = []
+    weeks = sorted(frame["week"].unique())
+    out.append("| week | games | card-only | replay-mismatch | " + " | ".join(LAYERS) + " | card | open/push |")
+    out.append("|" + "---|" * (len(LAYERS) + 6))
+    for w in weeks:
+        f = frame.loc[frame["week"].eq(w)]
+        cells = [_record(f[f"ok_{k}"]) if f[f"ok_{k}"].notna().any() else "-" for k in LAYERS]
+        out.append(
+            f"| {w} | {len(f)} | {int(f['replay_flag'].eq('card only').sum())} | {int(f['replay_flag'].eq('replay mismatch').sum())} | "
+            + " | ".join(cells)
+            + f" | {_record(f['ok_card'])} | {int(f['status'].ne('settled').sum())} |"
+        )
+    rep = frame.loc[frame["replay_flag"].ne("card only")]
+    cells = [_fmt(*_wl(rep[f"ok_{k}"])) for k in LAYERS]
+    out.append(
+        f"| total (replayed games {len(rep)}) | | | | " + " | ".join(cells)
+        + f" | {_fmt(*_wl(frame['ok_card']))} (all {len(frame)}) | |"
+    )
+    out.append("")
+    out.append("Layer flips (side changed v previous layer; record of the new side):")
+    out.append("")
+    out.append("| layer | " + " | ".join(f"W{w}" for w in weeks) + " | flips settled | record, P+ |")
+    out.append("|" + "---|" * (len(weeks) + 3))
+    pairs = [("calibrated", "base"), ("flags", "calibrated"), ("move", "flags"), ("hook", "move"), ("card", "hook")]
+    for key, ref in pairs:
+        cells = []
+        tw = tl = 0
+        for w in weeks:
+            f = rep.loc[rep["week"].eq(w)]
+            if f[f"side_{ref}"].isna().all():
+                cells.append("-")
+                continue
+            ch = f[f"side_{key}"].ne(f[f"side_{ref}"])
+            wi, lo = _wl(f.loc[ch, f"ok_{key}"])
+            tw += wi
+            tl += lo
+            cells.append(f"{wi}-{lo}")
+        out.append(f"| {key} v {ref} | " + " | ".join(cells) + f" | {tw + tl} | {_fmt(tw, tl)} |")
+    out.append("")
+    out.append("Terms (nonzero games; record on the side the term pushed relative to the layer before it):")
+    out.append("")
+    out.append("| term | " + " | ".join(f"W{w}" for w in weeks) + " | nonzero | pushed-side record, P+ |")
+    out.append("|" + "---|" * (len(weeks) + 3))
+    specs = [
+        (name, column, (lambda f, n=name, p=prev: (f[f"p_{n}"] - f[f"p_{p}"]).to_numpy(dtype=float)))
+        for name, column, prev in (
+            ("flags", "term_flag_sum", "calibrated"),
+            ("move", "term_move", "flags"),
+            ("hook", "term_hook", "move"),
+        )
+    ]
+    flag_cols = sorted(c for c in frame.columns if c.startswith("term_flag_") and c != "term_flag_sum")
+    specs += [(c[5:], c, (lambda f, c=c: f[c].to_numpy(dtype=float))) for c in flag_cols]
+    out.extend(_term_rows(rep, weeks, specs))
+    out.append("")
+    bad = sorted(rep.loc[rep["replay_flag"].eq("replay mismatch"), "week"].unique().tolist())
+    co = frame.loc[frame["replay_flag"].eq("card only"), "week"].value_counts().sort_index().to_dict()
+    out.append(f"weeks with replay mismatch: {bad}; card-only games by week: {co}")
+    mism = int((frame["ledger_side"].ne("") & frame["ledger_side"].ne(frame["card_side"])).sum())
+    out.append(f"card v ledger side mismatches: {mism}")
+    return "\n".join(out)
+
+
 def main():
     parser = argparse.ArgumentParser(description="per-week served-side attribution by layer at the pool line")
     parser.add_argument("--season", type=int, required=True)
-    parser.add_argument("--week", type=int, required=True)
+    parser.add_argument("--week", type=int)
+    parser.add_argument("--weeks", help="inclusive range such as 1-10")
     args = parser.parse_args()
+    if args.weeks:
+        lo, hi = (int(x) for x in args.weeks.split("-"))
+        frame = season_run(args.season, range(lo, hi + 1))
+        OUT.mkdir(parents=True, exist_ok=True)
+        stem = OUT / f"{args.season}_season"
+        frame.to_csv(stem.with_suffix(".csv"), index=False)
+        text = season_summary(frame)
+        stem.with_suffix(".md").write_text(text + "\n", encoding="utf-8")
+        print(text)
+        return
+    if args.week is None:
+        parser.error("--week or --weeks required")
     frame, pool_file, snapshot = build(args.season, args.week)
     OUT.mkdir(parents=True, exist_ok=True)
     stem = OUT / f"{args.season}_week{args.week:02d}"

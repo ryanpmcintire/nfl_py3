@@ -43,3 +43,24 @@ Tuesday rerun after MNF: `.\.tools\uv.exe run --no-sync nfl-ats ingest` then `.\
 
 ## Open
 - Whether Week 10 losses trace to a term or to the base model; base model went 10-19 in W8-9 with no stale input (U6).
+
+## Season attribution (2026-11-16 15:56 -05:00, measured)
+Command: `.\.tools\uv.exe run --no-sync python scripts/week_attribution.py --season 2026 --weeks 1-10` (new --weeks option; single-week mode unchanged). Outputs artifacts/week_attribution/2026_season.{csv,md}. Probabilities P+ = Beta(w+1,l+1) posterior mass above 0.5 (uniform prior), not a verdict. Card = latest published pick per game, 0 card v ledger mismatches in all 150 games. Weeks 1-2 have no usable feed (feed lacks the discrete-base field), so card record only, no layers. Replay differs from the served feed in Weeks 3-9 (quote store has since changed; W9 single-book hook), so those weeks' layer rows are replay, the card column is real.
+
+| week | base | calibrated | flags | move | hook | card (real) |
+|---|---|---|---|---|---|---|
+| 1-2 | - | - | - | - | - | 9-7, 14-2 |
+| 3 | 10-6 | 7-9 | 5-11 | 5-11 | 5-11 | 6-10 |
+| 4 | 8-8 | 10-6 | 10-6 | 8-8 | 8-8 | 9-7 |
+| 5 | 7-8 | 8-7 | 11-4 | 11-4 | 11-4 | 8-7 |
+| 6 | 7-7 | 9-5 | 6-8 | 7-7 | 7-7 | 6-8 |
+| 7 | 11-3 | 12-2 | 10-4 | 9-5 | 9-5 | 7-7 |
+| 8 | 3-11 | 3-11 | 5-9 | 8-6 | 8-6 | 6-8 |
+| 9 | 7-8 | 7-8 | 8-7 | 6-9 | 7-8 | 5-10 |
+| 10 | 6-7 | 8-5 | 8-5 | 7-6 | 6-7 | 6-7 (1 open) |
+| W3-10 replay | 59-58 (P+ 0.54) | 64-53 (0.84) | 63-54 (0.80) | 61-56 (0.68) | 61-56 (0.68) | 76-73 over all 150 (0.60) |
+
+Flips v previous layer, record of the new side (W3-10): calibration 14-9 of 23 (P+ 0.85); flags 15-16 of 31 (0.43); move 10-12 of 22 (0.34); hook 2-2 of 4 (0.50); card v hook replay 4-12 of 16 (0.02; this is replay-v-served drift, not a model layer).
+Terms, nonzero games, pushed-side record: flags 50 games 26-24 (0.61); move 60 games 31-28 (0.65); hook 22 games (W9-10 only) 12-9 (0.74). Counted flags (overlap with the flags layer): coach 32 games 11-21 (0.04); protection 27 games 19-8 (0.98); bye 6 games 2-4; division 4 games 2-2; arrests, cold_visitor, tank_zone 0 nonzero games. Per-week cells are in the artifact.
+
+Reading: of the model layers, the worst cumulative flips are the move term (10-12 on 22 settled flips) and flags (15-16 on 31); neither is below 0.34 P+, so both are unresolved_below_power. Base to calibration to flags to move all sit within 4 games of each other (59-58 to 64-53); the card sits at 76-73 only because Weeks 1-2 (9-7 and 14-2, 23-9 combined, no layers available) lifted it; Weeks 3-10 card alone is 53-64 versus replay hook 61-56 on the same games. The sharpest single cell is the coach flag, 11-21 on 32 games (P+ 0.04), one of eight counted flags and a look among about 50 cells; not recorded as a finding and not a cause (it is one term in a layer that nets 15-16). Nothing recorded in weak-signals.
