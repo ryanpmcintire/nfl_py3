@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:55:46.300221+00:00`
+Refreshed at: `2026-11-16T23:00:15.776642+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-16T22:55:46.300221+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `821f6444d8ec` — Decisive test of the market price at the pool number: loses to the current formula on 2026 (66-51 v 70-47) and is worse calibrated on 2025 Kalshi history; blend weight zero; capture continues as a data log
-- Pending change set: 62 paths
+- Baseline commit: `1993d4e6e938` — Pooled nested-LOSO stack of 20 as-of signals on the QW offset: 852-651 v 836-667 held out (+1.06 pts, null 100th pct); inputs were chosen after earlier looks on these games, so the frozen forward weeks decide
+- Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `A  docs/lanes/done/flag-timing-parity-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/pooled-stack-2026-11-16.md`
+  - ` M docs/lanes/pooled-stack-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/pooled_stack_2026_11_16.json`
+  - `A  scripts/flag_timing_parity.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/pooled_stack.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-16T22:55:46.300221+00:00`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
   - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 42 more
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
