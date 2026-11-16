@@ -1,0 +1,61 @@
+{
+  "family": "qb_starter_parity_2026_11_16",
+  "signals": {
+    "qb_starter_parity_2026_11_16_a1_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block accuracy interval lies below zero only because every season moved by 0 or -1 game (6 blocks, -3 games total); week-block interval spans zero (P+ 0.22) and log loss and Brier favour the arm (P+ 0.84, 0.88), so the sign is not resolved across scores and no closing ground applies",
+      "closing_ground": null,
+      "description": "QW table with training quarterback columns rebuilt for knowable starter changes only (first quarterback dropback; form strictly before the game), serving unchanged, minus QW; served four-term stage refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 833-670 vs 836-667; changed picks 21 (arm 9-12, QW 12-9); week-block P+ 0.222; Brier gain 0.000052 P+ 0.884",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "qb_starter_parity_2026_11_16",
+      "interval": [
+        -0.33025099075297226,
+        -0.06578947368421052
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train on the quarterback who actually started (knowable starter changes only).",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/qb_starter_parity/results.json",
+      "standard_error": null
+    },
+    "qb_starter_parity_2026_11_16_a_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Train/serve parity of the quarterback input; interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW table with training quarterback columns rebuilt for every actual starter (first quarterback dropback; form strictly before the game), serving unchanged, minus QW; served four-term stage refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 838-665 vs 836-667; changed picks 30 (arm 16-14, QW 14-16); week-block P+ 0.603; Brier gain -0.000024 P+ 0.362",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "qb_starter_parity_2026_11_16",
+      "interval": [
+        -0.27491408934707906,
+        0.6385696040868455
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Train on the quarterback who actually started (every actual starter).",
+      "probability_positive": 0.596,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/qb_starter_parity/results.json",
+      "standard_error": null
+    }
+  }
+}

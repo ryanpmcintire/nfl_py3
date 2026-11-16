@@ -1,0 +1,61 @@
+{
+  "family": "pooled_stack_frozen_2026_w1_10",
+  "signals": {
+    "pooled_stack_frozen_2026_w1_10_card_offset_pool_line_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy week-block interval crosses zero ([-4.05,+4.00], P+ 0.504). The log-loss interval lies below zero ([-0.0325,-0.0067]) but this replay is partly seen, uses the served card as offset instead of the QW offset the stack was fitted on, and the live coach flag agrees with the mod27 replay inputs on only 58 of 104 shared games, so an input-parity defect is not excluded; that is not a resolved refutation of the frozen stack's mechanism and no positive control exists, so unresolved_below_power is the admissible classification.",
+      "closing_ground": null,
+      "description": "Frozen 2020-25 elastic-net stack (l1 0.25, lambda 0.0326, 13 nonzero columns) added to the served card probability, 2026 weeks 1-10 graded at the Splash pool line; PARTLY SEEN (these weeks were looked at before the freeze); signals without a live 2026 builder held at the training mean (amendment 2026-11-16T23:04:14Z); stack 75-74 vs card 75-74; declared 2026-11-16T22:58:33Z.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "pooled_stack_frozen_2026_w1_10",
+      "interval": [
+        -4.054743519029234,
+        4.0
+      ],
+      "league": "nfl",
+      "notes": "2 looks. Changed picks 18 (stack 9-9, card 9-9), 5 to the home side. No live 2026 values: qbelo_gap, qb_adjust, pt_dispersion_x_model, pm_gap_tue, referee_trait (no builder), contract_year_gap (no 2026 snap counts on disk), asof_total (Tuesday capture returned no 2026 totals). Declared 0-plus-indicator sensitivity: referee missing indicator adds +0.661 logit to every game, 65 picks flip to home, stack 64-85 v card 75-74 (-7.38 pts), changed 27-38.",
+      "plain_summary": null,
+      "probability_positive": 0.50425,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/pooled_stack_forward.py replay; artifacts/pooled_stack_forward/replay_2026_w1_10.json, frozen.json; docs/lanes/pooled-stack-2026-11-16.md",
+      "standard_error": null
+    },
+    "pooled_stack_frozen_2026_w1_10_card_offset_pool_line_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy week-block interval crosses zero ([-4.05,+4.00], P+ 0.504). The log-loss interval lies below zero ([-0.0325,-0.0067]) but this replay is partly seen, uses the served card as offset instead of the QW offset the stack was fitted on, and the live coach flag agrees with the mod27 replay inputs on only 58 of 104 shared games, so an input-parity defect is not excluded; that is not a resolved refutation of the frozen stack's mechanism and no positive control exists, so unresolved_below_power is the admissible classification.",
+      "closing_ground": null,
+      "description": "Same frozen stack on the served card, 2026 weeks 1-10 at the Splash pool line, mean log-loss improvement per game over the card; PARTLY SEEN; week-block bootstrap (10 blocks); declared 2026-11-16T22:58:33Z.",
+      "effect": -0.018818951275849517,
+      "effect_units": "log_loss_improvement",
+      "family": "pooled_stack_frozen_2026_w1_10",
+      "interval": [
+        -0.03249165812510533,
+        -0.006730838994457353
+      ],
+      "league": "nfl",
+      "notes": "Decided log loss card 0.69258 v stack 0.71140; Brier 0.24958 v 0.25863. Stack delta logit mean -0.0066, sd 0.159. Live coach flag fires on 53 of 150 games and agrees with mod27 g26 flags on 58 of 104; served card already carries its own flag terms, so double counting is not excluded. U6 live builder reproduces the 2025 artifact exactly (max diff 0.0).",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/pooled_stack_forward.py replay; artifacts/pooled_stack_forward/replay_2026_w1_10.json, frozen.json; docs/lanes/pooled-stack-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

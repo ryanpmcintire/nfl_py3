@@ -943,6 +943,39 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"pooled_stack_{sub}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "pooled_stack_forward.py"),
+                sub,
+            ],
+            True,
+            "Pooled-stack forward log: frozen 2020-25 stack of as-of signals on the card "
+            "probability, written after each card refresh and graded Tuesday.",
+            added_on="2026-11-16",
+        )
+        for sub, day, at in (
+            ("pregame", "wed", "12:20"),
+            ("pregame", "wed", "18:20"),
+            ("pregame", "thu", "15:05"),
+            ("pregame", "thu", "19:20"),
+            ("pregame", "fri", "19:05"),
+            ("pregame", "sat", "10:35"),
+            ("pregame", "sat", "19:20"),
+            ("pregame", "sun", "10:05"),
+            ("pregame", "sun", "12:50"),
+            ("pregame", "sun", "15:40"),
+            ("score", "tue", "09:15"),
+        )
+    ),
+    *(
+        Job(
             f"exchange_move_{sub}_{day}_{at.replace(':', '')}",
             day,
             at,
