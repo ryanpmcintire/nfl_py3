@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:30:58.932395+00:00`
+Refreshed at: `2026-11-16T21:39:18.374221+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-11-16T21:30:58.932395+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e9ecd82ca947` — Test a Week-1-only model weight: fitted weight stays positive, all-games log loss worse; unresolved, nothing changes
+- Baseline commit: `a7bf1bd94e94` — Record the unpatched test baseline for the Tuesday bundle
 - Pending change set: 58 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/lanes/pool-standing-refresh.md`
