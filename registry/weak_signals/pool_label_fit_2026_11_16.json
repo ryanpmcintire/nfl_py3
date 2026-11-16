@@ -1,0 +1,341 @@
+{
+  "family": "pool_label_fit_2026_11_16",
+  "signals": {
+    "pool_label_fit_l4_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L4 (four served terms fitted on pool-line labels, no hook) minus served two-stage (opener-label stage 1 + hook), graded at the FanDuel-rebuilt pool line LOSO, pushes kept, whole lines split +-0.5, week-block bootstrap",
+      "effect": -1.0467980295566501,
+      "effect_units": "accuracy_points",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -2.5403514071969524,
+        0.42997542997543
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.07225,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l4_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L4 (four served terms fitted on pool-line labels, no hook) minus served two-stage (opener-label stage 1 + hook), graded at the FanDuel-rebuilt pool line LOSO, pushes kept, whole lines split +-0.5, week-block bootstrap",
+      "effect": 2.4120482247070988e-05,
+      "effect_units": "brier_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.0009257325070990044,
+        0.0009850035519653444
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.522,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l4_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L4 (four served terms fitted on pool-line labels, no hook) minus served two-stage (opener-label stage 1 + hook), graded at the FanDuel-rebuilt pool line LOSO, pushes kept, whole lines split +-0.5, week-block bootstrap",
+      "effect": 3.52286937280444e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.0019271634609774246,
+        0.0020082153387126493
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.514,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l4_2026_w01_w10_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L4 (four served terms fitted on pool-line labels, no hook) minus served two-stage (opener-label stage 1 + hook), graded at the real 2026 pool line, frozen 2020-25 fit, week-block bootstrap",
+      "effect": -4.026845637583892,
+      "effect_units": "accuracy_points",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -9.803921568627452,
+        1.36986301369863
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.06175,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l4_2026_w01_w10_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L4 (four served terms fitted on pool-line labels, no hook) minus served two-stage (opener-label stage 1 + hook), graded at the real 2026 pool line, frozen 2020-25 fit, week-block bootstrap",
+      "effect": -0.002517252917782272,
+      "effect_units": "brier_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.005618329207960253,
+        0.00043808814685059597
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.04725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l4_2026_w01_w10_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L4 (four served terms fitted on pool-line labels, no hook) minus served two-stage (opener-label stage 1 + hook), graded at the real 2026 pool line, frozen 2020-25 fit, week-block bootstrap",
+      "effect": -0.005154020287345058,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.011441267577765639,
+        0.0008893471209369883
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.04575,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l_2023_25_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L (joint five-term (four served terms + hook) fitted on pool-line labels) minus served two-stage (opener-label stage 1 + hook), graded at the FanDuel-rebuilt pool line LOSO, pushes kept, whole lines split +-0.5, week-block bootstrap",
+      "effect": -1.0467980295566501,
+      "effect_units": "accuracy_points",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -2.002610110213687,
+        -0.061955951636055794
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.01525,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l_2023_25_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L (joint five-term (four served terms + hook) fitted on pool-line labels) minus served two-stage (opener-label stage 1 + hook), graded at the FanDuel-rebuilt pool line LOSO, pushes kept, whole lines split +-0.5, week-block bootstrap",
+      "effect": -0.0001413559030155344,
+      "effect_units": "brier_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.0006415047340749495,
+        0.00033275842395217843
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.2885,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l_2023_25_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L (joint five-term (four served terms + hook) fitted on pool-line labels) minus served two-stage (opener-label stage 1 + hook), graded at the FanDuel-rebuilt pool line LOSO, pushes kept, whole lines split +-0.5, week-block bootstrap",
+      "effect": -0.00030639211435564215,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.0013263495828527878,
+        0.0006684954718514669
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.279,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 812,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l_2026_w01_w10_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L (joint five-term (four served terms + hook) fitted on pool-line labels) minus served two-stage (opener-label stage 1 + hook), graded at the real 2026 pool line, frozen 2020-25 fit, week-block bootstrap",
+      "effect": -2.684563758389262,
+      "effect_units": "accuracy_points",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -6.896551724137931,
+        1.3513513513513513
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.0755,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l_2026_w01_w10_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L (joint five-term (four served terms + hook) fitted on pool-line labels) minus served two-stage (opener-label stage 1 + hook), graded at the real 2026 pool line, frozen 2020-25 fit, week-block bootstrap",
+      "effect": -0.0009393128832190316,
+      "effect_units": "brier_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.002543039759444512,
+        0.0005545247143636941
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.115,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    },
+    "pool_label_fit_l_2026_w01_w10_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arm L (joint five-term (four served terms + hook) fitted on pool-line labels) minus served two-stage (opener-label stage 1 + hook), graded at the real 2026 pool line, frozen 2020-25 fit, week-block bootstrap",
+      "effect": -0.0019299387291225995,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_label_fit_2026_11_16",
+      "interval": [
+        -0.005180398008166293,
+        0.0011307109229927639
+      ],
+      "league": "nfl",
+      "notes": "Train/serve parity: stage fitted on pool-line labels versus served opener-label stage plus hook; scripts/pool_label_fit.py, one declared run.",
+      "plain_summary": null,
+      "probability_positive": 0.11225,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 149,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_label_fit/result.json",
+      "standard_error": null
+    }
+  }
+}

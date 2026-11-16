@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:45:36.560117+00:00`
+Refreshed at: `2026-11-16T22:50:24.809379+00:00`
 
 ## Start here
 
@@ -21,17 +21,18 @@ Refreshed at: `2026-11-16T22:45:36.560117+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e12979c34fd5` — Confirmation look of the preseason-favourite pattern fails against the close 2011-25 (both halves opposite), unresolved; family spent
-- Pending change set: 65 paths
+- Baseline commit: `8ffd393d1faa` — In-season refit of the served stage: worse on 2021-25 (changed picks 59-79), better on 2026 with a kickoff-timed move input; not a serving candidate
+- Pending change set: 66 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
-  - `A  docs/lanes/done/inseason-refit-2026-11-16.md`
+  - `A  docs/lanes/done/pool-label-fit-2026-11-16.md`
   - ` M docs/lanes/pool-number-price-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/inseason_stage_refit.json`
+  - `A  registry/weak_signals/pool_label_fit_2026_11_16.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/inseason_refit.py`
+  - `A  scripts/pool_label_fit.py`
+  - ` M scripts/pool_number_price.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-16T22:45:36.560117+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 45 more
+  - ...and 46 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
