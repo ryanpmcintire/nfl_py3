@@ -1,6 +1,26 @@
 {
   "schema_version": 1,
   "sources": {
+    "internet_archive_thespread_supercontest": {
+      "risk": "yellow",
+      "terms_url": "https://archive.org/about/terms.php",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["research_use_only", "capture_timestamp_required", "polite_crawl_required", "minimum_delay_seconds_4", "generic_user_agent"]
+    },
+    "thespread_supercontest_hub": {
+      "risk": "yellow",
+      "terms_url": "https://www.thespread.com/robots.txt",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["research_use_only", "robots_allows_path", "single_page_per_run", "generic_user_agent"]
+    },
     "internet_archive_vegasinsider": {
       "risk": "yellow",
       "terms_url": "https://archive.org/about/terms.php",

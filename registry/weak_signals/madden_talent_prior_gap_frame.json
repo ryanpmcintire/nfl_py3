@@ -1,0 +1,61 @@
+{
+  "family": "madden_talent_prior_gap_frame",
+  "signals": {
+    "madden_talent_gap_label_weeks_1_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "madden_talent input vs gap label, weeks_1_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.005096374425645009,
+      "effect_units": "mae_improvement",
+      "family": "madden_talent_prior_gap_frame",
+      "interval": [
+        0.001054288006511851,
+        0.0102642089531936
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether madden_talent predicts early-season line error.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/madden_prior/madden_talent_results.json",
+      "standard_error": null
+    },
+    "madden_talent_margin_label_weeks_1_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "madden_talent input vs margin label, weeks_1_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.008586214066868436,
+      "effect_units": "mae_improvement",
+      "family": "madden_talent_prior_gap_frame",
+      "interval": [
+        -0.05994840037041702,
+        0.06524921968743967
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether madden_talent predicts early-season line error.",
+      "probability_positive": 0.645,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/madden_prior/madden_talent_results.json",
+      "standard_error": null
+    }
+  }
+}
