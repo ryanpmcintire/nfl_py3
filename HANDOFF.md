@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:17:16.185047+00:00`
+Refreshed at: `2026-11-16T23:21:20.234589+00:00`
 
 ## Start here
 
@@ -21,15 +21,14 @@ Refreshed at: `2026-11-16T23:17:16.185047+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6d2e0896d9bd` — Coach flag parity: history and live share the builder; the 46 mismatches were a zero-filled replay table; 2026 coach flag 20-33 at the pool line against 136-96 in history
-- Pending change set: 67 paths
+- Baseline commit: `10709316805d` — Expert consensus rankings vs team totals: +1.73 pts per SD against the close 2020-25, both halves positive, 87.5th null percentile; unresolved, frozen 2026 check next
+- Pending change set: 70 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  config/source_policies.json`
-  - `A  docs/lanes/expert-rankings-2026-11-16.md`
+  - ` M config/source_policies.json`
+  - ` M docs/lanes/expert-rankings-2026-11-16.md`
+  - `M  docs/lanes/goal-65-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/expert_rankings_2026_11_16.json`
-  - `A  scripts/expert_rankings.py`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-16T23:17:16.185047+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 47 more
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 50 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
