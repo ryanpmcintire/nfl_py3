@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:16:43.630629+00:00`
+Refreshed at: `2026-11-16T21:18:19.662890+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-16T21:16:43.630629+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `898ccd856d18` — Fetch GFS and MEX forecast bulletins before every card refresh (17 scheduler slots)
+- Baseline commit: `17921691050e` — Card-ledger check compares displayed cover chances, not only sides; it now reports the four Week 10 locked-game mismatches
 - Pending change set: 65 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/ledger-check-pct-2026-11-16.md`
+  - `M  ROADMAP.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/roadmap-sync-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M scripts/source_pull_2026_11_16.py`
-  - `M  src/nfl_ats/card_ledger_check.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -88,7 +88,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 1. **Independent combination validation is the research priority.** The historical selection replay is complete: see `docs/independent_combination_historical_replay.md`. **Measured:** the full experimental pipeline went 269-264 versus raw 282-251; Brier improvement -0.002283 [-0.009488,+0.005479], probability_positive 0.266050. The post-result stage diagnostic went 300-233 before extra calibration; +0.002057 [-0.005241,+0.010013], probability_positive 0.700550. The added calibrator reverses the 2024 ordering and is absent from production. These results do not select a replacement or erase earlier feature-design reuse. Collect the enrolled 2026 Week 4–18 cohort, with no interim performance selection or retroactive backfill. Follow `docs/lanes/independent-combination-validation.md` and the declared protocol in `docs/independent_combination_validation.md` before further tuning.
 2. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/done/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
 3. **Confidence calibration: bounded repair measured 2026-09-20.** The complete candidate replay and two predeclared out-of-season temperature repairs are saved in `docs/confidence_best_pick_sunday_matched.md` and `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227, accompanies unstable fitted temperatures and worse all-game Brier. The served probability is unchanged; 28 new cells remain unresolved, not closed. Acquire more timestamped nominees before another declared calibration comparison. State: `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate ranker or independent side-flip rules.
-4. **Continue from lane files with bounded reads and scoped delegation.** Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`. Run the scheduler in operational sessions; harness maintenance and read-only work do not trigger operational jobs. Keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
+4. **Continue from lane files with bounded reads and scoped delegation.** Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`. Run the scheduler in operational sessions; harness maintenance and read-only work do not trigger operational jobs. Keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items. v4 landing (pregame-forecast weather plus quarterback repair): `docs/lanes/v4-landing-2026-11-17.md`.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.
