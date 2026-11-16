@@ -336,6 +336,174 @@
       ],
       "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
       "standard_error": null
+    },
+    "xlg14_schedule_strength_nfl_last_opponent_strength_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor last_opponent_strength: the most recent earlier opponent's points margin per game over that opponent's games in weeks before this one (including the game against this team), regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1403; changed picks 157, record 74-83; coefficient per SD -0.0761 [-0.1812, +0.0268], negative in 6 of 6 folds (expected negative, the college sign); this metric sits at percentile 26.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.133067.",
+      "effect": -0.598802,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -2.195609,
+        0.998004
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_schedule_strength_family_u6: one of the two pre-declared NFL confirmations of the college survivors; 2 gating reads in total (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams coming off a game against a stronger opponent go on to beat the opening spread less often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.2433,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_nfl_last_opponent_strength_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor last_opponent_strength: the most recent earlier opponent's points margin per game over that opponent's games in weeks before this one (including the game against this team), regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1403; changed picks 157, record 74-83; coefficient per SD -0.0761 [-0.1812, +0.0268], negative in 6 of 6 folds (expected negative, the college sign); this metric sits at percentile 83.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000298.",
+      "effect": 4.4e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000928,
+        0.001065
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_schedule_strength_family_u6: one of the two pre-declared NFL confirmations of the college survivors; 2 gating reads in total (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams coming off a game against a stronger opponent go on to beat the opening spread less often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.519,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_nfl_last_opponent_strength_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor last_opponent_strength: the most recent earlier opponent's points margin per game over that opponent's games in weeks before this one (including the game against this team), regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1403; changed picks 157, record 74-83; coefficient per SD -0.0761 [-0.1812, +0.0268], negative in 6 of 6 folds (expected negative, the college sign); this metric sits at percentile 83.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000621.",
+      "effect": 9.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.001866,
+        0.002153
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_schedule_strength_family_u6: one of the two pre-declared NFL confirmations of the college survivors; 2 gating reads in total (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams coming off a game against a stronger opponent go on to beat the opening spread less often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.5235,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_nfl_margin_sos_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor margin_sos_gap: mean over the team's earlier games this season of each opponent's points margin per game over that opponent's games in weeks before this one (including the game against this team), regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1412; changed picks 44, record 18-26; coefficient per SD -0.0163 [-0.1107, +0.0889], negative in 5 of 6 folds (expected negative, the college sign); this metric sits at percentile 21.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.465735.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -1.397206,
+        0.332668
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_schedule_strength_family_u6: one of the two pre-declared NFL confirmations of the college survivors; 2 gating reads in total (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams whose schedule so far has been against stronger opponents go on to beat the opening spread less often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.1118,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_nfl_margin_sos_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor margin_sos_gap: mean over the team's earlier games this season of each opponent's points margin per game over that opponent's games in weeks before this one (including the game against this team), regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1412; changed picks 44, record 18-26; coefficient per SD -0.0163 [-0.1107, +0.0889], negative in 5 of 6 folds (expected negative, the college sign); this metric sits at percentile 32.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000338.",
+      "effect": -0.000319,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000706,
+        6e-05
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_schedule_strength_family_u6: one of the two pre-declared NFL confirmations of the college survivors; 2 gating reads in total (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams whose schedule so far has been against stronger opponents go on to beat the opening spread less often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.0525,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_nfl_margin_sos_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly on the positive side), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor margin_sos_gap: mean over the team's earlier games this season of each opponent's points margin per game over that opponent's games in weeks before this one (including the game against this team), regular season. Home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1412; changed picks 44, record 18-26; coefficient per SD -0.0163 [-0.1107, +0.0889], negative in 5 of 6 folds (expected negative, the college sign); this metric sits at percentile 34.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000676.",
+      "effect": -0.000643,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.001414,
+        0.000119
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_schedule_strength_family_u6: one of the two pre-declared NFL confirmations of the college survivors; 2 gating reads in total (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each with accuracy and Brier secondary, 3 control reads; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro teams whose schedule so far has been against stronger opponents go on to beat the opening spread less often, as college teams appeared to. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.0515,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
     }
   }
 }

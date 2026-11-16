@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:47:53.115774+00:00`
+Refreshed at: `2026-11-16T20:51:00.503339+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T20:47:53.115774+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `89ae5d523712` — Screen a schedule-strength family on college games: two survivors with the opposite sign, NFL confirmations declared
-- Pending change set: 73 paths
+- Baseline commit: `c3bef33b911e` — Screen the sign-rule form of the early-season overreaction term on college games (fails the declared rule, unresolved); card-logit store patch prepared for the pinned batch
+- Pending change set: 77 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/card-logit-store-2026-11-16.md`
-  - `A  docs/lanes/done/t-signrule-2026-11-16.md`
   - ` M docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `M  docs/lanes/xlg-14-u6-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/t_signrule_cfb.json`
+  - `M  registry/weak_signals/xlg14_schedule_strength_family_u6.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/t_signrule.py`
+  - `A  scripts/xlg14_u6_nfl_confirmation.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - ...and 53 more
+  - ...and 57 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
