@@ -57,6 +57,230 @@
       "source": "artifacts/v4_candidate/results.json",
       "standard_error": null
     },
+    "v4_pinned_batch_oqw_vs_qw_mos_accuracy_points": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Same Open-Meteo weather replacement on the QB-repair table (replacement constant -0.15 as graded), minus QW (MOS weather); graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 835-668 vs 836-667; changed picks 1 (arm 0-1, base 1-0); week-block P+ 0.000",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.1969796454366382,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_oqw_vs_qw_mos_log_loss_improvement": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Same Open-Meteo weather replacement on the QB-repair table (replacement constant -0.15 as graded), minus QW (MOS weather); graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 835-668 vs 836-667; changed picks 1 (arm 0-1, base 1-0); week-block P+ 0.685",
+      "effect": 1.5630392524279354e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -2.1252945160469244e-05,
+        5.474657326160286e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.77725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_oqw_vs_served_accuracy_points": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Same Open-Meteo weather replacement on the QB-repair table (replacement constant -0.15 as graded), minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 835-668 vs 829-674; changed picks 22 (arm 14-8, base 8-14); week-block P+ 0.868",
+      "effect": 0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        0.13271400132714,
+        0.6720430107526881
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.99725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_oqw_vs_served_log_loss_improvement": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Same Open-Meteo weather replacement on the QB-repair table (replacement constant -0.15 as graded), minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 835-668 vs 829-674; changed picks 22 (arm 14-8, base 8-14); week-block P+ 0.493",
+      "effect": -5.014872156851761e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.0004676065009878313,
+        0.0003182757593877736
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.5045,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_ow_vs_served_accuracy_points": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with pregame forecast weather where 2021-25 open-air games take Open-Meteo previous_day1 (24 h lead) temp and wind in place of GFS MOS (wind only 2024-25; 2009-20 and missing values keep MOS), minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 833-670 vs 829-674; changed picks 16 (arm 10-6, base 6-10); week-block P+ 0.802",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        0.1251564455569462,
+        0.42046250875963564
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_ow_vs_served_log_loss_improvement": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with pregame forecast weather where 2021-25 open-air games take Open-Meteo previous_day1 (24 h lead) temp and wind in place of GFS MOS (wind only 2024-25; 2009-20 and missing values keep MOS), minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 833-670 vs 829-674; changed picks 16 (arm 10-6, base 6-10); week-block P+ 0.756",
+      "effect": 6.24082199672928e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -5.229479029407141e-05,
+        0.00018443856780784394
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.82625,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_ow_vs_w_mos_accuracy_points": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with pregame forecast weather where 2021-25 open-air games take Open-Meteo previous_day1 (24 h lead) temp and wind in place of GFS MOS (wind only 2024-25; 2009-20 and missing values keep MOS), minus W (MOS weather); graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 833-670 vs 836-667; changed picks 9 (arm 3-6, base 6-3); week-block P+ 0.090",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.5551700208188758,
+        0.0708215297450425
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.064,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_ow_vs_w_mos_log_loss_improvement": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Feed substitution for a correctness fix; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with pregame forecast weather where 2021-25 open-air games take Open-Meteo previous_day1 (24 h lead) temp and wind in place of GFS MOS (wind only 2024-25; 2009-20 and missing values keep MOS), minus W (MOS weather); graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 833-670 vs 836-667; changed picks 9 (arm 3-6, base 6-3); week-block P+ 0.802",
+      "effect": 3.1921374810268646e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -2.8057809308738863e-05,
+        9.20603968616386e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from a free forecast service that covers every upcoming game, in place of the thin airport bulletin feed.",
+      "probability_positive": 0.841,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_weather_openmeteo/results.json",
+      "standard_error": null
+    },
     "v4_pinned_batch_q_accuracy_points": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -167,6 +391,62 @@
         2025
       ],
       "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_qw123_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack with QB repair at the measured constant -0.123 and pregame-forecast temp/wind in train and serve, minus served; served four-term stage refit LOSO, opener grade 2020-2025, season-block bootstrap; record 836-667 v 829-674; changed picks 23 (arm 15-8); week-block accuracy P+ 0.8945",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        0.1342281879194631,
+        0.8163265306122449
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from pregame forecasts in training and serving plus the quarterback input repair at its measured constant -0.123.",
+      "probability_positive": 0.99725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/v4_landing/regrade/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_qw123_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack with QB repair at the measured constant -0.123 and pregame-forecast temp/wind in train and serve, minus served; served four-term stage refit LOSO, opener grade 2020-2025, season-block bootstrap; record 836-667 v 829-674; changed picks 23 (arm 15-8); week-block accuracy P+ 0.8945",
+      "effect": -2.1786129979430523e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.000462929200927202,
+        0.0003005437732538112
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weather from pregame forecasts in training and serving plus the quarterback input repair at its measured constant -0.123.",
+      "probability_positive": 0.47075,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/v4_landing/regrade/results.json",
       "standard_error": null
     },
     "v4_pinned_batch_qw_accuracy_points": {

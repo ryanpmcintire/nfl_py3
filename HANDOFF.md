@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:18:19.662890+00:00`
+Refreshed at: `2026-11-16T21:23:21.860386+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-11-16T21:18:19.662890+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `17921691050e` — Card-ledger check compares displayed cover chances, not only sides; it now reports the four Week 10 locked-game mismatches
-- Pending change set: 65 paths
+- Baseline commit: `e2c9a0eee2c2` — Bring ROADMAP rows up to date with the 2026-11-16 units
+- Pending change set: 70 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/roadmap-sync-2026-11-16.md`
+  - `M  docs/lanes/source-pull-2026-11-16.md`
+  - `M  docs/lanes/v4-landing-2026-11-17.md`
+  - `A  docs/lanes/v4-weather-openmeteo-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `M  registry/weak_signals/v4_pinned_batch.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - ` M scripts/source_pull_2026_11_16.py`
+  - `M  scripts/source_pull_2026_11_16.py`
+  - `A  scripts/v4_weather_openmeteo.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-16T21:18:19.662890+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 45 more
+  - ...and 50 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

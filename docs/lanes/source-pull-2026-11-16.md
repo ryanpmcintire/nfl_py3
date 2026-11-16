@@ -30,3 +30,9 @@ Acquire five free public sources for research (no outcomes read, no accuracy com
 - OUTCOME_COLUMN regex in the script also dropped pregame model columns containing "cover" (nfelo_home_cover_prob_close, home_cover_prob, projected_winner*); these are model outputs, not outcomes. Narrow the regex and rerun nfelo if wanted.
 - nfelo commit pagination capped at 10 pages; raise to prove as-of before 2025-09.
 - Win totals as-of regex missed 4 seasons' headers; read those pages' header text.
+
+## Re-pull 2026-11-16 (Kalshi prices, Polymarket keyset)
+- Kalshi: candles now read price.close_dollars (fallback close; 2025 stored close was already dollars), volume_fp, open_interest_fp. Candle price_close non-null 51,105 (2025 only) -> 98,251 (2025 51,105; 2026 47,146); bid/ask close 126,330 -> 203,197 rows. Events 447 joined (284 in 2025, 163 in 2026), unchanged. Whole series re-pulled (script has no season filter).
+- Polymarket: /events/keyset (limit 50, after_cursor) replaces offset paging. Tag events 2,371 -> 2,951; game events 824 -> 896; joined 670 -> 742 (2026: 107 -> 179; 2024 278, 2025 285 unchanged); history rows 117,553 -> 124,686.
+- 2026 W1-10, 145 played-card games, price within 1 h: Tuesday noon Kalshi 0 -> 145, Polymarket 107 -> 145, any 107 -> 145; pick deadline Kalshi 0 -> 145, Polymarket 100 -> 138, any 100 -> 145. Fit-season coverage (2024-25) unchanged (2025 Kalshi tue 258, deadline 267).
+- `prediction_market_gap.py pregame --week 10 --slot tue --dry` read both venues for 2026_10_LAC_BAL (Kalshi 0.50, Polymarket 0.50). No fit, score2026 or write run; frozen coefficients untouched. Prior 2026 score (Polymarket-only prices) was made on partial coverage; rescoring is the owner/orchestrator's decision.

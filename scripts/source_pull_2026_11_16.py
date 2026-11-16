@@ -446,6 +446,21 @@ def match_game(g, day, teams):
     return hit.iloc[0] if len(hit) else None
 
 
+def dollars(block):
+    block = block or {}
+    v = block.get("close_dollars")
+    if v is None:
+        v = block.get("close")
+    return None if v is None else float(v)
+
+
+def fp(k, name):
+    v = k.get(name + "_fp")
+    if v is None:
+        v = k.get(name)
+    return None if v is None else float(v)
+
+
 def run_kalshi(args):
     d = out_dir("kalshi")
     base = "https://api.elections.kalshi.com/trade-api/v2"
@@ -535,11 +550,11 @@ def run_kalshi(args):
                     "game_id": r.game_id,
                     "market": r.home_market,
                     "end_period_ts": k["end_period_ts"],
-                    "yes_bid_close": (k.get("yes_bid") or {}).get("close"),
-                    "yes_ask_close": (k.get("yes_ask") or {}).get("close"),
-                    "price_close": (k.get("price") or {}).get("close"),
-                    "volume": k.get("volume"),
-                    "open_interest": k.get("open_interest"),
+                    "yes_bid_close": dollars(k.get("yes_bid")),
+                    "yes_ask_close": dollars(k.get("yes_ask")),
+                    "price_close": dollars(k.get("price")),
+                    "volume": fp(k, "volume"),
+                    "open_interest": fp(k, "open_interest"),
                 }
             )
     cd = pd.DataFrame(candles)
@@ -569,17 +584,24 @@ def run_polymarket(args):
     g = repo_games()
     events = []
     for selector in [{"series_id": 10187}, {"series_id": 1}, {"tag_slug": "nfl"}]:
-        offset = 0
+        cursor = ""
         while True:
-            q = urllib.parse.urlencode({**selector, "limit": 50, "offset": offset})
+            params = {**selector, "limit": 50}
+            if cursor:
+                params["after_cursor"] = cursor
+            q = urllib.parse.urlencode(params)
             try:
-                r = fetch(f"https://gamma-api.polymarket.com/events?{q}", args.delay, as_json=True)
+                r = fetch(
+                    f"https://gamma-api.polymarket.com/events/keyset?{q}",
+                    args.delay,
+                    as_json=True,
+                )
             except urllib.error.HTTPError:
                 break
-            if not r:
+            events += r.get("events", [])
+            cursor = r.get("next_cursor") or ""
+            if not cursor or not r.get("events"):
                 break
-            events += r
-            offset += len(r)
     seen = set()
     events = [e for e in events if not (e.get("slug") in seen or seen.add(e.get("slug")))]
     rows = []
