@@ -1,0 +1,173 @@
+{
+  "family": "rating_dispersion_cfb_u1",
+  "signals": {
+    "rating_dispersion_cfb_dispersion_temper_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first rating-dispersion family, dispersion_temper: the served-equivalent logit times standardized D, D the per-game standard deviation of predicted margins across Prediction Tracker computer systems (market and aggregate columns excluded), so one coefficient shrinks or stretches confidence. One offset-logistic coefficient on the leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign negative. Changed picks 41, record 14-27; coefficient per SD -0.0440; season halves -0.0528 and -0.0340; percentile 1.0 of 200 within-season shuffles of D; in-sample minus held-out +0.081633.",
+      "effect": -0.151603,
+      "effect_units": "accuracy_points",
+      "family": "rating_dispersion_cfb_u1",
+      "interval": [
+        -0.291545,
+        0.0
+      ],
+      "league": "cfb",
+      "notes": "Family rating_dispersion_cfb_u1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating log-loss reads in the matched null, 4 season-half coefficients; declared in artifacts/rating_dispersion/declaration.json before the outcome join; survivor: no.",
+      "plain_summary": "Checks whether college games the computer ratings disagree more than usual about beat the opening spread more or less often than the model expects. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0253,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8575,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_cfb_dispersion_temper_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first rating-dispersion family, dispersion_temper: the served-equivalent logit times standardized D, D the per-game standard deviation of predicted margins across Prediction Tracker computer systems (market and aggregate columns excluded), so one coefficient shrinks or stretches confidence. One offset-logistic coefficient on the leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign negative. Changed picks 41, record 14-27; coefficient per SD -0.0440; season halves -0.0528 and -0.0340; percentile 92.0 of 200 within-season shuffles of D; in-sample minus held-out +0.000081.",
+      "effect": 3.7e-05,
+      "effect_units": "brier_improvement",
+      "family": "rating_dispersion_cfb_u1",
+      "interval": [
+        -0.000199,
+        0.00026
+      ],
+      "league": "cfb",
+      "notes": "Family rating_dispersion_cfb_u1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating log-loss reads in the matched null, 4 season-half coefficients; declared in artifacts/rating_dispersion/declaration.json before the outcome join; survivor: no.",
+      "plain_summary": "Checks whether college games the computer ratings disagree more than usual about beat the opening spread more or less often than the model expects. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.642,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8575,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_cfb_dispersion_temper_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first rating-dispersion family, dispersion_temper: the served-equivalent logit times standardized D, D the per-game standard deviation of predicted margins across Prediction Tracker computer systems (market and aggregate columns excluded), so one coefficient shrinks or stretches confidence. One offset-logistic coefficient on the leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign negative. Changed picks 41, record 14-27; coefficient per SD -0.0440; season halves -0.0528 and -0.0340; percentile 92.0 of 200 within-season shuffles of D; in-sample minus held-out +0.000161.",
+      "effect": 7.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "rating_dispersion_cfb_u1",
+      "interval": [
+        -0.0004,
+        0.000535
+      ],
+      "league": "cfb",
+      "notes": "Family rating_dispersion_cfb_u1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating log-loss reads in the matched null, 4 season-half coefficients; declared in artifacts/rating_dispersion/declaration.json before the outcome join; survivor: no.",
+      "plain_summary": "Checks whether college games the computer ratings disagree more than usual about beat the opening spread more or less often than the model expects. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.6505,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8575,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_cfb_median_open_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first rating-dispersion family, median_open_gap: the Prediction Tracker systems' median predicted home margin minus the opening spread (control, expected to be priced). One offset-logistic coefficient on the leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 936, record 468-468; coefficient per SD +0.0755; season halves +0.0984 and +0.0608; percentile 62.0 of 200 within-season shuffles of D; in-sample minus held-out -0.034985.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rating_dispersion_cfb_u1",
+      "interval": [
+        -0.723032,
+        0.723032
+      ],
+      "league": "cfb",
+      "notes": "Family rating_dispersion_cfb_u1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating log-loss reads in the matched null, 4 season-half coefficients; declared in artifacts/rating_dispersion/declaration.json before the outcome join; survivor: yes.",
+      "plain_summary": "Checks whether college games the computer ratings' middle pick sits away from the opening line for beat the opening spread more or less often than the model expects. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.472,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8575,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_cfb_median_open_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first rating-dispersion family, median_open_gap: the Prediction Tracker systems' median predicted home margin minus the opening spread (control, expected to be priced). One offset-logistic coefficient on the leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 936, record 468-468; coefficient per SD +0.0755; season halves +0.0984 and +0.0608; percentile 98.5 of 200 within-season shuffles of D; in-sample minus held-out +0.000070.",
+      "effect": 0.000138,
+      "effect_units": "brier_improvement",
+      "family": "rating_dispersion_cfb_u1",
+      "interval": [
+        -0.000137,
+        0.000419
+      ],
+      "league": "cfb",
+      "notes": "Family rating_dispersion_cfb_u1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating log-loss reads in the matched null, 4 season-half coefficients; declared in artifacts/rating_dispersion/declaration.json before the outcome join; survivor: yes.",
+      "plain_summary": "Checks whether college games the computer ratings' middle pick sits away from the opening line for beat the opening spread more or less often than the model expects. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8255,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8575,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    },
+    "rating_dispersion_cfb_median_open_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared mechanism, split-half reliability not measured, and no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first rating-dispersion family, median_open_gap: the Prediction Tracker systems' median predicted home margin minus the opening spread (control, expected to be priced). One offset-logistic coefficient on the leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 936, record 468-468; coefficient per SD +0.0755; season halves +0.0984 and +0.0608; percentile 99.0 of 200 within-season shuffles of D; in-sample minus held-out +0.000147.",
+      "effect": 0.000309,
+      "effect_units": "log_loss_improvement",
+      "family": "rating_dispersion_cfb_u1",
+      "interval": [
+        -0.00026,
+        0.000905
+      ],
+      "league": "cfb",
+      "notes": "Family rating_dispersion_cfb_u1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating log-loss reads in the matched null, 4 season-half coefficients; declared in artifacts/rating_dispersion/declaration.json before the outcome join; survivor: yes.",
+      "plain_summary": "Checks whether college games the computer ratings' middle pick sits away from the opening line for beat the opening spread more or less often than the model expects. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8445,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8575,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/rating-dispersion-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

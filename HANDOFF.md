@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:01:01.669396+00:00`
+Refreshed at: `2026-11-16T21:02:13.147611+00:00`
 
 ## Start here
 
@@ -21,20 +21,21 @@ Refreshed at: `2026-11-16T21:01:01.669396+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d338d2e57edd` — Pull win totals, Open-Meteo forecasts, 538 Elo, nfelo, Kalshi and Polymarket histories with source-policy entries (data not committed)
+- Baseline commit: `5aa27c84275b` — Screen the preseason futures anchor and coach familiarity on college games: no survivors, 12 cells unresolved
 - Pending change set: 68 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/coach-familiarity-2026-11-16.md`
-  - `A  docs/lanes/futures-anchor-2026-11-16.md`
+  - ` M docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/rating-dispersion-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  scripts/coach_familiarity.py`
+  - `A  registry/weak_signals/rating_dispersion_cfb_u1.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/futures_anchor.py`
+  - `A  scripts/rating_dispersion.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-16T21:01:01.669396+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - ...and 48 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
