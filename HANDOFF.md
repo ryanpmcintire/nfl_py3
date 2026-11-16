@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:00:27.441237+00:00`
+Refreshed at: `2026-11-16T21:00:44.844655+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T21:00:27.441237+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9f3bbeb8a9ea` — Screen an end-of-half family on college games, residualised on own results: no survivor
-- Pending change set: 76 paths
+- Baseline commit: `8fbdd9466017` — Grade the v4 candidate: pregame-forecast weather in training and serving 836-667 v 829-674 held out (+0.47 pts, P+ .997); QB repair keeps it
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M config/source_policies.json`
+  - `M  config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/v4-pinned-batch-2026-11-16.md`
+  - `A  docs/lanes/source-pull-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/coach_familiarity_family_v1.json`
-  - `A  registry/weak_signals/futures_anchor_family_2026_11_16.json`
-  - `A  registry/weak_signals/v4_pinned_batch.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/v4_candidate.py`
+  - `A  scripts/source_pull_2026_11_16.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - ...and 56 more
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

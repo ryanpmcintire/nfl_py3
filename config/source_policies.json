@@ -286,6 +286,158 @@
         "stop_on_403_429_5xx",
         "never_refetch_cached_response"
       ]
+    },
+    "sportsoddshistory_nfl_win_totals": {
+      "risk": "yellow",
+      "terms_url": "https://www.covers.com/terms",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "robots_txt_allows_sportsoddshistory_paths_2026_11_16",
+        "terms_keyword_check_found_no_scraping_clause",
+        "one_page_per_season_minimum_delay_seconds_3",
+        "generic_user_agent_no_personal_details",
+        "stop_on_403_429_5xx",
+        "outcome_columns_not_stored"
+      ]
+    },
+    "sportsoddshistory_championship_futures": {
+      "risk": "yellow",
+      "terms_url": "https://www.covers.com/terms",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "robots_txt_allows_sportsoddshistory_paths_2026_11_16",
+        "nfl_super_bowl_and_cfb_national_championship_season_pages_only",
+        "one_page_per_season_minimum_delay_seconds_3",
+        "generic_user_agent_no_personal_details",
+        "stop_on_403_429_5xx",
+        "result_column_not_stored"
+      ]
+    },
+    "open_meteo_historical_forecast": {
+      "risk": "yellow",
+      "terms_url": "https://open-meteo.com/en/terms",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "license_conditions_apply",
+      "derived_publication": "allowed_with_attribution",
+      "conditions": [
+        "cc_by_4_attribution",
+        "free_non_commercial_api_under_10000_calls_per_day",
+        "api_host_robots_txt_disallows_crawlers_documented_api_use_only_no_crawl",
+        "covers_historical_forecast_api_and_previous_runs_api",
+        "minimum_delay_seconds_1",
+        "generic_user_agent_no_personal_details",
+        "never_refetch_cached_response"
+      ]
+    },
+    "fivethirtyeight_nfl_elo": {
+      "risk": "green",
+      "terms_url": "https://github.com/fivethirtyeight/data/blob/master/LICENSE",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "license_conditions_apply",
+      "derived_publication": "allowed_with_attribution",
+      "conditions": [
+        "cc_by_4_attribution",
+        "original_host_redirects_fetched_via_internet_archive_capture",
+        "capture_timestamp_required",
+        "historical_only_archive_ends_2022_season",
+        "post_game_columns_not_stored"
+      ]
+    },
+    "github_nfelo_public_ratings": {
+      "risk": "yellow",
+      "terms_url": "https://github.com/greerreNFL/nfelo/blob/main/LICENSE",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "licence_permits_read_quote_analyze_republish_outputs",
+        "licence_forbids_running_or_importing_the_software",
+        "output_data_csv_only",
+        "commit_timestamps_are_the_as_of_proof",
+        "outcome_columns_not_stored"
+      ]
+    },
+    "kalshi_public_market_data": {
+      "risk": "yellow",
+      "terms_url": "https://kalshi.com/docs/kalshi-terms-of-service",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "unauthenticated_public_read_endpoints_only",
+        "no_trading_no_account",
+        "pregame_candles_only",
+        "minimum_delay_seconds_0_3",
+        "stop_on_403_429_5xx"
+      ]
+    },
+    "polymarket_public_market_data": {
+      "risk": "yellow",
+      "terms_url": "https://polymarket.com/tos",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "unauthenticated_public_read_endpoints_only",
+        "no_trading_no_account",
+        "pregame_prices_only",
+        "minimum_delay_seconds_0_3",
+        "stop_on_403_429_5xx"
+      ]
+    },
+    "cfbd_coaches": {
+      "risk": "green",
+      "terms_url": "https://collegefootballdata.com",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "api_key_from_environment_never_logged",
+        "one_request_per_season",
+        "minimum_delay_seconds_1"
+      ]
+    },
+    "prediction_tracker": {
+      "risk": "green",
+      "terms_url": "https://www.thepredictiontracker.com/robots.txt",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "robots_allow_all_content_signal_ai_train_no_use_reference",
+        "no_model_training_on_raw_text",
+        "generic_user_agent",
+        "one_request_per_season_file",
+        "minimum_delay_seconds_2"
+      ]
     }
   }
 }
