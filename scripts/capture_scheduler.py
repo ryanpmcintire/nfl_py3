@@ -845,6 +845,76 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"card_fidelity_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "card_fidelity_check.py"),
+            ],
+            True,
+            "Card fidelity check: recompute every open card game and compare side, shown "
+            "percentage and input freshness with the card, ledger and term recorder; notifies "
+            "on a disagreement.",
+            added_on="2026-11-16",
+        )
+        for day, at in (
+            ("wed", "12:20"),
+            ("wed", "18:20"),
+            ("wed", "19:20"),
+            ("thu", "12:00"),
+            ("thu", "15:05"),
+            ("thu", "15:30"),
+            ("thu", "19:20"),
+            ("fri", "12:45"),
+            ("fri", "13:35"),
+            ("fri", "15:20"),
+            ("fri", "19:05"),
+            ("sat", "10:35"),
+            ("sat", "12:20"),
+            ("sat", "15:55"),
+            ("sat", "19:20"),
+            ("sun", "08:35"),
+            ("sun", "10:05"),
+            ("sun", "12:00"),
+            ("sun", "12:50"),
+            ("sun", "15:05"),
+            ("sun", "15:40"),
+        )
+    ),
+    *(
+        Job(
+            f"exchange_move_{sub}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "exchange_move.py"),
+                sub,
+            ],
+            True,
+            "Exchange-move forward log: frozen Tuesday-to-deadline prediction-exchange move "
+            "term beside the served move, written before kickoff and graded Tuesday.",
+            added_on="2026-11-16",
+        )
+        for sub, day, at in (
+            ("pregame", "thu", "19:45"),
+            ("pregame", "sat", "15:45"),
+            ("pregame", "sun", "12:30"),
+            ("pregame", "sun", "15:45"),
+            ("score", "tue", "09:05"),
+        )
+    ),
+    *(
+        Job(
             f"nfelo_forward_{sub}_{day}_{at.replace(':', '')}",
             day,
             at,

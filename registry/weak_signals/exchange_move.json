@@ -1,0 +1,173 @@
+{
+  "family": "exchange_move",
+  "signals": {
+    "exchange_move_beside_2026_w1_10_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (every interval spans both sides; coefficients positive in both held-out folds), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Frozen beside arm scored once on 2026 W1-10 published card, opener grade. Served 75-65, term 74-66, changed picks 0-1.",
+      "effect": -1.86e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "exchange_move",
+      "interval": [
+        -0.0031132,
+        0.0028589
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:29:02Z before fit. Term = Kalshi/Polymarket venue-mean change in spread-equivalent (pre-2024 market residual quantiles) from Tuesday noon ET to each game's pick deadline. Arm beside: offset served out-of-season logit. Arm replace: offset minus fold move coefficient times leader-median book move. Fit 2024-2025 (2024 Polymarket only), frozen beside 0.0322/pt (SE 0.070), replace 0.1503/pt (SE 0.069). Correlation with book move 0.745 (2024-25), 0.846 (2026). 3 looks (2 arms, 1 zero-book-move diagnostic).",
+      "plain_summary": null,
+      "probability_positive": 0.513,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 140,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/exchange_move/fit_2024_2025.json; artifacts/exchange_move/score_2026_w1_10.json; artifacts/exchange_move/zero_book_direction.json; artifacts/exchange_move/per_game.parquet; docs/lanes/exchange-move-2026-11-16.md",
+      "standard_error": null
+    },
+    "exchange_move_beside_loso_2024_2025_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (every interval spans both sides; coefficients positive in both held-out folds), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Exchange move beside the served book move, leave-one-season-out 2024-2025, opener grade. Folds 0.054, 0.003 logit/pt; served 256-219, term 255-220, changed picks 4-5.",
+      "effect": -0.0002091,
+      "effect_units": "log_loss_improvement",
+      "family": "exchange_move",
+      "interval": [
+        -0.0022277,
+        0.0018568
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:29:02Z before fit. Term = Kalshi/Polymarket venue-mean change in spread-equivalent (pre-2024 market residual quantiles) from Tuesday noon ET to each game's pick deadline. Arm beside: offset served out-of-season logit. Arm replace: offset minus fold move coefficient times leader-median book move. Fit 2024-2025 (2024 Polymarket only), frozen beside 0.0322/pt (SE 0.070), replace 0.1503/pt (SE 0.069). Correlation with book move 0.745 (2024-25), 0.846 (2026). 3 looks (2 arms, 1 zero-book-move diagnostic).",
+      "plain_summary": null,
+      "probability_positive": 0.421,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 475,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/exchange_move/fit_2024_2025.json; artifacts/exchange_move/score_2026_w1_10.json; artifacts/exchange_move/zero_book_direction.json; artifacts/exchange_move/per_game.parquet; docs/lanes/exchange-move-2026-11-16.md",
+      "standard_error": null
+    },
+    "exchange_move_replace_2026_w1_10_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (every interval spans both sides; coefficients positive in both held-out folds), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Frozen replace arm scored once on 2026 W1-10 published card (book move recomputed at each deadline, active move coefficient 0.2204), opener grade. Served 75-65, term 77-63, changed picks 9-7.",
+      "effect": -0.0005846,
+      "effect_units": "log_loss_improvement",
+      "family": "exchange_move",
+      "interval": [
+        -0.0108435,
+        0.009446
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:29:02Z before fit. Term = Kalshi/Polymarket venue-mean change in spread-equivalent (pre-2024 market residual quantiles) from Tuesday noon ET to each game's pick deadline. Arm beside: offset served out-of-season logit. Arm replace: offset minus fold move coefficient times leader-median book move. Fit 2024-2025 (2024 Polymarket only), frozen beside 0.0322/pt (SE 0.070), replace 0.1503/pt (SE 0.069). Correlation with book move 0.745 (2024-25), 0.846 (2026). 3 looks (2 arms, 1 zero-book-move diagnostic).",
+      "plain_summary": null,
+      "probability_positive": 0.4575,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 140,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/exchange_move/fit_2024_2025.json; artifacts/exchange_move/score_2026_w1_10.json; artifacts/exchange_move/zero_book_direction.json; artifacts/exchange_move/per_game.parquet; docs/lanes/exchange-move-2026-11-16.md",
+      "standard_error": null
+    },
+    "exchange_move_replace_loso_2024_2025_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (every interval spans both sides; coefficients positive in both held-out folds), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Exchange move replacing the served book move, leave-one-season-out 2024-2025, opener grade. Folds 0.173, 0.120 logit/pt; served 256-219, term 257-218, changed picks 35-34; in-sample gain also negative (-0.0015).",
+      "effect": -0.0020178,
+      "effect_units": "log_loss_improvement",
+      "family": "exchange_move",
+      "interval": [
+        -0.0086535,
+        0.0051237
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:29:02Z before fit. Term = Kalshi/Polymarket venue-mean change in spread-equivalent (pre-2024 market residual quantiles) from Tuesday noon ET to each game's pick deadline. Arm beside: offset served out-of-season logit. Arm replace: offset minus fold move coefficient times leader-median book move. Fit 2024-2025 (2024 Polymarket only), frozen beside 0.0322/pt (SE 0.070), replace 0.1503/pt (SE 0.069). Correlation with book move 0.745 (2024-25), 0.846 (2026). 3 looks (2 arms, 1 zero-book-move diagnostic).",
+      "plain_summary": null,
+      "probability_positive": 0.288,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 475,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/exchange_move/fit_2024_2025.json; artifacts/exchange_move/score_2026_w1_10.json; artifacts/exchange_move/zero_book_direction.json; artifacts/exchange_move/per_game.parquet; docs/lanes/exchange-move-2026-11-16.md",
+      "standard_error": null
+    },
+    "exchange_move_zero_book_direction_2024_2025_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (every interval spans both sides; coefficients positive in both held-out folds), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Games with zero book move and nonzero exchange move, side the exchange moved toward, 2024-2025, opener grade: 59-56. Diagnostic look, no fitted selection.",
+      "effect": 1.3043,
+      "effect_units": "rate_pp",
+      "family": "exchange_move",
+      "interval": [
+        -6.5217,
+        9.1304
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:29:02Z before fit. Term = Kalshi/Polymarket venue-mean change in spread-equivalent (pre-2024 market residual quantiles) from Tuesday noon ET to each game's pick deadline. Arm beside: offset served out-of-season logit. Arm replace: offset minus fold move coefficient times leader-median book move. Fit 2024-2025 (2024 Polymarket only), frozen beside 0.0322/pt (SE 0.070), replace 0.1503/pt (SE 0.069). Correlation with book move 0.745 (2024-25), 0.846 (2026). 3 looks (2 arms, 1 zero-book-move diagnostic).",
+      "plain_summary": null,
+      "probability_positive": 0.6345,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 115,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/exchange_move/fit_2024_2025.json; artifacts/exchange_move/score_2026_w1_10.json; artifacts/exchange_move/zero_book_direction.json; artifacts/exchange_move/per_game.parquet; docs/lanes/exchange-move-2026-11-16.md",
+      "standard_error": null
+    },
+    "exchange_move_zero_book_direction_2026_w1_10_rate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (every interval spans both sides; coefficients positive in both held-out folds), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Games with zero book move and nonzero exchange move, side the exchange moved toward, 2026 W1-10, opener grade: 25-17 (served 24-18 on the same games; beside arm changed no pick). Diagnostic look.",
+      "effect": 9.5238,
+      "effect_units": "rate_pp",
+      "family": "exchange_move",
+      "interval": [
+        -4.7619,
+        21.4881
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:29:02Z before fit. Term = Kalshi/Polymarket venue-mean change in spread-equivalent (pre-2024 market residual quantiles) from Tuesday noon ET to each game's pick deadline. Arm beside: offset served out-of-season logit. Arm replace: offset minus fold move coefficient times leader-median book move. Fit 2024-2025 (2024 Polymarket only), frozen beside 0.0322/pt (SE 0.070), replace 0.1503/pt (SE 0.069). Correlation with book move 0.745 (2024-25), 0.846 (2026). 3 looks (2 arms, 1 zero-book-move diagnostic).",
+      "plain_summary": null,
+      "probability_positive": 0.8935,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 42,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/exchange_move/fit_2024_2025.json; artifacts/exchange_move/score_2026_w1_10.json; artifacts/exchange_move/zero_book_direction.json; artifacts/exchange_move/per_game.parquet; docs/lanes/exchange-move-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

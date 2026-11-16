@@ -1,0 +1,89 @@
+{
+  "family": "late_move_v1",
+  "signals": {
+    "late_move_v1_pred_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign across the whole interval and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Predicted post-deadline line move on games kicking off after the Sunday 4 PM ET pick cap: Dhat = b1*(deadline line minus Tuesday-noon line) + b2*(leader-book median minus all-book median at the deadline), no intercept, OLS on 2023-25 after-cap games of training seasons, entered as a fifth fitted term in the served four-term stage on the QW base model, nested leave-one-season-out, opener grade 2020-2025 (term zero in 2020-22: no quotes near the deadline). After-cap 2023-25 record 165-148 vs QW 169-144; all games 831-672 vs 836-667; changed picks 19 (arm 7-12); predictor out-of-fold direction on moved games 48-26; matched null (200 within-season shuffles) share at or above real gain 0.745, null mean -0.115 pts. Season-block bootstrap; week-block -0.33 [-0.86, +0.20] P+ 0.095.",
+      "effect": -0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "late_move_v1",
+      "interval": [
+        -0.8458035133376708,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Predicting how the line keeps moving after our pick on late Sunday and night games, and using that as one more fitted input, did not improve the picks.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/late_move/results.json",
+      "standard_error": null
+    },
+    "late_move_v1_pred_after_cap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign across the whole interval and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Predicted post-deadline line move on games kicking off after the Sunday 4 PM ET pick cap: Dhat = b1*(deadline line minus Tuesday-noon line) + b2*(leader-book median minus all-book median at the deadline), no intercept, OLS on 2023-25 after-cap games of training seasons, entered as a fifth fitted term in the served four-term stage on the QW base model, nested leave-one-season-out, opener grade 2020-2025 (term zero in 2020-22: no quotes near the deadline). After-cap 2023-25 record 165-148 vs QW 169-144; all games 831-672 vs 836-667; changed picks 19 (arm 7-12); predictor out-of-fold direction on moved games 48-26; matched null (200 within-season shuffles) share at or above real gain 0.745, null mean -0.115 pts. After-cap 2023-25 games only, week-block bootstrap.",
+      "effect": -1.2779552715654952,
+      "effect_units": "accuracy_points",
+      "family": "late_move_v1",
+      "interval": [
+        -3.1645569620253164,
+        0.331153329959737
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Predicting how the line keeps moving after our pick on late Sunday and night games, and using that as one more fitted input, did not improve the picks.",
+      "probability_positive": 0.0525,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 313,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/late_move/results.json",
+      "standard_error": null
+    },
+    "late_move_v1_pred_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; no resolved wrong sign across the whole interval and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Predicted post-deadline line move on games kicking off after the Sunday 4 PM ET pick cap: Dhat = b1*(deadline line minus Tuesday-noon line) + b2*(leader-book median minus all-book median at the deadline), no intercept, OLS on 2023-25 after-cap games of training seasons, entered as a fifth fitted term in the served four-term stage on the QW base model, nested leave-one-season-out, opener grade 2020-2025 (term zero in 2020-22: no quotes near the deadline). After-cap 2023-25 record 165-148 vs QW 169-144; all games 831-672 vs 836-667; changed picks 19 (arm 7-12); predictor out-of-fold direction on moved games 48-26; matched null (200 within-season shuffles) share at or above real gain 0.745, null mean -0.115 pts. Season-block bootstrap; in-sample log loss 0.6856 vs held-out 0.6887.",
+      "effect": -0.0019944459915531613,
+      "effect_units": "log_loss_improvement",
+      "family": "late_move_v1",
+      "interval": [
+        -0.005985086731477856,
+        0.00010321268579249629
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Predicting how the line keeps moving after our pick on late Sunday and night games, and using that as one more fitted input, did not improve the picks.",
+      "probability_positive": 0.27575,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/late_move/results.json",
+      "standard_error": null
+    }
+  }
+}

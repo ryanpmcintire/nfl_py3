@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:31:09.618282+00:00`
+Refreshed at: `2026-11-16T22:37:52.529099+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T22:31:09.618282+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e281ae46554a` — Open the 65% goal lane: baseline 836-667 held out, five lanes on late moves, pooled signals, exchange-confirmed moves, live-card fidelity and the price at the pool number
-- Pending change set: 62 paths
+- Baseline commit: `42c80c33914c` — Derive the weather forecast match rule from forecast error (MEX wind worse than climatology; GFS interpolated under 5 h); queued for the post-season batch
+- Pending change set: 72 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - ` M config/source_policies.json`
+  - `A  docs/lanes/card-fidelity-2026-11-16.md`
+  - `A  docs/lanes/done/late-move-2026-11-16.md`
+  - `A  docs/lanes/done/team-mispricing-2026-11-16.md`
+  - `A  docs/lanes/exchange-move-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `M  docs/lanes/v4-landing-2026-11-17.md`
-  - `A  docs/lanes/weather-match-rule-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/exchange_move.json`
+  - `A  registry/weak_signals/late_move_v1.json`
+  - `A  registry/weak_signals/team_mispricing_2026_11_16.json`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/card_fidelity_check.py`
+  - `A  scripts/exchange_move.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/weather_match_rule.py`
+  - `A  scripts/late_move.py`
+  - `A  scripts/team_mispricing.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 42 more
+  - ...and 52 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

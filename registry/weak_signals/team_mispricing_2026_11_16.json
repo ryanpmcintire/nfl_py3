@@ -1,0 +1,117 @@
+{
+  "family": "team_mispricing_2026_11_16",
+  "signals": {
+    "team_mispricing_public_pop_diff_all_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point estimate is on the wrong side but the season-block interval crosses zero, so no resolved wrong sign; no positive control bounds an effect this small at the close screen.",
+      "closing_ground": null,
+      "description": "Persistent public-team premium, prior-season national-window game count, z-scored across teams, home minus away; declared sign NEGATIVE on home cover (more popular side overpriced). Screen against the close, REG 2011-2025, pushes dropped, population ALL; OLS slope of home cover per SD in accuracy points, stored in the declared direction. Halves 2011-18 -0.47, 2019-25 -0.79; null percentile 15.5 of 200 within-season shuffles (p95 +1.18); fade-the-popular-side record 1586-1620; 7 of 15 seasons in the declared direction.",
+      "effect": -0.624842,
+      "effect_units": "accuracy_points",
+      "family": "team_mispricing_2026_11_16",
+      "interval": [
+        -2.552896,
+        1.374302
+      ],
+      "league": "nfl",
+      "notes": "Family team_mispricing_2026_11_16: 2 terms x 2 populations = 4 looks, declared in the lane before outcomes were joined; survivor rule null p95 plus same declared sign in both halves; survivor: no; served look not run.",
+      "plain_summary": "Checks whether teams the league put on national TV most the year before are priced too high by the spread. They covered slightly more often, not less; not enough games to be sure either way.",
+      "probability_positive": 0.262,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3818,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/team-mispricing-2026-11-16.md",
+      "standard_error": null
+    },
+    "team_mispricing_public_pop_diff_quiet_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point estimate is on the wrong side but the season-block interval crosses zero, so no resolved wrong sign; no positive control bounds an effect this small at the close screen.",
+      "closing_ground": null,
+      "description": "Persistent public-team premium, prior-season national-window game count, z-scored across teams, home minus away; declared sign NEGATIVE on home cover (more popular side overpriced). Screen against the close, REG 2011-2025, pushes dropped, population QUIET (|close - opener| < 1, opener = Tuesday capture else SBR open); OLS slope of home cover per SD in accuracy points, stored in the declared direction. Halves 2011-18 +0.73, 2019-25 -1.16; null percentile 47.5 of 200 within-season shuffles (p95 +1.82); fade-the-popular-side record 740-745; 6 of 15 seasons in the declared direction.",
+      "effect": -0.210465,
+      "effect_units": "accuracy_points",
+      "family": "team_mispricing_2026_11_16",
+      "interval": [
+        -2.700186,
+        2.43174
+      ],
+      "league": "nfl",
+      "notes": "Family team_mispricing_2026_11_16: 2 terms x 2 populations = 4 looks, declared in the lane before outcomes were joined; survivor rule null p95 plus same declared sign in both halves; survivor: no; served look not run.",
+      "plain_summary": "Checks whether teams the league put on national TV most the year before are priced too high by the spread on games where the line barely moved. They covered slightly more often, not less; not enough games to be sure either way.",
+      "probability_positive": 0.425,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 1809,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/team-mispricing-2026-11-16.md",
+      "standard_error": null
+    },
+    "team_mispricing_public_pop_resid_diff_all_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point estimate is on the wrong side but the season-block interval crosses zero, so no resolved wrong sign; no positive control bounds an effect this small at the close screen.",
+      "closing_ground": null,
+      "description": "Persistent public-team premium, prior-season national-window game count, z-scored and residualised on prior-season point differential per game, home minus away; declared sign NEGATIVE on home cover (more popular side overpriced). Screen against the close, REG 2011-2025, pushes dropped, population ALL; OLS slope of home cover per SD in accuracy points, stored in the declared direction. Halves 2011-18 -0.07, 2019-25 -1.58; null percentile 18.5 of 200 within-season shuffles (p95 +1.28); fade-the-popular-side record 1890-1927; 6 of 15 seasons in the declared direction.",
+      "effect": -0.742596,
+      "effect_units": "accuracy_points",
+      "family": "team_mispricing_2026_11_16",
+      "interval": [
+        -2.446021,
+        0.92266
+      ],
+      "league": "nfl",
+      "notes": "Family team_mispricing_2026_11_16: 2 terms x 2 populations = 4 looks, declared in the lane before outcomes were joined; survivor rule null p95 plus same declared sign in both halves; survivor: no; served look not run.",
+      "plain_summary": "Checks whether teams the league put on national TV most the year before are priced too high by the spread. They covered slightly more often, not less; not enough games to be sure either way.",
+      "probability_positive": 0.189,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3818,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/team-mispricing-2026-11-16.md",
+      "standard_error": null
+    },
+    "team_mispricing_public_pop_resid_diff_quiet_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point estimate is on the wrong side but the season-block interval crosses zero, so no resolved wrong sign; no positive control bounds an effect this small at the close screen.",
+      "closing_ground": null,
+      "description": "Persistent public-team premium, prior-season national-window game count, z-scored and residualised on prior-season point differential per game, home minus away; declared sign NEGATIVE on home cover (more popular side overpriced). Screen against the close, REG 2011-2025, pushes dropped, population QUIET (|close - opener| < 1, opener = Tuesday capture else SBR open); OLS slope of home cover per SD in accuracy points, stored in the declared direction. Halves 2011-18 +0.75, 2019-25 -1.65; null percentile 35.5 of 200 within-season shuffles (p95 +1.81); fade-the-popular-side record 912-896; 4 of 15 seasons in the declared direction.",
+      "effect": -0.398099,
+      "effect_units": "accuracy_points",
+      "family": "team_mispricing_2026_11_16",
+      "interval": [
+        -2.807381,
+        2.276675
+      ],
+      "league": "nfl",
+      "notes": "Family team_mispricing_2026_11_16: 2 terms x 2 populations = 4 looks, declared in the lane before outcomes were joined; survivor rule null p95 plus same declared sign in both halves; survivor: no; served look not run.",
+      "plain_summary": "Checks whether teams the league put on national TV most the year before are priced too high by the spread on games where the line barely moved. They covered slightly more often, not less; not enough games to be sure either way.",
+      "probability_positive": 0.3765,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 1809,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/team-mispricing-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}
