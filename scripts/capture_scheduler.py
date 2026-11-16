@@ -807,6 +807,44 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"mos_fetch_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            20,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "mos_fetch.py"),
+            ],
+            True,
+            "Fetch the newest GFS and MEX forecast bulletins for this week's open-air games "
+            "before each card refresh, so served weather follows the training rule.",
+            added_on="2026-11-16",
+        )
+        for day, at in (
+            ("tue", "11:55"),
+            ("wed", "12:10"),
+            ("wed", "18:10"),
+            ("thu", "14:55"),
+            ("thu", "19:10"),
+            ("fri", "12:35"),
+            ("fri", "13:25"),
+            ("fri", "15:10"),
+            ("fri", "18:55"),
+            ("sat", "10:25"),
+            ("sat", "12:10"),
+            ("sun", "08:25"),
+            ("sun", "09:55"),
+            ("sun", "11:50"),
+            ("sun", "12:40"),
+            ("sun", "14:55"),
+            ("sun", "15:30"),
+        )
+    ),
+    *(
+        Job(
             f"nfelo_forward_{sub}_{day}_{at.replace(':', '')}",
             day,
             at,

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:14:23.065130+00:00`
+Refreshed at: `2026-11-16T21:16:28.311670+00:00`
 
 ## Start here
 
@@ -21,13 +21,15 @@ Refreshed at: `2026-11-16T21:14:23.065130+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7adfd8a87d19` — Find the card-file percentage defect for locked games and queue its pinned fix with the Tuesday change
-- Pending change set: 65 paths
+- Baseline commit: `fe6fa5a45360` — Restate the weather check for landing as train-serve rule parity
+- Pending change set: 68 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - `M  docs/lanes/v4-landing-2026-11-17.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `M  scripts/capture_scheduler.py`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `A  scripts/mos_fetch.py`
   - ` M scripts/source_pull_2026_11_16.py`
   - ` M src/nfl_ats/card_ledger_check.py`
   - ` M tiebreaker.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-16T21:14:23.065130+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 45 more
+  - ...and 48 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
