@@ -56,6 +56,62 @@
       ],
       "source": "artifacts/madden_prior/madden_talent_results.json",
       "standard_error": null
+    },
+    "madden_talent_served_opener_weeks_1_6_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap with probability_positive; no refuted mechanism and no positive control bounds an effect this size.",
+      "closing_ground": null,
+      "description": "Madden launch-rating talent diff minus a leave-one-season-out OLS map on the Tuesday opener, weeks 1-6 only, one offset-logistic coefficient per SD on the QW served stage at the opener 2020-25, pushes kept at 0.5, nested LOSO offsets. Full +0.1175/SD, folds positive 6/6; weeks 1-6 291-233 v QW 302-222; changed 86 (37-48 v 48-37); season-block P+ acc 0.116 ll 0.352; matched-null percentile acc 0.145 ll 0.265.",
+      "effect": -2.099236641221374,
+      "effect_units": "accuracy_points",
+      "family": "madden_talent_prior_gap_frame",
+      "interval": [
+        -5.426720188489899,
+        1.1539017341040458
+      ],
+      "league": "nfl",
+      "notes": "The one served look declared after the margin-label gate; matched null, halves, folds, weeks 1-6 indicator control and in-sample gap in the source. The 2026 replay was not computable: the archive has no 2026 launch file.",
+      "plain_summary": "Adds the Madden launch ratings of each team's expected starters to the pick probability for Weeks 1-6 and checks the picks it would have changed.",
+      "probability_positive": 0.10625,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 524,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/madden_prior/served_look_results.json",
+      "standard_error": null
+    },
+    "madden_talent_served_opener_weeks_1_6_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block bootstrap with probability_positive; no refuted mechanism and no positive control bounds an effect this size.",
+      "closing_ground": null,
+      "description": "Madden launch-rating talent diff minus a leave-one-season-out OLS map on the Tuesday opener, weeks 1-6 only, one offset-logistic coefficient per SD on the QW served stage at the opener 2020-25, pushes kept at 0.5, nested LOSO offsets. Full +0.1175/SD, folds positive 6/6; weeks 1-6 291-233 v QW 302-222; changed 86 (37-48 v 48-37); season-block P+ acc 0.116 ll 0.352; matched-null percentile acc 0.145 ll 0.265.",
+      "effect": -0.0021695424975706305,
+      "effect_units": "log_loss_improvement",
+      "family": "madden_talent_prior_gap_frame",
+      "interval": [
+        -0.008674645456490727,
+        0.0036643142222006616
+      ],
+      "league": "nfl",
+      "notes": "The one served look declared after the margin-label gate; matched null, halves, folds, weeks 1-6 indicator control and in-sample gap in the source. The 2026 replay was not computable: the archive has no 2026 launch file.",
+      "plain_summary": "Adds the Madden launch ratings of each team's expected starters to the pick probability for Weeks 1-6 and checks the picks it would have changed.",
+      "probability_positive": 0.2425,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/madden_prior/served_look_results.json",
+      "standard_error": null
     }
   }
 }

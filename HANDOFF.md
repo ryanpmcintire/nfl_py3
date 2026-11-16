@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:30:28.680194+00:00`
+Refreshed at: `2026-11-16T23:33:46.769564+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-11-16T23:30:28.680194+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5188fd86451e` — Madden launch-rating talent prior: weeks 1-6 margin label beats 98% of shuffles (close 529-470 v intercept 508-491), no placebo signal, loses inside the 295-column stack; one served look declared
+- Baseline commit: `fa58809810d4` — SuperContest crowd share: no gain on the served stage (830-673 v 836-667), history not provably pregame; lane closed
 - Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/done/contest-crowd-2026-11-16.md`
+  - `R  docs/lanes/madden-prior-2026-11-16.md -> docs/lanes/done/madden-prior-2026-11-16.md`
   - `M  docs/lanes/goal-65-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/contest_crowd_2026_11_16.json`
-  - `A  scripts/contest_crowd.py`
+  - `M  registry/weak_signals/madden_talent_prior_gap_frame.json`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `M  scripts/madden_prior.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
