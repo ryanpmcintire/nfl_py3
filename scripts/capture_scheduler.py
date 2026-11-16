@@ -740,6 +740,47 @@ SCHEDULE: tuple[Job, ...] = (
             ("sat", "18:45", 360),
         )
     ),
+    *(
+        Job(
+            f"lead112_forward_pregame_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead112_forward.py"),
+                "pregame",
+            ],
+            True,
+            "LEAD-112 forward log: frozen Wednesday-to-Friday practice-status change term on "
+            "the card probability, written before kickoff.",
+            added_on="2026-11-16",
+        )
+        for day, at, grace in (
+            ("thu", "17:00", 90),
+            ("fri", "20:30", 600),
+        )
+    ),
+    Job(
+        "lead112_forward_score_tue",
+        "tue",
+        "13:30",
+        360,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "lead112_forward.py"),
+            "score",
+        ],
+        True,
+        "LEAD-112 forward log: grade settled forward rows against the served card.",
+        added_on="2026-11-16",
+    ),
     Job(
         "lead108_forward_score_tue",
         "tue",

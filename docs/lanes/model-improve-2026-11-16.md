@@ -19,6 +19,20 @@ Owner 2026-11-16: keep improving the model, no overfitting, maximum parallel thr
 
 - W1-A DONE (measured, serve-parity-audit-2026-11-16.md; tests/scratch/serve_parity/): 31 of 90 columns differ between the served rows and today's rebuild across 150 games. The only builder defect is temp/wind: they were blank at serve time in Weeks 1-4 on 45 games while the training rows hold observed game-time weather. Swapping them in moves the model logit by up to 0.071 and flips 4 model-side picks, all in Week 1 and all within 1.3 points of 50%. A drop patch exists (weather_drop.patch), not applied. This is the same defect as live-weather-features.md, which on 2026-10-19 deferred the fix to after Week 18 because features.py is pinned by the independent validation cohort. That decision stands: the effect is under 0.04 logit and zero card sides. total_line and neutral-site differences are line and schedule changes after the forecast; quarterback inputs are covered by repair_ab.patch; rest_diff matches. Gap: per-game card logits are not stored, so card-side effects of input fixes can only be bounded (about 0.3 points of 50%).
 
+- Wave 2 launched 2026-11-16 ~15:45 EST (owner: do not stop):
+  - W2-A weak_stack_v4 candidate built in isolation (QB repair + pregame MOS weather in train and serve), graded LOSO 2020-25 at the opener vs served: lane v4-pinned-batch-2026-11-16.md.
+  - W2-B store per-game served card logits in the pick pipeline: lane card-logit-store-2026-11-16.md.
+  - W2-C move-term baseline book count, out of season 2023-25: lane move-book-count-2026-11-16.md.
+  - W2-D LEAD-112 practice-status change, declared forward log Weeks 11-18: lane lead112-forward-2026-11-16.md.
+  - W2-E denoised training labels for the base (quarter/drive-level or score-state labels), novelty checked first: lane base-label-noise-2026-11-16.md.
+
+- Root decision 2026-11-16 (owner: never ask the owner about data sources): 538 Elo (CC-BY-4.0) and nfelo public data approved for research use, no redistribution, data never committed; entries go in config/source_policies.json.
+- W3-A launched: new source pull (win totals history, Open-Meteo historical forecasts, 538 Elo/QB Elo, nfelo, prediction-market history): lane source-pull-2026-11-16.md.
+- Queue for slots as they free (in order): (1) win totals as an early-season prior against the opener, weeks 1-6, gap frame (scripts/mod57_p3_gap_frame.py); (2) forecast-weather base refit once Open-Meteo lands (hand to v4 lane); (3) 538 QB-Elo and nfelo disagreement with the opener, declared, matched null; (4) prediction-market price vs line gap, forward 2026; (5) sixth college family; (6) T sign-rule form declaration for 2027 forward log.
+
+- W2-D DONE (measured, lead112-forward-2026-11-16.md): practice-change term frozen at 0.401 logit/pt on 2026 W2-9 (120 games), leave-one-week-out log loss .0024 worse than the card, so it is a forward test only; declaration 20:39Z before fit. Jobs lead112_forward_pregame_thu_1700, _fri_2030, lead112_forward_score_tue added; score dry run OK; scheduler restarted (pid 22692 under 10456).
+- W3-B launched: sixth college family, lane xlg-14-u6-2026-11-16.md.
+
 ## Post-Week-18 pinned batch (one refit, re-enrol validation)
 - Quarterback input repair (tests/scratch/qb_input_repair/repair_ab.patch), unless applied Tuesday per full-steam-2026-11-14.md.
 - Weather: pregame MOS temp/wind in serve and train (live-weather-features.md), or weather_drop.patch; forecast-trained weak_stack_v4.
