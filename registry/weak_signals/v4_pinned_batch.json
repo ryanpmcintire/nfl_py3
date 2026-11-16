@@ -1,0 +1,285 @@
+{
+  "family": "v4_pinned_batch",
+  "signals": {
+    "v4_pinned_batch_d_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with temperature and wind removed from the model, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 830-673 vs 829-674; changed picks 41 (arm 21-20, served 20-21); Brier gain 0.000185 P+ 0.984",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.1386001386001386,
+        0.2801120448179272
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: temperature and wind removed from the model.",
+      "probability_positive": 0.61175,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_d_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with temperature and wind removed from the model, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 830-673 vs 829-674; changed picks 41 (arm 21-20, served 20-21); Brier gain 0.000185 P+ 0.984",
+      "effect": 0.00035590118968148075,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        1.0395370591834307e-05,
+        0.0006992326147097034
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: temperature and wind removed from the model.",
+      "probability_positive": 0.978,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_q_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with quarterback input repair (next healthy depth-chart quarterback when the starter is ruled out; earlier-season first-start average for a debut starter), minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 832-671 vs 829-674; changed picks 17 (arm 10-7, served 7-10); Brier gain -0.000011 P+ 0.480",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        0.0,
+        0.4513217279174726
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: quarterback input repair (next healthy depth-chart quarterback when the starter is ruled out; earlier-season first-start average for a debut starter).",
+      "probability_positive": 0.91,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_q_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with quarterback input repair (next healthy depth-chart quarterback when the starter is ruled out; earlier-season first-start average for a debut starter), minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 832-671 vs 829-674; changed picks 17 (arm 10-7, served 7-10); Brier gain -0.000011 P+ 0.480",
+      "effect": -1.8033515270514826e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.000428647799159711,
+        0.00025624733867175603
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: quarterback input repair (next healthy depth-chart quarterback when the starter is ruled out; earlier-season first-start average for a debut starter).",
+      "probability_positive": 0.4895,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_qd_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with quarterback input repair plus temperature and wind removed, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 828-675 vs 829-674; changed picks 41 (arm 20-21, served 21-20); Brier gain 0.000175 P+ 0.994",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.4861111111111111,
+        0.3826530612244898
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: quarterback input repair plus temperature and wind removed.",
+      "probability_positive": 0.316,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_qd_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with quarterback input repair plus temperature and wind removed, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 828-675 vs 829-674; changed picks 41 (arm 20-21, served 21-20); Brier gain 0.000175 P+ 0.994",
+      "effect": 0.00034078673034071546,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        6.908620206688487e-05,
+        0.0006526053795273218
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: quarterback input repair plus temperature and wind removed.",
+      "probability_positive": 0.99225,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_qw_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with quarterback input repair plus pregame-forecast temperature and wind, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 836-667 vs 829-674; changed picks 23 (arm 15-8, served 8-15); Brier gain -0.000012 P+ 0.468",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        0.1342281879194631,
+        0.8163265306122449
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: quarterback input repair plus pregame-forecast temperature and wind.",
+      "probability_positive": 0.99725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_qw_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with quarterback input repair plus pregame-forecast temperature and wind, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 836-667 vs 829-674; changed picks 23 (arm 15-8, served 8-15); Brier gain -0.000012 P+ 0.468",
+      "effect": -2.0645264681131114e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -0.0004589832593371186,
+        0.0002988924422063793
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: quarterback input repair plus pregame-forecast temperature and wind.",
+      "probability_positive": 0.47075,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_w_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with temperature and wind from the pregame forecast at the pool deadline in training and serving instead of observed game weather, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 836-667 vs 829-674; changed picks 15 (arm 11-4, served 4-11); Brier gain 0.000016 P+ 0.754",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "v4_pinned_batch",
+      "interval": [
+        0.13020833333333331,
+        0.851063829787234
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: temperature and wind from the pregame forecast at the pool deadline in training and serving instead of observed game weather.",
+      "probability_positive": 0.99725,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    },
+    "v4_pinned_batch_w_log_loss_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Correctness repair to model inputs; interval and probability_positive reported; no resolved wrong sign and no positive control bound, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Served weak_stack ridge 10 with temperature and wind from the pregame forecast at the pool deadline in training and serving instead of observed game weather, minus served; graded through the served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap; record 836-667 vs 829-674; changed picks 15 (arm 11-4, served 4-11); Brier gain 0.000016 P+ 0.754",
+      "effect": 3.0486845157024154e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "v4_pinned_batch",
+      "interval": [
+        -4.8846769528600773e-05,
+        0.00011783510800256257
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Base-model candidate for after Week 18: temperature and wind from the pregame forecast at the pool deadline in training and serving instead of observed game weather.",
+      "probability_positive": 0.739,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/v4_candidate/results.json",
+      "standard_error": null
+    }
+  }
+}

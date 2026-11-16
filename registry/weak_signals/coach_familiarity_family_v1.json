@@ -1,0 +1,173 @@
+{
+  "family": "coach_familiarity_family_v1",
+  "signals": {
+    "coach_familiarity_cfb_hc_former_employer_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared familiarity mechanism, split-half reliability not measured, and no positive control bounds an effect this small on a sparse flag: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College coach-familiarity family, hc_former_employer_gap: home flag minus away flag, flag = the team's head coach this season was head coach of the opponent in any of the previous 4 seasons. Season-level, known preseason; school-seasons with more than one listed head coach set to 0. One offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Nonzero games 22; changed picks 12, record 7-5; coefficient per SD +0.0190; season-half coefficients +0.0651 and -0.0084; this metric sits at percentile 65.8 of 200 within-season shuffles; in-sample minus held-out +0.000000.",
+      "effect": 0.022409,
+      "effect_units": "accuracy_points",
+      "family": "coach_familiarity_family_v1",
+      "interval": [
+        -0.044818,
+        0.10084
+      ],
+      "league": "cfb",
+      "notes": "Family coach_familiarity_family_v1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null), 4 season-half coefficients and control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that are coached by a man who ran the opponent's program in the last few years beat the opening spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.7242,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/coach-familiarity-2026-11-16.md",
+      "standard_error": null
+    },
+    "coach_familiarity_cfb_hc_former_employer_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared familiarity mechanism, split-half reliability not measured, and no positive control bounds an effect this small on a sparse flag: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College coach-familiarity family, hc_former_employer_gap: home flag minus away flag, flag = the team's head coach this season was head coach of the opponent in any of the previous 4 seasons. Season-level, known preseason; school-seasons with more than one listed head coach set to 0. One offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Nonzero games 22; changed picks 12, record 7-5; coefficient per SD +0.0190; season-half coefficients +0.0651 and -0.0084; this metric sits at percentile 54.5 of 200 within-season shuffles; in-sample minus held-out +0.000060.",
+      "effect": -3.8e-05,
+      "effect_units": "brier_improvement",
+      "family": "coach_familiarity_family_v1",
+      "interval": [
+        -0.000149,
+        6.8e-05
+      ],
+      "league": "cfb",
+      "notes": "Family coach_familiarity_family_v1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null), 4 season-half coefficients and control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that are coached by a man who ran the opponent's program in the last few years beat the opening spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2465,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/coach-familiarity-2026-11-16.md",
+      "standard_error": null
+    },
+    "coach_familiarity_cfb_hc_former_employer_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared familiarity mechanism, split-half reliability not measured, and no positive control bounds an effect this small on a sparse flag: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College coach-familiarity family, hc_former_employer_gap: home flag minus away flag, flag = the team's head coach this season was head coach of the opponent in any of the previous 4 seasons. Season-level, known preseason; school-seasons with more than one listed head coach set to 0. One offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Nonzero games 22; changed picks 12, record 7-5; coefficient per SD +0.0190; season-half coefficients +0.0651 and -0.0084; this metric sits at percentile 55.0 of 200 within-season shuffles; in-sample minus held-out +0.000124.",
+      "effect": -8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "coach_familiarity_family_v1",
+      "interval": [
+        -0.000307,
+        0.000136
+      ],
+      "league": "cfb",
+      "notes": "Family coach_familiarity_family_v1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null), 4 season-half coefficients and control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that are coached by a man who ran the opponent's program in the last few years beat the opening spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2385,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/coach-familiarity-2026-11-16.md",
+      "standard_error": null
+    },
+    "coach_familiarity_cfb_hc_former_employer_resid_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared familiarity mechanism, split-half reliability not measured, and no positive control bounds an effect this small on a sparse flag: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College coach-familiarity family, hc_former_employer_resid: the same former-employer gap residualised on home minus away own cover margin against the opener over earlier games this season. Season-level, known preseason; school-seasons with more than one listed head coach set to 0. One offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Nonzero games 8925; changed picks 16, record 9-7; coefficient per SD +0.0185; season-half coefficients +0.0637 and -0.0084; this metric sits at percentile 68.2 of 200 within-season shuffles; in-sample minus held-out +0.000000.",
+      "effect": 0.022409,
+      "effect_units": "accuracy_points",
+      "family": "coach_familiarity_family_v1",
+      "interval": [
+        -0.067227,
+        0.112045
+      ],
+      "league": "cfb",
+      "notes": "Family coach_familiarity_family_v1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null), 4 season-half coefficients and control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that are coached by a man who ran the opponent's program recently, after allowing for how both teams have done against the spread so far beat the opening spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.6697,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/coach-familiarity-2026-11-16.md",
+      "standard_error": null
+    },
+    "coach_familiarity_cfb_hc_former_employer_resid_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared familiarity mechanism, split-half reliability not measured, and no positive control bounds an effect this small on a sparse flag: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College coach-familiarity family, hc_former_employer_resid: the same former-employer gap residualised on home minus away own cover margin against the opener over earlier games this season. Season-level, known preseason; school-seasons with more than one listed head coach set to 0. One offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Nonzero games 8925; changed picks 16, record 9-7; coefficient per SD +0.0185; season-half coefficients +0.0637 and -0.0084; this metric sits at percentile 51.0 of 200 within-season shuffles; in-sample minus held-out +0.000060.",
+      "effect": -3.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "coach_familiarity_family_v1",
+      "interval": [
+        -0.000149,
+        5.9e-05
+      ],
+      "league": "cfb",
+      "notes": "Family coach_familiarity_family_v1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null), 4 season-half coefficients and control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that are coached by a man who ran the opponent's program recently, after allowing for how both teams have done against the spread so far beat the opening spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.221,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/coach-familiarity-2026-11-16.md",
+      "standard_error": null
+    },
+    "coach_familiarity_cfb_hc_former_employer_resid_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared familiarity mechanism, split-half reliability not measured, and no positive control bounds an effect this small on a sparse flag: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College coach-familiarity family, hc_former_employer_resid: the same former-employer gap residualised on home minus away own cover margin against the opener over earlier games this season. Season-level, known preseason; school-seasons with more than one listed head coach set to 0. One offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Nonzero games 8925; changed picks 16, record 9-7; coefficient per SD +0.0185; season-half coefficients +0.0637 and -0.0084; this metric sits at percentile 50.5 of 200 within-season shuffles; in-sample minus held-out +0.000124.",
+      "effect": -8.2e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "coach_familiarity_family_v1",
+      "interval": [
+        -0.000307,
+        0.000118
+      ],
+      "league": "cfb",
+      "notes": "Family coach_familiarity_family_v1: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null), 4 season-half coefficients and control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that are coached by a man who ran the opponent's program recently, after allowing for how both teams have done against the spread so far beat the opening spread more often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.217,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/coach-familiarity-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

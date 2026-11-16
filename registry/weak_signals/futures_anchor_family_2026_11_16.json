@@ -1,0 +1,173 @@
+{
+  "family": "futures_anchor_family_2026_11_16",
+  "signals": {
+    "futures_anchor_cfb_futures_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign with the whole interval on the wrong side, split-half reliability not measured, and no positive control bounds an effect this small on the college add-one harness (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first preseason futures anchor (Fodor, Patterson and Shank 2025), futures_gap: the team's preseason championship-futures strength percentile among listed teams minus its current opener-implied strength percentile among the same teams, where opener strength is a least-squares rating fitted to the season's strictly earlier week openers with a home-field column. Home minus away; declared sign negative; one offset-logistic coefficient on the leave-one-season-out college ridge cover probability graded at the opener, 13 seasons. Changed picks 369, record 188-181; coefficient per SD +0.0245; season-half coefficients +0.0098 and +0.0329; percentile 81.0 of 200 within-season shuffles; in-sample minus held-out +0.123249.",
+      "effect": 0.078431,
+      "effect_units": "accuracy_points",
+      "family": "futures_anchor_family_2026_11_16",
+      "interval": [
+        -0.336134,
+        0.492997
+      ],
+      "league": "cfb",
+      "notes": "Family futures_anchor_family_2026_11_16: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null plus same sign in both season halves), declared in the lane before outcomes were joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that were rated higher by preseason title odds than by this season's spreads go on to beat the opening spread less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.6525,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/futures-anchor-2026-11-16.md",
+      "standard_error": null
+    },
+    "futures_anchor_cfb_futures_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign with the whole interval on the wrong side, split-half reliability not measured, and no positive control bounds an effect this small on the college add-one harness (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first preseason futures anchor (Fodor, Patterson and Shank 2025), futures_gap: the team's preseason championship-futures strength percentile among listed teams minus its current opener-implied strength percentile among the same teams, where opener strength is a least-squares rating fitted to the season's strictly earlier week openers with a home-field column. Home minus away; declared sign negative; one offset-logistic coefficient on the leave-one-season-out college ridge cover probability graded at the opener, 13 seasons. Changed picks 369, record 188-181; coefficient per SD +0.0245; season-half coefficients +0.0098 and +0.0329; percentile 73.5 of 200 within-season shuffles; in-sample minus held-out +0.000054.",
+      "effect": -1.6e-05,
+      "effect_units": "brier_improvement",
+      "family": "futures_anchor_family_2026_11_16",
+      "interval": [
+        -0.000149,
+        0.000109
+      ],
+      "league": "cfb",
+      "notes": "Family futures_anchor_family_2026_11_16: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null plus same sign in both season halves), declared in the lane before outcomes were joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that were rated higher by preseason title odds than by this season's spreads go on to beat the opening spread less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.401,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/futures-anchor-2026-11-16.md",
+      "standard_error": null
+    },
+    "futures_anchor_cfb_futures_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign with the whole interval on the wrong side, split-half reliability not measured, and no positive control bounds an effect this small on the college add-one harness (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first preseason futures anchor (Fodor, Patterson and Shank 2025), futures_gap: the team's preseason championship-futures strength percentile among listed teams minus its current opener-implied strength percentile among the same teams, where opener strength is a least-squares rating fitted to the season's strictly earlier week openers with a home-field column. Home minus away; declared sign negative; one offset-logistic coefficient on the leave-one-season-out college ridge cover probability graded at the opener, 13 seasons. Changed picks 369, record 188-181; coefficient per SD +0.0245; season-half coefficients +0.0098 and +0.0329; percentile 73.0 of 200 within-season shuffles; in-sample minus held-out +0.000108.",
+      "effect": -3.4e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "futures_anchor_family_2026_11_16",
+      "interval": [
+        -0.000299,
+        0.000217
+      ],
+      "league": "cfb",
+      "notes": "Family futures_anchor_family_2026_11_16: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null plus same sign in both season halves), declared in the lane before outcomes were joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that were rated higher by preseason title odds than by this season's spreads go on to beat the opening spread less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.395,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/futures-anchor-2026-11-16.md",
+      "standard_error": null
+    },
+    "futures_anchor_cfb_futures_gap_resid_ats_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign with the whole interval on the wrong side, split-half reliability not measured, and no positive control bounds an effect this small on the college add-one harness (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first preseason futures anchor (Fodor, Patterson and Shank 2025), futures_gap_resid_ats: the same gap residualised (pooled least squares, no outcome of the graded game) on the home-minus-away share of strictly earlier games covered against the opener. Home minus away; declared sign negative; one offset-logistic coefficient on the leave-one-season-out college ridge cover probability graded at the opener, 13 seasons. Changed picks 399, record 212-187; coefficient per SD +0.0263; season-half coefficients +0.0124 and +0.0342; percentile 94.2 of 200 within-season shuffles; in-sample minus held-out -0.056022.",
+      "effect": 0.280112,
+      "effect_units": "accuracy_points",
+      "family": "futures_anchor_family_2026_11_16",
+      "interval": [
+        -0.145658,
+        0.717087
+      ],
+      "league": "cfb",
+      "notes": "Family futures_anchor_family_2026_11_16: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null plus same sign in both season halves), declared in the lane before outcomes were joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that were rated higher by preseason title odds than by spreads, after their cover record go on to beat the opening spread less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.8937,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/futures-anchor-2026-11-16.md",
+      "standard_error": null
+    },
+    "futures_anchor_cfb_futures_gap_resid_ats_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign with the whole interval on the wrong side, split-half reliability not measured, and no positive control bounds an effect this small on the college add-one harness (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first preseason futures anchor (Fodor, Patterson and Shank 2025), futures_gap_resid_ats: the same gap residualised (pooled least squares, no outcome of the graded game) on the home-minus-away share of strictly earlier games covered against the opener. Home minus away; declared sign negative; one offset-logistic coefficient on the leave-one-season-out college ridge cover probability graded at the opener, 13 seasons. Changed picks 399, record 212-187; coefficient per SD +0.0263; season-half coefficients +0.0124 and +0.0342; percentile 83.0 of 200 within-season shuffles; in-sample minus held-out +0.000042.",
+      "effect": 2e-06,
+      "effect_units": "brier_improvement",
+      "family": "futures_anchor_family_2026_11_16",
+      "interval": [
+        -0.000131,
+        0.000134
+      ],
+      "league": "cfb",
+      "notes": "Family futures_anchor_family_2026_11_16: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null plus same sign in both season halves), declared in the lane before outcomes were joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that were rated higher by preseason title odds than by spreads, after their cover record go on to beat the opening spread less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.5105,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/futures-anchor-2026-11-16.md",
+      "standard_error": null
+    },
+    "futures_anchor_cfb_futures_gap_resid_ats_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign with the whole interval on the wrong side, split-half reliability not measured, and no positive control bounds an effect this small on the college add-one harness (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first preseason futures anchor (Fodor, Patterson and Shank 2025), futures_gap_resid_ats: the same gap residualised (pooled least squares, no outcome of the graded game) on the home-minus-away share of strictly earlier games covered against the opener. Home minus away; declared sign negative; one offset-logistic coefficient on the leave-one-season-out college ridge cover probability graded at the opener, 13 seasons. Changed picks 399, record 212-187; coefficient per SD +0.0263; season-half coefficients +0.0124 and +0.0342; percentile 83.0 of 200 within-season shuffles; in-sample minus held-out +0.000084.",
+      "effect": 2e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "futures_anchor_family_2026_11_16",
+      "interval": [
+        -0.000266,
+        0.000269
+      ],
+      "league": "cfb",
+      "notes": "Family futures_anchor_family_2026_11_16: 2 candidates x 3 metrics = 6 recorded cells; 2 gating reads (log-loss percentile in the matched null plus same sign in both season halves), declared in the lane before outcomes were joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that were rated higher by preseason title odds than by spreads, after their cover record go on to beat the opening spread less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.5035,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/futures-anchor-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

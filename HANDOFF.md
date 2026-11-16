@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:58:18.454237+00:00`
+Refreshed at: `2026-11-16T21:00:27.441237+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T20:58:18.454237+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `159aba46f7ee` — Attribute the 2026 card by layer for Weeks 1-10: card 76-73; real card sides that differ from today's formula went 4-12
-- Pending change set: 74 paths
+- Baseline commit: `9f3bbeb8a9ea` — Screen an end-of-half family on college games, residualised on own results: no survivor
+- Pending change set: 76 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/xlg-14-u7-2026-11-16.md`
+  - `A  docs/lanes/v4-pinned-batch-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/xlg14_end_of_half_family_u7.json`
+  - `A  registry/weak_signals/coach_familiarity_family_v1.json`
+  - `A  registry/weak_signals/futures_anchor_family_2026_11_16.json`
+  - `A  registry/weak_signals/v4_pinned_batch.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/xlg14_family_u7.py`
+  - `A  scripts/v4_candidate.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 54 more
+  - ...and 56 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
