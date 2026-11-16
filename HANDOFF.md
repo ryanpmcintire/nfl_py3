@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:56:31.431417+00:00`
+Refreshed at: `2026-11-16T20:58:18.454237+00:00`
 
 ## Start here
 
@@ -21,19 +21,21 @@ Refreshed at: `2026-11-16T20:56:31.431417+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a32fcb6aedec` — Record the outside-leads search and queue its candidates
-- Pending change set: 72 paths
+- Baseline commit: `159aba46f7ee` — Attribute the 2026 card by layer for Weeks 1-10: card 76-73; real card sides that differ from today's formula went 4-12
+- Pending change set: 74 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/picks-getting-worse-2026-11-15.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/xlg-14-u7-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
+  - `A  registry/weak_signals/xlg14_end_of_half_family_u7.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `M  scripts/week_attribution.py`
+  - `A  scripts/xlg14_family_u7.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-16T20:56:31.431417+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 52 more
+  - ...and 54 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

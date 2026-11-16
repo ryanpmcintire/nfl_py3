@@ -1,0 +1,257 @@
+{
+  "family": "xlg14_end_of_half_family_u7",
+  "signals": {
+    "xlg14_end_of_half_cfb_two_minute_def_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_def_oe: per earlier game, minus the EPA allowed in the last two minutes of the first half beyond the defence's own allowed rate outside that window, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 229, record 101-128; coefficient per SD -0.0102; earlier and later season-half coefficients -0.0373 and +0.0123; this metric sits at percentile 6.2 of 200 within-season shuffles of the same column; in-sample minus held-out +0.212885.",
+      "effect": -0.302521,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.64986,
+        0.033613
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that defend better than usual in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0368,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_def_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_def_oe: per earlier game, minus the EPA allowed in the last two minutes of the first half beyond the defence's own allowed rate outside that window, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 229, record 101-128; coefficient per SD -0.0102; earlier and later season-half coefficients -0.0373 and +0.0123; this metric sits at percentile 35.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000052.",
+      "effect": -4.5e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.000107,
+        1.5e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that defend better than usual in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.068,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_def_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_def_oe: per earlier game, minus the EPA allowed in the last two minutes of the first half beyond the defence's own allowed rate outside that window, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 229, record 101-128; coefficient per SD -0.0102; earlier and later season-half coefficients -0.0373 and +0.0123; this metric sits at percentile 35.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000104.",
+      "effect": -9.1e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.000215,
+        3e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that defend better than usual in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.068,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_net_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_net_oe: the sum of the offensive and defensive two-minute-before-halftime gains over the team's own baselines, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 352, record 168-184; coefficient per SD -0.0147; earlier and later season-half coefficients -0.0691 and +0.0371; this metric sits at percentile 24.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.078431.",
+      "effect": -0.179272,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.571429,
+        0.212885
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that outplay their own usual level in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.1935,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_net_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_net_oe: the sum of the offensive and defensive two-minute-before-halftime gains over the team's own baselines, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 352, record 168-184; coefficient per SD -0.0147; earlier and later season-half coefficients -0.0691 and +0.0371; this metric sits at percentile 13.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000086.",
+      "effect": -7.3e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.000167,
+        1.9e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that outplay their own usual level in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0645,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_net_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_net_oe: the sum of the offensive and defensive two-minute-before-halftime gains over the team's own baselines, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 352, record 168-184; coefficient per SD -0.0147; earlier and later season-half coefficients -0.0691 and +0.0371; this metric sits at percentile 13.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000173.",
+      "effect": -0.000147,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.000334,
+        3.7e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that outplay their own usual level in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.064,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_off_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_off_oe: per earlier game, offensive EPA in the last two minutes of the first half minus those plays at the team's own EPA per play outside that window, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 267, record 132-135; coefficient per SD -0.0107; earlier and later season-half coefficients -0.0676 and +0.0372; this metric sits at percentile 61.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.179272.",
+      "effect": -0.033613,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.370028,
+        0.313725
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that move the ball better than usual in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.4128,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_off_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_off_oe: per earlier game, offensive EPA in the last two minutes of the first half minus those plays at the team's own EPA per play outside that window, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 267, record 132-135; coefficient per SD -0.0107; earlier and later season-half coefficients -0.0676 and +0.0372; this metric sits at percentile 11.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000086.",
+      "effect": -7.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.000152,
+        -8e-06
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that move the ball better than usual in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.015,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_end_of_half_cfb_two_minute_off_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared end-of-half execution mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first end-of-half execution family, two_minute_off_oe: per earlier game, offensive EPA in the last two minutes of the first half minus those plays at the team's own EPA per play outside that window, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 267, record 132-135; coefficient per SD -0.0107; earlier and later season-half coefficients -0.0676 and +0.0372; this metric sits at percentile 11.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000174.",
+      "effect": -0.00016,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_end_of_half_family_u7",
+      "interval": [
+        -0.000307,
+        -1.6e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_end_of_half_family_u7: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that move the ball better than usual in the two minutes before halftime, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.015,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u7-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}
