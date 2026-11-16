@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:38:58.192512+00:00`
+Refreshed at: `2026-11-16T22:41:20.069819+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-11-16T22:38:58.192512+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `15eda0fff08f` — 65% wave 1: late-move predictor, exchange-confirmed move and team popularity add nothing held out (all unresolved); card fidelity check and exchange-move forward log scheduled
-- Pending change set: 61 paths
+- Baseline commit: `0bd0e2ee5dda` — Goal-65 lane: wave 1 results and wave 2 units
+- Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M config/source_policies.json`
-  - `M  docs/lanes/goal-65-2026-11-16.md`
+  - `M  config/source_policies.json`
+  - `A  docs/lanes/pool-number-price-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/pool_number_price_2026.json`
+  - `M  scripts/capture_scheduler.py`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `A  scripts/pool_number_price.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-16T22:38:58.192512+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - ...and 41 more
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

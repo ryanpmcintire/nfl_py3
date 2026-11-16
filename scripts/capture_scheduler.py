@@ -845,6 +845,33 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"pool_number_price_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            20,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "pool_number_price.py"),
+                "capture",
+            ],
+            True,
+            "Capture alternate-spread ladders (Bovada) and Kalshi spread strikes so the "
+            "market's probability at each pool number is known before the pick deadline.",
+            added_on="2026-11-16",
+        )
+        for day, at in (
+            ("thu", "19:30"),
+            ("sat", "12:00"),
+            ("sun", "09:15"),
+            ("sun", "12:50"),
+            ("sun", "15:45"),
+        )
+    ),
+    *(
+        Job(
             f"card_fidelity_{day}_{at.replace(':', '')}",
             day,
             at,

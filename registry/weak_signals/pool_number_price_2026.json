@@ -1,0 +1,173 @@
+{
+  "family": "pool_number_price_2026",
+  "signals": {
+    "pool_number_price_fitted_w7_10_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool's exact number (sportsbook lines and Kalshi ladder translated with the conditional margin lattice), fitted_w7_10, versus the served card, 56 games, week-block bootstrap.",
+      "effect": 5.318734,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_2026",
+      "interval": [
+        1.886792,
+        7.142857
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9973,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 56,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_fitted_w7_10_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool's exact number (sportsbook lines and Kalshi ladder translated with the conditional margin lattice), fitted_w7_10, versus the served card, 56 games, week-block bootstrap.",
+      "effect": -0.003375,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.015576,
+        0.006402
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2781,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 56,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_fitted_w7_10_log": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool's exact number (sportsbook lines and Kalshi ladder translated with the conditional margin lattice), fitted_w7_10, versus the served card, 56 games, week-block bootstrap.",
+      "effect": -0.009783,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        -0.035905,
+        0.012564
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2128,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 56,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_probability_alone_w3_10_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool's exact number (sportsbook lines and Kalshi ladder translated with the conditional margin lattice), probability_alone_w3_10, versus the served card, 117 games, week-block bootstrap.",
+      "effect": 11.992769,
+      "effect_units": "accuracy_points",
+      "family": "pool_number_price_2026",
+      "interval": [
+        2.479339,
+        21.551724
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_probability_alone_w3_10_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool's exact number (sportsbook lines and Kalshi ladder translated with the conditional margin lattice), probability_alone_w3_10, versus the served card, 117 games, week-block bootstrap.",
+      "effect": 0.009955,
+      "effect_units": "brier_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        0.003645,
+        0.016002
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9989,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    },
+    "pool_number_price_probability_alone_w3_10_log": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Market probability at the pool's exact number (sportsbook lines and Kalshi ladder translated with the conditional margin lattice), probability_alone_w3_10, versus the served card, 117 games, week-block bootstrap.",
+      "effect": 0.020432,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_number_price_2026",
+      "interval": [
+        0.007675,
+        0.03288
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9989,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_number_price/20261116T223931Z/results.json",
+      "standard_error": null
+    }
+  }
+}
