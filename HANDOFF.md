@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T17:46:21.499816+00:00`
+Refreshed at: `2026-11-16T20:14:41.416497+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T17:46:21.499816+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e4b7cfaa8bb9` — Republish the site with the latest settled results
-- Pending change set: 72 paths
+- Baseline commit: `f4b37588cc6b` — Screen a scoreboard-versus-EPA family on college games; its survivor does not confirm in the NFL
+- Pending change set: 78 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/model-improve-2026-11-15.md`
+  - `A  docs/lanes/lead108-forward-2026-11-16.md`
+  - `A  docs/lanes/mod30-outside-ratings-acquire-2026-11-16.md`
+  - `A  docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
+  - `A  docs/lanes/served-terms-thin-move-2026-11-16.md`
+  - `A  docs/lanes/xlg-14-u5-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/xlg14_scoreboard_family_u4.json`
+  - `A  registry/weak_signals/xlg14_composition_family_u5.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/check_served_terms.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/xlg14_family_u4.py`
-  - `A  scripts/xlg14_scoreboard_nfl_confirmation.py`
-  - ` M tiebreaker.json`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 52 more
+  - `A  scripts/lead108_forward.py`
+  - ...and 58 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

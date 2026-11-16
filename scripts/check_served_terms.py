@@ -31,6 +31,7 @@ from nfl_ats.pick_probability import (  # noqa: E402
 )
 from nfl_ats.sharp_book_movement_features import (  # noqa: E402
     LEADER_BOOKS,
+    LEADERSHIP_WEIGHTS,
     sharp_book_movement_features,
 )
 from nfl_ats.splash_lines import load_splash_capture  # noqa: E402
@@ -216,10 +217,17 @@ def _thin_move_games(
         quotes, games, include_sunday=version == MARKET_MOVE_FEATURE_SUNDAY
     )
     thin = depth.loc[depth["leader_books"].gt(0) & depth["leader_books"].lt(MOVE_FIT_LEADER_BOOKS)]
+    current = quotes.loc[
+        quotes["market"].eq("spreads")
+        & quotes["bookmaker_key"].isin(LEADERSHIP_WEIGHTS)
+        & pd.to_datetime(quotes["observed_at_utc"], utc=True).le(now)
+    ]
+    current_books = current.groupby("nflverse_game_id")["bookmaker_key"].nunique()
     return [
         {
             "game": str(row.game_id).split("_", 2)[2].replace("_", " at "),
-            "books": int(row.leader_books),
+            "books": max(int(row.leader_books), int(current_books.get(row.game_id, 0))),
+            "leader_books_with_baseline": int(row.leader_books),
             "books_fitted": MOVE_FIT_LEADER_BOOKS,
             "move": round(float(row.leader_median_net_move), 2),
         }
