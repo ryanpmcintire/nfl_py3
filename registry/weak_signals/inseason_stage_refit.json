@@ -1,0 +1,117 @@
+{
+  "family": "inseason_stage_refit",
+  "signals": {
+    "inseason_stage_refit_opener_2021_2025_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opposite signs across grades: opener 2021-25 log-loss interval spans zero (week and season blocks; only the 5-block season accuracy bootstrap sits below zero), 2026 pool-line intervals span zero on the other side. No refuted mechanism on the proper score, no split-half reliability measured, no positive control bounding an effect this size.",
+      "closing_ground": null,
+      "description": "Same comparison, accuracy points, week block. Season block -1.56 [-2.63, -0.46] PP 0.002 (5 blocks). Per season I minus P wins: 2021 -3, 2022 -5, 2023 -9, 2024 +1, 2025 -4.",
+      "effect": -1.5588,
+      "effect_units": "accuracy_points",
+      "family": "inseason_stage_refit",
+      "interval": [
+        -3.2234,
+        0.0791
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:42:17Z before grading. Arm I refits the four-term stage (QW opener model logit, counted flag sum, move toward home, move available) for week w of season s on seasons < s plus season s weeks < w; arm P on seasons < s only (reproduces served chronological probabilities exactly, max abs 0.0). Base ridge already refits in-season (outcomes.py:480), not re-run. 2026 inputs rebuilt with production flag and move functions (move through Sunday prekick, not deadline; P agrees with the card on 74/129 sides); hook omitted in both arms. 2 comparisons x 2 scores = 4 looks; recency-weight arm not run.",
+      "plain_summary": null,
+      "probability_positive": 0.02875,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1283,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/inseason_refit.py; artifacts/inseason_refit/results.json; artifacts/inseason_refit/per_game.parquet; docs/lanes/inseason-refit-2026-11-16.md",
+      "standard_error": null
+    },
+    "inseason_stage_refit_opener_2021_2025_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opposite signs across grades: opener 2021-25 log-loss interval spans zero (week and season blocks; only the 5-block season accuracy bootstrap sits below zero), 2026 pool-line intervals span zero on the other side. No refuted mechanism on the proper score, no split-half reliability measured, no positive control bounding an effect this size.",
+      "closing_ground": null,
+      "description": "Stage refit weekly with current-season settled weeks vs prior seasons only, opener grade 2021-25, pushes (27) excluded. P 709-574, I 689-594; changed picks 138 (I 59-79). Season block log-loss PP 0.0565.",
+      "effect": -0.0033547,
+      "effect_units": "log_loss_improvement",
+      "family": "inseason_stage_refit",
+      "interval": [
+        -0.0089762,
+        0.0017476
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:42:17Z before grading. Arm I refits the four-term stage (QW opener model logit, counted flag sum, move toward home, move available) for week w of season s on seasons < s plus season s weeks < w; arm P on seasons < s only (reproduces served chronological probabilities exactly, max abs 0.0). Base ridge already refits in-season (outcomes.py:480), not re-run. 2026 inputs rebuilt with production flag and move functions (move through Sunday prekick, not deadline; P agrees with the card on 74/129 sides); hook omitted in both arms. 2 comparisons x 2 scores = 4 looks; recency-weight arm not run.",
+      "plain_summary": null,
+      "probability_positive": 0.11,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1283,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/inseason_refit.py; artifacts/inseason_refit/results.json; artifacts/inseason_refit/per_game.parquet; docs/lanes/inseason-refit-2026-11-16.md",
+      "standard_error": null
+    },
+    "inseason_stage_refit_pool_2026_w2_10_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opposite signs across grades: opener 2021-25 log-loss interval spans zero (week and season blocks; only the 5-block season accuracy bootstrap sits below zero), 2026 pool-line intervals span zero on the other side. No refuted mechanism on the proper score, no split-half reliability measured, no positive control bounding an effect this size.",
+      "closing_ground": null,
+      "description": "Same 2026 comparison, accuracy points, week block.",
+      "effect": 3.1008,
+      "effect_units": "accuracy_points",
+      "family": "inseason_stage_refit",
+      "interval": [
+        -2.7279,
+        8.209
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:42:17Z before grading. Arm I refits the four-term stage (QW opener model logit, counted flag sum, move toward home, move available) for week w of season s on seasons < s plus season s weeks < w; arm P on seasons < s only (reproduces served chronological probabilities exactly, max abs 0.0). Base ridge already refits in-season (outcomes.py:480), not re-run. 2026 inputs rebuilt with production flag and move functions (move through Sunday prekick, not deadline; P agrees with the card on 74/129 sides); hook omitted in both arms. 2 comparisons x 2 scores = 4 looks; recency-weight arm not run.",
+      "plain_summary": null,
+      "probability_positive": 0.82425,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 129,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/inseason_refit.py; artifacts/inseason_refit/results.json; artifacts/inseason_refit/per_game.parquet; docs/lanes/inseason-refit-2026-11-16.md",
+      "standard_error": null
+    },
+    "inseason_stage_refit_pool_2026_w2_10_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opposite signs across grades: opener 2021-25 log-loss interval spans zero (week and season blocks; only the 5-block season accuracy bootstrap sits below zero), 2026 pool-line intervals span zero on the other side. No refuted mechanism on the proper score, no split-half reliability measured, no positive control bounding an effect this size.",
+      "closing_ground": null,
+      "description": "Same arms on 2026 W2-10 graded at the card's pool line, target at the pool line. P 67-62, I 71-58, card 68-61; changed picks 10 (I 7-3). Week-10 I move coefficient 0.081 vs P 0.220.",
+      "effect": 0.0284869,
+      "effect_units": "log_loss_improvement",
+      "family": "inseason_stage_refit",
+      "interval": [
+        -0.007824,
+        0.0627896
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T22:42:17Z before grading. Arm I refits the four-term stage (QW opener model logit, counted flag sum, move toward home, move available) for week w of season s on seasons < s plus season s weeks < w; arm P on seasons < s only (reproduces served chronological probabilities exactly, max abs 0.0). Base ridge already refits in-season (outcomes.py:480), not re-run. 2026 inputs rebuilt with production flag and move functions (move through Sunday prekick, not deadline; P agrees with the card on 74/129 sides); hook omitted in both arms. 2 comparisons x 2 scores = 4 looks; recency-weight arm not run.",
+      "plain_summary": null,
+      "probability_positive": 0.94675,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 129,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/inseason_refit.py; artifacts/inseason_refit/results.json; artifacts/inseason_refit/per_game.parquet; docs/lanes/inseason-refit-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

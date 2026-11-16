@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:42:45.476030+00:00`
+Refreshed at: `2026-11-16T22:45:36.560117+00:00`
 
 ## Start here
 
@@ -21,15 +21,17 @@ Refreshed at: `2026-11-16T22:42:45.476030+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e888153dcb58` — Price at the pool number: parameter-free market probability 66-51 on 2026 W3-10 against the played card 52-65; capture of Bovada ladders and Kalshi strikes scheduled before each deadline
-- Pending change set: 61 paths
+- Baseline commit: `e12979c34fd5` — Confirmation look of the preseason-favourite pattern fails against the close 2011-25 (both halves opposite), unresolved; family spent
+- Pending change set: 65 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/done/favourite-underpriced-2026-11-16.md`
+  - ` M config/source_policies.json`
+  - `A  docs/lanes/done/inseason-refit-2026-11-16.md`
+  - ` M docs/lanes/pool-number-price-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/favourite_underpriced_2026_11_16.json`
-  - `A  scripts/favourite_underpriced.py`
+  - `A  registry/weak_signals/inseason_stage_refit.json`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `A  scripts/inseason_refit.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-16T22:42:45.476030+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 41 more
+  - ...and 45 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
