@@ -1,0 +1,173 @@
+{
+  "family": "t_signrule_cfb",
+  "signals": {
+    "t_signrule_cfb_fade_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-week block bootstrap with probability_positive; matched within-season shuffle null; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: fade sign of surprise to date (minus sign of T) in the early window as one added fitted term on the opener-input cover probability, leave-one-season-out, accuracy_points against the base; changed picks 373-368; matched-null percentile 12.5",
+      "effect": 0.056022408963585235,
+      "effect_units": "accuracy_points",
+      "family": "t_signrule_cfb",
+      "interval": [
+        -0.5573923005456041,
+        0.7261681649779096
+      ],
+      "league": "cfb",
+      "notes": "One declared sign-rule form of the early-surprise term (MOD-57 T), declared in docs/lanes/t-signrule-2026-11-16.md before outcomes were joined; 6 looks.",
+      "plain_summary": "Whether fading a college team that has beaten the line early in a season, entered as one fitted term, improves the opener cover probability.",
+      "probability_positive": 0.576,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/t_signrule/results.json",
+      "standard_error": null
+    },
+    "t_signrule_cfb_fade_first_half_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-week block bootstrap with probability_positive; matched within-season shuffle null; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "Same term, first chronological half of seasons, out-of-season accuracy_points; changed picks 197-196; coefficient fit inside the half -0.0241",
+      "effect": 0.025432349949139343,
+      "effect_units": "accuracy_points",
+      "family": "t_signrule_cfb",
+      "interval": [
+        -1.0467170293531773,
+        1.1024481361003542
+      ],
+      "league": "cfb",
+      "notes": "One declared sign-rule form of the early-surprise term (MOD-57 T), declared in docs/lanes/t-signrule-2026-11-16.md before outcomes were joined; 6 looks.",
+      "plain_summary": "Whether fading a college team that has beaten the line early in a season, entered as one fitted term, improves the opener cover probability.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3932,
+      "seasons": [
+        2012,
+        2017
+      ],
+      "source": "artifacts/t_signrule/results.json",
+      "standard_error": null
+    },
+    "t_signrule_cfb_fade_first_half_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-week block bootstrap with probability_positive; matched within-season shuffle null; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "Same term, first chronological half of seasons, out-of-season log_loss_improvement; changed picks 197-196; coefficient fit inside the half -0.0241",
+      "effect": -0.0002254148397597966,
+      "effect_units": "log_loss_improvement",
+      "family": "t_signrule_cfb",
+      "interval": [
+        -0.0006000245295505246,
+        0.00012158783738549783
+      ],
+      "league": "cfb",
+      "notes": "One declared sign-rule form of the early-surprise term (MOD-57 T), declared in docs/lanes/t-signrule-2026-11-16.md before outcomes were joined; 6 looks.",
+      "plain_summary": "Whether fading a college team that has beaten the line early in a season, entered as one fitted term, improves the opener cover probability.",
+      "probability_positive": 0.109,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3932,
+      "seasons": [
+        2012,
+        2017
+      ],
+      "source": "artifacts/t_signrule/results.json",
+      "standard_error": null
+    },
+    "t_signrule_cfb_fade_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-week block bootstrap with probability_positive; matched within-season shuffle null; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "College-first harness: fade sign of surprise to date (minus sign of T) in the early window as one added fitted term on the opener-input cover probability, leave-one-season-out, log_loss_improvement against the base; changed picks 373-368; matched-null percentile 38.5",
+      "effect": -7.282601119940058e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "t_signrule_cfb",
+      "interval": [
+        -0.0003072890449868387,
+        0.0001297750225215804
+      ],
+      "league": "cfb",
+      "notes": "One declared sign-rule form of the early-surprise term (MOD-57 T), declared in docs/lanes/t-signrule-2026-11-16.md before outcomes were joined; 6 looks.",
+      "plain_summary": "Whether fading a college team that has beaten the line early in a season, entered as one fitted term, improves the opener cover probability.",
+      "probability_positive": 0.269,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/t_signrule/results.json",
+      "standard_error": null
+    },
+    "t_signrule_cfb_fade_second_half_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-week block bootstrap with probability_positive; matched within-season shuffle null; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "Same term, second chronological half of seasons, out-of-season accuracy_points; changed picks 176-172; coefficient fit inside the half +0.0724",
+      "effect": 0.08011215701982932,
+      "effect_units": "accuracy_points",
+      "family": "t_signrule_cfb",
+      "interval": [
+        -0.6273467537695463,
+        0.8282303778808091
+      ],
+      "league": "cfb",
+      "notes": "One declared sign-rule form of the early-surprise term (MOD-57 T), declared in docs/lanes/t-signrule-2026-11-16.md before outcomes were joined; 6 looks.",
+      "plain_summary": "Whether fading a college team that has beaten the line early in a season, entered as one fitted term, improves the opener cover probability.",
+      "probability_positive": 0.584,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4993,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/t_signrule/results.json",
+      "standard_error": null
+    },
+    "t_signrule_cfb_fade_second_half_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-week block bootstrap with probability_positive; matched within-season shuffle null; no closing ground claimed.",
+      "closing_ground": null,
+      "description": "Same term, second chronological half of seasons, out-of-season log_loss_improvement; changed picks 176-172; coefficient fit inside the half +0.0724",
+      "effect": 4.7338073298708316e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "t_signrule_cfb",
+      "interval": [
+        -0.00024324979678907178,
+        0.0003073663250706681
+      ],
+      "league": "cfb",
+      "notes": "One declared sign-rule form of the early-surprise term (MOD-57 T), declared in docs/lanes/t-signrule-2026-11-16.md before outcomes were joined; 6 looks.",
+      "plain_summary": "Whether fading a college team that has beaten the line early in a season, entered as one fitted term, improves the opener cover probability.",
+      "probability_positive": 0.624,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4993,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/t_signrule/results.json",
+      "standard_error": null
+    }
+  }
+}
