@@ -1,0 +1,89 @@
+{
+  "family": "referee_home_penalty_yard_tendency",
+  "signals": {
+    "referee_home_penalty_yard_tendency_close_full": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (season-block bootstrap interval is not wholly negative) and no positive control bounds an effect this small; recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Trait = head referee's LOSO-shrunk prior mean of away-minus-home accepted penalty yards (earlier seasons and earlier weeks only); trait SD 1.56 yd; first stage (game differential on trait) +1.03 yd per SD at null percentile 98.5. Close-graded home ATS margin, pushes kept, OLS per SD. Window 2011-2025: slope +0.023 pts per SD [-0.292, +0.320]. Full-window slope sits at null percentile 71.0 of 200 within-season referee-label shuffles (null 95th +0.306); survivor=False.",
+      "effect": 0.022551,
+      "effect_units": "ats_points",
+      "family": "referee_home_penalty_yard_tendency",
+      "interval": [
+        -0.29178,
+        0.319617
+      ],
+      "league": "nfl",
+      "notes": "Family referee_home_penalty_yard_tendency, declared 2026-11-16T21:41:32Z before outcomes; 3 looks (full screen plus two halves) at the close; served opener look only for a survivor.",
+      "plain_summary": "Checks whether referees who have tended to flag the visitors for more yardage help home teams beat the closing spread. Not clear enough to tell from chance; no pick changes.",
+      "probability_positive": 0.555,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3918,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "docs/lanes/referee-tendency-2026-11-16.md",
+      "standard_error": null
+    },
+    "referee_home_penalty_yard_tendency_close_half_2011_2017": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (season-block bootstrap interval is not wholly negative) and no positive control bounds an effect this small; recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Trait = head referee's LOSO-shrunk prior mean of away-minus-home accepted penalty yards (earlier seasons and earlier weeks only); trait SD 1.56 yd; first stage (game differential on trait) +1.03 yd per SD at null percentile 98.5. Close-graded home ATS margin, pushes kept, OLS per SD. Window 2011-2017: slope +0.132 pts per SD [-0.368, +0.606]. Full-window slope sits at null percentile 71.0 of 200 within-season referee-label shuffles (null 95th +0.306); survivor=False.",
+      "effect": 0.131636,
+      "effect_units": "ats_points",
+      "family": "referee_home_penalty_yard_tendency",
+      "interval": [
+        -0.367877,
+        0.605561
+      ],
+      "league": "nfl",
+      "notes": "Family referee_home_penalty_yard_tendency, declared 2026-11-16T21:41:32Z before outcomes; 3 looks (full screen plus two halves) at the close; served opener look only for a survivor.",
+      "plain_summary": "Checks whether referees who have tended to flag the visitors for more yardage help home teams beat the closing spread. Not clear enough to tell from chance; no pick changes.",
+      "probability_positive": 0.701,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1792,
+      "seasons": [
+        2011,
+        2017
+      ],
+      "source": "docs/lanes/referee-tendency-2026-11-16.md",
+      "standard_error": null
+    },
+    "referee_home_penalty_yard_tendency_close_half_2018_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (season-block bootstrap interval is not wholly negative) and no positive control bounds an effect this small; recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Trait = head referee's LOSO-shrunk prior mean of away-minus-home accepted penalty yards (earlier seasons and earlier weeks only); trait SD 1.56 yd; first stage (game differential on trait) +1.03 yd per SD at null percentile 98.5. Close-graded home ATS margin, pushes kept, OLS per SD. Window 2018-2025: slope -0.099 pts per SD [-0.491, +0.285]. Full-window slope sits at null percentile 71.0 of 200 within-season referee-label shuffles (null 95th +0.306); survivor=False.",
+      "effect": -0.098684,
+      "effect_units": "ats_points",
+      "family": "referee_home_penalty_yard_tendency",
+      "interval": [
+        -0.490893,
+        0.285165
+      ],
+      "league": "nfl",
+      "notes": "Family referee_home_penalty_yard_tendency, declared 2026-11-16T21:41:32Z before outcomes; 3 looks (full screen plus two halves) at the close; served opener look only for a survivor.",
+      "plain_summary": "Checks whether referees who have tended to flag the visitors for more yardage help home teams beat the closing spread. Not clear enough to tell from chance; no pick changes.",
+      "probability_positive": 0.2855,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2126,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "docs/lanes/referee-tendency-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

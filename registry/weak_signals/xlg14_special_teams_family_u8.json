@@ -1,0 +1,257 @@
+{
+  "family": "xlg14_special_teams_family_u8",
+  "signals": {
+    "xlg14_special_teams_cfb_punt_cover_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_cover_oe: mean EPA per own punt over earlier weeks (punting team's view; blocks, muffs and return touchdowns excluded), residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 106, record 44-62; coefficient per SD +0.0030; earlier and later season-half coefficients +0.0289 and -0.0236; this metric sits at percentile 25.8 of 200 within-season shuffles of the same column; in-sample minus held-out +0.156863.",
+      "effect": -0.201681,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.42577,
+        0.033613
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that gain more field position than expected when they punt, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0373,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_cover_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_cover_oe: mean EPA per own punt over earlier weeks (punting team's view; blocks, muffs and return touchdowns excluded), residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 106, record 44-62; coefficient per SD +0.0030; earlier and later season-half coefficients +0.0289 and -0.0236; this metric sits at percentile 57.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000032.",
+      "effect": -3.1e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -6.1e-05,
+        -2e-06
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that gain more field position than expected when they punt, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0185,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_cover_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_cover_oe: mean EPA per own punt over earlier weeks (punting team's view; blocks, muffs and return touchdowns excluded), residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 106, record 44-62; coefficient per SD +0.0030; earlier and later season-half coefficients +0.0289 and -0.0236; this metric sits at percentile 57.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000064.",
+      "effect": -6.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.000123,
+        -4e-06
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that gain more field position than expected when they punt, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0185,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_return_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_return_oe: minus the mean EPA per opponent punt received over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 276, record 134-142; coefficient per SD +0.0126; earlier and later season-half coefficients +0.0184 and +0.0070; this metric sits at percentile 47.8 of 200 within-season shuffles of the same column; in-sample minus held-out -0.011204.",
+      "effect": -0.089636,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.448179,
+        0.268908
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that give up less field position than expected when opponents punt to them, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2952,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_return_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_return_oe: minus the mean EPA per opponent punt received over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 276, record 134-142; coefficient per SD +0.0126; earlier and later season-half coefficients +0.0184 and +0.0070; this metric sits at percentile 56.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000040.",
+      "effect": -3e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.0001,
+        3.9e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that give up less field position than expected when opponents punt to them, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2045,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_return_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_return_oe: minus the mean EPA per opponent punt received over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 276, record 134-142; coefficient per SD +0.0126; earlier and later season-half coefficients +0.0184 and +0.0070; this metric sits at percentile 56.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000080.",
+      "effect": -6.1e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.000202,
+        7.8e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that give up less field position than expected when opponents punt to them, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2035,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_unit_net_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_unit_net_oe: the sum of the punt-coverage and punt-return field-position reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 212, record 107-105; coefficient per SD +0.0106; earlier and later season-half coefficients +0.0333 and -0.0127; this metric sits at percentile 63.0 of 200 within-season shuffles of the same column; in-sample minus held-out -0.112045.",
+      "effect": 0.022409,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.291317,
+        0.358543
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that win the punting exchange on field position, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.5585,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_unit_net_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_unit_net_oe: the sum of the punt-coverage and punt-return field-position reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 212, record 107-105; coefficient per SD +0.0106; earlier and later season-half coefficients +0.0333 and -0.0127; this metric sits at percentile 47.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000046.",
+      "effect": -3.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.0001,
+        2e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that win the punting exchange on field position, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.1,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_special_teams_cfb_punt_unit_net_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared punt-unit quality mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first special-teams punt-unit quality family, punt_unit_net_oe: the sum of the punt-coverage and punt-return field-position reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks; the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 212, record 107-105; coefficient per SD +0.0106; earlier and later season-half coefficients +0.0333 and -0.0127; this metric sits at percentile 47.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000092.",
+      "effect": -7.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_special_teams_family_u8",
+      "interval": [
+        -0.000202,
+        3.9e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_special_teams_family_u8: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that win the punting exchange on field position, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0985,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u8-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

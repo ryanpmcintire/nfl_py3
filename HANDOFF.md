@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:39:18.374221+00:00`
+Refreshed at: `2026-11-16T21:43:41.619848+00:00`
 
 ## Start here
 
@@ -21,13 +21,16 @@ Refreshed at: `2026-11-16T21:39:18.374221+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a7bf1bd94e94` — Record the unpatched test baseline for the Tuesday bundle
-- Pending change set: 58 paths
+- Baseline commit: `177a7b6f7a96` — Rehearse the weather-and-quarterback rebuild: identical 836-667 from scratch; all three landing checks pass Monday evening
+- Pending change set: 63 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `A  docs/lanes/done/referee-tendency-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `M  docs/lanes/v4-landing-2026-11-17.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/referee_home_penalty_yard_tendency.json`
+  - `A  registry/weak_signals/xlg14_special_teams_family_u8.json`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `A  scripts/referee_tendency.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-16T21:39:18.374221+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
-  - ...and 38 more
+  - ...and 43 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
