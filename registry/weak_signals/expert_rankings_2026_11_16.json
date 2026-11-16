@@ -1,0 +1,61 @@
+{
+  "family": "expert_rankings_2026_11_16",
+  "signals": {
+    "expert_rankings_fp_ecr_gap_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign, season-block interval crosses zero and the effect sits below the within-season shuffle p95; no refuted mechanism and no positive control bounds an effect this size at the close screen.",
+      "closing_ground": null,
+      "description": "FantasyPros weekly expert consensus rankings (QB, PPR RB/WR/TE), ECR team expectation home minus away (points) minus the as-of spread. Rank to points by isotonic fit of actual PPR points on position rank over the season's earlier weeks; fantasy points to real points by OLS of team points on the team sum over earlier weeks; as-of spread Tuesday or SBR open (1117 games), else close (14). Only scrapes dated before the pick deadline date. Declared sign POSITIVE on home cover. Screen against the close, REG 2020-2025 weeks 2+, pushes dropped; OLS slope per SD in accuracy points. Halves 2020-22 +1.64, 2023-25 +1.83; null percentile 87.5 of 200 within-season shuffles (p95 +2.82); gap-side record 575-556; 4 of 6 seasons positive.",
+      "effect": 1.729659,
+      "effect_units": "accuracy_points",
+      "family": "expert_rankings_2026_11_16",
+      "interval": [
+        -0.363912,
+        3.479423
+      ],
+      "league": "nfl",
+      "notes": "Family expert_rankings_2026_11_16: 2 terms x 1 population = 2 looks, declared in the lane before outcomes were joined; survivor rule null p95 plus positive in both halves; survivor: no; served look not run. Weekly ECR history starts 2020.",
+      "plain_summary": "Adds up the fantasy experts' weekly player rankings into how many points each offense should score and compares that with the betting line. Teams the experts liked more than the line covered slightly more often; not enough games to be sure.",
+      "probability_positive": 0.9405,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/expert-rankings-2026-11-16.md",
+      "standard_error": null
+    },
+    "expert_rankings_fp_ecr_gap_orth_close": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign, season-block interval crosses zero and the effect sits below the within-season shuffle p95; no refuted mechanism and no positive control bounds an effect this size at the close screen.",
+      "closing_ground": null,
+      "description": "FantasyPros weekly expert consensus rankings (QB, PPR RB/WR/TE), ECR team expectation home minus away (points) minus its OLS fit on the as-of spread over the season's earlier weeks. Rank to points by isotonic fit of actual PPR points on position rank over the season's earlier weeks; fantasy points to real points by OLS of team points on the team sum over earlier weeks; as-of spread Tuesday or SBR open (1117 games), else close (14). Only scrapes dated before the pick deadline date. Declared sign POSITIVE on home cover. Screen against the close, REG 2020-2025 weeks 2+, pushes dropped; OLS slope per SD in accuracy points. Halves 2020-22 +0.02, 2023-25 +2.53; null percentile 81.5 of 200 within-season shuffles (p95 +2.45); gap-side record 567-564; 5 of 6 seasons positive.",
+      "effect": 1.317812,
+      "effect_units": "accuracy_points",
+      "family": "expert_rankings_2026_11_16",
+      "interval": [
+        -0.067175,
+        2.532311
+      ],
+      "league": "nfl",
+      "notes": "Family expert_rankings_2026_11_16: 2 terms x 1 population = 2 looks, declared in the lane before outcomes were joined; survivor rule null p95 plus positive in both halves; survivor: no; served look not run. Weekly ECR history starts 2020.",
+      "plain_summary": "Adds up the fantasy experts' weekly player rankings into how many points each offense should score and compares that with the betting line. Teams the experts liked more than the line covered slightly more often; not enough games to be sure.",
+      "probability_positive": 0.965,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/expert-rankings-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

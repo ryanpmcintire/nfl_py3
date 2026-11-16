@@ -193,6 +193,20 @@
       "derived_publication": "allowed_with_attribution",
       "conditions": ["cc_by_4_attribution_required", "check_upstream_dataset_license"]
     },
+    "dynastyprocess_fpecr": {
+      "risk": "yellow",
+      "terms_url": "https://github.com/dynastyprocess/data/blob/master/LICENSE",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "gpl_3_repository_file_db_fpecr_parquet_fetched_from_github_raw_with_generic_user_agent",
+        "upstream_rankings_are_fantasypros_expert_consensus_research_use_only",
+        "no_direct_fantasypros_site_requests"
+      ]
+    },
     "pfr_transactions": {
       "risk": "yellow",
       "terms_url": "https://www.profootballrumors.com/",
