@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:44:11.341003+00:00`
+Refreshed at: `2026-11-16T20:47:06.004908+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T20:44:11.341003+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `82846e425980` — Measure the line-move term by baseline book count: history has three books on every game; 2026 one-book moves 14-10, unresolved
-- Pending change set: 76 paths
+- Baseline commit: `e966236ac3bd` — Train the served ridge on the hindsight-gap label: served card 812-691 v 829-674, model alone worse with its whole interval below zero
+- Pending change set: 75 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/done/base-label-noise-2026-11-16.md`
   - ` M docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/xlg-14-u6-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/base_label_noise_hindsight.json`
-  - `M  registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/season_phase_x_underdog_pick_probability.json`
-  - `A  registry/weak_signals/served_probability_line_size_reliability.json`
-  - `A  scripts/base_label_noise.py`
+  - `A  registry/weak_signals/xlg14_schedule_strength_family_u6.json`
   - ` M scripts/forward2026_ftn_terms.py`
+  - `A  scripts/xlg14_family_u6.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 56 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - ...and 55 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

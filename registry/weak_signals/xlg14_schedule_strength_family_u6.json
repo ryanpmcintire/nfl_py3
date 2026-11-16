@@ -1,0 +1,341 @@
+{
+  "family": "xlg14_schedule_strength_family_u6",
+  "signals": {
+    "xlg14_schedule_strength_cfb_def_sos_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, def_sos_gap: the mean, over the team's earlier games, of each opponent's offensive EPA per play to date minus the league rate to date (defence that faced strong offences). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 379, record 168-211; coefficient per SD -0.0201; earlier and later season-half coefficients -0.0369 and -0.0013; this metric sits at percentile 1.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.224090.",
+      "effect": -0.481793,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.885154,
+        -0.056022
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have played their defense against stronger offenses than most go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0132,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_def_sos_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, def_sos_gap: the mean, over the team's earlier games, of each opponent's offensive EPA per play to date minus the league rate to date (defence that faced strong offences). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 379, record 168-211; coefficient per SD -0.0201; earlier and later season-half coefficients -0.0369 and -0.0013; this metric sits at percentile 59.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000057.",
+      "effect": -3.1e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000138,
+        7.4e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have played their defense against stronger offenses than most go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.296,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_def_sos_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, def_sos_gap: the mean, over the team's earlier games, of each opponent's offensive EPA per play to date minus the league rate to date (defence that faced strong offences). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 379, record 168-211; coefficient per SD -0.0201; earlier and later season-half coefficients -0.0369 and -0.0013; this metric sits at percentile 59.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000114.",
+      "effect": -6.4e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000279,
+        0.000146
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have played their defense against stronger offenses than most go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.2945,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_last_opponent_strength_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, last_opponent_strength: the most recent earlier opponent's points margin per game to date. Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1165, record 594-571; coefficient per SD -0.0589; earlier and later season-half coefficients -0.0967 and -0.0176; this metric sits at percentile 93.8 of 200 within-season shuffles of the same column; in-sample minus held-out +0.033613.",
+      "effect": 0.257703,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.470588,
+        0.997199
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that just played a strong opponent go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.7667,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_last_opponent_strength_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, last_opponent_strength: the most recent earlier opponent's points margin per game to date. Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1165, record 594-571; coefficient per SD -0.0589; earlier and later season-half coefficients -0.0967 and -0.0176; this metric sits at percentile 99.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000046.",
+      "effect": 0.000169,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000138,
+        0.00047
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that just played a strong opponent go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8635,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_last_opponent_strength_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, last_opponent_strength: the most recent earlier opponent's points margin per game to date. Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1165, record 594-571; coefficient per SD -0.0589; earlier and later season-half coefficients -0.0967 and -0.0176; this metric sits at percentile 99.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000092.",
+      "effect": 0.00034,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000278,
+        0.000947
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that just played a strong opponent go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8635,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_margin_sos_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, margin_sos_gap: the mean, over the team's earlier games, of each opponent's points margin per game to date (a strength-of-schedule margin adjustment). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1081, record 518-563; coefficient per SD -0.0641; earlier and later season-half coefficients -0.0869 and -0.0372; this metric sits at percentile 0.0 of 200 within-season shuffles of the same column; in-sample minus held-out -0.123249.",
+      "effect": -0.504202,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -1.232773,
+        0.235294
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have built their record against a harder schedule go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.0963,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_margin_sos_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, margin_sos_gap: the mean, over the team's earlier games, of each opponent's points margin per game to date (a strength-of-schedule margin adjustment). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1081, record 518-563; coefficient per SD -0.0641; earlier and later season-half coefficients -0.0869 and -0.0372; this metric sits at percentile 99.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000073.",
+      "effect": 0.000182,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000147,
+        0.000512
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have built their record against a harder schedule go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.859,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_margin_sos_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, margin_sos_gap: the mean, over the team's earlier games, of each opponent's points margin per game to date (a strength-of-schedule margin adjustment). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1081, record 518-563; coefficient per SD -0.0641; earlier and later season-half coefficients -0.0869 and -0.0372; this metric sits at percentile 99.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000148.",
+      "effect": 0.000362,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000301,
+        0.001026
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that have built their record against a harder schedule go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8555,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_off_sos_gap_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, off_sos_gap: minus the mean, over the team's earlier games, of each opponent's allowed EPA per play to date minus the league rate to date (offence that faced stingy defences). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 691, record 333-358; coefficient per SD -0.0377; earlier and later season-half coefficients -0.0729 and -0.0041; this metric sits at percentile 8.2 of 200 within-season shuffles of the same column; in-sample minus held-out +0.156863.",
+      "effect": -0.280112,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.829412,
+        0.291317
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have put up their offense against tougher defenses than most go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.1708,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_off_sos_gap_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, off_sos_gap: minus the mean, over the team's earlier games, of each opponent's allowed EPA per play to date minus the league rate to date (offence that faced stingy defences). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 691, record 333-358; coefficient per SD -0.0377; earlier and later season-half coefficients -0.0729 and -0.0041; this metric sits at percentile 78.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000090.",
+      "effect": -1e-06,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000199,
+        0.000195
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have put up their offense against tougher defenses than most go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.482,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    },
+    "xlg14_schedule_strength_cfb_off_sos_gap_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared schedule-strength mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first schedule-strength family, off_sos_gap: minus the mean, over the team's earlier games, of each opponent's allowed EPA per play to date minus the league rate to date (offence that faced stingy defences). Opponent strength from each opponent's games in strictly earlier weeks than the target game, home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 691, record 333-358; coefficient per SD -0.0377; earlier and later season-half coefficients -0.0729 and -0.0041; this metric sits at percentile 78.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000181.",
+      "effect": -4e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_schedule_strength_family_u6",
+      "interval": [
+        -0.000401,
+        0.000391
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_schedule_strength_family_u6: 4 candidates x 3 metrics = 12 recorded cells; 4 gating reads (log-loss percentile in the matched null), 8 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that have put up their offense against tougher defenses than most go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.4785,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u6-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}
