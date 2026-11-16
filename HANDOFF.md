@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:42:47.898727+00:00`
+Refreshed at: `2026-11-16T20:44:11.341003+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-16T20:42:47.898727+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `88dfc1de5722` — Freeze the LEAD-112 practice-change term for a Weeks 11-18 forward test and schedule its jobs
-- Pending change set: 74 paths
+- Baseline commit: `82846e425980` — Measure the line-move term by baseline book count: history has three books on every game; 2026 one-book moves 14-10, unresolved
+- Pending change set: 76 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/move-book-count-2026-11-16.md`
+  - `A  docs/lanes/done/base-label-noise-2026-11-16.md`
+  - ` M docs/lanes/model-improve-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - ` M registry/weak_signals/lead110_absorption.json`
-  - `A  registry/weak_signals/move_book_count_2026_11_16.json`
+  - `A  registry/weak_signals/base_label_noise_hindsight.json`
+  - `M  registry/weak_signals/lead110_absorption.json`
+  - `A  registry/weak_signals/season_phase_x_underdog_pick_probability.json`
+  - `A  registry/weak_signals/served_probability_line_size_reliability.json`
+  - `A  scripts/base_label_noise.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/move_book_count.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 54 more
+  - ...and 56 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

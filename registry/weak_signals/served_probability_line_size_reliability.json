@@ -1,0 +1,61 @@
+{
+  "family": "served_probability_line_size_reliability",
+  "signals": {
+    "served_prob_dog_pick_line_size_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Slope per line point -0.0001, season-week block 95% interval -0.050 to +0.047; unresolved, no positive control",
+      "closing_ground": null,
+      "description": "Reliability of the served pick probability against absolute opener line size on underdog picks: logistic of pick covered on |line| with offset logit(served pick probability), leave-one-season-out served structure 2020-25 at the opener grade",
+      "effect": -0.0001,
+      "effect_units": "logit_coefficient",
+      "family": "served_probability_line_size_reliability",
+      "interval": [
+        -0.0496,
+        0.0471
+      ],
+      "league": "nfl",
+      "notes": "Look 2 of 5. Favourite-minus-underdog slope difference -0.019, season-week block -0.084 to +0.046, P(+) 0.29. 2020-25 underdog picks 436-349. 2026 current formula underdog picks 50-27, slope -0.015, -0.186 to +0.218. Script tests/scratch/fixpicks/u10_linesize.py.",
+      "plain_summary": "When the card backs an underdog, its confidence holds up the same on big and small spreads; nothing changes on the card.",
+      "probability_positive": 0.504,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 785,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/fixpicks/u10_linesize.out",
+      "standard_error": null
+    },
+    "served_prob_fav_pick_line_size_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Slope per line point -0.019, season-week block 95% interval -0.063 to +0.023 (season block -0.061 to +0.022); sign unresolved, no positive control, so not refuted and not served",
+      "closing_ground": null,
+      "description": "Reliability of the served pick probability against absolute opener line size on favourite picks: logistic of pick covered on |line| with offset logit(served pick probability), leave-one-season-out served structure 2020-25 at the opener grade",
+      "effect": -0.0194,
+      "effect_units": "logit_coefficient",
+      "family": "served_probability_line_size_reliability",
+      "interval": [
+        -0.0628,
+        0.0226
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 5 in family (fav slope, dog slope, fav-minus-dog, 2026 fav slope, 2026 dog slope; one descriptive 6.5-point cut). 2020-25 favourite picks 386-320, |line|>=6.5 117-106 (mean q .550), <6.5 269-214 (mean q .539). 2026 current formula favourite picks 44-24, slope -0.155 week-block -0.380 to +0.054, P(+) 0.066; big-line favourite picks 10-13 v card 6-16. Script tests/scratch/fixpicks/u10_linesize.py.",
+      "plain_summary": "When the card backs a favourite, its confidence does not drift measurably with how big the spread is; nothing changes on the card.",
+      "probability_positive": 0.198,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 706,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/fixpicks/u10_linesize.out",
+      "standard_error": null
+    }
+  }
+}

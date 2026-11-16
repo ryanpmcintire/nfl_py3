@@ -4,21 +4,21 @@
     "lead110_move_loading_des": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval spans zero with wide width on 91 games; no reliability estimate, no positive control",
       "closing_ground": null,
-      "description": "Same as desprac but designation-only ladder control",
-      "effect": -0.739,
+      "description": "Tuesday-to-deadline consensus spread move toward home on read-minus-ladder availability difference with designation-only ladder control; 2026 weeks 2-8, 91 games. Reads were recorded after the deadlines of the games they describe, so this is a description of history and not a forward test.",
+      "effect": 0.7344,
       "effect_units": "slope_difference",
       "family": "lead110_absorption",
       "interval": [
-        -12.65,
-        5.62
+        -5.6448,
+        12.6494
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Re-recorded 2026-11-14 after a line-sign repair in scripts/lead110_absorption.py (move now deadline minus Tuesday line, cover now result minus line); the 2026-11-03 values had the sign inverted. The reads were recorded after the deadlines of the games they describe, so this cell describes history and is not a forward test.",
       "plain_summary": null,
-      "probability_positive": 0.439,
-      "recorded_at": "2026-11-03",
+      "probability_positive": 0.561,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": 91,
@@ -27,26 +27,26 @@
         2026
       ],
       "source": "artifacts/lead110_absorption/report.json",
-      "standard_error": 4.5
+      "standard_error": 4.667
     },
     "lead110_move_loading_desprac": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval spans zero with wide width on 91 games; no reliability estimate, no positive control",
       "closing_ground": null,
-      "description": "Tuesday-to-deadline consensus spread move toward home on read-minus-ladder availability difference (position-weighted, prior-season weights), controlling for ladder availability difference; 2026 weeks 2-8, 91 games",
-      "effect": -0.975,
+      "description": "Tuesday-to-deadline consensus spread move toward home on read-minus-ladder availability difference (position-weighted, prior-season weights), controlling for ladder availability difference; 2026 weeks 2-8, 91 games. Reads were recorded after the deadlines of the games they describe, so this is a description of history and not a forward test.",
+      "effect": 0.9692,
       "effect_units": "slope_difference",
       "family": "lead110_absorption",
       "interval": [
-        -8.84,
-        6.13
+        -6.16,
+        8.8358
       ],
       "league": "nfl",
-      "notes": "deadline-view analysis; permutation p two-sided .73; 2 loading looks + 2 cover looks",
+      "notes": "Re-recorded 2026-11-14 after a line-sign repair in scripts/lead110_absorption.py (move now deadline minus Tuesday line, cover now result minus line); the 2026-11-03 values had the sign inverted. The reads were recorded after the deadlines of the games they describe, so this cell describes history and is not a forward test.",
       "plain_summary": null,
-      "probability_positive": 0.378,
-      "recorded_at": "2026-11-03",
+      "probability_positive": 0.622,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
       "sample_games": 91,
@@ -55,63 +55,63 @@
         2026
       ],
       "source": "artifacts/lead110_absorption/report.json",
-      "standard_error": 3.8
+      "standard_error": 3.826
     },
     "lead110_residual_cover_all": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval spans zero with wide width on 91 games; no reliability estimate, no positive control",
       "closing_ground": null,
-      "description": "Deadline-graded cover margin on side of read residual not explained by the move; 38-48 decisive, small-n look",
-      "effect": -2.645,
+      "description": "Deadline-graded cover margin on side of read residual not explained by the move; 41-47 decisive, small-n look. Reads were recorded after the deadlines of the games they describe, so this is a description of history and not a forward test.",
+      "effect": -1.2557,
       "effect_units": "ats_points",
       "family": "lead110_absorption",
       "interval": [
-        -5.77,
-        0.7
+        -3.4347,
+        1.0261
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Re-recorded 2026-11-14 after a line-sign repair in scripts/lead110_absorption.py (move now deadline minus Tuesday line, cover now result minus line); the 2026-11-03 values had the sign inverted. The reads were recorded after the deadlines of the games they describe, so this cell describes history and is not a forward test.",
       "plain_summary": null,
-      "probability_positive": 0.0645,
-      "recorded_at": "2026-11-03",
+      "probability_positive": 0.1345,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 86,
+      "sample_games": 88,
       "seasons": [
         2026,
         2026
       ],
       "source": "artifacts/lead110_absorption/report.json",
-      "standard_error": 1.65
+      "standard_error": 1.138
     },
     "lead110_residual_cover_tophalf": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "interval spans zero with wide width on 91 games; no reliability estimate, no positive control",
       "closing_ground": null,
-      "description": "Same, top half by absolute residual; 19-24",
-      "effect": -0.308,
+      "description": "Same, top half by absolute residual; 23-22. Reads were recorded after the deadlines of the games they describe, so this is a description of history and not a forward test.",
+      "effect": 0.3833,
       "effect_units": "ats_points",
       "family": "lead110_absorption",
       "interval": [
-        -4.55,
-        3.84
+        -2.889,
+        3.8279
       ],
       "league": "nfl",
-      "notes": "",
+      "notes": "Re-recorded 2026-11-14 after a line-sign repair in scripts/lead110_absorption.py (move now deadline minus Tuesday line, cover now result minus line); the 2026-11-03 values had the sign inverted. The reads were recorded after the deadlines of the games they describe, so this cell describes history and is not a forward test.",
       "plain_summary": null,
-      "probability_positive": 0.43,
-      "recorded_at": "2026-11-03",
+      "probability_positive": 0.5945,
+      "recorded_at": "2026-11-14",
       "reliability": null,
       "sample_blocks": null,
-      "sample_games": 43,
+      "sample_games": 45,
       "seasons": [
         2026,
         2026
       ],
       "source": "artifacts/lead110_absorption/report.json",
-      "standard_error": 2.2
+      "standard_error": 1.713
     }
   }
 }

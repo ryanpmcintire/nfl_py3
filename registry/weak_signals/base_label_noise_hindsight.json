@@ -1,0 +1,117 @@
+{
+  "family": "base_label_noise_hindsight",
+  "signals": {
+    "base_label_noise_hindsight_model_alone_accuracy": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero: the hindsight-label ridge alone picks 761-742 v base 802-701 (changed picks 247-288 of 535).",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Model-alone opener picks from the hindsight-label ridge v the served base ridge.",
+      "effect": -2.728,
+      "effect_units": "accuracy_points",
+      "family": "base_label_noise_hindsight",
+      "interval": [
+        -4.348,
+        -1.338
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10, 88 inputs, trained on hindsight gap label (same-season leave-own-game-out team-rating margin minus closing line) for seasons before the test season; test-season in-week rows keep the real label. Graded at the Tuesday opener 2020-25, 1503 served games (pushes excluded by the served fitter), served four-term logistic refit leave-one-season-out. Season-block bootstrap 10000 draws, seed 20261116. Declared before outcomes in docs/lanes/base-label-noise-2026-11-16.md.",
+      "plain_summary": "The model by itself picks worse when trained on team-strength labels.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_label_noise/report.json",
+      "standard_error": null
+    },
+    "base_label_noise_hindsight_model_alone_log_loss": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval on the worse side.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Model-alone raw probability log loss v the served base ridge.",
+      "effect": -0.0063,
+      "effect_units": "log_loss_improvement",
+      "family": "base_label_noise_hindsight",
+      "interval": [
+        -0.0085,
+        -0.004
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10, 88 inputs, trained on hindsight gap label (same-season leave-own-game-out team-rating margin minus closing line) for seasons before the test season; test-season in-week rows keep the real label. Graded at the Tuesday opener 2020-25, 1503 served games (pushes excluded by the served fitter), served four-term logistic refit leave-one-season-out. Season-block bootstrap 10000 draws, seed 20261116. Declared before outcomes in docs/lanes/base-label-noise-2026-11-16.md.",
+      "plain_summary": "Its raw probabilities also fit worse.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_label_noise/report.json",
+      "standard_error": null
+    },
+    "base_label_noise_hindsight_served_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero; no positive control; not a closing ground.",
+      "closing_ground": null,
+      "description": "Served card with the base logit from the hindsight-label ridge: 812-691 v served 829-674; changed picks 92-109 of 201.",
+      "effect": -1.131,
+      "effect_units": "accuracy_points",
+      "family": "base_label_noise_hindsight",
+      "interval": [
+        -2.611,
+        0.645
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10, 88 inputs, trained on hindsight gap label (same-season leave-own-game-out team-rating margin minus closing line) for seasons before the test season; test-season in-week rows keep the real label. Graded at the Tuesday opener 2020-25, 1503 served games (pushes excluded by the served fitter), served four-term logistic refit leave-one-season-out. Season-block bootstrap 10000 draws, seed 20261116. Declared before outcomes in docs/lanes/base-label-noise-2026-11-16.md.",
+      "plain_summary": "Trains the model on a team-strength version of each past result instead of the raw score and checks the served picks against the opening line.",
+      "probability_positive": 0.0893,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_label_noise/report.json",
+      "standard_error": null
+    },
+    "base_label_noise_hindsight_served_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval (6 blocks) is wholly on the worse side, but the week-block interval [-0.0032, +0.0007] crosses zero, so the wrong sign is not resolved under both declared intervals; left unresolved rather than closed.",
+      "closing_ground": null,
+      "description": "Served out-of-season log loss 0.68794 v 0.68670 base; worse in 5 of 6 seasons.",
+      "effect": -0.00124,
+      "effect_units": "log_loss_improvement",
+      "family": "base_label_noise_hindsight",
+      "interval": [
+        -0.00216,
+        -0.0003
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10, 88 inputs, trained on hindsight gap label (same-season leave-own-game-out team-rating margin minus closing line) for seasons before the test season; test-season in-week rows keep the real label. Graded at the Tuesday opener 2020-25, 1503 served games (pushes excluded by the served fitter), served four-term logistic refit leave-one-season-out. Season-block bootstrap 10000 draws, seed 20261116. Declared before outcomes in docs/lanes/base-label-noise-2026-11-16.md.",
+      "plain_summary": "Same test scored on how well the probabilities fit, not just pick count.",
+      "probability_positive": 0.0047,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_label_noise/report.json",
+      "standard_error": null
+    }
+  }
+}

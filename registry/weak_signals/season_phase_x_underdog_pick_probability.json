@@ -1,0 +1,33 @@
+{
+  "family": "season_phase_x_underdog_pick_probability",
+  "signals": {
+    "pick_prob_underdog_x_week_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Out-of-season log loss is worse in all six held-out seasons (season-block 95% interval wholly below zero), so the term is not served; but the hypothesised mechanism (underdog lean should fade later in the season) is not refuted: the interaction coefficient is +0.0057 per week, week-block 95% interval -0.0129 to +0.0259, probability positive 0.71, so its sign is unresolved, and no positive control bounds it",
+      "closing_ground": null,
+      "description": "Underdog-side indicator (signed toward the opener underdog) plus its interaction with continuous week, added to the served stage-1 pick probability (model logit, flag sum, move, move available) with stage-2 pool hook refit; LOSO 2020-25 at the opener grade versus the served structure on the same 1503 rows",
+      "effect": -0.00354,
+      "effect_units": "log_loss_improvement",
+      "family": "season_phase_x_underdog_pick_probability",
+      "interval": [
+        -0.00684,
+        -0.00133
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 2 in family (second look: underdog indicator alone, LOSO log loss -0.00232, season-block -0.00558 to -0.00017). Pool-line two-stage: -0.00397, season-block -0.00728 to -0.00117. Fold dog_week coefficients 2020-25: 0.0071, 0.0098, 0.0064, 0.0092, 0.0097, -0.0075. In-sample minus out-of-sample gain 0.00368. Underdogs covered the opener 50.3 percent weeks 1-7, 50.4 percent weeks 8-12, 51.4 percent weeks 13+ in 2020-25; the model leans toward underdogs early (+0.053 logit) and toward favourites late (-0.032). Scripts tests/scratch/fixpicks/u9_main.py, u9_replay.py.",
+      "plain_summary": "Letting the pick lean toward or away from underdogs depending on the week made held-out picks slightly worse in every season, 808-695 against 829-674 for the current card logic; it would have changed six 2026 picks, which went 1-5.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-15",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/fixpicks/u9_main.out",
+      "standard_error": null
+    }
+  }
+}
