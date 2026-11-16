@@ -41,6 +41,8 @@ Owner 2026-11-16: keep improving the model, no overfitting, maximum parallel thr
 - W3-E DONE (measured, xlg-14-u6 NFL section, commit f71d4adf): neither schedule-strength survivor confirms in the NFL (null pct 34.0 and 83.5); margin_sos_gap is mostly own margin (r -.63). College-to-NFL transfer 0 of 11.
 - W3-D DONE (measured, commit c719df59): Week 10 card 6-7 (+LAC_BAL open); base 6-7, calibrated 8-5, +flags 8-5, +move 7-6, +hook 6-7; fitted terms net -2 v the calibrated base, one week, unresolved. Rerun Tue: `nfl-ats ingest` then `scripts/week_attribution.py --season 2026 --week 10`. W3-H launched: season-wide attribution (Sonnet).
 - LEAD-107 DONE but degenerate (measured, lead107-forward-2026-11-16.md): each game has one LEAD-106 read file, so dispersion is 0 and the term equals LEAD-108's. No jobs added (would duplicate LEAD-108). It needs repeated reads of the same player; decide only if a second read carries new wording.
+- Web research DONE (outside-leads-2026-11-16.md): four candidates, none with out-of-sample ATS evidence: preseason Super Bowl futures anchor (Fodor et al. 2025), cross-system rating dispersion (Prediction Tracker), coach familiarity, contract-year snap share. Launched: futures-anchor-2026-11-16.md and rating-dispersion-2026-11-16.md (acquire, then college-first screen). Queued: coach familiarity (college-first via CFBD coaches), contract-year share (NFL forward only).
+- W3-I launched: seventh college family, residualised on own ATS to date, lane xlg-14-u7-2026-11-16.md.
 - W3-D launched: reusable per-week layer attribution, Week 10 now and rerun Tue after MNF; section in picks-getting-worse-2026-11-15.md.
 - W3-C launched: T sign-rule form screened on college, lane t-signrule-2026-11-16.md.
 

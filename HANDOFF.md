@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T20:53:08.935307+00:00`
+Refreshed at: `2026-11-16T20:54:12.069560+00:00`
 
 ## Start here
 
@@ -21,19 +21,18 @@ Refreshed at: `2026-11-16T20:53:08.935307+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3cf6171d951b` — Freeze LEAD-107 read-dispersion weighting; it equals LEAD-108 while each game has one read, so no jobs are scheduled
-- Pending change set: 71 paths
+- Baseline commit: `c9e984cb2ded` — Record every card game's served probability split into fitted terms after each refresh (unpinned side recorder, 14 scheduler slots)
+- Pending change set: 70 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/card-term-recorder-2026-11-16.md`
+  - `M  docs/lanes/model-improve-2026-11-16.md`
+  - `A  docs/lanes/outside-leads-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/card_term_recorder.py`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M scripts/week_attribution.py`
   - ` M tiebreaker.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-16T20:53:08.935307+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 51 more
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 50 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
