@@ -114,6 +114,26 @@
         "stop_on_403_429_5xx"
       ]
     },
+    "bovada_player_props": {
+      "risk": "yellow",
+      "terms_url": "https://www.bovada.lv/contents/terms_of_service_bvd.pdf",
+      "terms_reviewed_on": "2026-11-16",
+      "robots_checked_on": "2026-11-16",
+      "robots_result": "user-agent * with empty disallow",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "public_unauthenticated_endpoint_only",
+        "capture_timestamp_required",
+        "pregame_prices_only",
+        "alternate_lines_and_player_prop_groups_only",
+        "minimum_delay_seconds_1_0",
+        "stop_on_403_429_5xx"
+      ]
+    },
     "espn_scoreboard_pickcenter": {
       "risk": "yellow",
       "terms_url": "https://www.espn.com/robots.txt",
@@ -472,6 +492,22 @@
         "upstream_overthecap_derived_aggregates_only",
         "generic_user_agent",
         "one_request_per_release_file"
+      ]
+    },
+    "madden_ratings_github_archive": {
+      "risk": "amber",
+      "terms_url": "https://github.com/theedgepredictor/nfl-madden-data",
+      "terms_reviewed_on": "2026-11-16",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "no_repository_license_upstream_ea_ratings_via_maddenratings_weebly",
+        "generic_user_agent",
+        "one_request_per_season_file",
+        "never_display_player_ratings"
       ]
     }
   }

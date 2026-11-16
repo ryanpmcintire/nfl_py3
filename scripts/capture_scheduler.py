@@ -872,6 +872,34 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"prop_market_{sub}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            20,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "prop_market.py"),
+                sub,
+            ],
+            True,
+            "Player-prop forward log: capture props and team totals before each deadline and "
+            "write the parameter-free prop-versus-totals diagnostic; graded Tuesday.",
+            added_on="2026-11-16",
+        )
+        for sub, day, at in (
+            ("pregame", "thu", "19:30"),
+            ("pregame", "sat", "12:00"),
+            ("pregame", "sun", "09:15"),
+            ("pregame", "sun", "12:50"),
+            ("pregame", "sun", "15:45"),
+            ("score", "tue", "09:10"),
+        )
+    ),
+    *(
+        Job(
             f"card_fidelity_{day}_{at.replace(':', '')}",
             day,
             at,

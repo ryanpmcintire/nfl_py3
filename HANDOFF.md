@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:50:24.809379+00:00`
+Refreshed at: `2026-11-16T22:53:43.353812+00:00`
 
 ## Start here
 
@@ -21,18 +21,19 @@ Refreshed at: `2026-11-16T22:50:24.809379+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8ffd393d1faa` — In-season refit of the served stage: worse on 2021-25 (changed picks 59-79), better on 2026 with a kickoff-timed move input; not a serving candidate
-- Pending change set: 66 paths
+- Baseline commit: `bd71c6a6e99a` — Fit the served stage on pool-line labels: worse than the served two-stage on 2023-25 (459.5-352.5 v 451-361) and on 2026; unresolved, nothing served
+- Pending change set: 67 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M config/source_policies.json`
-  - `A  docs/lanes/done/pool-label-fit-2026-11-16.md`
+  - `M  config/source_policies.json`
   - ` M docs/lanes/pool-number-price-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/prop-market-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/pool_label_fit_2026_11_16.json`
+  - ` M registry/weak_signals/pool_number_price_2026.json`
+  - `M  scripts/capture_scheduler.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/pool_label_fit.py`
   - ` M scripts/pool_number_price.py`
+  - `A  scripts/prop_market.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-16T22:50:24.809379+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 46 more
+  - ...and 47 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
