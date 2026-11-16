@@ -1,0 +1,117 @@
+{
+  "family": "win_totals_drift_2026_11_16",
+  "signals": {
+    "sb_drift_gap_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "sb_drift input vs gap label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.006988200121918574,
+      "effect_units": "mae_improvement",
+      "family": "win_totals_drift_2026_11_16",
+      "interval": [
+        -0.0010257360917616124,
+        0.01550871280463319
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether sb_drift predicts early-season line error.",
+      "probability_positive": 0.9495,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/win_totals_test/sb_drift_results.json",
+      "standard_error": null
+    },
+    "sb_drift_margin_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "sb_drift input vs margin label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": -0.018472237020693193,
+      "effect_units": "mae_improvement",
+      "family": "win_totals_drift_2026_11_16",
+      "interval": [
+        -0.04387579799238285,
+        0.003202229194824117
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether sb_drift predicts early-season line error.",
+      "probability_positive": 0.0535,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/win_totals_test/sb_drift_results.json",
+      "standard_error": null
+    },
+    "wt_drift_gap_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "wt_drift input vs gap label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": 0.006314196446468756,
+      "effect_units": "mae_improvement",
+      "family": "win_totals_drift_2026_11_16",
+      "interval": [
+        -0.0006859794946613708,
+        0.013119676019851463
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether wt_drift predicts early-season line error.",
+      "probability_positive": 0.959,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/win_totals_test/wt_drift_results.json",
+      "standard_error": null
+    },
+    "wt_drift_margin_label_weeks_2_6_mae_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Walk-forward by season, probability_positive reported; no refuted mechanism and no closing ground.",
+      "closing_ground": null,
+      "description": "wt_drift input vs margin label, weeks_2_6, walk-forward: MAE improvement on real margin vs closing line",
+      "effect": -0.019204897942789716,
+      "effect_units": "mae_improvement",
+      "family": "win_totals_drift_2026_11_16",
+      "interval": [
+        -0.04396518731161137,
+        0.002381321797419585
+      ],
+      "league": "nfl",
+      "notes": "Elastic net on the named input only, trained on earlier seasons in the same week window, tested walk-forward 2015-25. Season-block bootstrap. Placebo window and permutation controls are in the source file.",
+      "plain_summary": "Tests whether wt_drift predicts early-season line error.",
+      "probability_positive": 0.047,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/win_totals_test/wt_drift_results.json",
+      "standard_error": null
+    }
+  }
+}
