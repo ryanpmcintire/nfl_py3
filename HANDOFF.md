@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:08:19.178623+00:00`
+Refreshed at: `2026-11-16T23:09:16.542165+00:00`
 
 ## Start here
 
@@ -21,18 +21,14 @@ Refreshed at: `2026-11-16T23:08:19.178623+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9e9418b308b3` — Two-base stage (QW and opener-parity logits) 828-675 v 836-667, logits collinear; goal-65 lane updated
-- Pending change set: 65 paths
+- Baseline commit: `7ae3f4fcabc2` — Freeze the pooled stack: 2026 W1-10 replay 75-74 equals the card, log loss worse; the coach flag carries most of the 2020-25 gain; forward log scheduled; second outside-leads sweep
+- Pending change set: 60 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/outside-leads-2-2026-11-16.md`
+  - `A  docs/lanes/done/qb-starter-parity-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `M  docs/lanes/pooled-stack-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/pooled_stack_frozen_2026_w1_10.json`
-  - `A  registry/weak_signals/qb_starter_parity_2026_11_16.json`
-  - `M  scripts/capture_scheduler.py`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/pooled_stack_forward.py`
+  - `A  scripts/qb_starter_parity.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-11-16T23:08:19.178623+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 45 more
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - ...and 40 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
