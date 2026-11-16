@@ -1,0 +1,201 @@
+{
+  "family": "week1_model_weight",
+  "signals": {
+    "week1_model_weight_2011_25_close_all_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2011_25_close_all, close; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": -0.4714510214772205,
+      "effect_units": "accuracy_points",
+      "family": "week1_model_weight",
+      "interval": [
+        -1.0264583710533302,
+        0.05231699178016412
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0325,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3919,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    },
+    "week1_model_weight_2011_25_close_all_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2011_25_close_all, close; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": -0.00027353590929179994,
+      "effect_units": "log_loss_improvement",
+      "family": "week1_model_weight",
+      "interval": [
+        -0.0005897785850141196,
+        -5.0724268488056065e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3919,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    },
+    "week1_model_weight_2020_25_opener_all_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2020_25_opener_all, opener; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": 0.19960079840318778,
+      "effect_units": "accuracy_points",
+      "family": "week1_model_weight",
+      "interval": [
+        -0.06697923643670389,
+        0.5222102766258834
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.868,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    },
+    "week1_model_weight_2020_25_opener_all_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2020_25_opener_all, opener; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": -0.00013133663804221207,
+      "effect_units": "brier_improvement",
+      "family": "week1_model_weight",
+      "interval": [
+        -0.0002950465470329712,
+        -7.2194742049912845e-06
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.019,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    },
+    "week1_model_weight_2020_25_opener_all_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2020_25_opener_all, opener; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": -0.0002688054961617059,
+      "effect_units": "log_loss_improvement",
+      "family": "week1_model_weight",
+      "interval": [
+        -0.0006018861707483281,
+        -1.6035299264793903e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0185,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    },
+    "week1_model_weight_2020_25_opener_week1_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2020_25_opener_week1, opener; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": 2.272727272727276,
+      "effect_units": "accuracy_points",
+      "family": "week1_model_weight",
+      "interval": [
+        0.0,
+        4.819277108433734
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9165,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 94,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    },
+    "week1_model_weight_2026_week1_forward_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week 1 model weight: model_logit x 1[week 1] added as one fitted term, 2026_week1_forward, frozen 2020-25 fit, pool-line harness; LOSO by season, week-block bootstrap, improvement positive; declared 2026-11-16T21:19:52Z before fitting.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "week1_model_weight",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/week1_structure/results.json",
+      "standard_error": null
+    }
+  }
+}

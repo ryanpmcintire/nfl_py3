@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T21:23:21.860386+00:00`
+Refreshed at: `2026-11-16T21:23:42.068367+00:00`
 
 ## Start here
 
@@ -21,18 +21,19 @@ Refreshed at: `2026-11-16T21:23:21.860386+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e2c9a0eee2c2` — Bring ROADMAP rows up to date with the 2026-11-16 units
-- Pending change set: 70 paths
+- Baseline commit: `63bfdc45afbb` — Regrade the weather-and-quarterback candidate at the measured constant (836-667 v 829-674); keep MOS as its weather feed; re-pull Kalshi and Polymarket 2026
+- Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/lanes/pool-standing-refresh.md`
-  - `M  docs/lanes/source-pull-2026-11-16.md`
-  - `M  docs/lanes/v4-landing-2026-11-17.md`
-  - `A  docs/lanes/v4-weather-openmeteo-2026-11-16.md`
+  - `A  docs/lanes/week1-structure-2026-11-16.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/v4_pinned_batch.json`
+  - `A  registry/experiments/margin-backtest/20261115T143853Z.json`
+  - `A  registry/experiments/margin-backtest/20261115T170917Z.json`
+  - `A  registry/experiments/margin-backtest/20261116T170931Z.json`
+  - `A  registry/experiments/margin-backtest/20261116T212043Z.json`
+  - `A  registry/weak_signals/week1_model_weight.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `M  scripts/source_pull_2026_11_16.py`
-  - `A  scripts/v4_weather_openmeteo.py`
+  - `A  scripts/week1_structure.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-16T21:23:21.860386+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 50 more
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
