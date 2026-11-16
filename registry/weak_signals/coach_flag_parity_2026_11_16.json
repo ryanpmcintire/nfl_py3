@@ -1,0 +1,61 @@
+{
+  "family": "coach_flag_parity_2026_11_16",
+  "signals": {
+    "coach_flag_parity_2026_11_16_deadline_asof_pool_line_w1_8_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact 95% intervals: coach_flag_parity_2026_11_16_latest_snapshot_pool_line_w1_8_accuracy_points [-25.21,+2.11]; coach_flag_parity_2026_11_16_deadline_asof_pool_line_w1_8_accuracy_points [-29.37,+1.68]. Neither interval lies wholly below zero and no positive control exists, so unresolved_below_power is the only admissible classification.",
+      "closing_ground": null,
+      "description": "Year-one head-coach flag as the live feed served it: values from the latest schedules snapshot stamped before each game's pick deadline (nflverse coach fields stale for ATL, ARI and BUF before 2026-11-11). Record 14-26 on 40 decided nonzero games, 2026 Weeks 1-8 at the Splash pool line; declared 2026-11-16T23:13:33Z before intervals; PARTLY SEEN (records viewed in explain.json first).",
+      "effect": -15.000000000000002,
+      "effect_units": "accuracy_points",
+      "family": "coach_flag_parity_2026_11_16",
+      "interval": [
+        -29.37175091292331,
+        1.6844453648990676
+      ],
+      "league": "nfl",
+      "notes": "Exact Clopper-Pearson 95% interval; probability_positive = P(rate > .5) under Beta(1+W,1+L). 2 looks in the family. History 2020-25 at the opener: 236 nonzero, 136-96-4 (stored fit flag, equal to every as-of rebuild). The flag is zero after Week 8.",
+      "plain_summary": null,
+      "probability_positive": 0.029791944009048166,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 40,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/coach_flag_parity.py; artifacts/coach_flag_parity/; docs/lanes/coach-flag-parity-2026-11-16.md",
+      "standard_error": null
+    },
+    "coach_flag_parity_2026_11_16_latest_snapshot_pool_line_w1_8_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact 95% intervals: coach_flag_parity_2026_11_16_latest_snapshot_pool_line_w1_8_accuracy_points [-25.21,+2.11]; coach_flag_parity_2026_11_16_deadline_asof_pool_line_w1_8_accuracy_points [-29.37,+1.68]. Neither interval lies wholly below zero and no positive control exists, so unresolved_below_power is the only admissible classification.",
+      "closing_ground": null,
+      "description": "Year-one head-coach flag (history definition: the game's coach of record against the prior season's modal coach; +1 away year one, -1 home year one), values from the latest schedules snapshot. Record 20-33 on 53 decided nonzero games, 2026 Weeks 1-8 at the Splash pool line; declared 2026-11-16T23:13:33Z before intervals; PARTLY SEEN (records viewed in explain.json first).",
+      "effect": -12.264150943396224,
+      "effect_units": "accuracy_points",
+      "family": "coach_flag_parity_2026_11_16",
+      "interval": [
+        -25.212780153508785,
+        2.106071508129792
+      ],
+      "league": "nfl",
+      "notes": "Exact Clopper-Pearson 95% interval; probability_positive = P(rate > .5) under Beta(1+W,1+L). 2 looks in the family. History 2020-25 at the opener: 236 nonzero, 136-96-4 (stored fit flag, equal to every as-of rebuild). The flag is zero after Week 8.",
+      "plain_summary": null,
+      "probability_positive": 0.03795236474455066,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 53,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/coach_flag_parity.py; artifacts/coach_flag_parity/; docs/lanes/coach-flag-parity-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

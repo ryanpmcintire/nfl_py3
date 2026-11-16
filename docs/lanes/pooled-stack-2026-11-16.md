@@ -55,3 +55,6 @@ The first pooled stack of every on-disk as-of signal over QW is ahead on accurac
 1. Root adds scheduler jobs (pregame at card_fidelity slots, score Tue 09:15) before Week 11 Wednesday.
 2. Resolve coach-flag parity (live signed_composition_flags v mod27 g26 58/104) and whether the 2026 card already counts the coach flag (double count on the card offset) before reading the W11-18 log.
 3. Optional builders: 2026 snap counts for contract year; Tuesday totals for asof_total.
+
+## Root note 2026-11-16 (from done/coach-flag-parity-2026-11-16.md, measured)
+- The coach flag that carries most of the stack's 2020-25 gain is 136-96-4 at the opener in history but 20-33 (latest snapshot) and 14-26 (deadline as-of) at the 2026 pool line, and it is zero after Week 8, so the Weeks 11-18 forward log cannot test its weight. History and live use the same builder and as-of inputs; 23 live games differ only because nflverse listed old coaches for ATL, ARI and BUF until 11-11. Treat the stack's 2020-25 gain as unconfirmed; the forward log tests only the non-coach terms.
