@@ -1,0 +1,89 @@
+{
+  "family": "win_totals_anchor_2026_11_16",
+  "signals": {
+    "win_totals_anchor_wt_drift_wk7_12_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bounding an effect this small; the NFL add-one harness floor is in docs/lanes/xlg-harness-power-2026-11-14.md.",
+      "closing_ground": null,
+      "description": "Preseason win-total percentile minus current market-rating percentile, home minus away, weeks 7-12, one offset-logistic coefficient per SD on the served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out. Coefficient -0.0795 per SD (expected negative), folds 6/6 negative; halves -0.0433 / -0.1042; null percentile 7.3 of 200 within-season shuffles; changed 54 record 22-29; in-sample minus held-out +1.417004.",
+      "effect": -2.024291,
+      "effect_units": "accuracy_points",
+      "family": "win_totals_anchor_2026_11_16",
+      "interval": [
+        -5.633803,
+        1.419878
+      ],
+      "league": "nfl",
+      "notes": "Family win_totals_anchor_2026_11_16: one declared fresh look after the weeks 7-12 placebo of win_totals_drift_2026_11_16; 1 gating read, 3 cells; season-block interval; declared pass False. Not served.",
+      "plain_summary": "Checks whether teams whose market rating has moved away from their preseason win total keep beating the opening line in that direction in weeks 7-12.",
+      "probability_positive": 0.1275,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 494,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/win-totals-2026-11-16.md",
+      "standard_error": null
+    },
+    "win_totals_anchor_wt_drift_wk7_12_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bounding an effect this small; the NFL add-one harness floor is in docs/lanes/xlg-harness-power-2026-11-14.md.",
+      "closing_ground": null,
+      "description": "Preseason win-total percentile minus current market-rating percentile, home minus away, weeks 7-12, one offset-logistic coefficient per SD on the served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out. Coefficient -0.0795 per SD (expected negative), folds 6/6 negative; halves -0.0433 / -0.1042; null percentile 83.5 of 200 within-season shuffles; changed 54 record 22-29; in-sample minus held-out +0.000403.",
+      "effect": -3e-05,
+      "effect_units": "brier_improvement",
+      "family": "win_totals_anchor_2026_11_16",
+      "interval": [
+        -0.001451,
+        0.000962
+      ],
+      "league": "nfl",
+      "notes": "Family win_totals_anchor_2026_11_16: one declared fresh look after the weeks 7-12 placebo of win_totals_drift_2026_11_16; 1 gating read, 3 cells; season-block interval; declared pass False. Not served.",
+      "plain_summary": "Checks whether teams whose market rating has moved away from their preseason win total keep beating the opening line in that direction in weeks 7-12.",
+      "probability_positive": 0.5045,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 494,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/win-totals-2026-11-16.md",
+      "standard_error": null
+    },
+    "win_totals_anchor_wt_drift_wk7_12_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bounding an effect this small; the NFL add-one harness floor is in docs/lanes/xlg-harness-power-2026-11-14.md.",
+      "closing_ground": null,
+      "description": "Preseason win-total percentile minus current market-rating percentile, home minus away, weeks 7-12, one offset-logistic coefficient per SD on the served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out. Coefficient -0.0795 per SD (expected negative), folds 6/6 negative; halves -0.0433 / -0.1042; null percentile 83.5 of 200 within-season shuffles; changed 54 record 22-29; in-sample minus held-out +0.000831.",
+      "effect": -5.6e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "win_totals_anchor_2026_11_16",
+      "interval": [
+        -0.002952,
+        0.001987
+      ],
+      "league": "nfl",
+      "notes": "Family win_totals_anchor_2026_11_16: one declared fresh look after the weeks 7-12 placebo of win_totals_drift_2026_11_16; 1 gating read, 3 cells; season-block interval; declared pass False. Not served.",
+      "plain_summary": "Checks whether teams whose market rating has moved away from their preseason win total keep beating the opening line in that direction in weeks 7-12.",
+      "probability_positive": 0.512,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 494,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/win-totals-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

@@ -25,3 +25,19 @@ Test whether the preseason market view (season win total; second look Super Bowl
 - Optional fresh declared look, not a re-read: negative-sign preseason-anchor term, weeks 7-12 primary, graded on the real margin at the opener 2020-25 through the served stage with pushes kept. The margin placebo (sb pct 0.97, wt 0.23) is the only real-outcome evidence so far and is mixed.
 
 ## Open
+
+## Weeks 7-12 anchor look
+### Declaration (stamped 2026-11-16T21:50:14Z, before any outcome joined to this look)
+- One fresh look, family `win_totals_anchor_2026_11_16`. Term wt_drift as built in artifacts/win_totals_test/features.parquet (same as-of construction, truncation check max diff 0.0), weeks 7-12, REG 2020-25, home minus away, scaled per SD on that sample. Expected sign NEGATIVE (follow the drift: line stays anchored to the preseason view).
+- Grade at the opener through the served stage: population `build_fit_population(keep_pushes=True)`, offset = eng62 `stage_one` out-of-season logit, pushes kept with label 0.5. One offset-logistic coefficient, no intercept, leave-one-season-out over 2020-25.
+- Gating read: held-out log-loss gain against the served stage, season-block bootstrap interval (2000 draws over 6 seasons), percentile among 200 within-season shuffles of the term. Pass = null percentile above 95 AND full-sample coefficient negative AND negative coefficient fitted separately on 2020-22 and 2023-25. Context: accuracy P+, Brier, changed picks and record (weeks 7-12 and all games, pushes counted separately), fold coefficients, in-sample minus held-out, intercept-only control, correlation with served logit and with the MOD-57 surprise-to-date (T before its weeks 2-6 indicator).
+- Looks: 1 gating read; 3 recorded cells (accuracy, log loss, Brier). A pass writes a 2026 Weeks 11-12 forward-log declaration here; nothing is scheduled or served.
+### Result (measured; scripts/win_totals_anchor.py, artifacts/win_totals_anchor/results.json, exit 0, 47 s)
+- 494 games weeks 7-12 2020-25 (11 pushes kept at 0.5), 481 nonzero; served-stage reproduction gap 0.0.
+- Coefficient -0.079 per SD (expected negative), negative in 6/6 folds (-0.054 to -0.124); halves 2020-22 -0.043, 2023-25 -0.104 (both negative). Null coefficient SD 0.085.
+- Held-out log-loss gain -0.000056 [-0.00295, +0.00199] season-block, P+ 0.51, null percentile 83.5 (bar 95; null 5-95 [-0.0045, +0.0016]). Brier -0.000030, P+ 0.50, pct 83.5. Accuracy -2.02 pts [-5.63, +1.42], P+ 0.13, pct 7.3.
+- Changed picks 54: 22-29 against the term (3 pushes). Weeks 7-12 261-222 v served 268-215; all games 822-681 v 829-674.
+- In-sample minus held-out: ll +0.00083, acc +1.42 pts. Intercept-only control ll +0.00030 (beats the term).
+- Correlation: served logit -0.03; surprise to date weeks 7-12 -0.32; MOD-57 T weeks 2-6 -0.06.
+- Declared pass FAILED (null pct 83.5 < 95), so no 2026 Weeks 11-12 forward-log declaration. Sign stable but unresolved_below_power, not closed (no wrong-sign resolution, no positive control).
+- Recorded (measured): 3 cells, family win_totals_anchor_2026_11_16, `weak-signals record --batch` exit 0 (recorded 3); `pool --league nfl --effect-units accuracy_points` exit 0.
