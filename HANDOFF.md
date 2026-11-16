@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T22:02:10.021559+00:00`
+Refreshed at: `2026-11-16T22:11:37.464743+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-16T22:02:10.021559+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `99baae1fd1d1` — Run the one declared served look of the weeks 7-12 preseason anchor: sign held in every fold, no gain (changed picks 22-29), unresolved
+- Baseline commit: `9492a5ff8561` — Audit training-time timing of team and schedule inputs: as-of total and opener spread arms do not beat the weather-and-quarterback reference
 - Pending change set: 58 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/lanes/hindsight-audit-team-2026-11-16.md`
+  - `A  docs/lanes/opener-parity-2026-11-16.md`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/hindsight_audit_team.json`
+  - `A  registry/weak_signals/opener_parity_2026_11_16.json`
   - ` M scripts/forward2026_ftn_terms.py`
-  - `A  scripts/hindsight_audit_team.py`
+  - `A  scripts/opener_parity.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`

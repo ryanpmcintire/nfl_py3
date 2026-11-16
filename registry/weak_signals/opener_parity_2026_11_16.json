@@ -1,0 +1,173 @@
+{
+  "family": "opener_parity_2026_11_16",
+  "signals": {
+    "opener_parity_op_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW base (QB repair + forecast weather) trained with spread_line AND target ats_margin rebased to the as-of opener (Tuesday capture, else SBR open, else close on 16 completed REG rows), minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.255); record 831-672 vs 836-667; changed picks 77 (arm 36-41)",
+      "effect": -0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "opener_parity_2026_11_16",
+      "interval": [
+        -1.3615082337705207,
+        0.6631299734748011
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener parity: QW base (QB repair + forecast weather) trained with spread_line AND target ats_margin rebased to the as-of opener (Tuesday capture, else SBR open, else close on 16 completed REG rows).",
+      "probability_positive": 0.24025,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_parity/results.json",
+      "standard_error": null
+    },
+    "opener_parity_op_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "QW base (QB repair + forecast weather) trained with spread_line AND target ats_margin rebased to the as-of opener (Tuesday capture, else SBR open, else close on 16 completed REG rows), minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.467); record 831-672 vs 836-667; changed picks 77 (arm 36-41)",
+      "effect": -2.1203741465848728e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "opener_parity_2026_11_16",
+      "interval": [
+        -0.0007471306686069949,
+        0.0005638113368421202
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener parity: QW base (QB repair + forecast weather) trained with spread_line AND target ats_margin rebased to the as-of opener (Tuesday capture, else SBR open, else close on 16 completed REG rows).",
+      "probability_positive": 0.47775,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_parity/results.json",
+      "standard_error": null
+    },
+    "opener_parity_opi_accuracy_points": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval entirely below zero for this arm",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Control: OP table with an intercept-only base (one constant column), so the four-term stage carries no model information, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.037); record 810-693 vs 836-667; changed picks 190 (arm 82-108)",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "opener_parity_2026_11_16",
+      "interval": [
+        -3.181285125465582,
+        -0.26595744680851063
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener parity: Control: OP table with an intercept-only base (one constant column), so the four-term stage carries no model information.",
+      "probability_positive": 0.0105,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_parity/results.json",
+      "standard_error": null
+    },
+    "opener_parity_opi_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "Control: OP table with an intercept-only base (one constant column), so the four-term stage carries no model information, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.219); record 810-693 vs 836-667; changed picks 190 (arm 82-108)",
+      "effect": -0.0008012282280980566,
+      "effect_units": "log_loss_improvement",
+      "family": "opener_parity_2026_11_16",
+      "interval": [
+        -0.0017798625977702418,
+        0.0005825459709631793
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener parity: Control: OP table with an intercept-only base (one constant column), so the four-term stage carries no model information.",
+      "probability_positive": 0.1035,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_parity/results.json",
+      "standard_error": null
+    },
+    "opener_parity_opr_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "As OP but the 16 completed REG rows with no real opener are dropped from training, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.122); record 827-676 vs 836-667; changed picks 79 (arm 35-44)",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "opener_parity_2026_11_16",
+      "interval": [
+        -1.8043025676613464,
+        0.5968169761273209
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener parity: As OP but the 16 completed REG rows with no real opener are dropped from training.",
+      "probability_positive": 0.1575,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_parity/results.json",
+      "standard_error": null
+    },
+    "opener_parity_opr_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval and probability_positive reported; no resolved wrong sign and no positive control bound",
+      "closing_ground": null,
+      "description": "As OP but the 16 completed REG rows with no real opener are dropped from training, minus QW; served four-term pick probability refit leave-one-season-out, opener grade 2020-2025, 1503 games, season-block bootstrap (week-block P+ 0.471); record 827-676 vs 836-667; changed picks 79 (arm 35-44)",
+      "effect": -2.1505497998488355e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "opener_parity_2026_11_16",
+      "interval": [
+        -0.0006875176093169824,
+        0.0004775691658754552
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener parity: As OP but the 16 completed REG rows with no real opener are dropped from training.",
+      "probability_positive": 0.49475,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_parity/results.json",
+      "standard_error": null
+    }
+  }
+}
