@@ -1,0 +1,117 @@
+{
+  "family": "prediction_market_gap",
+  "signals": {
+    "pm_gap_deadline_2026_w1_10_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (intervals span both sides), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Frozen pick-deadline gap term scored once on 2026 W1-10 published card, opener grade. Served 57-38, term 59-36, changed 3-1.",
+      "effect": -9.21e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "prediction_market_gap",
+      "interval": [
+        -0.0036203,
+        0.0038342
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T21:03:10Z before outcomes. Term = Kalshi/Polymarket home win price mapped to points via pre-2024 market residual quantiles minus the book line, mean of venues. 6 looks (2 primary, 4 venue diagnostics). Kalshi 2026 candles lack prices (source pull parsed close not close_dollars), so 2026 scoring is Polymarket only. Mean gap +0.37 (tue) and +0.42 (deadline) points.",
+      "plain_summary": null,
+      "probability_positive": 0.4865,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 95,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/prediction_market_gap/fit_2024_2025.json; artifacts/prediction_market_gap/score_2026_w1_10.json; docs/lanes/prediction-market-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "pm_gap_deadline_loso_2024_2025_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (intervals span both sides), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Pick-deadline prediction-market gap vs close line, leave-one-season-out 2024-2025, graded vs Tuesday opener. Coef -0.028/pt (SE 0.082), folds -0.081, +0.044; changed picks 17-17.",
+      "effect": -0.0015449,
+      "effect_units": "log_loss_improvement",
+      "family": "prediction_market_gap",
+      "interval": [
+        -0.0040443,
+        0.0010771
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T21:03:10Z before outcomes. Term = Kalshi/Polymarket home win price mapped to points via pre-2024 market residual quantiles minus the book line, mean of venues. 6 looks (2 primary, 4 venue diagnostics). Kalshi 2026 candles lack prices (source pull parsed close not close_dollars), so 2026 scoring is Polymarket only. Mean gap +0.37 (tue) and +0.42 (deadline) points.",
+      "plain_summary": null,
+      "probability_positive": 0.1425,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 524,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/prediction_market_gap/fit_2024_2025.json; artifacts/prediction_market_gap/score_2026_w1_10.json; docs/lanes/prediction-market-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "pm_gap_tue_2026_w1_10_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (intervals span both sides), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Frozen Tuesday-noon gap term scored once on 2026 W1-10 published card, opener grade. Served 61-41, term 60-42, changed 4-5.",
+      "effect": -0.0028483,
+      "effect_units": "log_loss_improvement",
+      "family": "prediction_market_gap",
+      "interval": [
+        -0.0064926,
+        0.0008505
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T21:03:10Z before outcomes. Term = Kalshi/Polymarket home win price mapped to points via pre-2024 market residual quantiles minus the book line, mean of venues. 6 looks (2 primary, 4 venue diagnostics). Kalshi 2026 candles lack prices (source pull parsed close not close_dollars), so 2026 scoring is Polymarket only. Mean gap +0.37 (tue) and +0.42 (deadline) points.",
+      "plain_summary": null,
+      "probability_positive": 0.065,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 102,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/prediction_market_gap/fit_2024_2025.json; artifacts/prediction_market_gap/score_2026_w1_10.json; docs/lanes/prediction-market-gap-2026-11-16.md",
+      "standard_error": null
+    },
+    "pm_gap_tue_loso_2024_2025_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (intervals span both sides), split-half reliability not measured, no positive control bounds an effect this small (add-one noise floor about 1.5 accuracy points).",
+      "closing_ground": null,
+      "description": "Tuesday-noon prediction-market gap, offset-logistic on served out-of-season probability, leave-one-season-out 2024-2025, graded vs Tuesday opener. Coef 0.041/pt (SE 0.086), folds -0.017, +0.147; changed picks 29-27.",
+      "effect": -0.0026525,
+      "effect_units": "log_loss_improvement",
+      "family": "prediction_market_gap",
+      "interval": [
+        -0.0081291,
+        0.0028445
+      ],
+      "league": "nfl",
+      "notes": "Declared 2026-11-16T21:03:10Z before outcomes. Term = Kalshi/Polymarket home win price mapped to points via pre-2024 market residual quantiles minus the book line, mean of venues. 6 looks (2 primary, 4 venue diagnostics). Kalshi 2026 candles lack prices (source pull parsed close not close_dollars), so 2026 scoring is Polymarket only. Mean gap +0.37 (tue) and +0.42 (deadline) points.",
+      "plain_summary": null,
+      "probability_positive": 0.1865,
+      "recorded_at": "2026-11-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 475,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/prediction_market_gap/fit_2024_2025.json; artifacts/prediction_market_gap/score_2026_w1_10.json; docs/lanes/prediction-market-gap-2026-11-16.md",
+      "standard_error": null
+    }
+  }
+}

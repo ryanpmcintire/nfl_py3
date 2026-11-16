@@ -778,6 +778,52 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"pm_gap_pregame_{slot}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "prediction_market_gap.py"),
+                "pregame",
+                "--slot",
+                slot,
+            ],
+            True,
+            "Prediction-market gap forward log: frozen term from prediction-market win prices "
+            "against the book line, written before kickoff.",
+            added_on="2026-11-16",
+        )
+        for slot, day, at in (
+            ("tue", "tue", "12:30"),
+            ("deadline", "thu", "19:45"),
+            ("deadline", "sat", "15:45"),
+            ("deadline", "sun", "12:30"),
+            ("deadline", "sun", "15:45"),
+        )
+    ),
+    Job(
+        "pm_gap_score_tue",
+        "tue",
+        "09:00",
+        360,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "prediction_market_gap.py"),
+            "score",
+        ],
+        True,
+        "Prediction-market gap forward log: grade settled forward rows against the served card.",
+        added_on="2026-11-16",
+    ),
+    *(
+        Job(
             f"lead112_forward_pregame_{day}_{at.replace(':', '')}",
             day,
             at,
