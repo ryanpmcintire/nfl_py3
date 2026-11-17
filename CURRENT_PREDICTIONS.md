@@ -1,16 +1,16 @@
 # NFL ATS predictions: 2026 Week 10
 
-Published from the synchronized weak stack model, 2026-11-15 17:17 UTC.
+Published from the synchronized weak stack model, 2026-11-16 17:20 UTC.
 
-<!-- publication: model_id=01e86749d895ef79 published_at_utc=2026-11-15T17:17:52.271377+00:00 -->
+<!-- publication: model_id=f09e045fb672183f published_at_utc=2026-11-16T17:20:04.366942+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,159 of 2,211 non-push games correctly (52.42%)**. The 95% range was 50.43%-54.51%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,163 of 2,220 non-push games correctly (52.39%)**. The 95% range was 50.36%-54.47%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
@@ -26,7 +26,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 15 | NE at DET  | NE +2.5          | 52.6%          |
 | Sun, Nov 15 | PIT at CIN | CIN -3.5         | 55.2%          |
 | Sun, Nov 15 | SEA at LV  | ★ SEA -3.5       | 62.4%          |
-| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 51.4%          |
+| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 50.1%          |
 | Mon, Nov 16 | LAC at BAL | LAC +5.5         | 54.1%          |
 
 **Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
@@ -43,6 +43,6 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
 | MIN at GB  | GB              | MIN        | 50.9%          |
-| SF at DAL  | SF              | DAL        | 51.4%          |
+| SF at DAL  | SF              | DAL        | 50.1%          |
 | WAS at NYG | WAS             | NYG        | 50.6%          |
 <!-- LATE_WEEK_REFRESH:END -->

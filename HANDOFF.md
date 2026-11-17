@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-16T23:33:54.296017+00:00`
+Refreshed at: `2026-11-17T05:32:22.097974+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-11-16T23:33:54.296017+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7a7f727a3168` — Madden talent prior served look: 825-678 v 836-667, unresolved; close the goal-65 wave with the Tuesday plan and running forward logs
-- Pending change set: 61 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
+- Baseline commit: `46cad1af815c` — Refresh the handoff
+- Pending change set: 64 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/pool-standing-refresh.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `M  docs/model.html`
   - ` M scripts/forward2026_ftn_terms.py`
-  - ` M tiebreaker.json`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-16T23:33:54.296017+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 41 more
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
