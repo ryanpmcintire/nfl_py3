@@ -71,6 +71,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [week11-lock-2026-11-17](done/week11-lock-2026-11-17.md) - 2026-11-17: invalid source-policy risk broke source jobs from 11-16; fixed; board read, v4 bundle landed, weekly_lock verified, validation v10 enrolled, pool panel After Week 10; pushed 62d554ea.
 - [why-this-pick-flipback](done/why-this-pick-flipback.md) - 2026-10-31: board explanation follows the explanation's own side after a flip back; prefix wording true before lock.
 - [registry-split](done/registry-split.md) - 2026-10-20: registry/weak_signals.json split into 392 per-family shards under registry/weak_signals/.
 - [card-table-ledger-sync](done/card-table-ledger-sync.md) - 2026-10-16: card table rewrites from the refresh ledger rows; card, board and alerts share the held Tuesday Best Pick until the Sunday re-nomination.

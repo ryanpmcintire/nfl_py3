@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-17T23:05:21.186124+00:00`
+Refreshed at: `2026-11-17T23:06:18.185326+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-17T23:05:21.186124+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `277968e88272` — Republish the site with the latest settled results
-- Pending change set: 91 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/pool-standing-refresh.md`
-  - `A  docs/lanes/week11-lock-2026-11-17.md`
+- Baseline commit: `62d554ea08db` — Week 11 lock: land the QB repair and pregame weather, enroll validation v10, pool panel after Week 10
+- Pending change set: 53 paths
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/week11-lock-2026-11-17.md -> docs/lanes/done/week11-lock-2026-11-17.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20261117T194003Z.json`
-  - `A  registry/experiments/margin-backtest/20261117T222720Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-10-20261115T143944Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-10-20261115T171007Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-10-20261116T171102Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-10-20261117T194158Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-11-20261117T222853Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-11-20261117T224836Z.json`
-  - `A  registry/experiments/opener-evaluation/20261115T144308Z.json`
-  - `A  registry/experiments/opener-evaluation/20261116T171510Z.json`
-  - ...and 71 more
+  - ` M scripts/forward2026_ftn_terms.py`
+  - `?? an.csv`
+  - `?? cdx_tspread.json`
+  - `?? cdx_vipre.json`
+  - `?? cdx_vipre2.json`
+  - `?? cdx_viweek.json`
+  - `?? cdx_wgdl.json`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - ...and 33 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
