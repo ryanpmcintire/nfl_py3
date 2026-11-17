@@ -1,12 +1,12 @@
 # NFL ATS predictions: 2026 Week 10
 
-Published from the synchronized weak stack model, 2026-11-16 17:20 UTC.
+Published from the synchronized weak stack model, 2026-11-17 19:50 UTC.
 
-<!-- publication: model_id=f09e045fb672183f published_at_utc=2026-11-16T17:20:04.366942+00:00 -->
+<!-- publication: model_id=dee1fbc6d2db3de8 published_at_utc=2026-11-17T19:50:34.892698+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,163 of 2,220 non-push games correctly (52.39%)**. The 95% range was 50.36%-54.47%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,166 of 2,224 non-push games correctly (52.43%)**. The 95% range was 50.38%-54.51%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
@@ -29,9 +29,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 15 | SF at DAL  | DAL +4.5         | 50.1%          |
 | Mon, Nov 16 | LAC at BAL | LAC +5.5         | 54.1%          |
 
-**Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 16, total 37 (market total 38.5) -- consistent with the LAC +5.5 pick.
+**Tiebreaker (last game, LAC at BAL):** BAL 21 - LAC 17, total 38 (market total 39) -- consistent with the LAC +5.5 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Partial lists: inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 52% and 51%. These broad groups do not establish a large advantage for the single highest estimate.
 

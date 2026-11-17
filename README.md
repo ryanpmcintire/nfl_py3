@@ -11,7 +11,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,163 of 2,220 non-push games correctly (52.39%)**. The 95% range was 50.36%-54.47%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,166 of 2,224 non-push games correctly (52.43%)**. The 95% range was 50.38%-54.51%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
@@ -45,10 +45,10 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`f09e045fb672183f`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`dee1fbc6d2db3de8`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
-- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.39%** (1,163 of 2,220 non-push games), week-blocked 95% interval [50.36%, 54.47%].
+- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.43%** (1,166 of 2,224 non-push games), week-blocked 95% interval [50.38%, 54.51%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).
 <!-- ACTIVE_MODEL_STATE:END -->
