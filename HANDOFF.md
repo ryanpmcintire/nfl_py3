@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-17T19:57:11.079212+00:00`
+Refreshed at: `2026-11-17T23:05:21.186124+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-17T19:57:11.079212+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5e558f943a8a` — Republish the site with the latest settled results
-- Pending change set: 72 paths
+- Baseline commit: `277968e88272` — Republish the site with the latest settled results
+- Pending change set: 91 paths
   - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
+  - `M  README.md`
+  - `M  config/source_policies.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - ` M docs/lanes/pool-standing-refresh.md`
+  - `M  docs/lanes/pool-standing-refresh.md`
+  - `A  docs/lanes/week11-lock-2026-11-17.md`
   - ` M docs/lead64_freshness_audit.md`
   - `M  docs/model.html`
-  - ` M scripts/forward2026_ftn_terms.py`
-  - `M  tiebreaker.json`
-  - `?? an.csv`
-  - `?? cdx_tspread.json`
-  - `?? cdx_vipre.json`
-  - `?? cdx_vipre2.json`
-  - `?? cdx_viweek.json`
-  - `?? cdx_wgdl.json`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - ...and 52 more
+  - `A  registry/experiments/margin-backtest/20261117T194003Z.json`
+  - `A  registry/experiments/margin-backtest/20261117T222720Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-10-20261115T143944Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-10-20261115T171007Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-10-20261116T171102Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-10-20261117T194158Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-11-20261117T222853Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-11-20261117T224836Z.json`
+  - `A  registry/experiments/opener-evaluation/20261115T144308Z.json`
+  - `A  registry/experiments/opener-evaluation/20261116T171510Z.json`
+  - ...and 71 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `dee1fbc6d2db3de8`
+- Model ID: `ecb63b4358cf95b1`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261117T194522Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261117T223216Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,166 / 2,224 (52.43%)**
-- Linked forecast: **2026 Week 10**, created `2026-11-17T19:41:58.235941+00:00`
+- Secondary close-grade historical classification: **1,164 / 2,225 (52.31%)**
+- Linked forecast: **2026 Week 11**, created `2026-11-17T22:28:53.152354+00:00`
 
-The 52.43% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.31% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 10** from model `dee1fbc6d2db3de8`, published `2026-11-17T19:50:34.892698+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `ecb63b4358cf95b1`, published `2026-11-17T22:38:04.822225+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

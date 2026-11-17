@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import math
 import re
 from collections import Counter
 from collections.abc import Mapping
@@ -46,10 +48,19 @@ from nfl_ats.mass_preserving_lattice import (
 from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
 from nfl_ats.pick_probability import (
+    CALIBRATED_HOME_PROBABILITY_COLUMN,
     CALIBRATED_PICK_SIDE_COLUMN,
+    FLAG_SUM_COLUMN,
+    MODEL_HOME_PROBABILITY_COLUMN,
+    MOVE_AVAILABLE_COLUMN,
+    MOVE_COLUMN,
     PICK_PROBABILITY_POLICY,
+    PICK_SIDE_FLOOR,
+    PROBABILITY_EPSILON,
+    PickProbabilityModel,
     active_pick_probability_path,
 )
+from nfl_ats.pool_hook import HOOK_COLUMN
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
 from nfl_ats.public_betting_live import HandleReading, load_latest_public_handle
@@ -204,6 +215,29 @@ def current_captured_home_spread(
     }
 
 
+SERVED_TERM_NUMERIC_COLUMNS: tuple[str, ...] = (
+    "served_model_home_probability",
+    "served_model_logit",
+    "served_intercept_contribution",
+    "served_model_contribution",
+    "served_flag_sum",
+    "served_flag_contribution",
+    "served_move_toward_home",
+    "served_move_contribution",
+    "served_move_available",
+    "served_move_available_contribution",
+    "served_hook_mass",
+    "served_hook_contribution",
+    "served_home_logit",
+    "served_home_cover_probability",
+)
+SERVED_TERM_TEXT_COLUMNS: tuple[str, ...] = (
+    "served_pick_side",
+    "served_fit_artifact",
+    "served_input_row_sha256",
+)
+SERVED_TERM_COLUMNS: tuple[str, ...] = SERVED_TERM_NUMERIC_COLUMNS + SERVED_TERM_TEXT_COLUMNS
+
 PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "revision_recorded_at_utc",
     "refresh_run_id",
@@ -256,7 +290,75 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "trigger_type",
     "trigger_source",
     "trigger_observed_at_utc",
+    *SERVED_TERM_COLUMNS,
 )
+
+
+def _input_row_sha256(row: pd.Series) -> str:
+
+    body = row.to_json(date_format="iso", double_precision=15, default_handler=str)
+    return hashlib.sha256(str(body).encode()).hexdigest()
+
+
+def _finite_or_zero(value: Any) -> float:
+
+    number = pd.to_numeric(value, errors="coerce")
+    return float(number) if pd.notna(number) and math.isfinite(float(number)) else 0.0
+
+
+def _served_terms(
+    served: pd.Series | None,
+    pick_model: PickProbabilityModel | None,
+    *,
+    model_home_probability: float,
+    input_row_sha256: str,
+) -> dict[str, Any]:
+
+    base = (
+        _finite_or_zero(served[MODEL_HOME_PROBABILITY_COLUMN])
+        if served is not None and MODEL_HOME_PROBABILITY_COLUMN in served.index
+        else model_home_probability
+    )
+    stated = min(max(base, PROBABILITY_EPSILON), 1.0 - PROBABILITY_EPSILON)
+    model_logit = math.log(stated / (1.0 - stated))
+    record: dict[str, Any] = dict.fromkeys(SERVED_TERM_NUMERIC_COLUMNS, math.nan)
+    record.update(
+        served_model_home_probability=base,
+        served_model_logit=model_logit,
+        served_fit_artifact="",
+        served_input_row_sha256=input_row_sha256,
+    )
+    if served is None or pick_model is None:
+        record.update(
+            served_home_logit=model_logit,
+            served_home_cover_probability=base,
+            served_pick_side="HOME" if base >= PICK_SIDE_FLOOR else "AWAY",
+        )
+        return record
+    flag_sum = _finite_or_zero(served.get(FLAG_SUM_COLUMN))
+    move = _finite_or_zero(served.get(MOVE_COLUMN))
+    move_available = _finite_or_zero(served.get(MOVE_AVAILABLE_COLUMN))
+    hook = _finite_or_zero(served.get(HOOK_COLUMN)) if pick_model.has_pool_hook else 0.0
+    contributions = {
+        "served_intercept_contribution": pick_model.intercept,
+        "served_model_contribution": pick_model.model_logit * model_logit,
+        "served_flag_contribution": pick_model.flag_sum * flag_sum,
+        "served_move_contribution": pick_model.move_toward_home * move,
+        "served_move_available_contribution": pick_model.move_available * move_available,
+        "served_hook_contribution": pick_model.pool_hook * hook,
+    }
+    record.update(contributions)
+    record.update(
+        served_flag_sum=flag_sum,
+        served_move_toward_home=move,
+        served_move_available=move_available,
+        served_hook_mass=hook,
+        served_home_logit=float(sum(contributions.values())),
+        served_home_cover_probability=float(served[CALIBRATED_HOME_PROBABILITY_COLUMN]),
+        served_pick_side=str(served[CALIBRATED_PICK_SIDE_COLUMN]),
+        served_fit_artifact=pick_model.artifact,
+    )
+    return record
 
 
 TRIGGER_CLOCK_DISPATCH = "clock_dispatch"
@@ -304,6 +406,8 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "follow_news_team": "",
         "best_pick_before": "",
         "best_pick_after": "",
+        **dict.fromkeys(SERVED_TERM_NUMERIC_COLUMNS, math.nan),
+        **dict.fromkeys(SERVED_TERM_TEXT_COLUMNS, ""),
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -511,6 +615,7 @@ class RefreshedGame:
     follow_news_source: str = ""
     follow_news_team: str = ""
     published_pick_side: str = ""
+    served_terms: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -1148,6 +1253,7 @@ def plan_refresh(
         if frozen_union.isna().any():
             raise DataContractError("Tuesday paper ledger is missing frozen composition flags")
         served_probabilities: pd.DataFrame | None = None
+        served_pick_model: PickProbabilityModel | None = None
         if active_pick_probability_path(artifacts_root).is_file():
             from nfl_ats.card_view import resolve_card_probabilities
 
@@ -1158,11 +1264,15 @@ def plan_refresh(
                 artifacts_root=artifacts_root,
             )
             served_probabilities = probability_view.predictions.set_index("game_id")
+            served_pick_model = probability_view.pick_probability
         else:
             overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"] = (
                 1.0 - overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"]
             )
         overlaid = overlaid_frame.set_index("game_id")
+        input_rows = overridden.assign(game_id=overridden["game_id"].astype(str)).set_index(
+            "game_id"
+        )
 
         published_side = _published_pick_side(original)
         current_lines, line_metadata = current_captured_home_spread(data_root, now=computed_at)
@@ -1254,6 +1364,16 @@ def plan_refresh(
 
             new_prob = float(row["home_cover_probability"])
             model_only_side = "HOME" if new_prob >= 0.5 else "AWAY"
+            served_terms = _served_terms(
+                None if served_probabilities is None else served_probabilities.loc[game_id],
+                served_pick_model,
+                model_home_probability=new_prob,
+                input_row_sha256=(
+                    _input_row_sha256(input_rows.loc[game_id])
+                    if game_id in input_rows.index
+                    else ""
+                ),
+            )
             if served_probabilities is not None:
                 new_prob = float(
                     cast(Any, served_probabilities.loc[game_id, "home_cover_probability"])
@@ -1405,6 +1525,7 @@ def plan_refresh(
                     ineligible_reason=reason,
                     changed=changed,
                     published_pick_side=str(published_side[game_id]),
+                    served_terms=served_terms,
                 )
             )
         games = tuple(sorted(rows, key=lambda game: game.game_id))
@@ -1720,6 +1841,15 @@ def record_plan(
             "trigger_type": trigger_type,
             "trigger_source": trigger_source,
             "trigger_observed_at_utc": observed_at,
+            **{
+                column: [
+                    game.served_terms.get(
+                        column, "" if column in SERVED_TERM_TEXT_COLUMNS else math.nan
+                    )
+                    for game in changed
+                ]
+                for column in SERVED_TERM_COLUMNS
+            },
         }
     )
     combined = pd.concat([existing, rows], ignore_index=True) if not existing.empty else rows
@@ -1858,6 +1988,7 @@ def _served_side_rows(
     ledger_latest: Mapping[str, Mapping[str, Any]] | None,
     *,
     changed_only: bool = True,
+    locked_scores: Mapping[str, tuple[str, float]] | None = None,
 ) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for game in result.games:
@@ -1878,6 +2009,9 @@ def _served_side_rows(
         estimate = home_probability if side == "HOME" else 1.0 - home_probability
         previous_team = game.home_team if published == "HOME" else game.away_team
         new_team = game.home_team if side == "HOME" else game.away_team
+        locked = None if game.eligible or not locked_scores else locked_scores.get(game.game_id)
+        if locked is not None and locked[0] == new_team:
+            estimate = locked[1]
         spread = float(game.decision_home_spread)
         pick_line = -spread if side == "HOME" else spread
         rows.append(
@@ -1915,10 +2049,11 @@ def _refresh_section_markdown(
     note: str,
     renomination: SundayRenomination | None = None,
     ledger_latest: Mapping[str, Mapping[str, Any]] | None = None,
+    locked_scores: Mapping[str, tuple[str, float]] | None = None,
 ) -> str:
     heading = "## Late-week refresh\n\n"
     star = _renomination_sentence(renomination)
-    rows = _served_side_rows(result, ledger_latest)
+    rows = _served_side_rows(result, ledger_latest, locked_scores=locked_scores)
     if not rows:
         return heading + star + "No pick changes since the Tuesday card.\n"
 
@@ -1960,6 +2095,22 @@ def _refreshed_source_freshness_line(
     return _SOURCE_FRESHNESS_LINE_PATTERN.sub(live_report.summary_line(), text, count=1)
 
 
+def _locked_scores(
+    artifacts_root: Path | None, result: RefreshResult
+) -> dict[str, tuple[str, float]]:
+    if artifacts_root is None:
+        return {}
+    from nfl_ats.published_picks import frozen_picks
+
+    frozen = frozen_picks(
+        artifacts_root,
+        now=pd.Timestamp(result.computed_at_utc).to_pydatetime(),
+        season=int(result.season),
+        week=int(result.week),
+    )
+    return {game_id: (pick.pick_team, pick.displayed_score) for game_id, pick in frozen.items()}
+
+
 def append_refresh_to_card(
     destination: Path,
     result: RefreshResult,
@@ -1978,14 +2129,19 @@ def append_refresh_to_card(
         )
     text = destination.read_text(encoding="utf-8")
     text = _refreshed_source_freshness_line(text, result, data_root, artifacts_root)
-    section = _refresh_section_markdown(result, note, renomination, ledger_latest)
+    locked_scores = _locked_scores(artifacts_root, result)
+    section = _refresh_section_markdown(result, note, renomination, ledger_latest, locked_scores)
     if LATE_WEEK_REFRESH_START in text:
         head, tail = text.split(LATE_WEEK_REFRESH_START, maxsplit=1)
-        served = _served_side_rows(result, ledger_latest, changed_only=False)
+        served = _served_side_rows(
+            result, ledger_latest, changed_only=False, locked_scores=locked_scores
+        )
         head = _sync_card_table_rows(head, served)
         text = head + LATE_WEEK_REFRESH_START + tail
     else:
-        served = _served_side_rows(result, ledger_latest, changed_only=False)
+        served = _served_side_rows(
+            result, ledger_latest, changed_only=False, locked_scores=locked_scores
+        )
         text = _sync_card_table_rows(text, served)
     block = f"{LATE_WEEK_REFRESH_START}\n{section.rstrip()}\n{LATE_WEEK_REFRESH_END}"
     if LATE_WEEK_REFRESH_START in text or LATE_WEEK_REFRESH_END in text:

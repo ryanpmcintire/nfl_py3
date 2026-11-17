@@ -1,0 +1,67 @@
+{
+  "artifact_directory": "artifacts\\opener_evaluation\\20261116T171510Z",
+  "backfill_note": null,
+  "code_diff_sha256": "c7d26a2f6198d7fa370ad05adefe27fc0a966f8548b0026eccf62b434bbae087",
+  "code_dirty": true,
+  "code_revision": "e4b7cfaa8bb909f0646a4ae882c3066a54cb8429",
+  "command": "opener-evaluation",
+  "config_hash": "afaeecda91da9b40c43dacf0975cf1745df92bcbdc975cb1cc7f67f8751a361a",
+  "experiment_id": "opener-evaluation/20261116T171510Z",
+  "feature_table_sha256": "a1ab30136207708b21562025c0ec3cd9d703ce76c1ff0fa24fd0784f00c7470c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "metrics",
+      "provenance",
+      "uncertainty"
+    ],
+    "active_model_config": {
+      "calibration_method": "none",
+      "feature_profile": "weak_stack",
+      "feature_table_sha256": "a1ab30136207708b21562025c0ec3cd9d703ce76c1ff0fa24fd0784f00c7470c",
+      "model_id": "f09e045fb672183f",
+      "probability_method": "gaussian_median",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "active_model_id": "f09e045fb672183f",
+    "base_probability_policy": "discrete_conditional_non_push_v1",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "calibration_method": "none",
+    "command": "opener-evaluation",
+    "created_at_utc": "2026-11-16T17:15:10.182903+00:00",
+    "feature_profile": "weak_stack",
+    "feature_table_sha256": "a1ab30136207708b21562025c0ec3cd9d703ce76c1ff0fa24fd0784f00c7470c",
+    "games": 1537,
+    "home_side_offset": {
+      "fitted_from": "walk-forward on this evaluation's own raw out-of-time opener points",
+      "games_with_nonzero_offset": 401,
+      "mean_absolute_offset": 0.15756294534344037,
+      "opener_picks_changed_by_offset": 37,
+      "policy": "home_side_offset_big_spreads_v2",
+      "prior_weight_games": 100.0,
+      "served": true,
+      "trailing_seasons": 5
+    },
+    "hypothesis_frozen_before_scoring": true,
+    "mean_absolute_open_to_close_move": 0.9634027325959662,
+    "min_train_games": 500,
+    "opener_line_source": null,
+    "predeclaration": "docs/opener_evaluation.md",
+    "probability_method": "gaussian_median",
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "timing": {
+      "total_seconds": 57.465751000039745
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-11-16T17:15:10.182903+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats opener-evaluation",
+  "uv_lock_sha256": "d9c6de76a04edb224d918e720b48a1150144ff753813ec1c0547c7502fc75dcc",
+  "weak_signal_name": null
+}

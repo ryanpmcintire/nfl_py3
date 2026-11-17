@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "study_id": "combined_vs_raw_2026_w11_w18_v10",
+  "season": 2026,
+  "start_week": 11,
+  "end_week": 18,
+  "game_type": "REG",
+  "primary_metric": "raw_minus_combined_brier",
+  "secondary_metrics": [
+    "log_loss",
+    "ats_accuracy",
+    "disagreement_record",
+    "reliability"
+  ],
+  "arms": [
+    "frozen_combined",
+    "raw",
+    "neutral_market"
+  ],
+  "line_policy": "original_pool_line_fixed_at_first_capture",
+  "capture_policy": "latest_eligible_capture_before_normal_pool_lock",
+  "coefficient_policy": "frozen_at_enrollment",
+  "raw_model_policy": "fixed_recipe_and_source_with_pregame_data_updates",
+  "interim_policy": "coverage_only_until_all_declared_games_are_final",
+  "missing_policy": "report_every_missing_game_and_block_complete_comparison",
+  "bootstrap_samples": 20000,
+  "bootstrap_seed": 20260928,
+  "confidence": 0.95,
+  "automatic_promotion": false,
+  "exclusions": "Historical development seasons, 2026 weeks 1-10, games kicking off before v10 enrollment, playoffs, and opener pushes for binary cover scoring. Push counts remain reported.",
+  "closure_policy": "Inconclusive results remain unresolved_below_power; terminal signal verdicts require admissible closing grounds through the research registry.",
+  "supersedes": {
+    "study_id": "combined_vs_raw_2026_w10_w18_v9",
+    "directory": "independent_validation_v9",
+    "reason": "pinned prediction source changed on 2026-11-17 before the Week 11 lock: players.py replacement quarterback value set to the measured listed-Out value -0.123, build-features attaches pregame GFS/MEX forecast temperature and wind (pregame_weather_features.py) under the same rule in training and serving, and pick_refresh scores locked games from the stored card; v9 stays frozen with its Week 10 captures and is never blended with v10"
+  },
+  "cohort_policy": "declared season weeks restricted to games whose scheduled kickoff is after enrollment"
+}

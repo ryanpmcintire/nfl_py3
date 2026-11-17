@@ -7,32 +7,31 @@ constructs every feature strictly from information available before kickoff,
 and evaluates model choices with nested chronological walk-forward tests.
 
 <!-- CURRENT_PREDICTIONS:START -->
-## Current ATS forecast: 2026 Week 10
+## Current ATS forecast: 2026 Week 11
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,166 of 2,224 non-push games correctly (52.43%)**. The 95% range was 50.38%-54.51%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,164 of 2,225 non-push games correctly (52.31%)**. The 95% range was 50.26%-54.57%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** SEA -3.5 in SEA at LV. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
+**Best Pick of the week (★):** HOU -11.5 in IND at HOU. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Nov 12 | WAS at NYG | NYG -1.5         | 50.6%          |
-| Sun, Nov 15 | BUF at NYJ | NYJ +7.5         | 55.7%          |
-| Sun, Nov 15 | CAR at NO  | CAR +1.5         | 50.4%          |
-| Sun, Nov 15 | HOU at CLE | CLE +4.5         | 53.9%          |
-| Sun, Nov 15 | JAX at TEN | TEN +10.5        | 50.9%          |
-| Sun, Nov 15 | KC at ATL  | ATL +3.5         | 53.1%          |
-| Sun, Nov 15 | LA at ARI  | LA -9.5          | 59.8%          |
-| Sun, Nov 15 | MIA at IND | IND -2.5         | 61.0%          |
-| Sun, Nov 15 | MIN at GB  | MIN +4.5         | 53.8%          |
-| Sun, Nov 15 | NE at DET  | NE +2.5          | 53.5%          |
-| Sun, Nov 15 | PIT at CIN | CIN -3.5         | 55.2%          |
-| Sun, Nov 15 | SEA at LV  | ★ SEA -3.5       | 62.4%          |
-| Sun, Nov 15 | SF at DAL  | DAL +4.5         | 51.4%          |
-| Mon, Nov 16 | LAC at BAL | LAC +5.5         | 54.1%          |
+| Thu, Nov 19 | IND at HOU | ★ HOU -11.5      | 59.1%          |
+| Sun, Nov 22 | ARI at KC  | KC -15.5         | 50.8%          |
+| Sun, Nov 22 | BAL at CAR | BAL +2.5         | 50.1%          |
+| Sun, Nov 22 | JAX at NYG | JAX -5.5         | 50.5%          |
+| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 57.1%          |
+| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 51.1%          |
+| Sun, Nov 22 | MIN at SF  | MIN +3.5         | 54.7%          |
+| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 53.3%          |
+| Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 54.7%          |
+| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 57.3%          |
+| Sun, Nov 22 | TB at DET  | DET -6.5         | 54.1%          |
+| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 53.1%          |
+| Mon, Nov 23 | CIN at WAS | CIN -5.5         | 52.6%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -45,10 +44,10 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`dee1fbc6d2db3de8`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`ecb63b4358cf95b1`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
-- **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
-- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.43%** (1,166 of 2,224 non-push games), week-blocked 95% interval [50.38%, 54.51%].
+- **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.81%, 55.85%].
+- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.31%** (1,164 of 2,225 non-push games), week-blocked 95% interval [50.26%, 54.57%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).
 <!-- ACTIVE_MODEL_STATE:END -->

@@ -529,7 +529,7 @@
       ]
     },
     "madden_ratings_github_archive": {
-      "risk": "amber",
+      "risk": "yellow",
       "terms_url": "https://github.com/theedgepredictor/nfl-madden-data",
       "terms_reviewed_on": "2026-11-16",
       "acquisition_allowed": true,

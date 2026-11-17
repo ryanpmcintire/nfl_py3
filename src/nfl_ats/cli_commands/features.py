@@ -67,6 +67,7 @@ from nfl_ats.pool_decision_lines import (
     decision_lines_manifest_block,
     splash_decision_line_overrides,
 )
+from nfl_ats.pregame_weather_features import attach_pregame_forecast_weather
 from nfl_ats.provenance import sha256_file
 from nfl_ats.quarterbacks import (
     depth_snapshot_from_root,
@@ -105,6 +106,7 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
         graph_min_games=args.graph_min_games,
         include_postseason=args.include_postseason,
     )
+    features, weather_coverage = attach_pregame_forecast_weather(features, schedules, _data_root())
     destination = _data_root() / "processed" / "game_features.parquet"
     atomic_parquet(features, destination)
     completed = int(features["home_cover"].notna().sum())
@@ -124,6 +126,7 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
         "first_season": int(features["season"].min()),
         "last_season": int(features["season"].max()),
         "destination": str(destination),
+        "pregame_weather": weather_coverage,
     }
     if applied:
         metadata[DECISION_LINES_KEY] = decision_lines_manifest_block(applied)

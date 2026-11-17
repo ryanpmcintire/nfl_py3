@@ -112,6 +112,23 @@ _PICK_REVISION_LEDGER_COLUMNS: tuple[str, ...] = (
     "trigger_type",
     "trigger_source",
     "trigger_observed_at_utc",
+    "served_model_home_probability",
+    "served_model_logit",
+    "served_intercept_contribution",
+    "served_model_contribution",
+    "served_flag_sum",
+    "served_flag_contribution",
+    "served_move_toward_home",
+    "served_move_contribution",
+    "served_move_available",
+    "served_move_available_contribution",
+    "served_hook_mass",
+    "served_hook_contribution",
+    "served_home_logit",
+    "served_home_cover_probability",
+    "served_pick_side",
+    "served_fit_artifact",
+    "served_input_row_sha256",
 )
 
 

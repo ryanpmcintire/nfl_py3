@@ -123,7 +123,8 @@ _OFFENSIVE_LINE = frozenset(("C", "G", "OG", "OL", "OT", "T"))
 _SKILL = frozenset(("FB", "HB", "QB", "RB", "TE", "WR"))
 _FRONT = frozenset(("DE", "DL", "DT", "EDGE", "ILB", "LB", "NT", "OLB"))
 _SECONDARY = frozenset(("CB", "DB", "FS", "S", "SAF", "SS"))
-_REPLACEMENT_QB_EPA = -0.15
+_REPLACEMENT_QB_EPA = -0.123
+_REPORT_STATUS_OUT = "out"
 
 _DEFENSE_DISRUPTION_WEIGHTS: tuple[tuple[str, float], ...] = (
     ("def_tackles_for_loss", 0.5),
@@ -1236,6 +1237,40 @@ def _injury_unavailability(injury: pd.Series) -> float:
     return unavailable
 
 
+def _qb_ids_listed_out(visible: pd.DataFrame | None) -> frozenset[str]:
+    if visible is None or visible.empty:
+        return frozenset()
+    status = visible["report_status"].astype("string").str.strip().str.casefold()
+    listed = visible.loc[status.eq(_REPORT_STATUS_OUT).fillna(False), "gsis_id"]
+    return frozenset(listed.astype(str))
+
+
+def _debut_qb_fill(qb_states: pd.DataFrame, seasons: list[int]) -> dict[int, tuple[float, float]]:
+    ordered = qb_states.sort_values(["player_id", "gameday", "game_id"])
+    prior_state = ordered.groupby("player_id", sort=False)["state_qb_epa_per_dropback"].shift(1)
+    primary = (
+        ordered.assign(_prior_state=prior_state)
+        .sort_values("qb_dropbacks", ascending=False)
+        .drop_duplicates(["game_id", "team"])
+    )
+    debuts = primary.loc[primary["_prior_state"].isna()]
+    fill: dict[int, tuple[float, float]] = {}
+    for season in seasons:
+        prior = debuts.loc[debuts["season"].astype(int) < season]
+        graded = prior.loc[prior["qb_cpoe"].notna()]
+        dropbacks = float(prior["qb_dropbacks"].sum())
+        graded_dropbacks = float(graded["qb_dropbacks"].sum())
+        fill[season] = (
+            float((prior["qb_epa_per_dropback"] * prior["qb_dropbacks"]).sum() / dropbacks)
+            if dropbacks > 0.0
+            else math.nan,
+            float((graded["qb_cpoe"] * graded["qb_dropbacks"]).sum() / graded_dropbacks)
+            if graded_dropbacks > 0.0
+            else math.nan,
+        )
+    return fill
+
+
 def _position_group(position: object) -> str:
     normalized = str(position).strip().upper()
     if normalized in _OFFENSIVE_LINE:
@@ -1777,6 +1812,7 @@ def enrich_with_player_features(
         )
         for (game_id, team), group in qb_games.groupby(["game_id", "team"], sort=False)
     }
+    debut_qb_fill = _debut_qb_fill(qb_states, sorted({int(season) for season in result["season"]}))
     depth_qbs_by_team: dict[str, pd.DataFrame] = {}
     if depth_charts is not None and not depth_charts.empty:
         required_depth = {"team", "gsis_id", "pos_rank", "observed_at_utc"}
@@ -1814,6 +1850,7 @@ def enrich_with_player_features(
 
     prior_lineups: dict[str, list[_PlayerLineup]] = defaultdict(list)
     latest_qb_appearance: dict[str, pd.Series] = {}
+    latest_qb_order: dict[str, tuple[str, ...]] = {}
     role_states: dict[str, dict[str, dict[str, float | str]]] = defaultdict(dict)
     player_value_states: dict[str, dict[str, float]] = {}
     alpha = 2.0 / (role_span + 1.0)
@@ -1963,40 +2000,60 @@ def enrich_with_player_features(
                 result.at[index, f"{side}_injury_observed_at_basis"] = "snapshot_captured_at"
 
             starter = latest_qb_appearance.get(team)
+            listed_out = _qb_ids_listed_out(visible_injuries)
+            if starter is not None and str(starter["player_id"]) in listed_out:
+                for candidate_id in latest_qb_order.get(team, ()):
+                    if candidate_id not in listed_out:
+                        starter = pd.Series({"player_id": candidate_id})
+                        break
             if pd.notna(decision_at) and team in depth_qbs_by_team:
                 depth_visible = depth_qbs_by_team[team]
                 depth_visible = depth_visible.loc[
                     depth_visible["observed_at_utc"] <= pd.Timestamp(decision_at)
                 ]
                 if not depth_visible.empty:
-                    depth_row = depth_visible.iloc[0]
+                    newest_depth = depth_visible.loc[
+                        depth_visible["observed_at_utc"].eq(
+                            depth_visible["observed_at_utc"].iloc[0]
+                        )
+                    ]
+                    eligible_depth = newest_depth.loc[
+                        ~newest_depth["gsis_id"].astype(str).isin(listed_out)
+                    ]
+                    depth_row = (newest_depth if eligible_depth.empty else eligible_depth).iloc[0]
                     starter = pd.Series({"player_id": str(depth_row["gsis_id"])})
             if starter is not None:
                 player_id = str(starter["player_id"])
                 result.at[index, f"{side}_projected_qb_id"] = player_id
                 qb_state = _latest_qb_state(qb_histories, player_id, pd.Timestamp(game["gameday"]))
+                debut_epa, debut_cpoe = debut_qb_fill.get(int(game["season"]), (math.nan, math.nan))
+                starter_epa = debut_epa
+                starter_cpoe = debut_cpoe
+                experience = 0.0
                 if qb_state is not None:
-                    starter_epa = float(qb_state["state_qb_epa_per_dropback"])
-                    starter_cpoe = float(qb_state["state_qb_cpoe"])
                     experience = float(qb_state["career_dropbacks"])
-                    unavailable = 0.0
-                    if visible_injuries is not None and not visible_injuries.empty:
-                        match = visible_injuries.loc[visible_injuries["gsis_id"].eq(player_id)]
-                        if not match.empty:
-                            row = match.iloc[-1]
-                            unavailable = _injury_unavailability(row)
-                    start_probability = 1.0 - unavailable if np.isfinite(unavailable) else math.nan
-                    expected_epa = (
-                        start_probability * starter_epa
-                        + (1.0 - start_probability) * _REPLACEMENT_QB_EPA
-                        if np.isfinite(start_probability)
-                        else math.nan
-                    )
-                    result.at[index, f"{side}_qb_expected_epa_per_dropback"] = expected_epa
-                    result.at[index, f"{side}_qb_starter_epa_per_dropback"] = starter_epa
-                    result.at[index, f"{side}_qb_starter_cpoe"] = starter_cpoe
-                    result.at[index, f"{side}_qb_start_probability"] = start_probability
-                    result.at[index, f"{side}_qb_starter_experience_log"] = math.log1p(experience)
+                    if pd.notna(qb_state["state_qb_epa_per_dropback"]):
+                        starter_epa = float(qb_state["state_qb_epa_per_dropback"])
+                    if pd.notna(qb_state["state_qb_cpoe"]):
+                        starter_cpoe = float(qb_state["state_qb_cpoe"])
+                unavailable = 0.0
+                if visible_injuries is not None and not visible_injuries.empty:
+                    match = visible_injuries.loc[visible_injuries["gsis_id"].eq(player_id)]
+                    if not match.empty:
+                        row = match.iloc[-1]
+                        unavailable = _injury_unavailability(row)
+                start_probability = 1.0 - unavailable if np.isfinite(unavailable) else math.nan
+                expected_epa = (
+                    start_probability * starter_epa
+                    + (1.0 - start_probability) * _REPLACEMENT_QB_EPA
+                    if np.isfinite(start_probability)
+                    else math.nan
+                )
+                result.at[index, f"{side}_qb_expected_epa_per_dropback"] = expected_epa
+                result.at[index, f"{side}_qb_starter_epa_per_dropback"] = starter_epa
+                result.at[index, f"{side}_qb_starter_cpoe"] = starter_cpoe
+                result.at[index, f"{side}_qb_start_probability"] = start_probability
+                result.at[index, f"{side}_qb_starter_experience_log"] = math.log1p(experience)
 
         for metric in feature_metrics:
             home_value: Any = result.at[index, f"home_{metric}"]
@@ -2062,6 +2119,7 @@ def enrich_with_player_features(
             appearances = qb_appearances.get((str(game["game_id"]), team))
             if appearances is not None and not appearances.empty:
                 latest_qb_appearance[team] = appearances.iloc[0]
+                latest_qb_order[team] = tuple(appearances["player_id"].astype(str))
 
     for metric in feature_metrics:
         for side in ("home", "away"):
