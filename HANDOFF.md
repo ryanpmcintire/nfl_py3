@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-17T23:06:18.185326+00:00`
+Refreshed at: `2026-11-18T17:28:10.069710+00:00`
 
 ## Start here
 
@@ -21,12 +21,19 @@ Refreshed at: `2026-11-17T23:06:18.185326+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `62d554ea08db` — Week 11 lock: land the QB repair and pregame weather, enroll validation v10, pool panel after Week 10
-- Pending change set: 53 paths
-  - `M  docs/lanes/README.md`
-  - `R  docs/lanes/week11-lock-2026-11-17.md -> docs/lanes/done/week11-lock-2026-11-17.md`
+- Baseline commit: `4bc771f1a647` — Close the Week 11 lock lane
+- Pending change set: 67 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/flag-gate-evaluation-2026-11-14.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `M  docs/model.html`
   - ` M scripts/forward2026_ftn_terms.py`
+  - ` M src/nfl_ats/pick_probability.py`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -36,14 +43,7 @@ Refreshed at: `2026-11-17T23:06:18.185326+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 33 more
+  - ...and 47 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `ecb63b4358cf95b1`
+- Model ID: `ec27db502821ebeb`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261117T223216Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261118T171529Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,164 / 2,225 (52.31%)**
-- Linked forecast: **2026 Week 11**, created `2026-11-17T22:28:53.152354+00:00`
+- Linked forecast: **2026 Week 11**, created `2026-11-18T17:11:58.979884+00:00`
 
 The 52.31% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `ecb63b4358cf95b1`, published `2026-11-17T22:38:04.822225+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `ec27db502821ebeb`, published `2026-11-18T17:21:13.095618+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
