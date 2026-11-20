@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 11
 
-Published from the synchronized weak stack model, 2026-11-19 22:21 UTC.
+Published from the synchronized weak stack model, 2026-11-20 17:21 UTC.
 
-<!-- publication: model_id=b6779060afdc2fc0 published_at_utc=2026-11-19T22:21:18.330858+00:00 -->
+<!-- publication: model_id=592dc27ca1835b3e published_at_utc=2026-11-20T17:21:52.934756+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -10,25 +10,25 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** HOU -11.5 in IND at HOU. The pool scores one Best Pick per regular-season week. This pick was the Tuesday star, held until the Sunday-morning re-nomination moves it.
+**Best Pick of the week (★):** HOU -11.5 in IND at HOU. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 19 | IND at HOU | ★ HOU -11.5      | 60.2%          |
-| Sun, Nov 22 | ARI at KC  | KC -15.5         | 51.5%          |
-| Sun, Nov 22 | BAL at CAR | CAR -2.5         | 53.5%          |
-| Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.3%          |
-| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 57.8%          |
-| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 50.9%          |
+| Sun, Nov 22 | ARI at KC  | ARI +15.5        | 50.9%          |
+| Sun, Nov 22 | BAL at CAR | CAR -2.5         | 54.0%          |
+| Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.5%          |
+| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 57.7%          |
+| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 51.2%          |
 | Sun, Nov 22 | MIN at SF  | MIN +3.5         | 51.3%          |
-| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 53.8%          |
+| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.2%          |
 | Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 57.0%          |
-| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 56.2%          |
-| Sun, Nov 22 | TB at DET  | DET -6.5         | 55.2%          |
-| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 53.6%          |
+| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 53.6%          |
+| Sun, Nov 22 | TB at DET  | TB +6.5          | 50.4%          |
+| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 53.7%          |
 | Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.8%          |
 
-**Tiebreaker (last game, CIN at WAS):** WAS 23 - CIN 29, total 52 (market total 54) -- consistent with the CIN -5.5 pick.
+**Tiebreaker (last game, CIN at WAS):** WAS 24 - CIN 29, total 53 (market total 54) -- consistent with the WAS +5.5 pick.
 
 **Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
@@ -37,11 +37,13 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-3 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| BAL at CAR | BAL             | CAR        | 53.5%          |
+| ARI at KC  | KC              | ARI        | 50.9%          |
+| BAL at CAR | BAL             | CAR        | 54.0%          |
 | CIN at WAS | CIN             | WAS        | 50.8%          |
-| JAX at NYG | JAX             | NYG        | 50.3%          |
+| JAX at NYG | JAX             | NYG        | 50.5%          |
+| TB at DET  | DET             | TB         | 50.4%          |
 <!-- LATE_WEEK_REFRESH:END -->

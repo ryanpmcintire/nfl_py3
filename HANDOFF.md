@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-20T05:32:41.811369+00:00`
+Refreshed at: `2026-11-20T17:43:59.875250+00:00`
 
 ## Start here
 
@@ -21,8 +21,10 @@ Refreshed at: `2026-11-20T05:32:41.811369+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `765b50297d48` — Republish the site with the latest settled results
-- Pending change set: 78 paths
+- Baseline commit: `3d75e68d704a` — Republish the site with the latest settled results
+- Pending change set: 87 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
@@ -31,6 +33,7 @@ Refreshed at: `2026-11-20T05:32:41.811369+00:00`
   - `M  docs/model.html`
   - ` M scripts/forward2026_ftn_terms.py`
   - ` M src/nfl_ats/pick_probability.py`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-20T05:32:41.811369+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - ...and 58 more
+  - ...and 67 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `b6779060afdc2fc0`
+- Model ID: `592dc27ca1835b3e`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261119T221549Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261120T171639Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,164 / 2,225 (52.31%)**
-- Linked forecast: **2026 Week 11**, created `2026-11-19T22:11:37.483497+00:00`
+- Linked forecast: **2026 Week 11**, created `2026-11-20T17:12:26.660213+00:00`
 
 The 52.31% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `b6779060afdc2fc0`, published `2026-11-19T22:21:18.330858+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `592dc27ca1835b3e`, published `2026-11-20T17:21:52.934756+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
