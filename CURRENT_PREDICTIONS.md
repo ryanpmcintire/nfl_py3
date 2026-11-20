@@ -15,7 +15,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 19 | IND at HOU | ★ HOU -11.5      | 60.2%          |
-| Sun, Nov 22 | ARI at KC  | ARI +15.5        | 50.9%          |
+| Sun, Nov 22 | ARI at KC  | KC -15.5         | 51.8%          |
 | Sun, Nov 22 | BAL at CAR | CAR -2.5         | 54.0%          |
 | Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.5%          |
 | Sun, Nov 22 | LV at DEN  | DEN -9.5         | 57.7%          |
@@ -24,7 +24,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.2%          |
 | Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 57.0%          |
 | Sun, Nov 22 | PIT at PHI | PIT -4.5         | 53.6%          |
-| Sun, Nov 22 | TB at DET  | TB +6.5          | 50.4%          |
+| Sun, Nov 22 | TB at DET  | TB +6.5          | 53.2%          |
 | Sun, Nov 22 | TEN at DAL | DAL -7.5         | 53.7%          |
 | Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.8%          |
 
@@ -37,13 +37,12 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+4 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| ARI at KC  | KC              | ARI        | 50.9%          |
 | BAL at CAR | BAL             | CAR        | 54.0%          |
 | CIN at WAS | CIN             | WAS        | 50.8%          |
 | JAX at NYG | JAX             | NYG        | 50.5%          |
-| TB at DET  | DET             | TB         | 50.4%          |
+| TB at DET  | DET             | TB         | 53.2%          |
 <!-- LATE_WEEK_REFRESH:END -->
