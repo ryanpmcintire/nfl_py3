@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:34:58.502327+00:00`
+Refreshed at: `2026-11-21T16:44:27.188933+00:00`
 
 ## Start here
 
@@ -21,16 +21,18 @@ Refreshed at: `2026-11-21T16:34:58.502327+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a6babe17ec24` — Backlog lane: queue and in-flight state
-- Pending change set: 86 paths
+- Baseline commit: `601e945f9650` — XLG-14 family 11 fumble proneness: no college survivor; family generation paused after eleven families
+- Pending change set: 87 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/lanes/done/xlg-14-u11-2026-11-21.md`
-  - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - ` M registry/weak_signals/sim29_lineup.json`
-  - `A  registry/weak_signals/xlg14_fumble_proneness_family_u11.json`
-  - `A  scripts/xlg14_family_u11.py`
+  - ` M docs/lanes/lead-102-name-blinded-control-read.md`
+  - `M  docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - ` M registry/weak_signals/lead102_name_blinded_control_read.json`
+  - `M  registry/weak_signals/sim29_lineup.json`
+  - ` M scripts/lead102_blinded_read.py`
+  - ` M scripts/lead103_ablation.py`
+  - `A  scripts/sim29_lineup_sim.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-21T16:34:58.502327+00:00`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - ...and 66 more
+  - ...and 67 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
