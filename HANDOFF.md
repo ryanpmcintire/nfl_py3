@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:02:06.618471+00:00`
+Refreshed at: `2026-11-21T16:03:08.884148+00:00`
 
 ## Start here
 
@@ -21,15 +21,20 @@ Refreshed at: `2026-11-21T16:02:06.618471+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1956c2e87243` — Card checks: recorder comparison waits for a recorder run after the latest refresh, and the recorder and check share one slot table (recorder first); pool-line badge reads a half-point-to-a-point range when Tuesday books split; PER-11 dated arrivals graded on the served probability, 8 cells unresolved
+- Baseline commit: `5bbf86aff486` — UI-33 scenario producer (research mixture) built; root holds its lines off the board until they come from the served probability's own quarterback input
 - Pending change set: 90 paths
+  - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/lanes/backlog-2026-11-21.md`
   - ` M docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - `A  docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
-  - ` M docs/lanes/xlg-15-xlg15-reliability-transfer.md`
-  - ` M registry/weak_signals/xlg15_cfb_trait_reliability.json`
-  - `A  scripts/ui33_scenario_producer.py`
+  - `M  docs/lanes/xlg-15-xlg15-reliability-transfer.md`
+  - `M  registry/weak_signals/xlg15_cfb_trait_reliability.json`
+  - `A  scripts/xlg15_batch_u2.py`
+  - `A  scripts/xlg15_batch_u3.py`
+  - `A  scripts/xlg15_cfb_wind_reliability.py`
+  - `A  scripts/xlg15_nfl_confirm.py`
+  - `A  scripts/xlg15_wind_fetch.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -38,11 +43,6 @@ Refreshed at: `2026-11-21T16:02:06.618471+00:00`
   - `?? cdx_wgdl.json`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - ...and 70 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

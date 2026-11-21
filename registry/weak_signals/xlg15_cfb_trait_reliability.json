@@ -318,6 +318,622 @@
       ],
       "source": "artifacts/xlg15/report.json",
       "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_alternating_games_2010-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.163 [-0.012, 0.333], r80 0.17790909211113376; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (alternating_games), enlarged era 2010-2019.",
+      "effect": 0.16307207996593362,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.011827101956566107,
+        0.3326323973474626
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.036; r80 detectable 0.17790909211113376; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.9655,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.2804161199892444,
+      "sample_blocks": 131,
+      "sample_games": 14326,
+      "seasons": [
+        2010,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_alternating_games_2014-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.075 [-0.103, 0.263], r80 0.18832394935159785; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (alternating_games), 2014-2019.",
+      "effect": 0.07514754041138899,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.10344218158036614,
+        0.26348454063261456
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.194; r80 detectable 0.18832394935159785; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.7745,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.13979019173988885,
+      "sample_blocks": 131,
+      "sample_games": 8903,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_alternating_games_2020-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.132 [-0.298, 0.029], r80 0.21208568395359068; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (alternating_games), enlarged era 2020-2025.",
+      "effect": -0.13156738254611966,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.29755634313726664,
+        0.028690140087158526
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.930; r80 detectable 0.21208568395359068; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.054,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.3029996338273344,
+      "sample_blocks": 139,
+      "sample_games": 8685,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_alternating_games_2023-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.014 [-0.172, 0.141], r80 0.18797067303410786; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (alternating_games), 2023-2025.",
+      "effect": -0.013629576866690854,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.17231960210430827,
+        0.141303491658323
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.566; r80 detectable 0.18797067303410786; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.4305,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.027635818242390264,
+      "sample_blocks": 138,
+      "sample_games": 4744,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_season_parity_2010-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.024 [-0.116, 0.172], r80 0.15864257228173928; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (season_parity), enlarged era 2010-2019.",
+      "effect": 0.023969995126858497,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.11634373612747993,
+        0.17239528394708917
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.386; r80 detectable 0.15864257228173928; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.626,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.046817768569261405,
+      "sample_blocks": 162,
+      "sample_games": 14750,
+      "seasons": [
+        2010,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_season_parity_2014-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.030 [-0.132, 0.188], r80 0.18039834158114595; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (season_parity), 2014-2019.",
+      "effect": 0.029663169456349153,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.13164512801684827,
+        0.18833849013675247
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.363; r80 detectable 0.18039834158114595; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.653,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.05761722927704791,
+      "sample_blocks": 153,
+      "sample_games": 9112,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_season_parity_2020-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.084 [-0.058, 0.208], r80 0.13797916511911523; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (season_parity), enlarged era 2020-2025.",
+      "effect": 0.08354390200974202,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.058017925514800936,
+        0.20796662134321006
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.115; r80 detectable 0.13797916511911523; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.879,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.1542049230396405,
+      "sample_blocks": 169,
+      "sample_games": 8929,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_epa_season_parity_2023-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.041 [-0.093, 0.174], r80 0.15970006458952324; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of epa per mph, split-half r (season_parity), 2023-2025.",
+      "effect": 0.04122569469545583,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.09319213092962361,
+        0.17417380499483334
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.322; r80 detectable 0.15970006458952324; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.7245,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.07918685623199834,
+      "sample_blocks": 164,
+      "sample_games": 4890,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_alternating_games_2010-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.067 [-0.219, 0.100], r80 0.1883583129916121; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (alternating_games), enlarged era 2010-2019.",
+      "effect": -0.06725795975840014,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.21852284986583106,
+        0.10017230625381103
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.766; r80 detectable 0.1883583129916121; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.211,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.14421556412527284,
+      "sample_blocks": 131,
+      "sample_games": 14326,
+      "seasons": [
+        2010,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_alternating_games_2014-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.042 [-0.239, 0.159], r80 0.1853908479565091; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (alternating_games), 2014-2019.",
+      "effect": -0.04164052674873439,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.2389626816553359,
+        0.15908750394949928
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.671; r80 detectable 0.1853908479565091; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.336,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.08689959855557655,
+      "sample_blocks": 131,
+      "sample_games": 8903,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_alternating_games_2020-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.100 [-0.242, 0.048], r80 0.18251292365479146; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (alternating_games), enlarged era 2020-2025.",
+      "effect": -0.09959725252886953,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.2418661433840922,
+        0.04802497641592864
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.885; r80 detectable 0.18251292365479146; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.0855,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.2212282288311496,
+      "sample_blocks": 139,
+      "sample_games": 8685,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_alternating_games_2023-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.124 [-0.282, 0.026], r80 0.19017335888643133; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (alternating_games), 2023-2025.",
+      "effect": -0.12353518128068332,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.28216957024305556,
+        0.025816552555598355
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.930; r80 detectable 0.19017335888643133; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.055,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.2818942155857252,
+      "sample_blocks": 138,
+      "sample_games": 4744,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_season_parity_2010-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.013 [-0.131, 0.164], r80 0.14683158171353483; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (season_parity), enlarged era 2010-2019.",
+      "effect": 0.01287596846601115,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.13082571325715356,
+        0.1643712882365638
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.459; r80 detectable 0.14683158171353483; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.58,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.025424570958103892,
+      "sample_blocks": 162,
+      "sample_games": 14750,
+      "seasons": [
+        2010,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_season_parity_2014-2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r 0.080 [-0.076, 0.225], r80 0.17212561298440124; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (season_parity), 2014-2019.",
+      "effect": 0.07967806449296704,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.07634800018516748,
+        0.22497991094497313
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.164; r80 detectable 0.17212561298440124; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.86,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.14759596793398788,
+      "sample_blocks": 153,
+      "sample_games": 9112,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_season_parity_2020-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.030 [-0.152, 0.096], r80 0.15841892524126144; not every enlarged cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (season_parity), enlarged era 2020-2025.",
+      "effect": -0.03046061509418722,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.1524819300457127,
+        0.09565463137505235
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.654; r80 detectable 0.15841892524126144; realized station wind (no CFB forecast archive); Unit 3 amendment 1 enlarged eras.",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.3085,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.06283522994199221,
+      "sample_blocks": 169,
+      "sample_games": 8929,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability_enlarged.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_wind_elasticity_pass_oe_season_parity_2023-2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "r -0.063 [-0.233, 0.102], r80 0.17093352739195827; not every cell of this outcome excludes the detectable reliability",
+      "closing_ground": null,
+      "description": "CFB team wind elasticity of pass_oe per mph, split-half r (season_parity), 2023-2025.",
+      "effect": -0.06255192363161442,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.23294450217883525,
+        0.10182577810239125
+      ],
+      "league": "cfb",
+      "notes": "perm p 0.805; r80 detectable 0.17093352739195827; realized station wind (no CFB forecast archive).",
+      "plain_summary": "Whether college teams keep the same response to wind from one half of their games to the other.",
+      "probability_positive": 0.236,
+      "recorded_at": "2026-11-21",
+      "reliability": -0.13345149498612577,
+      "sample_blocks": 164,
+      "sample_games": 4890,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_nfl_opener_addon_fourth_down_go_residual": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "matched-null percentile 29.5; decisive flips 19-30; sign not pre-declared; below the add-one noise floor",
+      "closing_ground": null,
+      "description": "NFL served-base LOSO add-on of as-of home-minus-away fourth_down_go_residual; log-loss gain vs intercept-only, 2020-2025.",
+      "effect": -0.0007517323658992318,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.0012324574447730692,
+        -0.0002567474907281876
+      ],
+      "league": "nfl",
+      "notes": "fold coefs {'2020': -0.0049, '2021': 0.0275, '2022': -0.0181, '2023': 0.0064, '2024': -0.0366, '2025': 0.0289}; acc base 0.5562 arm 0.5489",
+      "plain_summary": "Whether the habit adds anything to the served pick probability at the opener.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.5497201346836934,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_nfl_opener_addon_pass_oe_when_ahead": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "matched-null percentile 83.0; decisive flips 86-91; sign not pre-declared; below the add-one noise floor",
+      "closing_ground": null,
+      "description": "NFL served-base LOSO add-on of as-of home-minus-away pass_oe_when_ahead; log-loss gain vs intercept-only, 2020-2025.",
+      "effect": 5.445635558907717e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.0016295610147924091,
+        0.0015793557529006053
+      ],
+      "league": "nfl",
+      "notes": "fold coefs {'2020': 0.0678, '2021': 0.0566, '2022': 0.1072, '2023': 0.0863, '2024': 0.0432, '2025': 0.0944}; acc base 0.5562 arm 0.5529",
+      "plain_summary": "Whether the habit adds anything to the served pick probability at the opener.",
+      "probability_positive": 0.553,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.3514943299683387,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_nfl_reliability_fourth_down_go_residual_2009-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliable trait (perm p 0.0000); reliability is not a pick effect",
+      "closing_ground": null,
+      "description": "NFL split-half reliability (alternating games, team-season), fourth_down_go_residual, 2009-2019; CFB construction.",
+      "effect": 0.21024865888692465,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        0.09492388041094384,
+        0.3311087688140038
+      ],
+      "league": "nfl",
+      "notes": "Unit 2: 14 looks (8 CFB wind, 4 NFL reliability, 2 NFL opener add-ons), declared in lane before signs.",
+      "plain_summary": "Whether NFL teams keep this habit from one half of their games to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.34744704295775386,
+      "sample_blocks": 352,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_nfl_reliability_fourth_down_go_residual_2020-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliable trait (perm p 0.0000); reliability is not a pick effect",
+      "closing_ground": null,
+      "description": "NFL split-half reliability (alternating games, team-season), fourth_down_go_residual, 2020-2025; CFB construction.",
+      "effect": 0.37904417473505997,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        0.20742807173006017,
+        0.5124543280538639
+      ],
+      "league": "nfl",
+      "notes": "Unit 2: 14 looks (8 CFB wind, 4 NFL reliability, 2 NFL opener add-ons), declared in lane before signs.",
+      "plain_summary": "Whether NFL teams keep this habit from one half of their games to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.5497201346836934,
+      "sample_blocks": 192,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_nfl_reliability_pass_oe_when_ahead_2009-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliable trait (perm p 0.0000); reliability is not a pick effect",
+      "closing_ground": null,
+      "description": "NFL split-half reliability (alternating games, team-season), pass_oe_when_ahead, 2009-2019; CFB construction.",
+      "effect": 0.32526685339337563,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        0.23808915124197477,
+        0.40301577323527144
+      ],
+      "league": "nfl",
+      "notes": "Unit 2: 14 looks (8 CFB wind, 4 NFL reliability, 2 NFL opener add-ons), declared in lane before signs.",
+      "plain_summary": "Whether NFL teams keep this habit from one half of their games to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.49086997469305527,
+      "sample_blocks": 300,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2019
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
+    },
+    "xlg15_nfl_reliability_pass_oe_when_ahead_2020-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliable trait (perm p 0.0045); reliability is not a pick effect",
+      "closing_ground": null,
+      "description": "NFL split-half reliability (alternating games, team-season), pass_oe_when_ahead, 2020-2025; CFB construction.",
+      "effect": 0.21321997027865114,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        0.05732771171854154,
+        0.3608245772119765
+      ],
+      "league": "nfl",
+      "notes": "Unit 2: 14 looks (8 CFB wind, 4 NFL reliability, 2 NFL opener add-ons), declared in lane before signs.",
+      "plain_summary": "Whether NFL teams keep this habit from one half of their games to the other.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-11-21",
+      "reliability": 0.3514943299683387,
+      "sample_blocks": 167,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg15/wind_reliability.json; artifacts/xlg15/nfl_confirm.json",
+      "standard_error": null
     }
   }
 }
