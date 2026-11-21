@@ -155,6 +155,7 @@ PRIVATE_SUNDAY_ODDS_CAPTURE = [
 DEADLINE_ODDS_CAPTURE = [*PRIVATE_SUNDAY_ODDS_CAPTURE, "--max-age-minutes", "1"]
 
 SUNDAY_EARLY_LAST_CALL_AT = "12:40"
+SUNDAY_TAPE_END_AT = "12:25"
 
 ODDS_TAPE_CAPTURE = [
     str(UV),
@@ -1097,6 +1098,27 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day, at, grace in (("tue", "14:00", 360), ("sun", "12:15", 30))
     ),
+    *(
+        Job(
+            f"lead108_mixture_forward_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead108_mixture_forward.py"),
+                "log",
+            ],
+            True,
+            "LEAD-108 forward log: unfitted read-weighted and ladder-weighted injury scenario "
+            "mixtures on the card probability, written before kickoff from the LEAD-106 reads.",
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (("thu", "18:30", 90), ("sat", "19:00", 360), ("sun", "09:40", 60))
+    ),
     Job(
         "lead112_forward_score_tue",
         "tue",
@@ -1982,15 +2004,16 @@ SCHEDULE: tuple[Job, ...] = (
             "--duration-minutes",
             "48",
             "--end-before-et",
-            SUNDAY_EARLY_LAST_CALL_AT,
+            SUNDAY_TAPE_END_AT,
         ],
         True,
         "Sunday pre-kickoff Bovada spread tape sampled every 8.5 seconds with the "
         "provider's last-updated time, for the lead-lag latency estimate. Starts after "
         "odds_private_sun because both read the same Bovada endpoint; it stops before the "
-        "first Sunday last-call job so the single-threaded daemon never blocks the "
-        "pre-deadline refresh (on 2026-11-15 a late start ran it to 13:14 and the 12:45 "
-        "last-call refresh was missed).",
+        "12:30 batch so the jobs queued behind it in the single-threaded daemon clear "
+        "before the 12:40 and 12:45 last-call jobs, and skips when started too late "
+        "(on 2026-11-15 a late start ran it to 13:14 and the 12:45 last-call refresh was "
+        "missed).",
         season_guarded=False,
         added_on="2026-11-03",
     ),

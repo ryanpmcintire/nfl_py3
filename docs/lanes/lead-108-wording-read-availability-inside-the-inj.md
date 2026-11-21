@@ -14,11 +14,15 @@ Registry: 5 cells unresolved_below_power, family lead108_wording_mixture (`lead1
 
 ROADMAP LEAD-108 update: Measured 2026-11-21 (unit 2, `scripts/lead108_full_mixture.py`): full PER-10 lattice mixture, read vs ladder weights, 130 opener games weeks 2-10, no fitted parameter: log loss +.0007 [-.0011, .0030] P+ .72, decisive 1-1, detectable .0029; full-read weeks 9-10 +.0048 P+ .87; fitted-slope arms overfit (worse than served OOS). 5 cells unresolved_below_power; nothing served. Next: score the unfitted read mixture forward on Weeks 11-18 beside the frozen linear term.
 
+Unit 3 (2026-11-21 10:51 -0500, read + measured): the unfitted read mixture is declared as forward arm "declaration 2" in `docs/lanes/lead108-forward-2026-11-16.md` (Weeks 12-18, 109 scheduled games, graded at the pool line against the ladder arm and the played card, decisive record first, 8 looks, scoring after Week 18 only). Logger `scripts/lead108_mixture_forward.py log` calls unit 2's `mixtures()` unchanged; smoke files for Weeks 11 and 10 written under `artifacts/lead108_mixture_forward/` (never scored). Nothing recorded (no result yet); nothing served.
+
+ROADMAP LEAD-108 update: 2026-11-21: unfitted read-weighted lattice mixture declared as a forward arm for Weeks 12-18 before the Week 12 openers (`docs/lanes/lead108-forward-2026-11-16.md`, declaration 2); per-game read-arm, ladder-arm and card probabilities logged before kickoff by `scripts/lead108_mixture_forward.py log` (auto week, SKIP outside 12-18); scheduler jobs proposed (Thu 18:30, Sat 19:00, Sun 12:20), not yet added; detectable log loss about .0066 at about 105 games; scored after Week 18.
+
 ## Tried
 Novelty check: nearest PER-10 (ordinal mixture, 2020-2024, unresolved), LEAD-106, LEAD-110, LEAD-109. Unit 1 linear term; unit 2 full lattice mixture with tilt-centre shift.
 
 ## Next
-1. After Week 18: score the unfitted read mixture (no parameter, so no freeze needed beyond the code) on Weeks 11-18 forward reads alongside the frozen unit-1 forward cell; declare in the forward lane before Week 12 grades.
+1. Root: add the three `lead108_mixture_forward_*` scheduler jobs (diff in the forward lane) before Thanksgiving Week 12 (first Week 12 game Wed 2026-11-25 20:00 ET). Before Week 18: add the `score` subcommand per declaration 2; after Week 18: score and record `lead108_fullmix_read_vs_ladder_{ll,acc}_fwd_wk12_18`.
 2. Optional: restore PER-10 pairwise unit coupling in the convolution (same arms) to test the independence deviation.
 
 ## Open
