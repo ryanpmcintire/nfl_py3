@@ -1,0 +1,89 @@
+{
+  "family": "mod30_nfelo_stamped_2026_11_21",
+  "signals": {
+    "mod30_nfelo_gap_2025_current_file_control_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign; one season; no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "nfelo model margin (points per Elo x nfelo_dif_base) minus the Tuesday opener, home minus away, points, current-file (retroactively rebuilt) nfelo values, control; offset logistic on the served out-of-season probability, coefficient fitted 2020-2024 (+0.01663 logit per point) and applied unchanged to 2025. Games 267, nonzero 233, changed 8 record 4-4; null percentile 61.0 of 200 within-week shuffles; detectable size 0.00154.",
+      "effect": -7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod30_nfelo_stamped_2026_11_21",
+      "interval": [
+        -0.001796,
+        0.001702
+      ],
+      "league": "nfl",
+      "notes": "Family mod30_nfelo_stamped_2026_11_21: 2 looks (stamped, current-file control), 1 season.",
+      "plain_summary": "Checks whether the nfelo model's number, as published before each 2025 game, improves the card's probability against the opening line. No pick changes from this check.",
+      "probability_positive": 0.4895,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lanes/mod-30-mod30-public-ratings.md",
+      "standard_error": null
+    },
+    "mod30_nfelo_gap_2025_stamped_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign; one season; no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "nfelo model margin (points per Elo x nfelo_dif_base) minus the Tuesday opener, home minus away, points, commit-stamped pregame nfelo values; offset logistic on the served out-of-season probability, coefficient fitted 2020-2024 (+0.01663 logit per point) and applied unchanged to 2025. Games 267, nonzero 267, changed 10 record 4-6; null percentile 77.5 of 200 within-week shuffles; detectable size 1.87266.",
+      "effect": -0.749064,
+      "effect_units": "accuracy_points",
+      "family": "mod30_nfelo_stamped_2026_11_21",
+      "interval": [
+        -3.018868,
+        1.526718
+      ],
+      "league": "nfl",
+      "notes": "Family mod30_nfelo_stamped_2026_11_21: 2 looks (stamped, current-file control), 1 season.",
+      "plain_summary": "Checks whether the nfelo model's number, as published before each 2025 game, improves the card's probability against the opening line. No pick changes from this check.",
+      "probability_positive": 0.2165,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lanes/mod-30-mod30-public-ratings.md",
+      "standard_error": null
+    },
+    "mod30_nfelo_gap_2025_stamped_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign; one season; no positive control bounds an effect this small (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "nfelo model margin (points per Elo x nfelo_dif_base) minus the Tuesday opener, home minus away, points, commit-stamped pregame nfelo values; offset logistic on the served out-of-season probability, coefficient fitted 2020-2024 (+0.01663 logit per point) and applied unchanged to 2025. Games 267, nonzero 267, changed 10 record 4-6; null percentile 76.0 of 200 within-week shuffles; detectable size 0.00151.",
+      "effect": 0.000253,
+      "effect_units": "log_loss_improvement",
+      "family": "mod30_nfelo_stamped_2026_11_21",
+      "interval": [
+        -0.00177,
+        0.002256
+      ],
+      "league": "nfl",
+      "notes": "Family mod30_nfelo_stamped_2026_11_21: 2 looks (stamped, current-file control), 1 season.",
+      "plain_summary": "Checks whether the nfelo model's number, as published before each 2025 game, improves the card's probability against the opening line. No pick changes from this check.",
+      "probability_positive": 0.5965,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lanes/mod-30-mod30-public-ratings.md",
+      "standard_error": null
+    }
+  }
+}
