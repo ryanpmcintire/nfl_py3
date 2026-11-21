@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:05:20.677089+00:00`
+Refreshed at: `2026-11-21T16:07:51.472055+00:00`
 
 ## Start here
 
@@ -21,14 +21,19 @@ Refreshed at: `2026-11-21T16:05:20.677089+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `01e649250583` — XLG-15 units 2-3: college wind elasticity not reliable across 16 cells but not closed by the declared bar; NFL fourth-down and pass-rate-when-ahead traits reliable, below the add-one floor; 22 cells unresolved
-- Pending change set: 85 paths
+- Baseline commit: `12ea9dd99feb` — ENG-58 rest_diff repair prepared for the season-boundary bundle (0 changed picks 2020-25); abandoned 2022 BUF-CIN game counts as an appearance
+- Pending change set: 89 paths
   - `M  ROADMAP.md`
-  - ` M docs/lanes/backlog-2026-11-21.md`
-  - `M  docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
+  - `M  docs/lanes/backlog-2026-11-21.md`
+  - ` M docs/lanes/mkt-23-spread-total-move-decomposition.md`
+  - `M  docs/lanes/mkt-24-slot-opener-residual.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - `M  scripts/capture_scheduler.py`
   - ` M scripts/mkt23_move_decomposition.py`
-  - ` M scripts/mkt24_slot_residual.py`
+  - ` M scripts/mkt23_unit2_term.py`
+  - `A  scripts/mkt24_holiday_forward.py`
+  - `M  scripts/mkt24_slot_residual.py`
+  - ` M scripts/ui33_scenario_producer.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -38,12 +43,7 @@ Refreshed at: `2026-11-21T16:05:20.677089+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 65 more
+  - ...and 69 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

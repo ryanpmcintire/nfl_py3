@@ -1106,6 +1106,27 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day, at, grace in (("thu", "18:30", 90), ("sat", "19:00", 360), ("sun", "09:40", 60))
     ),
+    *(
+        Job(
+            f"mkt24_holiday_forward_log_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "mkt24_holiday_forward.py"),
+                "log",
+            ],
+            True,
+            "MKT-24 forward log: pool line, Tuesday opener and served side for holiday "
+            "games before each pick deadline; no-op in weeks without one.",
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (("tue", "21:00", 180), ("wed", "20:30", 120))
+    ),
     Job(
         "lead112_forward_score_tue",
         "tue",

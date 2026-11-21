@@ -47,6 +47,12 @@ def kickoff_cuts(sched):
     ]
 
 
+def holiday_mask(day):
+    thanks = (day.dt.month == 11) & (day.dt.weekday == 3) & day.dt.day.between(22, 28)
+    xmas = (day.dt.month == 12) & (day.dt.day == 25)
+    return thanks | xmas
+
+
 def build_slots():
     s = pd.read_parquet(FEATURES)
     s = s[s.game_type == "REG"].copy()
@@ -55,8 +61,6 @@ def build_slots():
     )
     cuts = kickoff_cuts(s)
     day = pd.to_datetime(s.gameday)
-    thanks = (day.dt.month == 11) & (day.dt.weekday == 3) & day.dt.day.between(22, 28)
-    xmas = (day.dt.month == 12) & (day.dt.day == 25)
     slot = pd.Series("other_weekday", index=s.index)
     wd = s.weekday
     slot[wd == "Thursday"] = "thursday_night"
@@ -66,7 +70,7 @@ def build_slots():
     slot[sun & (s.minute < cuts[0])] = "sunday_early"
     slot[sun & (s.minute >= cuts[0]) & (s.minute < cuts[1])] = "sunday_late"
     slot[sun & (s.minute >= cuts[1])] = "sunday_night"
-    slot[thanks | xmas] = "holiday"
+    slot[holiday_mask(day)] = "holiday"
     slot[s.location == "Neutral"] = "international"
     s["slot"] = slot
     return s[["game_id", "slot"]], [float(c) for c in cuts]
@@ -777,4 +781,5 @@ def main():
         unit1()
 
 
-main()
+if __name__ == "__main__":
+    main()
