@@ -1,0 +1,89 @@
+{
+  "family": "g55_deadline_availability",
+  "signals": {
+    "g55_u3_s_all_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade; no refuted mechanism and no positive-control bound, so the result is recorded below power with probability_positive and the matched-null percentile.",
+      "closing_ground": null,
+      "description": "Servable deadline availability arm S_ALL (U1 gameday actives O1, U2 expected snap share O2, projected QB inactive O3, known-at-deadline games only) minus served base, all games, model alone at the Tuesday opener, season-block bootstrap; record 809-694 v base 802-701; matched null wins percentile 87.0 over 50 within-season shuffles",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "g55_deadline_availability",
+      "interval": [
+        -0.7703081232492998,
+        1.4734144778987828
+      ],
+      "league": "nfl",
+      "notes": "G55-U3 declared look family (all primary, quiet, moved = 3 looks); declaration in docs/lanes/goal-55-backwards-2026-11-21.md; serving candidate failed",
+      "plain_summary": "Gives the model the gameday inactive list, each player's expected playing time and whether the expected quarterback is inactive, using only what is posted before picks lock.",
+      "probability_positive": 0.78525,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u3/results.json",
+      "standard_error": null
+    },
+    "g55_u3_s_all_moved_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade; no refuted mechanism and no positive-control bound, so the result is recorded below power with probability_positive and the matched-null percentile.",
+      "closing_ground": null,
+      "description": "Servable deadline availability arm S_ALL (U1 gameday actives O1, U2 expected snap share O2, projected QB inactive O3, known-at-deadline games only) minus served base, moved games, model alone at the Tuesday opener, season-block bootstrap; record 355-298 v base 361-292; matched null wins percentile 65.0 over 50 within-season shuffles",
+      "effect": -0.9188361408882083,
+      "effect_units": "accuracy_points",
+      "family": "g55_deadline_availability",
+      "interval": [
+        -2.6785714285714284,
+        0.7564296520423601
+      ],
+      "league": "nfl",
+      "notes": "G55-U3 declared look family (all primary, quiet, moved = 3 looks); declaration in docs/lanes/goal-55-backwards-2026-11-21.md; serving candidate failed",
+      "plain_summary": "Gives the model the gameday inactive list, each player's expected playing time and whether the expected quarterback is inactive, using only what is posted before picks lock.",
+      "probability_positive": 0.1295,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 653,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u3/results.json",
+      "standard_error": null
+    },
+    "g55_u3_s_all_quiet_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade; no refuted mechanism and no positive-control bound, so the result is recorded below power with probability_positive and the matched-null percentile.",
+      "closing_ground": null,
+      "description": "Servable deadline availability arm S_ALL (U1 gameday actives O1, U2 expected snap share O2, projected QB inactive O3, known-at-deadline games only) minus served base, quiet games, model alone at the Tuesday opener, season-block bootstrap; record 450-387 v base 437-400; matched null wins percentile 89.0 over 50 within-season shuffles",
+      "effect": 1.5531660692951015,
+      "effect_units": "accuracy_points",
+      "family": "g55_deadline_availability",
+      "interval": [
+        0.39473684210526316,
+        2.4070021881838075
+      ],
+      "league": "nfl",
+      "notes": "G55-U3 declared look family (all primary, quiet, moved = 3 looks); declaration in docs/lanes/goal-55-backwards-2026-11-21.md; serving candidate failed",
+      "plain_summary": "Gives the model the gameday inactive list, each player's expected playing time and whether the expected quarterback is inactive, using only what is posted before picks lock.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u3/results.json",
+      "standard_error": null
+    }
+  }
+}

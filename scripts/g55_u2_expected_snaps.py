@@ -59,15 +59,17 @@ def load_inputs(snapshot):
     return rosters, snaps
 
 
-def load_actives(path, snaps):
+def load_actives(path, snaps, stand_in_allowed=True):
     stand_in = snaps.loc[snaps["played"], KEYS].assign(active_source="snaps_gt_zero")
     if path is None:
         return stand_in
     given = pd.read_parquet(path)
     if "active" in given.columns:
-        given = given.loc[given["active"].astype(bool)]
+        given = given.loc[given["active"].fillna(False).astype(bool)]
     given = given.assign(player_key=given["gsis_id"].astype(str), active_source="actives_table")
     given = given[[*KEYS, "active_source"]].drop_duplicates(KEYS)
+    if not stand_in_allowed:
+        return given.reset_index(drop=True)
     covered = given[["game_id", "team"]].drop_duplicates()
     keep = stand_in.merge(covered, on=["game_id", "team"], how="left", indicator=True)
     keep = keep.loc[keep["_merge"].eq("left_only")].drop(columns="_merge")
@@ -213,10 +215,16 @@ def main():
         "does not cover fall back to the snaps-greater-than-zero stand-in",
     )
     parser.add_argument("--out", type=Path, default=OUT, help="output directory")
+    parser.add_argument(
+        "--no-stand-in",
+        action="store_true",
+        help="team-games the actives table does not cover get no active players instead of "
+        "the snaps-greater-than-zero stand-in",
+    )
     args = parser.parse_args()
 
     rosters, snaps = load_inputs(PLAYER_SNAPSHOT)
-    actives = load_actives(args.actives, snaps)
+    actives = load_actives(args.actives, snaps, stand_in_allowed=not args.no_stand_in)
     cand, hist = build_candidates(rosters, snaps, actives)
     active = cand["active"].to_numpy(bool)
     has = cand["row"].notna().to_numpy()
@@ -314,6 +322,7 @@ def main():
         "script": "scripts/g55_u2_expected_snaps.py",
         "player_snapshot": str(PLAYER_SNAPSHOT.relative_to(ROOT)),
         "actives": str(args.actives) if args.actives else "snaps_gt_zero stand-in",
+        "stand_in_for_uncovered": not args.no_stand_in,
         "active_source_rows": {
             str(k): int(v) for k, v in out["active_source"].value_counts().items()
         },
