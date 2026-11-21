@@ -32,7 +32,9 @@ exec(compile(UNIT_PATH.read_text().rsplit("\nmain()", 1)[0], str(UNIT_PATH), "ex
 ROOT = u3.ROOT
 OUT_DIR = ROOT / "artifacts" / "draftcap_forward"
 RUNS_DIR = OUT_DIR / "runs"
-FROZEN_PATH = OUT_DIR / "frozen.json"
+FROZEN_V1_PATH = OUT_DIR / "frozen.json"
+FROZEN_PATH = OUT_DIR / "frozen_v2.json"
+FROZEN_VERSION = 2
 SEASON = M.SEASON
 FIRST_WEEK = 7
 LAST_WEEK = 18
@@ -126,6 +128,36 @@ def freeze(table, digest, dry):
         "combine_file": str(U["COMBINE"]),
         "picks_dir": str(U["PICKS_DIR"]),
         "canonical_row": "latest row per game_id recorded before its pick deadline",
+    }
+    v1 = json.loads(FROZEN_V1_PATH.read_text())
+    frozen = {
+        "version": FROZEN_VERSION,
+        **frozen,
+        "feature_table_sha256": M.sha256_file(u3.FEATURES),
+        "reason": (
+            "the 2013-2025 refit no longer reproduces the v1 coefficients; the job failed its "
+            "guard from 2026-11-19 19:15 ET; inferred cause, not yet diffed: the 2026-11-17 "
+            "Week 11 lock (commit 62d554ea) landed the quarterback repair and pregame weather, "
+            "which rewrote "
+            "2013-2025 feature rows"
+        ),
+        "window": (
+            "2026 Week 11 games not yet kicked off at enrolled_at_utc and logged before their pick "
+            "deadline, through Week 18"
+        ),
+        "supersedes": {
+            "file": FROZEN_V1_PATH.name,
+            "version": 1,
+            "enrolled_at_utc": v1["enrolled_at_utc"],
+            "arm_coefficients_2026": v1["arm_coefficients_2026"],
+            "arm_coefficients_2026_sha256": v1["arm_coefficients_2026_sha256"],
+            "window": "2026 Weeks 7 through 10 (Week 8 missed; Week 11 Thursday lost)",
+            "status": "kept unchanged as history",
+        },
+        "pooling": (
+            "v1 and v2 rows are never pooled without saying so; every run payload carries "
+            "frozen_version and arm_coefficients_2026_sha256"
+        ),
     }
     if dry:
         return frozen
@@ -273,6 +305,8 @@ def record(week, now, dry):
         "feature_table_sha256": M.sha256_file(u3.FEATURES),
         "snap_file": str(U["SNAP_FILE"]),
         "latest_snap_order": int(tg["prior_order"].max()),
+        "frozen_version": frozen.get("version", 1),
+        "frozen_file": FROZEN_PATH.name,
         "arm_coefficients_2026_sha256": digest,
         "arm_coefficients_fit_max_season": fit_max,
         "served_forecast_dir": None if folder is None else folder.name,
@@ -313,7 +347,16 @@ def status():
     for path in files:
         payload = json.loads(path.read_text())
         out.setdefault(payload["week"], []).append(path.name)
-    print(json.dumps({"frozen": FROZEN_PATH.exists(), "runs_by_week": out}, indent=1))
+    print(
+        json.dumps(
+            {
+                "frozen_v1": FROZEN_V1_PATH.exists(),
+                "frozen_v2": FROZEN_PATH.exists(),
+                "runs_by_week": out,
+            },
+            indent=1,
+        )
+    )
 
 
 def main():

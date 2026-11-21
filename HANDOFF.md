@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:19:40.853413+00:00`
+Refreshed at: `2026-11-21T16:21:43.352956+00:00`
 
 ## Start here
 
@@ -21,14 +21,19 @@ Refreshed at: `2026-11-21T16:19:40.853413+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9730f179e6db` — LEAD-106 Week 10 scored (gain concentrated in one game read before designations) and LEAD-110 rerun, all unresolved; ladder expands through the prior week as declared
-- Pending change set: 84 paths
+- Baseline commit: `9f5d208e4482` — ENG-51 unit 3: opener-evaluation controls prepared for the season-boundary bundle (served 53.36% v opener-only 50.37%, P+ .96)
+- Pending change set: 89 paths
   - `M  ROADMAP.md`
-  - `M  docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - `M  docs/lanes/backlog-2026-11-21.md`
+  - `M  docs/lanes/draftcap-forward-log.md`
+  - `M  docs/lanes/forward-log-coverage-2026-11-21.md`
+  - ` M docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
+  - `M  docs/lanes/mod23-unit10b-draft-capital-v2.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - `M  docs/season_boundary_bundle_2026.md`
   - ` M registry/weak_signals/sim29_lineup.json`
-  - ` M scripts/draftcap_forward_log.py`
+  - `M  scripts/draftcap_forward_log.py`
+  - ` M scripts/lead100_analyze.py`
+  - ` M scripts/lead109_position_weights.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -38,12 +43,7 @@ Refreshed at: `2026-11-21T16:19:40.853413+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 64 more
+  - ...and 69 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
