@@ -33,6 +33,10 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 - Consequence: the who-plays route tops out at 823 even with leaky in-game usage, and the market hindsight route also at 823. Neither reaches 827 alone; 55% needs who-plays near its ceiling plus an independent source.
 - Next units: G55-U5a pregame usage forecaster v2 (designations, practice status, return ramp; build only, lane g55-u5a-usage-v2-2026-11-21.md); G55-U5b one declared grade of S_ALL_v2; then a declared combined arm with the other model-alone positive (MOD-23 unit 5a man/zone, 809-694), labelled post-selection, graded once and logged forward.
 
+## G55-U5b declaration (root, 2026-11-21, after the U5a build and before any outcome read of S_ALL_v2)
+- Arm S_ALL_v2 exactly as frozen in docs/lanes/g55-u5a-usage-v2-2026-11-21.md (U3 harness, O2 from artifacts/g55_u5a/expected_snaps_v2.parquet; O1 and O3 as U3). Build MAE (not a look): one-score share .1197 v1 .1297.
+- Same grade, populations (all primary, quiet, moved = 3 looks, family g55_deadline_availability), 50-draw within-season null and the same serving test as U3 (>= 827 wins, null pct >= 95, log loss no worse than base). Also report v S_ALL (809-694). No variants, no re-tuning; a fail is recorded unresolved_below_power.
+
 ## Tried
 - Gaussian correlation mapping of residual to accuracy predicts 51.8% against 53.4% measured; not usable for sizing, dropped.
 
