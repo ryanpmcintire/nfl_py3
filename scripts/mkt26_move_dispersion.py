@@ -28,7 +28,7 @@ def last_at(q, t, value):
     return qq.groupby("bookmaker_key")[value].last()
 
 
-def deadline_frame():
+def deadline_frame(keep_pushes=False):
     s = L.book_series()
     s = s[s.nflverse_game_id.str[:4].isin([str(x) for x in SEASONS])]
     s = s.sort_values("observed_at_utc")
@@ -66,7 +66,8 @@ def deadline_frame():
     g = g.merge(r, on="game_id").reset_index(drop=True)
     g["abs_move"] = (g.hs1 - g.hs0).abs().round(4)
     g["m_dl"] = g.result - g.hs1
-    g = g[g.m_dl != 0].reset_index(drop=True)
+    if not keep_pushes:
+        g = g[g.m_dl != 0].reset_index(drop=True)
     g["abs_resid"] = g.m_dl.abs()
     g["near_push"] = (g.m_dl.abs() <= 0.5).astype(float)
     g["abs_line"] = g.hs1.abs()

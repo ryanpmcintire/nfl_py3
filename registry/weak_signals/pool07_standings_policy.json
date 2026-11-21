@@ -1,6 +1,118 @@
 {
   "family": "pool07_standings_policy",
   "signals": {
+    "pool07_lowo_curve_decides_first": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, no split-half test of the tilt). Field-model arm of a pool-objective challenger, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Standings-conditional leverage tilt, lambda chosen leave-one-week-out, field-model arm: decision ownership from the line-curve proxy (refit on training weeks), field simulated with the observed Splash pick counts; change in first-place chance versus max-probability picks, mean over 10 held-out weeks, fold bootstrap; in-sample +0.341 pp, gap +0.171 pp; 5 of 10 folds positive; expected correct picks given up 0.018 per week; decisive tilted games tilt side 6-4 (expected 4.91 under served p, exact P(at least) 0.355); start rank 90, 77 pts, 8 weeks left, 10000 paths",
+      "effect": 0.170167,
+      "effect_units": "payout_first_pp",
+      "family": "pool07_standings_policy",
+      "interval": [
+        0.034667,
+        0.317667
+      ],
+      "league": "nfl",
+      "notes": "2026-11-21 Unit 3: scripts/pool07_standings_policy.py --mode lowo --arm <arm> --paths 10000 --chunk 2000 --weeks 8 --points 77 --rank 90; summary artifacts/pool07/pool07_lowo_field_arms_w10.json. Six held-out cells in this unit (the realised arm reproduces pool07_lowo_leverage_tilt_first exactly). Challenger only; no served pick changes.",
+      "plain_summary": "Tests whether taking the less-picked side of near coin-flip games when we trail the pool leader raises our chance of finishing first, under a different guess of how the rest of the pool picks.",
+      "probability_positive": 0.9948,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool07/pool07_lowo_curve_decides_w10.json",
+      "standard_error": null
+    },
+    "pool07_lowo_curve_field_first": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, no split-half test of the tilt). Field-model arm of a pool-objective challenger, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Standings-conditional leverage tilt, lambda chosen leave-one-week-out, field-model arm: decision ownership and simulated field both from the line-curve proxy; change in first-place chance versus max-probability picks, mean over 10 held-out weeks, fold bootstrap; in-sample +0.268 pp, gap +0.098 pp; 7 of 10 folds positive; expected correct picks given up 0.047 per week; decisive tilted games tilt side 11-7 (expected 8.76 under served p, exact P(at least) 0.206); start rank 90, 77 pts, 8 weeks left, 10000 paths",
+      "effect": 0.170333,
+      "effect_units": "payout_first_pp",
+      "family": "pool07_standings_policy",
+      "interval": [
+        0.0755,
+        0.267504
+      ],
+      "league": "nfl",
+      "notes": "2026-11-21 Unit 3: scripts/pool07_standings_policy.py --mode lowo --arm <arm> --paths 10000 --chunk 2000 --weeks 8 --points 77 --rank 90; summary artifacts/pool07/pool07_lowo_field_arms_w10.json. Six held-out cells in this unit (the realised arm reproduces pool07_lowo_leverage_tilt_first exactly). Challenger only; no served pick changes.",
+      "plain_summary": "Tests whether taking the less-picked side of near coin-flip games when we trail the pool leader raises our chance of finishing first, under a different guess of how the rest of the pool picks.",
+      "probability_positive": 0.99995,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool07/pool07_lowo_curve_field_w10.json",
+      "standard_error": null
+    },
+    "pool07_lowo_home_line_decides_first": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, no split-half test of the tilt). Field-model arm of a pool-objective challenger, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Standings-conditional leverage tilt, lambda chosen leave-one-week-out, field-model arm: decision ownership from the home-and-line proxy (refit on training weeks), field simulated with the observed Splash pick counts; change in first-place chance versus max-probability picks, mean over 10 held-out weeks, fold bootstrap; in-sample +0.266 pp, gap +0.210 pp; 3 of 10 folds positive; expected correct picks given up 0.025 per week; decisive tilted games tilt side 6-3 (expected 4.38 under served p, exact P(at least) 0.229); start rank 90, 77 pts, 8 weeks left, 10000 paths",
+      "effect": 0.055833,
+      "effect_units": "payout_first_pp",
+      "family": "pool07_standings_policy",
+      "interval": [
+        -0.118833,
+        0.242
+      ],
+      "league": "nfl",
+      "notes": "2026-11-21 Unit 3: scripts/pool07_standings_policy.py --mode lowo --arm <arm> --paths 10000 --chunk 2000 --weeks 8 --points 77 --rank 90; summary artifacts/pool07/pool07_lowo_field_arms_w10.json. Six held-out cells in this unit (the realised arm reproduces pool07_lowo_leverage_tilt_first exactly). Challenger only; no served pick changes.",
+      "plain_summary": "Tests whether taking the less-picked side of near coin-flip games when we trail the pool leader raises our chance of finishing first, under a different guess of how the rest of the pool picks.",
+      "probability_positive": 0.71395,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool07/pool07_lowo_home_line_decides_w10.json",
+      "standard_error": null
+    },
+    "pool07_lowo_home_line_field_first": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, no split-half test of the tilt). Field-model arm of a pool-objective challenger, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Standings-conditional leverage tilt, lambda chosen leave-one-week-out, field-model arm: decision ownership and simulated field both from the home-and-line proxy; change in first-place chance versus max-probability picks, mean over 10 held-out weeks, fold bootstrap; in-sample +0.310 pp, gap +0.179 pp; 6 of 10 folds positive; expected correct picks given up 0.029 per week; decisive tilted games tilt side 9-3 (expected 5.86 under served p, exact P(at least) 0.062); start rank 90, 77 pts, 8 weeks left, 10000 paths",
+      "effect": 0.130667,
+      "effect_units": "payout_first_pp",
+      "family": "pool07_standings_policy",
+      "interval": [
+        0.047333,
+        0.218333
+      ],
+      "league": "nfl",
+      "notes": "2026-11-21 Unit 3: scripts/pool07_standings_policy.py --mode lowo --arm <arm> --paths 10000 --chunk 2000 --weeks 8 --points 77 --rank 90; summary artifacts/pool07/pool07_lowo_field_arms_w10.json. Six held-out cells in this unit (the realised arm reproduces pool07_lowo_leverage_tilt_first exactly). Challenger only; no served pick changes.",
+      "plain_summary": "Tests whether taking the less-picked side of near coin-flip games when we trail the pool leader raises our chance of finishing first, under a different guess of how the rest of the pool picks.",
+      "probability_positive": 0.99955,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool07/pool07_lowo_home_line_field_w10.json",
+      "standard_error": null
+    },
     "pool07_lowo_leverage_tilt_first": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -27,6 +139,34 @@
         2026
       ],
       "source": "artifacts/pool07/pool07_lowo_leverage_w10.json",
+      "standard_error": null
+    },
+    "pool07_lowo_no_skill_first": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, no split-half test of the tilt). Field-model arm of a pool-objective challenger, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Standings-conditional leverage tilt, lambda chosen leave-one-week-out, field-model arm: observed pick counts for decision and field, entrant skill set to zero; change in first-place chance versus max-probability picks, mean over 10 held-out weeks, fold bootstrap; in-sample +0.795 pp, gap +0.251 pp; 8 of 10 folds positive; expected correct picks given up 0.053 per week; decisive tilted games tilt side 11-9 (expected 9.73 under served p, exact P(at least) 0.366); start rank 90, 77 pts, 8 weeks left, 10000 paths",
+      "effect": 0.54425,
+      "effect_units": "payout_first_pp",
+      "family": "pool07_standings_policy",
+      "interval": [
+        0.267081,
+        0.843752
+      ],
+      "league": "nfl",
+      "notes": "2026-11-21 Unit 3: scripts/pool07_standings_policy.py --mode lowo --arm <arm> --paths 10000 --chunk 2000 --weeks 8 --points 77 --rank 90; summary artifacts/pool07/pool07_lowo_field_arms_w10.json. Six held-out cells in this unit (the realised arm reproduces pool07_lowo_leverage_tilt_first exactly). Challenger only; no served pick changes.",
+      "plain_summary": "Tests whether taking the less-picked side of near coin-flip games when we trail the pool leader raises our chance of finishing first, under a different guess of how the rest of the pool picks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool07/pool07_lowo_no_skill_w10.json",
       "standard_error": null
     },
     "pool07_u1_base_bp_leverage_payout_first_pp": {

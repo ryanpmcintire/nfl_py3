@@ -3,10 +3,21 @@ import json
 from pathlib import Path
 
 import numpy as np
-from pool01_forward_sim import K, load_games, past_state, rival_table, share_given_key
+import pandas as pd
+from pool01_forward_sim import FIELD_FILE, K, load_games, past_state, rival_table, share_given_key
+from scipy.optimize import minimize
+from scipy.special import expit
 
 OUT = Path("artifacts/pool07")
 GAMES = 15
+ARMS = {
+    "realised": ("realised", "realised", True),
+    "home_line_decides": ("home_line", "realised", True),
+    "curve_decides": ("curve", "realised", True),
+    "home_line_field": ("home_line", "home_line", True),
+    "curve_field": ("curve", "curve", True),
+    "no_skill": ("realised", "realised", False),
+}
 
 
 def policies(cuts):
@@ -96,10 +107,11 @@ def play_lev(g, rng, state, dm, lams, weeks, dsd, our_points, our_bp0):
     P, E = state[0].shape
     delta = dm + dsd * rng.standard_normal((P, E))
     p, sh, uo, ut = (g[k] for k in ("p", "share", "u_o", "u_t"))
-    ratio = lev_ratio(p, sh)
+    ratio = lev_ratio(p, g["dec"])
     n, L = len(p), len(lams)
     pts = np.full((L, P), float(our_points))
     bp = np.full((L, P), float(our_bp0))
+    wins = np.zeros((L, P))
     fp, fb = state[0].copy(), state[1].copy()
     for _ in range(weeks):
         top = (fp * K + fb).max(axis=1)
@@ -119,9 +131,12 @@ def play_lev(g, rng, state, dm, lams, weeks, dsd, our_points, our_bp0):
         wp = np.where(tilt, 1.0 - pw[None], pw[None])
         j = wp.argmax(axis=2)
         pts += win.sum(axis=2)
+        wins += win.sum(axis=2)
         bp += np.take_along_axis(win, j[:, :, None], axis=2)[:, :, 0]
     fkey = fp * K + fb
-    return np.stack([share_given_key(fkey, pts[i] * K + bp[i]) for i in range(L)])
+    first = np.stack([share_given_key(fkey, pts[i] * K + bp[i]) for i in range(L)])
+    top10 = np.stack([((fkey > (pts[i] * K + bp[i])[:, None]).sum(axis=1) < 10) for i in range(L)])
+    return first, wins, top10.astype(float)
 
 
 def chunked(g, rng, state, dm, lams, a, dsd, our_bp):
@@ -129,47 +144,152 @@ def chunked(g, rng, state, dm, lams, a, dsd, our_bp):
     for s in range(0, len(dm), a.chunk):
         st = (state[0][s : s + a.chunk], state[1][s : s + a.chunk])
         out.append(play_lev(g, rng, st, dm[s : s + a.chunk], lams, a.weeks, dsd, a.points, our_bp))
-    return np.concatenate(out, axis=1)
+    return tuple(np.concatenate([o[i] for o in out], axis=1) for i in range(3))
+
+
+def side_table(df):
+    raw = pd.read_parquet(FIELD_FILE)
+    rows = {}
+    for gid, g in raw.groupby("game_id"):
+        h = g[g["home"]].iloc[0]
+        t = g[~g["home"]].iloc[0]
+        rows[gid] = (
+            -float(h["line"]),
+            float(h["picks"]),
+            float(t["picks"]),
+            float(h["model_p"] > t["model_p"]),
+            float(g["covered"].sum()),
+        )
+    return np.array([rows[gid] for gid in df["game_id"]])
+
+
+def fit(X, n1, n0):
+    def f(b):
+        z = X @ b
+        nll = (n1 * np.logaddexp(0.0, -z) + n0 * np.logaddexp(0.0, z)).sum()
+        return nll, X.T @ ((n1 + n0) * expit(z) - n1)
+
+    return minimize(f, np.zeros(X.shape[1]), jac=True, method="L-BFGS-B").x
+
+
+def shares(df, side, train, kind):
+    if kind == "realised":
+        return df["share"].to_numpy(), None
+    x = side[:, 0]
+    cols = [np.ones(len(x)), x]
+    if kind == "curve":
+        cols.append(x * np.abs(x))
+    X = np.column_stack(cols)
+    b = fit(X[train], side[train, 1], side[train, 2])
+    q = expit(X @ b)
+    return np.where(side[:, 3] > 0, q, 1.0 - q), [float(v) for v in b]
+
+
+def tails(q, k):
+    dist = np.ones(1)
+    for v in q:
+        dist = np.convolve(dist, [1.0 - v, v])
+    return float(dist[k:].sum()), float(dist[: k + 1].sum())
+
+
+def decisive(tilted):
+    games = [t for t in tilted if not t["push"]]
+    n = len(games)
+    k = int(sum(t["tilt_side_covered"] for t in games))
+    q = np.array([1.0 - t["p_served"] for t in games])
+    up, lo = tails(q, k)
+    up_h, lo_h = tails(np.full(n, 0.5), k)
+    return {
+        "games": n,
+        "pushes_dropped": len(tilted) - n,
+        "tilt_side_wins": k,
+        "tilt_side_losses": n - k,
+        "expected_tilt_wins_served": float(q.sum()),
+        "exact_p_at_least_served": up,
+        "exact_p_at_most_served": lo,
+        "exact_p_at_least_half": up_h,
+        "exact_p_at_most_half": lo_h,
+    }
 
 
 def lowo(a, df, rng, state, dm, dsd, our_bp):
-    cols = ("p", "share", "u_o", "u_t")
-    folds = []
+    dec_kind, field_kind, skill = ARMS[a.arm]
+    if not skill:
+        dm, dsd = np.zeros_like(dm), 0.0
+    side = side_table(df)
+    cols = ("p", "u_o", "u_t")
+    folds, tilted = [], []
     for w in sorted(df["week"].unique()):
-        tr, te = df[df["week"] != w], df[df["week"] == w]
-        gtr = {k: tr[k].to_numpy() for k in cols}
-        gte = {k: te[k].to_numpy() for k in cols}
-        rtr = lev_ratio(gtr["p"], gtr["share"])
+        trm = (df["week"] != w).to_numpy()
+        tem = ~trm
+        dec, coef = shares(df, side, trm, dec_kind)
+        fld, _ = shares(df, side, trm, field_kind)
+        gtr = {k: df[k].to_numpy()[trm] for k in cols} | {"share": fld[trm], "dec": dec[trm]}
+        gte = {k: df[k].to_numpy()[tem] for k in cols} | {"share": fld[tem], "dec": dec[tem]}
+        rtr = lev_ratio(gtr["p"], gtr["dec"])
         cand = np.unique(rtr[np.isfinite(rtr)])
         lams = np.concatenate([[-np.inf], cand])
-        ftr = chunked(gtr, rng, state, dm, lams, a, dsd, our_bp)
+        ftr, _, _ = chunked(gtr, rng, state, dm, lams, a, dsd, our_bp)
         dtr = (ftr[1:] - ftr[0]).mean(axis=1)
         best = int(np.argmax(dtr))
         lam = float(cand[best]) if dtr[best] > 0 else -np.inf
-        fte = chunked(gte, rng, state, dm, np.array([-np.inf, lam]), a, dsd, our_bp)
+        fte, wte, tte = chunked(gte, rng, state, dm, np.array([-np.inf, lam]), a, dsd, our_bp)
         d = fte[1] - fte[0]
-        rte = lev_ratio(gte["p"], gte["share"])
+        dw = (wte[1] - wte[0]) / a.weeks
+        dt = tte[1] - tte[0]
+        rte = lev_ratio(gte["p"], gte["dec"])
+        tl = rte <= lam
+        te = df[tem].reset_index(drop=True)
+        ste = side[tem]
+        for i in np.where(tl)[0]:
+            tilted.append(
+                {
+                    "week": int(w),
+                    "game_id": str(te.loc[i, "game_id"]),
+                    "p_served": float(gte["p"][i]),
+                    "share_decision": float(gte["dec"][i]),
+                    "share_realised": float(te.loc[i, "share"]),
+                    "tilt_side_covered": bool(not te.loc[i, "cov_o"]),
+                    "push": bool(ste[i, 4] != 1.0),
+                }
+            )
         folds.append(
             {
                 "week": int(w),
                 "lambda": lam if np.isfinite(lam) else None,
+                "decision_share_coef": coef,
                 "train_candidates": len(cand),
                 "train_games_tilted": int((rtr <= lam).sum()),
                 "heldout_games": len(te),
-                "heldout_games_tilted": int((rte <= lam).sum()),
+                "heldout_games_tilted": int(tl.sum()),
                 "in_sample_d_first_pp": float(100.0 * max(dtr[best], 0.0)),
                 "heldout_d_first_pp": float(100.0 * d.mean()),
                 "heldout_d_first_se_pp": float(100.0 * d.std(ddof=1) / np.sqrt(len(d))),
                 "heldout_p_first_max_prob": float(fte[0].mean()),
+                "heldout_d_wins_per_week": float(dw.mean()),
+                "heldout_d_wins_per_week_se": float(dw.std(ddof=1) / np.sqrt(len(dw))),
+                "heldout_cost_if_trailing_per_week": float(
+                    GAMES * ((2.0 * gte["p"] - 1.0) * tl).mean()
+                ),
+                "heldout_d_top10_pp": float(100.0 * dt.mean()),
             }
         )
-        print(folds[-1])
+        print({k: v for k, v in folds[-1].items() if k != "decision_share_coef"})
     ho = np.array([f["heldout_d_first_pp"] for f in folds])
     ins = np.array([f["in_sample_d_first_pp"] for f in folds])
-    boot = rng.choice(ho, size=(a.boot, len(ho)), replace=True).mean(axis=1)
+    hw = np.array([f["heldout_d_wins_per_week"] for f in folds])
+    ht = np.array([f["heldout_d_top10_pp"] for f in folds])
+    idx = rng.choice(len(ho), size=(a.boot, len(ho)), replace=True)
+    boot, bw, bt = ho[idx].mean(axis=1), hw[idx].mean(axis=1), ht[idx].mean(axis=1)
     lam_fin = [f["lambda"] for f in folds if f["lambda"] is not None]
     return {
         "start": vars(a),
+        "arm": {
+            "name": a.arm,
+            "decision_share": dec_kind,
+            "field_share": field_kind,
+            "entrant_skill": skill,
+        },
         "paths": len(dm),
         "dsd": dsd,
         "paid_places": 1,
@@ -181,14 +301,84 @@ def lowo(a, df, rng, state, dm, dsd, our_bp):
         "in_sample_d_first_pp": float(ins.mean()),
         "gap_pp": float(ins.mean() - ho.mean()),
         "folds_heldout_positive": int((ho > 0).sum()),
+        "heldout_d_wins_per_week": float(hw.mean()),
+        "heldout_d_wins_per_week_interval_95": [
+            float(np.quantile(bw, 0.025)),
+            float(np.quantile(bw, 0.975)),
+        ],
+        "heldout_cost_if_trailing_per_week": float(
+            np.mean([f["heldout_cost_if_trailing_per_week"] for f in folds])
+        ),
+        "heldout_d_top10_pp": float(ht.mean()),
+        "heldout_d_top10_interval_95": [
+            float(np.quantile(bt, 0.025)),
+            float(np.quantile(bt, 0.975)),
+        ],
         "lambda_min_max": [min(lam_fin), max(lam_fin)] if lam_fin else None,
         "folds_no_tilt": len(folds) - len(lam_fin),
+        "decisive": decisive(tilted),
+        "tilted_games": tilted,
     }
+
+
+def summary(wk):
+    rows = {}
+    for arm in ARMS:
+        f = OUT / f"pool07_lowo_{arm}_w{wk:02d}.json"
+        if not f.exists():
+            continue
+        r = json.loads(f.read_text())
+        rows[arm] = {
+            k: r[k]
+            for k in (
+                "arm",
+                "heldout_d_first_pp",
+                "heldout_interval_95",
+                "heldout_probability_positive",
+                "in_sample_d_first_pp",
+                "gap_pp",
+                "folds_heldout_positive",
+                "heldout_d_wins_per_week",
+                "heldout_d_wins_per_week_interval_95",
+                "heldout_cost_if_trailing_per_week",
+                "heldout_d_top10_pp",
+                "heldout_d_top10_interval_95",
+                "lambda_min_max",
+                "folds_no_tilt",
+                "decisive",
+            )
+        }
+    pts = [v["heldout_d_first_pp"] for v in rows.values()]
+    res = {
+        "arms": rows,
+        "looks_heldout_cells": len(rows),
+        "point_range_pp": [min(pts), max(pts)],
+        "interval_envelope_pp": [
+            min(v["heldout_interval_95"][0] for v in rows.values()),
+            max(v["heldout_interval_95"][1] for v in rows.values()),
+        ],
+    }
+    (OUT / f"pool07_lowo_field_arms_w{wk:02d}.json").write_text(json.dumps(res, indent=1) + "\n")
+    for arm, v in rows.items():
+        dv = v["decisive"]
+        print(
+            f"{arm:18s} dFirst {v['heldout_d_first_pp']:+.3f} {v['heldout_interval_95']} "
+            f"P+ {v['heldout_probability_positive']:.3f} folds+ {v['folds_heldout_positive']} "
+            f"gap {v['gap_pp']:+.3f} dWins/wk {v['heldout_d_wins_per_week']:+.4f} "
+            f"costIfTrail {v['heldout_cost_if_trailing_per_week']:.4f} "
+            f"dTop10 {v['heldout_d_top10_pp']:+.3f} "
+            f"decisive {dv['tilt_side_wins']}-{dv['tilt_side_losses']} "
+            f"exp {dv['expected_tilt_wins_served']:.2f} "
+            f"p>=served {dv['exact_p_at_least_served']:.3f} "
+            f"p>=half {dv['exact_p_at_least_half']:.3f}"
+        )
+    print({k: v for k, v in res.items() if k != "arms"})
 
 
 def main():
     ap = argparse.ArgumentParser(description="POOL-07 standings-conditional policy challenger")
-    ap.add_argument("--mode", choices=("quartile", "lowo"), default="quartile")
+    ap.add_argument("--mode", choices=("quartile", "lowo", "lowo_summary"), default="quartile")
+    ap.add_argument("--arm", choices=tuple(ARMS), default="realised")
     ap.add_argument("--paths", type=int, default=2000)
     ap.add_argument("--chunk", type=int, default=2000)
     ap.add_argument("--boot", type=int, default=20000)
@@ -199,6 +389,9 @@ def main():
     ap.add_argument("--seed", type=int, default=20261105)
     a = ap.parse_args()
     df = load_games()
+    if a.mode == "lowo_summary":
+        summary(int(df["week"].max()))
+        return
     rng = np.random.default_rng(a.seed)
     E = a.entries - 1
     table = rival_table(a.points)
@@ -217,9 +410,9 @@ def main():
     if a.mode == "lowo":
         res = lowo(a, df, rng, state, dm, dsd, our_bp)
         OUT.mkdir(parents=True, exist_ok=True)
-        name = f"pool07_lowo_leverage_w{int(df['week'].max()):02d}.json"
+        name = f"pool07_lowo_{a.arm}_w{int(df['week'].max()):02d}.json"
         (OUT / name).write_text(json.dumps(res, indent=1) + "\n")
-        print({k: v for k, v in res.items() if k not in ("folds", "start")})
+        print({k: v for k, v in res.items() if k not in ("folds", "start", "tilted_games")})
         return
     arms = {
         "base": (df, dm, dsd),

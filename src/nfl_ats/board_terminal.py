@@ -1986,15 +1986,19 @@ def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
             f"&middot; {pp}{classification}</span>"
         )
 
-    scored = [item for item in row.evidence if item.probability_positive is not None]
-    strongest = max(scored, key=lambda item: item.probability_positive, default=None)
+    scored = [
+        (item.probability_positive, item)
+        for item in row.evidence
+        if item.probability_positive is not None
+    ]
+    strongest = max(scored, key=lambda pair: pair[0], default=None)
     count = len(row.evidence)
     parts = [f"{count} supporting comparison{'' if count == 1 else 's'}"]
     if strongest is not None:
         lead = "the strongest is" if count > 1 else "it is"
-        parts.append(f"{lead} {_humanize_probability_positive(strongest.probability_positive)}")
-    if strongest is not None and strongest.classification:
-        parts.append(_humanize_classification(strongest.classification))
+        parts.append(f"{lead} {_humanize_probability_positive(strongest[0])}")
+    if strongest is not None and strongest[1].classification:
+        parts.append(_humanize_classification(strongest[1].classification))
     headline = escape("; ".join(parts))
     if count == 1:
         return f'<span class="game-sub">{headline}</span>'
@@ -2017,7 +2021,7 @@ def _points_range(lower: float | None, upper: float | None) -> str:
 
 def _season_timing_points_text(timing: Any) -> str:
     if not timing.available:
-        return timing.summary
+        return str(timing.summary)
     return (
         f"Early-season games minus late-season games, how often the model was right: "
         f"{_points(timing.accuracy_gap)} (resampled range "
@@ -2712,22 +2716,23 @@ def _leader_split_html(block: SeasonSoFar) -> str:
         f'<td data-label="Week">{escape(week)}</td>'
         f'<td data-label="Game">{escape(game)}</td>'
         f'<td data-label="Our side">{escape(ours)}</td>'
-        f'<td data-label="Their side">{escape(theirs)}</td>'
-        f'<td data-label="Who covered">{escape(winner)}</td>'
+        f'<td data-label="Leader\'s side">{escape(theirs)}</td>'
+        f'<td data-label="Point went to">{escape(winner)}</td>'
         "</tr>"
         for week, game, ours, theirs, winner in block.leader_split_games
     )
     table = (
         '<div class="board-scroll"><table class="board"><thead><tr>'
-        "<th>Week</th><th>Game</th><th>Our side</th><th>Their side</th><th>Who covered</th>"
-        f"</tr></thead><tbody>{body}</tbody></table></div>"
+        "<th>Week</th><th>Game</th><th>Our side</th><th>Leader's side</th>"
+        f"<th>Point went to</th></tr></thead><tbody>{body}</tbody></table></div>"
         if body
         else ""
     )
+    best = f"<p>{escape(block.leader_split_best_text)}</p>" if block.leader_split_best_text else ""
     return (
         '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
         f"{escape(block.leader_split_text)}</summary>"
-        f"<p>{escape(block.leader_split_note)}</p>{table}</details>"
+        f"<p>{escape(block.leader_split_note)}</p>{best}{table}</details>"
     )
 
 

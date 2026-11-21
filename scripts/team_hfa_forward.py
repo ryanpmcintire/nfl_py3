@@ -301,16 +301,21 @@ def cmd_log(a):
     now = datetime.now(UTC)
     fz = json.loads(FROZEN.read_text(encoding="utf-8"))
     sched, snap = latest_schedule(a.season)
-    if a.week == "auto":
+    auto = a.week == "auto"
+    if auto:
         ahead = sched.loc[sched["kickoff_utc"] > pd.Timestamp(now), "week"]
         if ahead.empty:
-            raise SystemExit("no unplayed regular-season week")
+            print("SKIP no unplayed regular-season week")
+            return
         week = int(ahead.min())
     else:
         week = int(a.week)
     if a.season != fz["season"]:
         raise SystemExit(f"frozen values are for season {fz['season']}")
     if not a.smoke and not fz["first_week"] <= week <= fz["last_week"]:
+        if auto:
+            print(f"SKIP week {week} outside the declared window")
+            return
         raise SystemExit(f"week {week} outside the declared window")
     g = sched.loc[sched["week"].eq(week)].sort_values(["kickoff_utc", "game_id"])
     if g.empty:

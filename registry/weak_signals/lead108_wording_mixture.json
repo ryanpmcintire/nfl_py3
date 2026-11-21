@@ -1,6 +1,146 @@
 {
   "family": "lead108_wording_mixture",
   "signals": {
+    "lead108_fullmix_ladder_curvature_vs_served_ll_wk2_10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "130 opener-graded 2026 games (pushes dropped), weeks 2-10; full PER-10 discrete-lattice scenario mixture; one of 28 declared looks in family lead108_wording_mixture (unit 2); week-stratified game bootstrap 2000; decisive 0-0 of 0; detectable at 80% power 0.0001; probability shift sd 0.00017, 0 side changes; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Ladder-weighted scenario mixture centred on its own expected shift (lattice curvature only, the PER-10 construction) vs the served probability, log loss at the Tuesday opener, 2026 weeks 2-10",
+      "effect": 2.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -3.4e-05,
+        9.6e-05
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-21 by scripts/lead108_full_mixture.py (LEAD-108 unit 2). Per-player value = LEAD-110 spread points per Out (OLS 2011-2025). Both arms centred on the ladder expected shift (served assumed to price it); centre bisected so zero shift reproduces the served card probability at the opener (max error 8e-9); each scenario moves the tilt centre with the band conditioned on the opener; independent sits by exact convolution (PER-10 pairwise coupling not used). Weeks 2-8 reads are LEAD-106 stored sample reads (8-40% of value mass), weeks 9-10 full forward reads; week 10 verified in memory from snap_counts_2026_before_week_11. Served base = last published card probability before the deadline. Uses no week 11+ data; the declared forward test is untouched.",
+      "plain_summary": "Spreading the official-tag injury chances over the lumpy final-margin pattern barely moved any probability and changed no picks.",
+      "probability_positive": 0.8035,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 130,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_full_mixture/report.json",
+      "standard_error": 4.6410360714525074e-05
+    },
+    "lead108_fullmix_read_fit_vs_ladder_fit_ll_wk2_10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "130 opener-graded 2026 games (pushes dropped), weeks 2-10; full PER-10 discrete-lattice scenario mixture; one of 28 declared looks in family lead108_wording_mixture (unit 2); week-stratified game bootstrap 2000; decisive 10-8 of 18; detectable at 80% power 0.0578; fitted slopes fold-unstable (ladder 165 to 340 with week 9 -168 on a near-zero curvature term; read 4.6 to 13.1 with week 9 -13.0), both fitted arms worse than served out of week; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Each mixture's shift from served as one fitted slope on a logit(served) offset, leave-one-week-out (one season of reads, LOSO impossible), read vs ladder, log loss at the Tuesday opener, 2026 weeks 2-10",
+      "effect": -0.013748,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.059286,
+        0.01838
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-21 by scripts/lead108_full_mixture.py (LEAD-108 unit 2). Per-player value = LEAD-110 spread points per Out (OLS 2011-2025). Both arms centred on the ladder expected shift (served assumed to price it); centre bisected so zero shift reproduces the served card probability at the opener (max error 8e-9); each scenario moves the tilt centre with the band conditioned on the opener; independent sits by exact convolution (PER-10 pairwise coupling not used). Weeks 2-8 reads are LEAD-106 stored sample reads (8-40% of value mass), weeks 9-10 full forward reads; week 10 verified in memory from snap_counts_2026_before_week_11. Served base = last published card probability before the deadline. Uses no week 11+ data; the declared forward test is untouched.",
+      "plain_summary": "Fitting a weight on top of the injury-scenario mix made both versions worse out of sample; the read version was not clearly better or worse than the official-tag version.",
+      "probability_positive": 0.29,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 130,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_full_mixture/report.json",
+      "standard_error": 0.020644
+    },
+    "lead108_fullmix_read_vs_ladder_acc_wk2_10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "130 opener-graded 2026 games (pushes dropped), weeks 2-10; full PER-10 discrete-lattice scenario mixture; one of 28 declared looks in family lead108_wording_mixture (unit 2); week-stratified game bootstrap 2000; decisive 1-1 of 2; detectable at 80% power 2.9135; only 2 games change side between arms; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Same read-weighted vs ladder-weighted scenario mixture, pick accuracy at the Tuesday opener, 2026 weeks 2-10",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -2.307692,
+        2.307692
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-21 by scripts/lead108_full_mixture.py (LEAD-108 unit 2). Per-player value = LEAD-110 spread points per Out (OLS 2011-2025). Both arms centred on the ladder expected shift (served assumed to price it); centre bisected so zero shift reproduces the served card probability at the opener (max error 8e-9); each scenario moves the tilt centre with the band conditioned on the opener; independent sits by exact convolution (PER-10 pairwise coupling not used). Weeks 2-8 reads are LEAD-106 stored sample reads (8-40% of value mass), weeks 9-10 full forward reads; week 10 verified in memory from snap_counts_2026_before_week_11. Served base = last published card probability before the deadline. Uses no week 11+ data; the declared forward test is untouched.",
+      "plain_summary": "The wording-read mixture and the official-tag mixture picked the same side in all but two games, one won each.",
+      "probability_positive": 0.3315,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 130,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_full_mixture/report.json",
+      "standard_error": 1.040548
+    },
+    "lead108_fullmix_read_vs_ladder_ll_wk2_10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "130 opener-graded 2026 games (pushes dropped), weeks 2-10; full PER-10 discrete-lattice scenario mixture; one of 28 declared looks in family lead108_wording_mixture (unit 2); week-stratified game bootstrap 2000; decisive 1-1 of 2; detectable at 80% power 0.0029; within-week permutation matched-null percentile 0.514; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Injury scenario mixture re-read on the discrete margin lattice with LEAD-106 wording-read play probabilities vs the same mixture with designation x practice ladder probabilities, no fitted parameter, log loss at the Tuesday opener, 2026 weeks 2-10",
+      "effect": 0.000703,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.001058,
+        0.00298
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-21 by scripts/lead108_full_mixture.py (LEAD-108 unit 2). Per-player value = LEAD-110 spread points per Out (OLS 2011-2025). Both arms centred on the ladder expected shift (served assumed to price it); centre bisected so zero shift reproduces the served card probability at the opener (max error 8e-9); each scenario moves the tilt centre with the band conditioned on the opener; independent sits by exact convolution (PER-10 pairwise coupling not used). Weeks 2-8 reads are LEAD-106 stored sample reads (8-40% of value mass), weeks 9-10 full forward reads; week 10 verified in memory from snap_counts_2026_before_week_11. Served base = last published card probability before the deadline. Uses no week 11+ data; the declared forward test is untouched.",
+      "plain_summary": "Weighing each injured player's chance to play by the wording read instead of the official tag, inside the full injury-scenario mix, moved the cover chance very little; too few games to tell if it helps.",
+      "probability_positive": 0.7155,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 130,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_full_mixture/report.json",
+      "standard_error": 0.001051
+    },
+    "lead108_fullmix_read_vs_ladder_ll_wk9_10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "130 opener-graded 2026 games (pushes dropped), weeks 2-10; full PER-10 discrete-lattice scenario mixture; one of 28 declared looks in family lead108_wording_mixture (unit 2); week-stratified game bootstrap 2000; decisive 1-0 of 1; detectable at 80% power 0.0125; 29 games with full read coverage; interval spans both signs, no resolved wrong sign, no split-half, no positive control bound",
+      "closing_ground": null,
+      "description": "Read-weighted vs ladder-weighted scenario mixture, log loss at the Tuesday opener, weeks 9-10 only (every verified listed player read)",
+      "effect": 0.004818,
+      "effect_units": "log_loss_improvement",
+      "family": "lead108_wording_mixture",
+      "interval": [
+        -0.001554,
+        0.015038
+      ],
+      "league": "nfl",
+      "notes": "Scored 2026-11-21 by scripts/lead108_full_mixture.py (LEAD-108 unit 2). Per-player value = LEAD-110 spread points per Out (OLS 2011-2025). Both arms centred on the ladder expected shift (served assumed to price it); centre bisected so zero shift reproduces the served card probability at the opener (max error 8e-9); each scenario moves the tilt centre with the band conditioned on the opener; independent sits by exact convolution (PER-10 pairwise coupling not used). Weeks 2-8 reads are LEAD-106 stored sample reads (8-40% of value mass), weeks 9-10 full forward reads; week 10 verified in memory from snap_counts_2026_before_week_11. Served base = last published card probability before the deadline. Uses no week 11+ data; the declared forward test is untouched.",
+      "plain_summary": "In the two weeks where every listed player had a wording read, the read-weighted mix scored a little better than the official-tag mix, not enough games to call it.",
+      "probability_positive": 0.871,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead108_full_mixture/report.json",
+      "standard_error": 0.004472
+    },
     "lead108_ladder_shift_vs_served_ll_wk2_9": {
       "category": "health",
       "classification": "unresolved_below_power",

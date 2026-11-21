@@ -441,6 +441,7 @@ class SeasonSoFar:
     half_point_week_texts: tuple[tuple[int, str], ...] = ()
     leader_split_text: str = ""
     leader_split_note: str = ""
+    leader_split_best_text: str = ""
     leader_split_games: tuple[tuple[str, str, str, str, str], ...] = ()
     calibration_rows: tuple[tuple[str, int, str, str], ...] = ()
     side_type_rows: tuple[tuple[str, int, str, str, str], ...] = ()
@@ -527,9 +528,10 @@ def _half_point_week_texts(
         return ()
     ours = {row.game_id: row.pick_side for row in rows if row.status == "settled"}
     texts = []
-    for week, week_picks in picks.groupby("week"):
+    for week in sorted(int(value) for value in picks["week"].unique()):
+        week_picks = picks[picks["week"] == week]
         ids = sorted(week_picks["game_id"].unique())
-        market = tuesday_market_lines(data_root, season, int(week), ids)
+        market = tuesday_market_lines(data_root, season, week, ids)
         crowd = covered = ours_on = games = 0
         total = 0
         for game_id, game in week_picks.groupby("game_id"):
@@ -552,7 +554,7 @@ def _half_point_week_texts(
         noun = "game" if games == 1 else "games"
         texts.append(
             (
-                int(week),
+                week,
                 f"On the {games} {noun} where the pool's half point beat the books, the crowd "
                 f"took that side {crowd / total:.0%} of the time; that side covered "
                 f"{covered} of {games}; our card took it on {ours_on}.",
@@ -561,62 +563,157 @@ def _half_point_week_texts(
     return tuple(texts)
 
 
+_LEADER_PICK = re.compile(r"([A-Z]{2,3}) ([+-]?\d+(?:\.\d+)?|PK)( Best Pick)? (correct|incorrect)")
+_SPLASH_TEAM_CODES: dict[str, tuple[str, ...]] = {
+    "JAC": ("JAX", "JAC"),
+    "LA": ("LA", "LAR"),
+    "LAR": ("LAR", "LA"),
+    "WSH": ("WAS", "WSH"),
+}
+
+
+def _leader_picks(path: Path) -> list[tuple[int, str, bool, bool]]:
+    picks: list[tuple[int, str, bool, bool]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        head, _, body = line.partition(":")
+        if not (head.startswith("W") and head[1:].isdigit()):
+            continue
+        picks.extend(
+            (int(head[1:]), team, bool(best), result == "correct")
+            for team, _line, best, result in _LEADER_PICK.findall(body)
+        )
+    return picks
+
+
 def _leader_split(
     rows: Sequence[HistoryPickRow], data_root: Path, season: int | None
-) -> tuple[str, str, tuple[tuple[str, str, str, str, str], ...]]:
+) -> tuple[str, str, str, tuple[tuple[str, str, str, str, str], ...]]:
     if season is None:
-        return "", "", ()
-    captures = sorted((data_root / "splash" / "field").glob(f"{season}_romana_empire_w*.csv"))
+        return "", "", "", ()
+    captures = sorted((data_root / "splash" / "field").glob(f"{season}_leader_rank1_picks_w*.txt"))
     if not captures:
-        return "", "", ()
-    path = captures[-1]
+        return "", "", "", ()
     try:
-        leader = pd.read_csv(path)
-    except (OSError, ValueError):
-        return "", "", ()
-    sides = {"a": "AWAY", "h": "HOME"}
-    ours = {row.game_id: row for row in rows if row.status == "settled"}
+        leader = _leader_picks(captures[-1])
+    except (OSError, UnicodeDecodeError):
+        return "", "", "", ()
+    by_team: dict[tuple[int, str], tuple[HistoryPickRow, str]] = {}
+    for row in rows:
+        if row.week is not None and row.pick_side in {"HOME", "AWAY"}:
+            by_team[(row.week, row.home_team)] = (row, "HOME")
+            by_team[(row.week, row.away_team)] = (row, "AWAY")
     games = []
-    weeks_covered = set()
+    by_week: dict[int, list[int]] = {}
+    seen: dict[str, tuple[str, bool]] = {}
+    leader_best: dict[int, tuple[str, bool]] = {}
     ours_won = leader_won = 0
-    for record in leader.itertuples():
-        row = ours.get(str(record.game_id))
-        if row is None or row.correct is None:
+    for week, team, best, leader_correct in leader:
+        match = next(
+            (
+                by_team[(week, code)]
+                for code in _SPLASH_TEAM_CODES.get(team, (team,))
+                if (week, code) in by_team
+            ),
+            None,
+        )
+        if match is None:
             continue
-        weeks_covered.add(int(record.week))
-        their_side = sides.get(str(record.r_side))
-        if their_side is None or their_side == row.pick_side:
+        row, their_side = match
+        seen[row.game_id] = (their_side, leader_correct)
+        if best:
+            leader_best[week] = (f"{row.game_id} {their_side}", leader_correct)
+        if their_side == row.pick_side:
+            by_week.setdefault(week, [0, 0])
             continue
-        leader_correct = bool(record.r_win)
-        if leader_correct == row.correct:
-            continue
-        ours_won += int(row.correct)
+        ours_won += int(not leader_correct)
         leader_won += int(leader_correct)
+        by_week.setdefault(week, [0, 0])[int(leader_correct)] += 1
         their_team = row.home_team if their_side == "HOME" else row.away_team
         games.append(
             (
-                f"Week {int(record.week)}",
+                f"Week {week}",
                 f"{row.away_team} at {row.home_team}",
-                row.pick_team,
-                their_team,
-                "Us" if row.correct else "Them",
+                f"{row.pick_team} (Best Pick)" if row.best_pick else row.pick_team,
+                f"{their_team} (Best Pick)" if best else their_team,
+                "Them" if leader_correct else "Us",
             )
         )
-    if not weeks_covered:
-        return "", "", ()
-    covered = len(weeks_covered)
-    week_word = "week" if covered == 1 else "weeks"
+    if not by_week:
+        return "", "", "", ()
+    gap = leader_won - ours_won
+    point_word = "point" if abs(gap) == 1 else "points"
+    net = (
+        f"a net {gap} {point_word} to the leader"
+        if gap > 0
+        else f"a net {-gap} {point_word} to us"
+        if gap < 0
+        else "even on points"
+    )
     game_word = "game" if len(games) == 1 else "games"
     text = (
-        f"Where we split from the leader: {len(games)} {game_word}, the leader right on "
-        f"{leader_won}, us on {ours_won}"
+        f"Where we split from the pool leader: {len(games)} {game_word} on opposite sides, "
+        f"the leader right on {leader_won}, us on {ours_won}, {net}"
     )
+    weeks = sorted(by_week)
+    last = weeks[-1]
+    played_last = len(
+        {row.game_id for row in rows if row.week == last and row.pick_side in {"HOME", "AWAY"}}
+    )
+    matched_last = len({row.game_id for row in rows if row.week == last} & set(seen))
+    partial = (
+        f" Week {last} counts only the {matched_last} "
+        f"{'game' if matched_last == 1 else 'games'} already played when the leader's picks "
+        "were read."
+        if matched_last < played_last
+        else ""
+    )
+    week_parts = ", ".join(f"Week {week} {by_week[week][0]}-{by_week[week][1]}" for week in weeks)
     note = (
-        f"These are the games where the leader and our card took opposite sides. Picks for "
-        f"the entry that led the pool were only captured for {covered} {week_word} (Weeks "
-        f"{min(weeks_covered)} to {max(weeks_covered)}), so later weeks are not counted."
+        "The pool leader is the entry ranked first in the pool today. On every other game the "
+        "two cards took the same side and scored the same, so these games are where the "
+        "points between us came from, each graded at the pool's own line. Weeks "
+        f"{weeks[0]} to {last} are counted.{partial} Our wins to the leader's on these "
+        f"games, week by week: {week_parts}."
     )
-    return text, note, tuple(games)
+    our_best: dict[int, tuple[str, bool]] = {}
+    for row in rows:
+        if not row.best_pick or row.week is None or row.game_id not in seen:
+            continue
+        their_side, leader_correct = seen[row.game_id]
+        our_best[row.week] = (
+            f"{row.game_id} {row.pick_side}",
+            leader_correct if their_side == row.pick_side else not leader_correct,
+        )
+    shared = sorted(set(our_best) & set(leader_best))
+    best_text = ""
+    if shared:
+        ours_best = sum(our_best[week][1] for week in shared)
+        theirs_best = sum(leader_best[week][1] for week in shared)
+        same_game = [
+            week
+            for week in shared
+            if our_best[week][0].split()[0] == leader_best[week][0].split()[0]
+        ]
+        same_side = sum(our_best[week][0] == leader_best[week][0] for week in same_game)
+        week_word = "week" if len(shared) == 1 else "weeks"
+        overlap = (
+            "The two never chose the same game."
+            if not same_game
+            else f"Both chose the same game in {len(same_game)} of those {week_word}, "
+            + (
+                "on the same side."
+                if same_side == len(same_game)
+                else "on opposite sides."
+                if same_side == 0
+                else f"on the same side {same_side} times."
+            )
+        )
+        best_text = (
+            f"Best Picks over the same {len(shared)} {week_word}: the leader's went "
+            f"{theirs_best}-{len(shared) - theirs_best}, ours went "
+            f"{ours_best}-{len(shared) - ours_best}. {overlap}"
+        )
+    return text, note, best_text, tuple(games)
 
 
 def _season_so_far_caveat(settled: int) -> str:
@@ -837,7 +934,8 @@ def _build_season_so_far(
         ),
         leader_split_text=leader_split[0],
         leader_split_note=leader_split[1],
-        leader_split_games=leader_split[2],
+        leader_split_best_text=leader_split[2],
+        leader_split_games=leader_split[3],
         calibration_rows=_calibration_rows(season_rows),
         side_type_rows=_side_type_rows(season_rows),
         tuesday_week_records=_week_records(

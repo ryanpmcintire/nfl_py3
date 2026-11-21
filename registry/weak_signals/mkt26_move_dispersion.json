@@ -448,6 +448,62 @@
       ],
       "source": "artifacts/mkt26/unit2_result.json",
       "standard_error": 0.0003115178280262644
+    },
+    "mkt26u3_L2_2023_25_reserve_located_opener_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unit 2 L2 rerun with per-week residual location reconstructed from stored opener reads and the 1537-game opener pool; 2 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 3: re-served deadline lattice, move-class pool; 2 looks",
+      "effect": 0.0003243548416548877,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0019416759434464912,
+        0.002407883466345985
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether reading the margin distribution from past games whose spread moved the same way (moved or unmoved) improves the cover probability re-served at the deadline line, checked on the live 2026 season at the pool line.",
+      "probability_positive": 0.6225,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit3_result.json",
+      "standard_error": 0.0011200214952766735
+    },
+    "mkt26u3_L2_2026_reserve_pool_line_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2026 Weeks 1-10 live deadline captures (reparse folders excluded), re-served lattice at deadline line, same move-class pool vs full pool, graded at the pool line; 2 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 3: re-served deadline lattice, move-class pool; 2 looks",
+      "effect": 0.0024245544021499503,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0038624360615416814,
+        0.008513393073295288
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether reading the margin distribution from past games whose spread moved the same way (moved or unmoved) improves the cover probability re-served at the deadline line, checked on the live 2026 season at the pool line.",
+      "probability_positive": 0.781,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mkt26/unit3_result.json",
+      "standard_error": 0.0031111093768155366
     }
   }
 }

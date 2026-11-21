@@ -154,6 +154,8 @@ PRIVATE_SUNDAY_ODDS_CAPTURE = [
 
 DEADLINE_ODDS_CAPTURE = [*PRIVATE_SUNDAY_ODDS_CAPTURE, "--max-age-minutes", "1"]
 
+SUNDAY_EARLY_LAST_CALL_AT = "12:40"
+
 ODDS_TAPE_CAPTURE = [
     str(UV),
     "run",
@@ -1069,6 +1071,32 @@ SCHEDULE: tuple[Job, ...] = (
             ("fri", "20:30", 600),
         )
     ),
+    *(
+        Job(
+            f"team_hfa_forward_log_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "team_hfa_forward.py"),
+                "log",
+                "--season",
+                "2026",
+                "--week",
+                "auto",
+            ],
+            True,
+            "Team home edge forward log (post-hoc): frozen term beside the served card, "
+            "written before kickoff; never changes a side.",
+            requires=("weekly_lock",) if day == "tue" else (),
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (("tue", "14:00", 360), ("sun", "12:15", 30))
+    ),
     Job(
         "lead112_forward_score_tue",
         "tue",
@@ -1949,12 +1977,20 @@ SCHEDULE: tuple[Job, ...] = (
         "sun",
         "12:12",
         35,
-        [*ODDS_TAPE_CAPTURE, "--duration-minutes", "48"],
+        [
+            *ODDS_TAPE_CAPTURE,
+            "--duration-minutes",
+            "48",
+            "--end-before-et",
+            SUNDAY_EARLY_LAST_CALL_AT,
+        ],
         True,
-        "Sunday 12:12-13:00 ET Bovada spread tape sampled every 8.5 seconds with the "
+        "Sunday pre-kickoff Bovada spread tape sampled every 8.5 seconds with the "
         "provider's last-updated time, for the lead-lag latency estimate. Starts after "
-        "odds_private_sun because both read the same Bovada endpoint; the run lasts 48 "
-        "minutes and has no age guard.",
+        "odds_private_sun because both read the same Bovada endpoint; it stops before the "
+        "first Sunday last-call job so the single-threaded daemon never blocks the "
+        "pre-deadline refresh (on 2026-11-15 a late start ran it to 13:14 and the 12:45 "
+        "last-call refresh was missed).",
         season_guarded=False,
         added_on="2026-11-03",
     ),
@@ -2163,7 +2199,7 @@ SCHEDULE: tuple[Job, ...] = (
     Job(
         "refresh_trigger_log_sun",
         "sun",
-        "12:40",
+        SUNDAY_EARLY_LAST_CALL_AT,
         10,
         [
             str(UV),

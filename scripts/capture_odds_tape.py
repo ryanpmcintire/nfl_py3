@@ -9,6 +9,7 @@ import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from capture_bovada_private import REPO, SOURCE, URL, _price
 
@@ -21,6 +22,7 @@ WINDOW_MINUTES = 60.0
 REQUEST_TIMEOUT_SECONDS = 30
 BLOCK_MARKER = REPO / "data" / "market" / f"{SOURCE}_blocked.json"
 DEFAULT_INTERVAL_SECONDS = MEASURED_PROVIDER_LAG_SECONDS / SAMPLES_PER_LAG
+EASTERN = ZoneInfo("America/New_York")
 
 
 class TapeStop(Exception):
@@ -174,13 +176,24 @@ def main() -> None:
     parser.add_argument("--interval-seconds", type=float, default=DEFAULT_INTERVAL_SECONDS)
     parser.add_argument("--duration-minutes", type=float, default=WINDOW_MINUTES)
     parser.add_argument("--out-dir", type=Path, default=REPO / "data" / "raw" / "odds_tape")
+    parser.add_argument("--end-before-et", default=None)
     args = parser.parse_args()
     if args.interval_seconds <= 0 or args.duration_minutes <= 0:
         parser.error("interval-seconds and duration-minutes must be positive")
     if BLOCK_MARKER.is_file():
         print(json.dumps({"captured": False, "reason": "source_http_block"}))
         sys.exit(2)
-    result = run(args.interval_seconds, args.duration_minutes, args.out_dir)
+    duration = args.duration_minutes
+    if args.end_before_et:
+        hour, minute = (int(part) for part in args.end_before_et.split(":"))
+        now_et = datetime.now(EASTERN)
+        end_et = now_et.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        minutes_left = (end_et - now_et).total_seconds() / 60
+        if minutes_left <= args.interval_seconds / 60:
+            print(json.dumps({"captured": False, "reason": f"past {args.end_before_et} ET"}))
+            sys.exit(0)
+        duration = min(duration, minutes_left)
+    result = run(args.interval_seconds, duration, args.out_dir)
     print(json.dumps(result, sort_keys=True))
     sys.exit(1 if result["status"] != "complete" else 0)
 
