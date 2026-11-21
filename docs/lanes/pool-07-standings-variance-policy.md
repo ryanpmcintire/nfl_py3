@@ -1,21 +1,23 @@
 # POOL-07
 
 ## Goal
-Standings-conditional variance policy: how far ahead or behind we sit changes which picks to take (ROADMAP POOL-07).
+Standings-conditional variance policy: how far ahead or behind we sit changes which picks to take (ROADMAP POOL-07). Challenger in the pool simulator only; one fitted cover probability selects every served side.
 
 ## State
-Added 2026-11-03 (backlog expansion 5), unmeasured, nothing run. Mechanism: A leader should avoid contrarian coin flips; a trailer needs them. Fitted term: a leverage coefficient on the simulated finish-probability slope, fitted leave-one-week-out on the pool simulator.
+Unit 2, 2026-11-21 10:05 local (fitted per-game leverage cut, leave-one-week-out), measured and recorded. `scripts/pool07_standings_policy.py --mode lowo --paths 10000 --chunk 2000 --weeks 8 --points 77 --rank 90` -> `artifacts/pool07/pool07_lowo_leverage_w10.json` (the quartile mode and its Unit 1 artifact are unchanged; `--mode quartile` is the default).
+- Start (read, `artifacts/pool_rank_replay/weekly_points_field.json`, Week 10 read): our total 77 (z 0.413), 89 entries above, rank set to 90 (13 entries on 77; tie order by Best Picks simulated), 8 weeks left, paid places 1 (rules observation). Entrant skill split-half 0.019, so field spread is nearly pure luck (dsd 0.005).
+- Rule: per game, leverage ratio (2p-1)/(2share-1) on the side the model favours when the field also favours it; when trailing the leader before the week, take the less-owned side if the ratio <= lambda. Lambda is chosen on the other nine weeks' games (candidates are every training ratio, so no grid constant) by simulated first-place chance, then scored on the held-out week's games with common random numbers against max-probability picks.
+- Held-out change in first-place chance: **+0.54 pp [0.32, 0.77] (10-fold bootstrap), P+ 1.000**, 9 of 10 folds positive (Week 2 fold tilts no held-out game, exactly 0). In-sample +0.76 pp, gap 0.22 pp. Per-fold simulation SE 0.12-0.20 pp. Lambda per fold 0.076-0.286 (median about 0.165); it tilts 15-26 of about 135 training games and 0-4 held-out games a week. Max-probability first-place chance per fold 0.6%-8.2% (depends on the week's game mix).
+- Implies: inside this simulator, trailing by 12 with 8 weeks left, taking the less-owned side of near coin flips the field leans on raises the first-place chance by about half a point out of week. Card unchanged: this is a pool-objective challenger, not a fitted term in the served probability, and Unit 1 showed the sign depends on the field model (Weeks 1-4 shares hurt, 5-8 helped). Recorded `pool07_lowo_leverage_tilt_first`, payout_first_pp, `unresolved_below_power` (interval is over week game pools only; field-model and start-state uncertainty are not in it).
 
 ## Tried
-Novelty check only. Nearest: POOL-01, POOL-03 (coin-flip-band leverage), UI-21 (outlook panel); grep found no standings-conditional policy. Differs: Policy depends on standing, not game ownership alone.
+Unit 1 (2026-11-03): quartile cuts from the arm's own |p-0.5| (in-sample), 24 looks; light tilt +0.51 pp, heavier tilts lower it; 20 cells recorded 2026-11-14. Unit 2 looks: one held-out cell; inner selection over 59-64 candidate cuts per fold x 10 folds. Expected-wins cost not measured in lowo mode.
 
 ## Next
-First unit: Using POOL-04's calibrated simulator, compute the finish-probability gain of each pick as standings vary and test whether the served card would change.
+1. Add the field-model arms (week 1-4 v 5-8 shares, no-skill) to `--mode lowo` and report each held-out change; that is the uncertainty the interval omits.
+2. Report expected wins and top-10 change for the chosen lambda per fold (cost of the tilt).
+3. Rerun each week with the new standings (`--points`, `--rank`, `--weeks`).
 
 ## Open
-Data: Pool standings and field simulator (captured). Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
-
-## Unit 1 result (2026-11-03T21:47:44Z)
-Script scripts/pool07_standings_policy.py, artifact artifacts/pool07/pool07_standings_policy.json. 9 weeks (10-18), 20000 accepted paths from rank 19, 65 pts, 250 entries, paid places = 1 (rules observation; no prize table) so top 10 is a stated proxy. Looks: 4 field arms x 6 policies = 24 (policies: max-p, BP leverage, tilt at p-dev quartile cuts q25/q50/q75 derived from the arm's own |p-0.5|, trailing-tilt q50). Base arm: max-p P(first) 7.57% +-0.19, top10 47.2% +-0.35, rank 22.3, wins 74.38. BP leverage -0.02 pp (no change). Tilt q25 +0.51 pp +-0.19 first, top10 -1.9 pp, wins -0.38; q50 -0.81 pp first, -1.18 wins; q75 -3.0 pp, -3.13 wins. Trailing tilt == q50 tilt (we are behind in ~all paths). Sensitivity: sign of tilt flips with field model (weeks 1-4 shares: tilt hurts; weeks 5-8 shares: tilt +1.0 pp; no-skill: tilt ~0). No weak-signals record (no admissible effect unit). Challenger only; no pick change.
-Next: derive the tilt cut from a fitted per-game leverage term, leave-one-week-out.
-- 2026-11-14 15:17 local, registry catch-up (docs/lanes/registry-catchup-2026-11-14.md): recorded 20 cells, family pool07_standings_policy, payout_first_pp, unresolved_below_power (4 field arms x 5 policies versus max-probability picks) from artifacts/pool07/pool07_standings_policy.json; that unit is admissible for the first-place change, so the no-unit note above applies only to the rest. Each cell carries the effect and the simulation standard error only, because the artifact stores no interval or probability_positive. Not recorded: top-10 chance, expected wins and expected rank changes (no admissible unit).
+- Behind check uses standings before each simulated week (Unit 1 used after); trailing is true in nearly all paths, so conditioning is weak here.
+- Zero crossing closes nothing; no side rule enters the card; no entrant names stored.

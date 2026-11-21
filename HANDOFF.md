@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:02:51.999931+00:00`
+Refreshed at: `2026-11-21T15:05:49.420709+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T15:02:51.999931+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1bde78dc1406` — ROADMAP: reconcile MOD-52, MOD-23, LEAD-102, MOD-39 and ENG-62 with today's units
-- Pending change set: 106 paths
+- Baseline commit: `a14998693576` — XLG-14 unit 9 penalty discipline: no college survivor, 9 cells; LEAD-101/104 rescored and LEAD-107 unit 1 from stored reads, all unresolved; ROADMAP reconciled
+- Pending change set: 100 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
   - ` M docs/lanes/eng-54-outcome-label-default-audit.md`
-  - `M  docs/lanes/lead-101-news-delta-read.md`
-  - `M  docs/lanes/lead-104-read-revision-path.md`
-  - `M  docs/lanes/lead-107-read-dispersion-weight.md`
-  - `A  docs/lanes/lead-read-analysis-2026-11-21.md`
-  - `M  docs/lanes/lead107-forward-2026-11-16.md`
-  - ` M docs/lanes/pool-05-ownership-proxy-v2.md`
-  - ` M docs/lanes/pool-07-standings-variance-policy.md`
-  - ` M docs/lanes/pool-08-hook-side-field-share.md`
-  - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
-  - `A  docs/lanes/xlg-14-u9-2026-11-21.md`
-  - `M  registry/weak_signals/lead101_news_delta_read.json`
-  - `M  registry/weak_signals/lead104_revision_path.json`
-  - `A  registry/weak_signals/lead107_read_dispersion_weight.json`
-  - ` M registry/weak_signals/pool05_ownership_v2.json`
-  - ` M registry/weak_signals/pool07_standings_policy.json`
-  - ` M registry/weak_signals/pool08_hook_field_share.json`
-  - ...and 86 more
+  - ` M docs/lanes/lead75.md`
+  - `M  docs/lanes/pool-05-ownership-proxy-v2.md`
+  - `M  docs/lanes/pool-07-standings-variance-policy.md`
+  - `M  docs/lanes/pool-08-hook-side-field-share.md`
+  - `M  docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
+  - `M  docs/lanes/pool-10-best-pick-placement-on-half-point-sides.md`
+  - `A  docs/lanes/pool-reruns-w10-2026-11-21.md`
+  - `M  registry/weak_signals/pool05_ownership_v2.json`
+  - `M  registry/weak_signals/pool07_standings_policy.json`
+  - `M  registry/weak_signals/pool08_hook_field_share.json`
+  - `M  registry/weak_signals/pool09_hook_value_slope.json`
+  - `M  registry/weak_signals/pool10_best_pick_hooks.json`
+  - `M  scripts/pool07_standings_policy.py`
+  - ` M src/nfl_ats/board_site_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - `?? an.csv`
+  - `?? cdx_tspread.json`
+  - ...and 80 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

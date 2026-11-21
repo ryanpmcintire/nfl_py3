@@ -4,169 +4,169 @@
     "pool08_hook_coefficient": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Hook-side coefficient in the home-share logit (intercept, pool line, hook side), full fit on 136 games Weeks 1-9, game bootstrap; leave-one-week-out fold range 0.209 to 0.343; about 6.8 share points at an even split",
-      "effect": 0.272,
+      "description": "Hook-side coefficient in the home-share logit (intercept, pool line, hook side), full fit on 150 games Weeks 1-10, game bootstrap, multi-book Tuesday anchor; about 5.7 share points at an even split",
+      "effect": 0.228923,
       "effect_units": "logit_coefficient",
       "family": "pool08_hook_field_share",
       "interval": [
-        0.086,
-        0.457
+        0.057057,
+        0.406698
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor served. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "In the model of how the pool splits each game, the half-point side gets about 7 extra points of the picks.",
-      "probability_positive": 0.99875,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.9945,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 136,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10.json",
       "standard_error": null
     },
     "pool08_hook_coefficient_first_snapshot_anchor": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Original anchor: hook-side coefficient in the home-share logit, full fit on 136 games Weeks 1-9; fold range 0.191 to 0.320; about 6.3 share points at an even split",
-      "effect": 0.255,
+      "description": "Hook-side coefficient in the home-share logit (intercept, pool line, hook side), full fit on 150 games Weeks 1-10, game bootstrap, first-snapshot anchor; about 6.4 share points at an even split",
+      "effect": 0.255798,
       "effect_units": "logit_coefficient",
       "family": "pool08_hook_field_share",
       "interval": [
-        0.081,
-        0.434
+        0.079707,
+        0.43685
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor first_snapshot. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "Measured the original way, the half-point side gets about 6 extra points of the picks.",
       "probability_positive": 0.99775,
-      "recorded_at": "2026-11-14",
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 136,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_first_snapshot.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10_first_snapshot.json",
       "standard_error": null
     },
     "pool08_hook_side_cover_vs_model_p": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Hook side decisive record 30-22 minus its mean model probability 0.513, 52 hook games Weeks 1-9, multi-book Tuesday anchor; simulated null two-sided p 0.40",
-      "effect": 6.43,
+      "description": "Hook side decisive record 32-25 minus its mean model probability 0.509, 57 hook games Weeks 1-10, multi-book Tuesday anchor; simulated null two-sided p 0.50",
+      "effect": 5.250299,
       "effect_units": "rate_pp",
       "family": "pool08_hook_field_share",
       "interval": [
-        -7.09,
-        19.95
+        -7.240862,
+        17.974158
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor served. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "The half-point side covered 30 of 52 against 51 percent expected; that gap is within what luck produces.",
-      "probability_positive": 0.822,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.792,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 52,
+      "sample_blocks": 10,
+      "sample_games": 57,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10.json",
       "standard_error": null
     },
     "pool08_hook_side_cover_vs_model_p_first_snapshot_anchor": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Original anchor: hook side decisive record 32-21 minus its mean model probability 0.511, 53 hook games Weeks 1-9; simulated null two-sided p 0.21",
-      "effect": 9.24,
+      "description": "Hook side decisive record 32-21 minus its mean model probability 0.511, 53 hook games Weeks 1-10, first-snapshot anchor; simulated null two-sided p 0.21",
+      "effect": 9.243245,
       "effect_units": "rate_pp",
       "family": "pool08_hook_field_share",
       "interval": [
-        -3.16,
-        22.17
+        -3.552504,
+        22.696615
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor first_snapshot. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "Measured the original way, the half-point side covered 32 of 53 against 51 percent expected; that gap is within what luck produces.",
-      "probability_positive": 0.92525,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.91825,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
+      "sample_blocks": 10,
       "sample_games": 53,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_first_snapshot.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10_first_snapshot.json",
       "standard_error": null
     },
     "pool08_hook_side_share_residual": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Field share on the half-point side minus POOL-05 line proxy (leave-one-week-out, pool line), 52 hook games Weeks 1-9, multi-book Tuesday anchor; within-week permutation two-sided p 0.039; 8 of 9 weekly means positive (exact sign p 0.039)",
-      "effect": 6.53,
+      "description": "Field share on the half-point side minus leave-one-week-out line proxy, 57 hook games Weeks 1-10, multi-book Tuesday anchor; within-week permutation two-sided p 0.078",
+      "effect": 5.48928,
       "effect_units": "rate_pp",
       "family": "pool08_hook_field_share",
       "interval": [
-        2.23,
-        10.57
+        1.360351,
+        9.353828
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor served. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "Through nine weeks, pool players took the side the pool's half point helps about 6.5 points more often than the line alone predicts.",
-      "probability_positive": 0.999,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.99475,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 52,
+      "sample_blocks": 10,
+      "sample_games": 57,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10.json",
       "standard_error": null
     },
     "pool08_hook_side_share_residual_first_snapshot_anchor": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Original 2026-11-03 anchor (first market snapshot after Tuesday noon): field share on the half-point side minus proxy, 53 hook games Weeks 1-9; within-week permutation two-sided p 0.058",
-      "effect": 6.19,
+      "description": "Field share on the half-point side minus leave-one-week-out line proxy, 53 hook games Weeks 1-10, first-snapshot anchor; within-week permutation two-sided p 0.058",
+      "effect": 6.201209,
       "effect_units": "rate_pp",
       "family": "pool08_hook_field_share",
       "interval": [
-        2.1,
-        10.34
+        2.087023,
+        10.344363
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor first_snapshot. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "Measured the original way, pool players took the half-point side about 6 points more often than the line alone predicts through nine weeks.",
       "probability_positive": 0.99775,
-      "recorded_at": "2026-11-14",
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
+      "sample_blocks": 10,
       "sample_games": 53,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_first_snapshot.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10_first_snapshot.json",
       "standard_error": null
     },
     "pool08_hook_side_share_residual_w01_08": {
@@ -223,6 +223,34 @@
         2026
       ],
       "source": "artifacts/pool_rank_replay/pool08_hook_field_share_first_snapshot.json",
+      "standard_error": null
+    },
+    "pool08_hook_side_share_residual_w01_09": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Weeks 1-9 subset of the Week 1-10 fit: field share on the half-point side minus proxy, 52 hook games, multi-book Tuesday anchor; within-week permutation two-sided p 0.039",
+      "effect": 6.561562,
+      "effect_units": "rate_pp",
+      "family": "pool08_hook_field_share",
+      "interval": [
+        2.304483,
+        10.748212
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor served. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
+      "plain_summary": "Through nine weeks, pool players took the side the pool's half point helps about 6.5 points more often than the line alone predicts.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 52,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10.json",
       "standard_error": null
     },
     "pool08_hook_side_share_residual_w03_08": {
@@ -337,60 +365,88 @@
       "source": "artifacts/pool_rank_replay/pool08_hook_field_share_first_snapshot.json",
       "standard_error": null
     },
-    "pool08_hook_term_logloss": {
+    "pool08_hook_side_share_residual_w10": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Ownership proxy with a hook-side term vs POOL-05 line proxy, leave-one-week-out, entry-weighted log loss, 136 games Weeks 1-9 (52 hook), multi-book Tuesday anchor; hook games 0.6780 to 0.6727",
-      "effect": 0.00226,
-      "effect_units": "log_loss_improvement",
+      "description": "Weeks 10-10 subset of the Week 1-10 fit: field share on the half-point side minus proxy, 5 hook games, multi-book Tuesday anchor; within-week permutation two-sided p 0.295",
+      "effect": -5.66245,
+      "effect_units": "rate_pp",
       "family": "pool08_hook_field_share",
       "interval": [
-        -0.00271,
-        0.00699
+        -12.788731,
+        1.46383
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
-      "plain_summary": "Knowing which side the half point helps makes the forecast of how the pool splits each game slightly better.",
-      "probability_positive": 0.824,
-      "recorded_at": "2026-11-14",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor served. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
+      "plain_summary": "Through nine weeks, pool players took the side the pool's half point helps about 6.5 points more often than the line alone predicts.",
+      "probability_positive": 0.0735,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 136,
+      "sample_blocks": 1,
+      "sample_games": 5,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10.json",
+      "standard_error": null
+    },
+    "pool08_hook_term_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Ownership proxy with a hook-side term vs line proxy, leave-one-week-out, entry-weighted log loss, 150 games Weeks 1-10 (57 hook), multi-book Tuesday anchor",
+      "effect": 0.001364,
+      "effect_units": "log_loss_improvement",
+      "family": "pool08_hook_field_share",
+      "interval": [
+        -0.002527,
+        0.005058
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor served. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
+      "plain_summary": "Knowing which side the half point helps makes the forecast of how the pool splits each game slightly better.",
+      "probability_positive": 0.7535,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10.json",
       "standard_error": null
     },
     "pool08_hook_term_logloss_first_snapshot_anchor": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A field-ownership measurement for the pool-standing context, not a pick input: one fitted cover probability selects every side.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Original anchor: ownership proxy with a hook-side term vs line proxy, leave-one-week-out, entry-weighted log loss, 136 games Weeks 1-9 (53 hook)",
-      "effect": 0.00198,
+      "description": "Ownership proxy with a hook-side term vs line proxy, leave-one-week-out, entry-weighted log loss, 150 games Weeks 1-10 (53 hook), first-snapshot anchor",
+      "effect": 0.001808,
       "effect_units": "log_loss_improvement",
       "family": "pool08_hook_field_share",
       "interval": [
-        -0.00277,
-        0.00641
+        -0.002552,
+        0.005587
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9. scripts/pool08_hook_field_share.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Anchor served = multi-book Tuesday line (src change 2026-11-10); first_snapshot = the 2026-11-03 construction, which reproduces the stored Week 1-8 artifact exactly. Family looks this rerun: 2 anchors x (pooled + 3 week subsets + log loss + coefficient + cover) = 14, plus one weekly sign count.",
+      "notes": "Rerun 2026-11-21 with Week 10. scripts/pool08_hook_field_share.py --last-week 10 --subset 1-9 --subset 10-10 --anchor first_snapshot. Looks this rerun: 2 anchors x (pooled, 2 subsets, log loss, coefficient, cover) = 12.",
       "plain_summary": "Measured the original way, knowing the half-point side still makes the forecast of how the pool splits each game slightly better.",
-      "probability_positive": 0.80325,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.805,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 136,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_first_snapshot.json",
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share_w10_first_snapshot.json",
       "standard_error": null
     }
   }

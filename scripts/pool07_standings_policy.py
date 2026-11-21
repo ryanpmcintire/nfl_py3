@@ -87,9 +87,111 @@ def summ(x):
     return [float(x.mean()), float(x.std(ddof=1) / np.sqrt(len(x)))]
 
 
+def lev_ratio(p, share):
+    gain = 2.0 * share - 1.0
+    return np.where(gain > 0, (2.0 * p - 1.0) / np.where(gain > 0, gain, 1.0), np.inf)
+
+
+def play_lev(g, rng, state, dm, lams, weeks, dsd, our_points, our_bp0):
+    P, E = state[0].shape
+    delta = dm + dsd * rng.standard_normal((P, E))
+    p, sh, uo, ut = (g[k] for k in ("p", "share", "u_o", "u_t"))
+    ratio = lev_ratio(p, sh)
+    n, L = len(p), len(lams)
+    pts = np.full((L, P), float(our_points))
+    bp = np.full((L, P), float(our_bp0))
+    fp, fb = state[0].copy(), state[1].copy()
+    for _ in range(weeks):
+        top = (fp * K + fb).max(axis=1)
+        behind = (pts * K + bp) < top[None, :]
+        idx = rng.integers(0, n, size=(P, GAMES))
+        pw, shw, uow, utw, rw = p[idx], sh[idx], uo[idx], ut[idx], ratio[idx]
+        cover = rng.random(pw.shape) < pw
+        thr = np.where(cover, shw, 1.0 - shw)
+        tp = np.clip(thr[:, None, :] + delta[:, :, None], 0.0, 1.0)
+        fp += (rng.random(tp.shape, dtype=np.float32) < tp).sum(axis=2)
+        eo, et = np.exp(uow), np.exp(utw)
+        z = (eo + et).sum(axis=1, keepdims=True)
+        rate = (np.where(cover, eo, et) / z).sum(axis=1)
+        fb += rng.random((P, E)) < rate[:, None]
+        tilt = (rw[None, :, :] <= lams[:, None, None]) & behind[:, :, None]
+        win = np.where(tilt, ~cover[None], cover[None])
+        wp = np.where(tilt, 1.0 - pw[None], pw[None])
+        j = wp.argmax(axis=2)
+        pts += win.sum(axis=2)
+        bp += np.take_along_axis(win, j[:, :, None], axis=2)[:, :, 0]
+    fkey = fp * K + fb
+    return np.stack([share_given_key(fkey, pts[i] * K + bp[i]) for i in range(L)])
+
+
+def chunked(g, rng, state, dm, lams, a, dsd, our_bp):
+    out = []
+    for s in range(0, len(dm), a.chunk):
+        st = (state[0][s : s + a.chunk], state[1][s : s + a.chunk])
+        out.append(play_lev(g, rng, st, dm[s : s + a.chunk], lams, a.weeks, dsd, a.points, our_bp))
+    return np.concatenate(out, axis=1)
+
+
+def lowo(a, df, rng, state, dm, dsd, our_bp):
+    cols = ("p", "share", "u_o", "u_t")
+    folds = []
+    for w in sorted(df["week"].unique()):
+        tr, te = df[df["week"] != w], df[df["week"] == w]
+        gtr = {k: tr[k].to_numpy() for k in cols}
+        gte = {k: te[k].to_numpy() for k in cols}
+        rtr = lev_ratio(gtr["p"], gtr["share"])
+        cand = np.unique(rtr[np.isfinite(rtr)])
+        lams = np.concatenate([[-np.inf], cand])
+        ftr = chunked(gtr, rng, state, dm, lams, a, dsd, our_bp)
+        dtr = (ftr[1:] - ftr[0]).mean(axis=1)
+        best = int(np.argmax(dtr))
+        lam = float(cand[best]) if dtr[best] > 0 else -np.inf
+        fte = chunked(gte, rng, state, dm, np.array([-np.inf, lam]), a, dsd, our_bp)
+        d = fte[1] - fte[0]
+        rte = lev_ratio(gte["p"], gte["share"])
+        folds.append(
+            {
+                "week": int(w),
+                "lambda": lam if np.isfinite(lam) else None,
+                "train_candidates": len(cand),
+                "train_games_tilted": int((rtr <= lam).sum()),
+                "heldout_games": len(te),
+                "heldout_games_tilted": int((rte <= lam).sum()),
+                "in_sample_d_first_pp": float(100.0 * max(dtr[best], 0.0)),
+                "heldout_d_first_pp": float(100.0 * d.mean()),
+                "heldout_d_first_se_pp": float(100.0 * d.std(ddof=1) / np.sqrt(len(d))),
+                "heldout_p_first_max_prob": float(fte[0].mean()),
+            }
+        )
+        print(folds[-1])
+    ho = np.array([f["heldout_d_first_pp"] for f in folds])
+    ins = np.array([f["in_sample_d_first_pp"] for f in folds])
+    boot = rng.choice(ho, size=(a.boot, len(ho)), replace=True).mean(axis=1)
+    lam_fin = [f["lambda"] for f in folds if f["lambda"] is not None]
+    return {
+        "start": vars(a),
+        "paths": len(dm),
+        "dsd": dsd,
+        "paid_places": 1,
+        "rule": "tilt a game to the less-owned side when trailing and (2p-1)/(2share-1) <= lambda",
+        "folds": folds,
+        "heldout_d_first_pp": float(ho.mean()),
+        "heldout_interval_95": [float(np.quantile(boot, 0.025)), float(np.quantile(boot, 0.975))],
+        "heldout_probability_positive": float((boot > 0).mean()),
+        "in_sample_d_first_pp": float(ins.mean()),
+        "gap_pp": float(ins.mean() - ho.mean()),
+        "folds_heldout_positive": int((ho > 0).sum()),
+        "lambda_min_max": [min(lam_fin), max(lam_fin)] if lam_fin else None,
+        "folds_no_tilt": len(folds) - len(lam_fin),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser(description="POOL-07 standings-conditional policy challenger")
+    ap.add_argument("--mode", choices=("quartile", "lowo"), default="quartile")
     ap.add_argument("--paths", type=int, default=2000)
+    ap.add_argument("--chunk", type=int, default=2000)
+    ap.add_argument("--boot", type=int, default=20000)
     ap.add_argument("--weeks", type=int, default=9)
     ap.add_argument("--points", type=int, default=65)
     ap.add_argument("--rank", type=int, default=19)
@@ -112,6 +214,13 @@ def main():
     our_bp = float(
         sum(g["cov_o"].to_numpy()[int(np.argmax(g["p"].to_numpy()))] for _, g in df.groupby("week"))
     )
+    if a.mode == "lowo":
+        res = lowo(a, df, rng, state, dm, dsd, our_bp)
+        OUT.mkdir(parents=True, exist_ok=True)
+        name = f"pool07_lowo_leverage_w{int(df['week'].max()):02d}.json"
+        (OUT / name).write_text(json.dumps(res, indent=1) + "\n")
+        print({k: v for k, v in res.items() if k not in ("folds", "start")})
+        return
     arms = {
         "base": (df, dm, dsd),
         "no_skill": (df, np.zeros_like(dm), 0.0),

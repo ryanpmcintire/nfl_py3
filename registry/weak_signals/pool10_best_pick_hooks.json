@@ -4,57 +4,57 @@
     "pool10_best_pick_hook_game_share": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A description of where the field places its Best Pick, context for the pool-standing panel and the standing-aware Best Pick question; not a pick input: one fitted cover probability selects every side and nothing here changes our Best Pick.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Field Best Pick share on hook games (either side) minus pick share, Weeks 1-9 (40.5% v 38.3%, 52 hook games), week-cluster bootstrap, 6 of 9 weeks positive",
-      "effect": 2.17,
+      "description": "Field Best Pick share on hook games (either side) minus pick share, Weeks 1-10 (39.9% v 38.1%, 57 hook games, 2431 Best Picks), week-cluster bootstrap, 6 of 10 weeks positive",
+      "effect": 1.873497,
       "effect_units": "rate_pp",
       "family": "pool10_best_pick_hooks",
       "interval": [
-        0.01,
-        4.73
+        -0.162862,
+        4.254119
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9: scripts/pool10_best_pick_hooks.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Hook games use the served multi-book Tuesday line (src change 2026-11-10): 52 hook games Weeks 1-9, 42 in Weeks 1-8 where the 2026-11-03 run under the first-snapshot line had 44. Favourite-adjusted model: Poisson rate of Best Picks per pick on a side with week fixed effects and offset log picks (a within-week multinomial of Best Pick share), terms favourite, points favoured by, half-point side. Looks this rerun: 11 placement splits, 1 outcome, 2 model specifications, 3 week subsets x (coefficient + share excess) = 20. 2189 field Best Picks.",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
       "plain_summary": "Games where the pool's line sits half a point off the market draw slightly more of the pool's Best Picks than of its ordinary picks.",
-      "probability_positive": 0.975,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.963,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": null,
-      "sample_games": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
       "standard_error": null
     },
     "pool10_best_pick_hook_side_share": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A description of where the field places its Best Pick, context for the pool-standing panel and the standing-aware Best Pick question; not a pick input: one fitted cover probability selects every side and nothing here changes our Best Pick.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Field Best Pick share on the half-point side minus its regular pick share, Weeks 1-9 (25.3% v 21.8%, 554 Best Picks, 52 hook games), week-cluster bootstrap, 7 of 9 weeks positive; supersedes Weeks 1-8 +2.33 [-1.04, 5.92] measured under the first-snapshot line",
-      "effect": 3.56,
+      "description": "Field Best Pick share on the half-point side minus pick share, Weeks 1-10 (24.3% v 21.3%, 57 hook games, 2431 Best Picks), week-cluster bootstrap, 7 of 10 weeks positive",
+      "effect": 3.008922,
       "effect_units": "rate_pp",
       "family": "pool10_best_pick_hooks",
       "interval": [
-        0.08,
-        7.07
+        -0.299318,
+        6.370653
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9: scripts/pool10_best_pick_hooks.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Hook games use the served multi-book Tuesday line (src change 2026-11-10): 52 hook games Weeks 1-9, 42 in Weeks 1-8 where the 2026-11-03 run under the first-snapshot line had 44. Favourite-adjusted model: Poisson rate of Best Picks per pick on a side with week fixed effects and offset log picks (a within-week multinomial of Best Pick share), terms favourite, points favoured by, half-point side. Looks this rerun: 11 placement splits, 1 outcome, 2 model specifications, 3 week subsets x (coefficient + share excess) = 20. 2189 field Best Picks.",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
       "plain_summary": "Through nine weeks the pool put about a quarter of its Best Picks on the side the half point helps, roughly 3.5 points more than its share of ordinary picks there.",
-      "probability_positive": 0.977,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.96425,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": null,
-      "sample_games": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
       "standard_error": null
     },
     "pool10_best_pick_hook_side_share_w01_08": {
@@ -116,57 +116,57 @@
     "pool10_best_pick_other_side_of_hook_game_share": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A description of where the field places its Best Pick, context for the pool-standing panel and the standing-aware Best Pick question; not a pick input: one fitted cover probability selects every side and nothing here changes our Best Pick.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Field Best Pick share on the side the half point hurts, minus pick share, Weeks 1-9 (15.2% v 16.6%), week-cluster bootstrap, 2 of 9 weeks positive",
-      "effect": -1.39,
+      "description": "Field Best Pick share on the side the half point hurts minus pick share, Weeks 1-10 (15.6% v 16.8%, 57 hook games, 2431 Best Picks), week-cluster bootstrap, 3 of 10 weeks positive",
+      "effect": -1.135425,
       "effect_units": "rate_pp",
       "family": "pool10_best_pick_hooks",
       "interval": [
-        -3.3,
-        0.89
+        -2.917007,
+        0.895529
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9: scripts/pool10_best_pick_hooks.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Hook games use the served multi-book Tuesday line (src change 2026-11-10): 52 hook games Weeks 1-9, 42 in Weeks 1-8 where the 2026-11-03 run under the first-snapshot line had 44. Favourite-adjusted model: Poisson rate of Best Picks per pick on a side with week fixed effects and offset log picks (a within-week multinomial of Best Pick share), terms favourite, points favoured by, half-point side. Looks this rerun: 11 placement splits, 1 outcome, 2 model specifications, 3 week subsets x (coefficient + share excess) = 20. 2189 field Best Picks.",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
       "plain_summary": "The pool places slightly fewer Best Picks on the side the half point hurts than its ordinary picks there would suggest.",
-      "probability_positive": 0.108,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.13075,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": null,
-      "sample_games": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
       "standard_error": null
     },
     "pool10_hook_coefficient_favourite_adjusted": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A description of where the field places its Best Pick, context for the pool-standing panel and the standing-aware Best Pick question; not a pick input: one fitted cover probability selects every side and nothing here changes our Best Pick.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Half-point-side coefficient in the favourite-adjusted field Best Pick share model (within-week multinomial: Best Picks per pick, terms favourite and points favoured by), 136 games Weeks 1-9, 52 hook games; game bootstrap within week; week-cluster interval [0.108, 0.423] probability_positive 0.9998; within-week permutation two-sided p 0.014; rate ratio 1.29; leaving out one week 0.181 to 0.286; favourite coefficient 0.559 [0.226, 0.860]",
-      "effect": 0.251,
+      "description": "Half-point-side coefficient in the field Best Pick share model (favourite_line; week fixed effects, offset log picks), 150 games Weeks 1-10, 57 hook games, game bootstrap within week",
+      "effect": 0.211917,
       "effect_units": "logit_coefficient",
       "family": "pool10_best_pick_hooks",
       "interval": [
-        0.049,
-        0.428
+        0.015714,
+        0.381506
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9: scripts/pool10_best_pick_hooks.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Hook games use the served multi-book Tuesday line (src change 2026-11-10): 52 hook games Weeks 1-9, 42 in Weeks 1-8 where the 2026-11-03 run under the first-snapshot line had 44. Favourite-adjusted model: Poisson rate of Best Picks per pick on a side with week fixed effects and offset log picks (a within-week multinomial of Best Pick share), terms favourite, points favoured by, half-point side. Looks this rerun: 11 placement splits, 1 outcome, 2 model specifications, 3 week subsets x (coefficient + share excess) = 20. 2189 field Best Picks.",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
       "plain_summary": "Even after allowing for the pool's habit of making favourites its Best Pick, a pick on the side the half point helps is about 29 percent more likely to be made the Best Pick.",
-      "probability_positive": 0.994,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": null,
-      "sample_games": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
       "standard_error": null
     },
     "pool10_hook_coefficient_favourite_adjusted_w01_08": {
@@ -195,6 +195,34 @@
         2026
       ],
       "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
+      "standard_error": null
+    },
+    "pool10_hook_coefficient_favourite_adjusted_w01_09": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Weeks 1-9 subset of the favourite-adjusted Best Pick share model, 136 games, 52 hook games; game bootstrap within week",
+      "effect": 0.251143,
+      "effect_units": "logit_coefficient",
+      "family": "pool10_best_pick_hooks",
+      "interval": [
+        0.055073,
+        0.429064
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
+      "plain_summary": "Even after allowing for the pool's habit of making favourites its Best Pick, a pick on the side the half point helps is about 29 percent more likely to be made the Best Pick.",
+      "probability_positive": 0.99975,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 136,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
       "standard_error": null
     },
     "pool10_hook_coefficient_favourite_adjusted_w03_08": {
@@ -253,32 +281,60 @@
       "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
       "standard_error": null
     },
-    "pool10_hook_coefficient_favourite_only": {
+    "pool10_hook_coefficient_favourite_adjusted_w10": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Nine weeks of one season; no closing ground applies. A description of where the field places its Best Pick, context for the pool-standing panel and the standing-aware Best Pick question; not a pick input: one fitted cover probability selects every side and nothing here changes our Best Pick.",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
       "closing_ground": null,
-      "description": "Sensitivity: half-point-side coefficient with a favourite indicator only (no points term), 136 games Weeks 1-9; game bootstrap within week; week-cluster interval [0.096, 0.403]; leaving out one week 0.172 to 0.269; favourite coefficient 0.737 [0.582, 0.889]",
-      "effect": 0.24,
+      "description": "Weeks 10-10 subset of the favourite-adjusted Best Pick share model, 14 games, 5 hook games; game bootstrap within week",
+      "effect": -0.087799,
       "effect_units": "logit_coefficient",
       "family": "pool10_best_pick_hooks",
       "interval": [
-        0.045,
-        0.409
+        -0.664232,
+        0.520582
       ],
       "league": "nfl",
-      "notes": "Rerun 2026-11-14 with Week 9: scripts/pool10_best_pick_hooks.py --last-week 9 --subset 1-8 --subset 3-8 --subset 9-9. Hook games use the served multi-book Tuesday line (src change 2026-11-10): 52 hook games Weeks 1-9, 42 in Weeks 1-8 where the 2026-11-03 run under the first-snapshot line had 44. Favourite-adjusted model: Poisson rate of Best Picks per pick on a side with week fixed effects and offset log picks (a within-week multinomial of Best Pick share), terms favourite, points favoured by, half-point side. Looks this rerun: 11 placement splits, 1 outcome, 2 model specifications, 3 week subsets x (coefficient + share excess) = 20. 2189 field Best Picks.",
-      "plain_summary": "The pool's lean to make a half-point-side pick its Best Pick is the same size whether or not the size of the spread is taken into account.",
-      "probability_positive": 0.9925,
-      "recorded_at": "2026-11-14",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
+      "plain_summary": "Even after allowing for the pool's habit of making favourites its Best Pick, a pick on the side the half point helps is about 29 percent more likely to be made the Best Pick.",
+      "probability_positive": 0.3275,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": null,
-      "sample_games": null,
+      "sample_blocks": 1,
+      "sample_games": 14,
       "seasons": [
         2026,
         2026
       ],
-      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w09.json",
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
+      "standard_error": null
+    },
+    "pool10_hook_coefficient_favourite_only": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Half-point-side coefficient in the field Best Pick share model (favourite_only; week fixed effects, offset log picks), 150 games Weeks 1-10, 57 hook games, game bootstrap within week",
+      "effect": 0.207625,
+      "effect_units": "logit_coefficient",
+      "family": "pool10_best_pick_hooks",
+      "interval": [
+        0.014184,
+        0.378746
+      ],
+      "league": "nfl",
+      "notes": "Rerun 2026-11-21 with Week 10: scripts/pool10_best_pick_hooks.py --last-week 10 --subset 1-9 --subset 10-10. Family looks 18.",
+      "plain_summary": "The pool's lean to make a half-point-side pick its Best Pick is the same size whether or not the size of the spread is taken into account.",
+      "probability_positive": 0.9965,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool10_best_pick_hooks_w10.json",
       "standard_error": null
     }
   }

@@ -1,6 +1,34 @@
 {
   "family": "pool07_standings_policy",
   "signals": {
+    "pool07_lowo_leverage_tilt_first": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Ten weeks of one season; no closing ground applies (no interval wholly on the wrong side, split-half not zero). Pool-field context, not a pick input: one fitted cover probability selects every side.",
+      "closing_ground": null,
+      "description": "Standings-conditional tilt with a fitted per-game leverage cut: when trailing, take the less-owned side of a game if (2p-1)/(2share-1) <= lambda; lambda chosen leave-one-week-out by simulated first-place chance on the other weeks and scored on the held-out week's games; change in first-place chance versus max-probability picks, mean over 10 folds, fold bootstrap; in-sample +0.759 pp, gap +0.221 pp; 9 of 10 folds positive; start rank 90, 77 pts, 8 weeks left, 10000 paths",
+      "effect": 0.537333,
+      "effect_units": "payout_first_pp",
+      "family": "pool07_standings_policy",
+      "interval": [
+        0.320492,
+        0.775
+      ],
+      "league": "nfl",
+      "notes": "2026-11-21: scripts/pool07_standings_policy.py --mode lowo --paths 10000 --weeks 8 --points 77 --rank 90. Challenger only; no served pick changes. Looks: one held-out cell; inner selection over all training-week candidate cuts per fold.",
+      "plain_summary": "Tests whether a pick policy that looks at our place in the standings changes our chance of finishing first in the pool, compared with always taking the most likely side.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 150,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool07/pool07_lowo_leverage_w10.json",
+      "standard_error": null
+    },
     "pool07_u1_base_bp_leverage_payout_first_pp": {
       "category": "modeling",
       "classification": "unresolved_below_power",
