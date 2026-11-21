@@ -22,3 +22,6 @@ Data: Pool field files (captured) and the local totals distribution (free). Zero
 - Capture spec if pursued: view-only read of the entry detail / weekly picks view for the designated last game; rows week, entry_idx (no names), tiebreak_total (or home/away score guesses), designated_game_id, read_ts. Needs top-tied entries per week at minimum; full field if shown.
 - Next: root checks whether Splash shows other entrants' guesses after lock; if not, POOL-06 is bounded by ~1 weekly tie in 8 reaching the total; any gain must come from the lattice (docs/tiebreaker.md) or a measured field offset, never a side change.
 - 2026-11-14 15:17 local, registry catch-up (docs/lanes/registry-catchup-2026-11-14.md): nothing recorded. Unit 1 measured only counts (entries tied at the weekly top: 8 in Week 5, 2 in Week 6, 1 in each other week; 2 entries on 75 season points) and found no captured tiebreak guesses; a count has no effect, interval or admissible unit.
+
+## Root check (2026-11-21 11:08 EST, read in Chrome)
+- Splash Standings > Picks by Week shows each entry's tiebreak guess after lock in a "TIEBREAKER (GUESS)" column as "<diff> (<guess>)", e.g. the season rank-1 entry's Week 10 "4 (47)". The capture spec in this lane applies; LEAD-80 bounds the guess's value at about 0.5% of weeks for an average entry, so capture is low priority.

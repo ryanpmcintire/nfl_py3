@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:07:51.472055+00:00`
+Refreshed at: `2026-11-21T16:08:28.932746+00:00`
 
 ## Start here
 
@@ -21,18 +21,16 @@ Refreshed at: `2026-11-21T16:07:51.472055+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `12ea9dd99feb` — ENG-58 rest_diff repair prepared for the season-boundary bundle (0 changed picks 2020-25); abandoned 2022 BUF-CIN game counts as an appearance
-- Pending change set: 89 paths
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/backlog-2026-11-21.md`
+- Baseline commit: `e2268b380013` — MKT-24 holiday forward look declared for Thanksgiving and Christmas 2026 before kickoff, with its logger and scheduler jobs
+- Pending change set: 87 paths
   - ` M docs/lanes/mkt-23-spread-total-move-decomposition.md`
-  - `M  docs/lanes/mkt-24-slot-opener-residual.md`
+  - ` M docs/lanes/mod-30-mod30-public-ratings.md`
+  - `M  docs/lanes/pool-06-tiebreak-field-guess.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - `M  scripts/capture_scheduler.py`
+  - ` M docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
+  - ` M registry/weak_signals/mkt23_unit2_term.json`
   - ` M scripts/mkt23_move_decomposition.py`
   - ` M scripts/mkt23_unit2_term.py`
-  - `A  scripts/mkt24_holiday_forward.py`
-  - `M  scripts/mkt24_slot_residual.py`
   - ` M scripts/ui33_scenario_producer.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-21T16:07:51.472055+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - ...and 69 more
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - ...and 67 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
