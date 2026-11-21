@@ -29,6 +29,34 @@
       "source": "tests/scratch/mod43/result.json",
       "standard_error": null
     },
+    "mod43 career curve term on served logit opener_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +0.81 accuracy points, +0.00737 log loss; accuracy 0.468 logit per sd, true +3.17 accuracy points, +0.02297 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod43 career curve term on served logit opener: the projected quarterback change from career starts added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 78.5 and P+ at 79.0.",
+      "effect": -3.3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.001028,
+        0.000961
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod43_qb_learning_curve.json. Accuracy -0.532 pts [-1.663, +0.532] P+ 0.177 (null pct 52.0); Brier -0.000020 [-0.000498, +0.000468] P+ 0.474. Decisive record 30-38 of 68 changed sides (null pct 52.0). Log loss out of sample minus in sample +0.00043; seasons positive 3/6; fold term coefficients [[0.018], [0.0447], [0.0361], [0.0491], [0.0241], [0.0273]]. Raw-base cell mod43 career curve term on served logit opener kept as history. Looks: 2 arms x 3 metrics in mod43_qb_learning_curve served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the projected quarterback change from career starts scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.485,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mod43 career-start curve first 2 seasons": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -139,6 +167,34 @@
         2025
       ],
       "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    },
+    "mod43 team-start curve term on served logit opener_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +1.09 accuracy points, +0.00784 log loss; accuracy 0.364 logit per sd, true +2.49 accuracy points, +0.01595 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod43 team-start curve term on served logit opener: the projected quarterback change from starts with the current team added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 37.5 and P+ at 29.5.",
+      "effect": -0.000541,
+      "effect_units": "log_loss_improvement",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.001241,
+        0.000131
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod43_qb_learning_curve.json. Accuracy -1.131 pts [-2.129, -0.133] P+ 0.012 (null pct 20.5); Brier -0.000266 [-0.000610, +0.000066] P+ 0.070. Decisive record 22-39 of 61 changed sides (null pct 20.5). Log loss out of sample minus in sample +0.00084; seasons positive 0/6; fold term coefficients [[-0.0329], [0.0177], [-0.0206], [-0.0281], [0.0047], [-0.0389]]. Raw-base cell mod43 team-start curve term on served logit opener kept as history. Looks: 2 arms x 3 metrics in mod43_qb_learning_curve served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the projected quarterback change from starts with the current team scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.069,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
       "standard_error": null
     },
     "mod43 team-start curve veterans with team": {

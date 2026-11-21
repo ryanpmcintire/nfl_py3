@@ -113,6 +113,34 @@
       "source": "artifacts/mkt27",
       "standard_error": null
     },
+    "mkt27_total_median_lattice_loso_logloss_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.261 logit per sd, true +1.07 accuracy points, +0.00709 log loss; accuracy 0.417 logit per sd, true +3.36 accuracy points, +0.01833 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mkt27_total_median_lattice_loso_logloss: the total-median-conditioned lattice shift added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 91.5 and P+ at 91.5.",
+      "effect": 0.000385,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -0.002025,
+        0.002592
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mkt27_total_lattice.json. Accuracy -0.804 pts [-2.614, +1.072] P+ 0.198 (null pct 37.5); Brier +0.000182 [-0.001000, +0.001274] P+ 0.608. Decisive record 93-105 of 198 changed sides (null pct 37.5). Log loss out of sample minus in sample +0.00082; seasons positive 4/6; fold term coefficients [[-1.0752], [-0.9822], [-1.2973], [-1.6006], [-1.155], [-1.8073]]. Raw-base cell mkt27_total_median_lattice_loso_logloss kept as history. Looks: 2 arms x 3 metrics in mkt27_total_lattice served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the total-median-conditioned lattice shift scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.612,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1493,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mkt27_total_tercile_lattice_loso_logloss": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -139,6 +167,34 @@
         2025
       ],
       "source": "artifacts/mkt27",
+      "standard_error": null
+    },
+    "mkt27_total_tercile_lattice_loso_logloss_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.261 logit per sd, true +0.91 accuracy points, +0.00661 log loss; accuracy 0.417 logit per sd, true +3.19 accuracy points, +0.01785 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mkt27_total_tercile_lattice_loso_logloss: the total-tercile-conditioned lattice shift added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 32.5 and P+ at 44.0.",
+      "effect": -0.000695,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -0.001879,
+        0.000443
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mkt27_total_lattice.json. Accuracy -1.273 pts [-2.612, +0.067] P+ 0.033 (null pct 10.2); Brier -0.000340 [-0.000922, +0.000217] P+ 0.113. Decisive record 40-59 of 99 changed sides (null pct 10.2). Log loss out of sample minus in sample +0.00112; seasons positive 2/6; fold term coefficients [[-0.2541], [0.0136], [-0.7534], [-0.7613], [-0.2334], [-0.529]]. Raw-base cell mkt27_total_tercile_lattice_loso_logloss kept as history. Looks: 2 arms x 3 metrics in mkt27_total_lattice served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the total-tercile-conditioned lattice shift scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.1115,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1493,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
       "standard_error": null
     }
   }

@@ -29,6 +29,34 @@
       "source": "artifacts/lead76_declared/results.json",
       "standard_error": 0.0009
     },
+    "lead76_decl_pool_vs_served_cover_served": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Root adjudication 2026-11-21: the pooled-prior read used in place of the served probability loses on the served base with the whole 95% game-bootstrap interval below zero (log loss -0.00893 [-0.01598, -0.00178], P+ 0.0055; accuracy -3.73 pts P+ 0.009; decisive 232-288 of 520). Closes the replacement form only; the additive rule term (lead76 served term) stays unresolved_below_power.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Served-base re-grade of lead76_decl_pool_vs_served_cover: discrete pooled-prior read at the model point versus the served out-of-season probability, unfitted, 2020-2025 non-push opener games, log loss.",
+      "effect": -0.008927,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -0.015984,
+        -0.001783
+      ],
+      "league": "nfl",
+      "notes": "Accuracy -3.726 pts P+ 0.009; decisive record 232-288 of 520. Raw-base cell lead76_decl_pool_vs_served_cover kept as history.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the pooled margin-history read alone.",
+      "probability_positive": 0.0055,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "lead76_decl_rule_vs_pool_cover": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -140,6 +168,34 @@
       ],
       "source": "artifacts/lead76_declared/results.json",
       "standard_error": 0.0004
+    },
+    "lead76_decl_term_vs_cal_loso_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +1.41 accuracy points, +0.00782 log loss; accuracy 0.468 logit per sd, true +3.44 accuracy points, +0.02194 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of lead76_decl_term_vs_cal_loso: the rule-era minus pooled margin-prior shift added to a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 27.0 and P+ at 20.0.",
+      "effect": -0.000741,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -0.001642,
+        0.000116
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/lead76_rule_prior.json. Accuracy +0.067 pts [-0.798, +0.931] P+ 0.551 (null pct 88.0); Brier -0.000365 [-0.000803, +0.000048] P+ 0.045. Decisive record 21-20 of 41 changed sides (null pct 88.0). Log loss out of sample minus in sample +0.00098; seasons positive 0/6; fold term coefficients [[-11.7296], [1.936], [39.5924], [-60.4863], [17.0456], [2.1707]]. Raw-base cell lead76_decl_term_vs_cal_loso kept as history. Looks: 1 arms x 3 metrics in lead76_rule_prior served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the rule-era minus pooled margin-prior shift scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.0465,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
     },
     "lead76_rule_term_vs_recalibrated_served": {
       "category": "modeling",

@@ -281,6 +281,34 @@
       "source": "scripts/mod44_coach_tenure.py",
       "standard_error": 0.00123
     },
+    "mod44_term_served+both_states_2020-25_loso_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +1.67 accuracy points, +0.00823 log loss; accuracy 0.364 logit per sd, true +2.75 accuracy points, +0.01541 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod44_term_served+both_states_2020-25_loso: the first-year and interim head coach differences added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 75.5 and P+ at 73.5.",
+      "effect": -0.000192,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.002322,
+        0.001834
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod44_coach_tenure.json. Accuracy -0.931 pts [-2.528, +0.599] P+ 0.113 (null pct 32.8); Brier -0.000094 [-0.001143, +0.000912] P+ 0.432. Decisive record 62-76 of 138 changed sides (null pct 32.8). Log loss out of sample minus in sample +0.00117; seasons positive 5/6; fold term coefficients [[-0.0879, 0.2415], [-0.07, 0.2606], [-0.0915, 0.0637], [-0.1016, 0.1253], [-0.1198, 0.1612], [-0.1885, 0.1568]]. Raw-base cell mod44_term_served+both_states_2020-25_loso kept as history. Looks: 4 arms x 3 metrics in mod44_coach_tenure served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the first-year and interim head coach differences scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.4335,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mod44_term_served+first_year_2011-19_loso": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -336,6 +364,34 @@
       ],
       "source": "scripts/mod44_coach_tenure.py",
       "standard_error": 0.00103
+    },
+    "mod44_term_served+first_year_2020-25_loso_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +1.79 accuracy points, +0.00852 log loss; accuracy 0.312 logit per sd, true +2.50 accuracy points, +0.01250 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod44_term_served+first_year_2020-25_loso: the first-year head coach difference added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 68.5 and P+ at 70.0.",
+      "effect": -0.000105,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.001842,
+        0.001548
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod44_coach_tenure.json. Accuracy -0.599 pts [-1.929, +0.732] P+ 0.182 (null pct 51.0); Brier -0.000055 [-0.000909, +0.000769] P+ 0.432. Decisive record 55-64 of 119 changed sides (null pct 51.0). Log loss out of sample minus in sample +0.00091; seasons positive 5/6; fold term coefficients [[-0.0952], [-0.0766], [-0.0926], [-0.1053], [-0.1255], [-0.1941]]. Raw-base cell mod44_term_served+first_year_2020-25_loso kept as history. Looks: 4 arms x 3 metrics in mod44_coach_tenure served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the first-year head coach difference scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.437,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
     },
     "mod44_term_served+games_into_2011-19_loso": {
       "category": "onfield",
@@ -393,6 +449,34 @@
       "source": "scripts/mod44_coach_tenure.py",
       "standard_error": 0.00037
     },
+    "mod44_term_served+games_into_2020-25_loso_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +1.27 accuracy points, +0.00836 log loss; accuracy 0.364 logit per sd, true +2.87 accuracy points, +0.01647 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod44_term_served+games_into_2020-25_loso: the head coach tenure difference added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 40.0 and P+ at 33.5.",
+      "effect": -0.000463,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.001109,
+        0.000225
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod44_coach_tenure.json. Accuracy -0.998 pts [-1.929, -0.133] P+ 0.016 (null pct 37.0); Brier -0.000229 [-0.000550, +0.000112] P+ 0.093. Decisive record 17-32 of 49 changed sides (null pct 37.0). Log loss out of sample minus in sample +0.00077; seasons positive 2/6; fold term coefficients [[-0.001], [0.0263], [0.0058], [0.0103], [-0.0008], [0.0083]]. Raw-base cell mod44_term_served+games_into_2020-25_loso kept as history. Looks: 4 arms x 3 metrics in mod44_coach_tenure served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the head coach tenure difference scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.0935,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mod44_term_served+interim_2011-19_loso": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -448,6 +532,34 @@
       ],
       "source": "scripts/mod44_coach_tenure.py",
       "standard_error": 0.00076
+    },
+    "mod44_term_served+interim_2020-25_loso_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +0.72 accuracy points, +0.00724 log loss; accuracy 0.312 logit per sd, true +0.96 accuracy points, +0.00955 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod44_term_served+interim_2020-25_loso: the interim head coach difference added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 70.5 and P+ at 72.5.",
+      "effect": -6.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.001196,
+        0.001064
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod44_coach_tenure.json. Accuracy +0.200 pts [-0.399, +0.798] P+ 0.728 (null pct 78.5); Brier -0.000029 [-0.000582, +0.000528] P+ 0.482. Decisive record 13-10 of 23 changed sides (null pct 78.5). Log loss out of sample minus in sample +0.00056; seasons positive 3/6; fold term coefficients [[0.2666], [0.2729], [0.0751], [0.1484], [0.185], [0.1941]]. Raw-base cell mod44_term_served+interim_2020-25_loso kept as history. Looks: 4 arms x 3 metrics in mod44_coach_tenure served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the interim head coach difference scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.477,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
     }
   }
 }

@@ -29,6 +29,34 @@
       "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
       "standard_error": null
     },
+    "mod47_short_week_slope_interaction_opener_served": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.268 logit per sd, true -0.90 accuracy points, +0.00713 log loss; accuracy not reached by 0.536 logit per sd (share 0.13). No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod47_short_week_slope_interaction_opener: a short-week indicator and its interaction with the served logit added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 88.5 and P+ at 89.5.",
+      "effect": 0.000231,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_slope",
+      "interval": [
+        -0.001976,
+        0.002443
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod47_short_week_slope.json. Accuracy -0.565 pts [-2.120, +1.060] P+ 0.247 (null pct 69.5); Brier +0.000037 [-0.001017, +0.001112] P+ 0.524. Decisive record 66-74 of 140 changed sides (null pct 69.5). Log loss out of sample minus in sample +0.00108; seasons positive 4/6; fold term coefficients [[-0.0757, 0.3427], [-0.2086, 0.7778], [-0.1465, 0.6373], [-0.1384, 0.5304], [-0.1296, 0.7511], [-0.1816, 0.6219]]. Raw-base cell mod47_short_week_slope_interaction_opener kept as history. Looks: 1 arms x 3 metrics in mod47_short_week_slope served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, a short-week indicator and its interaction with the served logit scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.576,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1415,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mod47_short_week_slope_interaction_sbr": {
       "category": "schedule",
       "classification": "unresolved_below_power",

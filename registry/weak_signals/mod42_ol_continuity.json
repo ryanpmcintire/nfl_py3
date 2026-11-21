@@ -29,6 +29,34 @@
       "source": "scripts/mod42_ol_continuity.py",
       "standard_error": 0.0003
     },
+    "mod42_ol_cont_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +0.93 accuracy points, +0.00814 log loss; accuracy 0.364 logit per sd, true +2.55 accuracy points, +0.01545 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod42_ol_cont: the five-starter continuity streak difference added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 27.0 and P+ at 13.5.",
+      "effect": -0.000669,
+      "effect_units": "log_loss_improvement",
+      "family": "mod42_ol_continuity",
+      "interval": [
+        -0.001266,
+        -6.9e-05
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod42_ol_continuity.json. Accuracy -0.399 pts [-1.264, +0.466] P+ 0.191 (null pct 72.0); Brier -0.000330 [-0.000624, -0.000034] P+ 0.015. Decisive record 19-25 of 44 changed sides (null pct 72.0). Log loss out of sample minus in sample +0.00095; seasons positive 2/6; fold term coefficients [[0.0061], [0.0047], [-0.0256], [-0.0101], [0.0473], [0.0135]]. Raw-base cell mod42_ol_cont kept as history. Looks: 3 arms x 3 metrics in mod42_ol_continuity served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the five-starter continuity streak difference scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.0145,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mod42_ol_cont_x_pressure": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -57,6 +85,34 @@
       "source": "scripts/mod42_ol_continuity.py",
       "standard_error": 0.00112
     },
+    "mod42_ol_cont_x_pressure_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +0.96 accuracy points, +0.00814 log loss; accuracy 0.416 logit per sd, true +3.00 accuracy points, +0.01989 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod42_ol_cont_x_pressure: continuity plus continuity times opponent pass-rush pressure added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 52.5 and P+ at 60.5.",
+      "effect": -0.00082,
+      "effect_units": "log_loss_improvement",
+      "family": "mod42_ol_continuity",
+      "interval": [
+        -0.003419,
+        0.001667
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod42_ol_continuity.json. Accuracy -1.730 pts [-3.460, +0.067] P+ 0.029 (null pct 16.8); Brier -0.000394 [-0.001667, +0.000823] P+ 0.280. Decisive record 83-109 of 192 changed sides (null pct 16.8). Log loss out of sample minus in sample +0.00219; seasons positive 4/6; fold term coefficients [[0.0094, 0.155], [0.007, 0.0968], [-0.0235, 0.0987], [-0.0087, 0.061], [0.0505, 0.0734], [0.0152, 0.0829]]. Raw-base cell mod42_ol_cont_x_pressure kept as history. Looks: 3 arms x 3 metrics in mod42_ol_continuity served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, continuity plus continuity times opponent pass-rush pressure scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.271,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
+    },
     "mod42_ol_new": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -84,6 +140,34 @@
       ],
       "source": "scripts/mod42_ol_continuity.py",
       "standard_error": 0.00089
+    },
+    "mod42_ol_new_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Served base (out_of_season_home_probability); planted detectable size at 80 percent power, P+ at least 0.90: log loss 0.260 logit per sd, true +1.24 accuracy points, +0.00817 log loss; accuracy 0.364 logit per sd, true +3.12 accuracy points, +0.01570 log loss. No refuted mechanism and no positive control at this size, so no closing ground.",
+      "closing_ground": null,
+      "description": "Served-base re-grade of mod42_ol_new: the new-starter count difference added to an intercept and a free slope on the served out-of-season logit, leave-one-season-out 2020-2025 opener games, log loss versus the same fit without the term; matched null 200 within-season shuffles puts the effect at percentile 75.0 and P+ at 75.5.",
+      "effect": -0.000124,
+      "effect_units": "log_loss_improvement",
+      "family": "mod42_ol_continuity",
+      "interval": [
+        -0.001946,
+        0.001557
+      ],
+      "league": "nfl",
+      "notes": "scripts/eng54_served_regrade.py, artifacts/eng54_served/mod42_ol_continuity.json. Accuracy -1.663 pts [-3.194, -0.067] P+ 0.020 (null pct 4.8); Brier -0.000035 [-0.000926, +0.000799] P+ 0.473. Decisive record 59-84 of 143 changed sides (null pct 4.8). Log loss out of sample minus in sample +0.00096; seasons positive 4/6; fold term coefficients [[0.0673], [0.0737], [0.0796], [0.0314], [0.1035], [0.0523]]. Raw-base cell mod42_ol_new kept as history. Looks: 3 arms x 3 metrics in mod42_ol_continuity served re-grade.",
+      "plain_summary": "Rechecked against the probability that actually picks each side, the new-starter count difference scored inside the range a meaningless ingredient produces.",
+      "probability_positive": 0.4495,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/eng-54-outcome-label-default-audit.md",
+      "standard_error": null
     }
   }
 }

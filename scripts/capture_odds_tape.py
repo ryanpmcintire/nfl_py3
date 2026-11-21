@@ -184,6 +184,10 @@ def main() -> None:
         print(json.dumps({"captured": False, "reason": "source_http_block"}))
         sys.exit(2)
     duration = args.duration_minutes
+    if args.end_before_et is None:
+        from capture_scheduler import SUNDAY_EARLY_LAST_CALL_AT
+
+        args.end_before_et = SUNDAY_EARLY_LAST_CALL_AT
     if args.end_before_et:
         hour, minute = (int(part) for part in args.end_before_et.split(":"))
         now_et = datetime.now(EASTERN)
