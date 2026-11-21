@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:01:27.639386+00:00`
+Refreshed at: `2026-11-21T15:02:51.999931+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T15:01:27.639386+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8f686ad412f7` — Refresh the handoff
-- Pending change set: 99 paths
+- Baseline commit: `1bde78dc1406` — ROADMAP: reconcile MOD-52, MOD-23, LEAD-102, MOD-39 and ENG-62 with today's units
+- Pending change set: 106 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
   - ` M docs/lanes/eng-54-outcome-label-default-audit.md`
-  - ` M docs/lanes/lead-101-news-delta-read.md`
-  - ` M docs/lanes/lead-104-read-revision-path.md`
-  - ` M docs/lanes/lead-107-read-dispersion-weight.md`
+  - `M  docs/lanes/lead-101-news-delta-read.md`
+  - `M  docs/lanes/lead-104-read-revision-path.md`
+  - `M  docs/lanes/lead-107-read-dispersion-weight.md`
+  - `A  docs/lanes/lead-read-analysis-2026-11-21.md`
+  - `M  docs/lanes/lead107-forward-2026-11-16.md`
+  - ` M docs/lanes/pool-05-ownership-proxy-v2.md`
   - ` M docs/lanes/pool-07-standings-variance-policy.md`
   - ` M docs/lanes/pool-08-hook-side-field-share.md`
   - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
-  - ` M registry/weak_signals/lead101_news_delta_read.json`
-  - ` M registry/weak_signals/lead104_revision_path.json`
+  - `A  docs/lanes/xlg-14-u9-2026-11-21.md`
+  - `M  registry/weak_signals/lead101_news_delta_read.json`
+  - `M  registry/weak_signals/lead104_revision_path.json`
+  - `A  registry/weak_signals/lead107_read_dispersion_weight.json`
+  - ` M registry/weak_signals/pool05_ownership_v2.json`
   - ` M registry/weak_signals/pool07_standings_policy.json`
   - ` M registry/weak_signals/pool08_hook_field_share.json`
-  - ` M registry/weak_signals/pool09_hook_value_slope.json`
-  - ` M scripts/pool07_standings_policy.py`
-  - `?? an.csv`
-  - `?? cdx_tspread.json`
-  - `?? cdx_vipre.json`
-  - `?? cdx_vipre2.json`
-  - `?? cdx_viweek.json`
-  - `?? cdx_wgdl.json`
-  - ...and 79 more
+  - ...and 86 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

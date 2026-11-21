@@ -1,0 +1,61 @@
+{
+  "family": "lead107_read_dispersion_weight",
+  "signals": {
+    "lead107_dispersion_vs_error_blinded_spearman": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 week, game-cluster bootstrap; interval spans zero and no positive control exists, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-107 unit 1, repeated reads of the same packet with names replaced by role labels: Spearman correlation between the between-read SD of the read logits and the absolute gap between the mean read logit and the later line read at the pool line through the served move coefficient; positive means disagreeing reads miss more; 3 of 6 high-dispersion games had above-median error; within-week permutation p 0.454; 4 looks in the family this unit",
+      "effect": 0.03398932093366976,
+      "effect_units": "correlation",
+      "family": "lead107_read_dispersion_weight",
+      "interval": [
+        -0.5603713150537105,
+        0.5680584504534109
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model read each game several times. This checks whether the games where its repeated reads disagreed are the games where its read ended up furthest from where the betting line later went.",
+      "probability_positive": 0.5568,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead107_dispersion_error/summary.json",
+      "standard_error": null
+    },
+    "lead107_dispersion_vs_error_named_spearman": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "15 games in 1 week, game-cluster bootstrap; interval spans zero and no positive control exists, so no closing ground applies",
+      "closing_ground": null,
+      "description": "LEAD-107 unit 1, repeated reads of the same packet with team and player names: Spearman correlation between the between-read SD of the read logits and the absolute gap between the mean read logit and the later line read at the pool line through the served move coefficient; positive means disagreeing reads miss more; 3 of 7 high-dispersion games had above-median error; within-week permutation p 0.615; 4 looks in the family this unit",
+      "effect": -0.08400360816365662,
+      "effect_units": "correlation",
+      "family": "lead107_read_dispersion_weight",
+      "interval": [
+        -0.601835705865917,
+        0.4608449688238025
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A language model read each game several times. This checks whether the games where its repeated reads disagreed are the games where its read ended up furthest from where the betting line later went.",
+      "probability_positive": 0.37715,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 15,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead107_dispersion_error/summary.json",
+      "standard_error": null
+    }
+  }
+}

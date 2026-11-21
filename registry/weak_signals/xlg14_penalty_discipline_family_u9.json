@@ -1,0 +1,257 @@
+{
+  "family": "xlg14_penalty_discipline_family_u9",
+  "signals": {
+    "xlg14_penalty_discipline_cfb_def_penalty_discipline_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, def_penalty_discipline_oe: minus the defence's accepted no-play penalty yards per opponent scrimmage snap over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 401, record 192-209; coefficient per SD +0.0192; earlier and later season-half coefficients +0.0241 and +0.0163; this metric sits at percentile 23.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.089636.",
+      "effect": -0.190476,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.627451,
+        0.22409
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that commit fewer pre-snap and no-play penalties on defence, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.187,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_def_penalty_discipline_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, def_penalty_discipline_oe: minus the defence's accepted no-play penalty yards per opponent scrimmage snap over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 401, record 192-209; coefficient per SD +0.0192; earlier and later season-half coefficients +0.0241 and +0.0163; this metric sits at percentile 71.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000048.",
+      "effect": -2.5e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.000136,
+        8.3e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that commit fewer pre-snap and no-play penalties on defence, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.3335,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_def_penalty_discipline_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, def_penalty_discipline_oe: minus the defence's accepted no-play penalty yards per opponent scrimmage snap over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 401, record 192-209; coefficient per SD +0.0192; earlier and later season-half coefficients +0.0241 and +0.0163; this metric sits at percentile 69.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000097.",
+      "effect": -5.1e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.000275,
+        0.000166
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that commit fewer pre-snap and no-play penalties on defence, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.327,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_off_penalty_discipline_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, off_penalty_discipline_oe: minus the offence's accepted no-play penalty yards per own scrimmage snap over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 68, record 30-38; coefficient per SD +0.0067; earlier and later season-half coefficients +0.0000 and +0.0117; this metric sits at percentile 41.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.022409.",
+      "effect": -0.089636,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.269188,
+        0.089636
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that commit fewer pre-snap and no-play penalties on offence, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.1598,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_off_penalty_discipline_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, off_penalty_discipline_oe: minus the offence's accepted no-play penalty yards per own scrimmage snap over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 68, record 30-38; coefficient per SD +0.0067; earlier and later season-half coefficients +0.0000 and +0.0117; this metric sits at percentile 69.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000011.",
+      "effect": -8e-06,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -5.5e-05,
+        3.4e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that commit fewer pre-snap and no-play penalties on offence, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.3435,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_off_penalty_discipline_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, off_penalty_discipline_oe: minus the offence's accepted no-play penalty yards per own scrimmage snap over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 68, record 30-38; coefficient per SD +0.0067; earlier and later season-half coefficients +0.0000 and +0.0117; this metric sits at percentile 71.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000022.",
+      "effect": -1.7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.000114,
+        7.1e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that commit fewer pre-snap and no-play penalties on offence, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.341,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_penalty_discipline_net_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, penalty_discipline_net_oe: the sum of the offensive and defensive penalty-discipline reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 213, record 100-113; coefficient per SD +0.0146; earlier and later season-half coefficients +0.0100 and +0.0178; this metric sits at percentile 25.8 of 200 within-season shuffles of the same column; in-sample minus held-out +0.022409.",
+      "effect": -0.145658,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.459384,
+        0.179272
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that give away fewer penalty yards on both sides of the ball, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.175,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_penalty_discipline_net_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, penalty_discipline_net_oe: the sum of the offensive and defensive penalty-discipline reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 213, record 100-113; coefficient per SD +0.0146; earlier and later season-half coefficients +0.0100 and +0.0178; this metric sits at percentile 60.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000030.",
+      "effect": -1.7e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.000113,
+        7.4e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that give away fewer penalty yards on both sides of the ball, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.3785,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_penalty_discipline_cfb_penalty_discipline_net_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared penalty-discipline mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first penalty-discipline family, penalty_discipline_net_oe: the sum of the offensive and defensive penalty-discipline reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with signed penalty yardage (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 213, record 100-113; coefficient per SD +0.0146; earlier and later season-half coefficients +0.0100 and +0.0178; this metric sits at percentile 60.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000061.",
+      "effect": -3.6e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_penalty_discipline_family_u9",
+      "interval": [
+        -0.000237,
+        0.000155
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_penalty_discipline_family_u9: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that give away fewer penalty yards on both sides of the ball, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.376,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u9-2026-11-21.md",
+      "standard_error": null
+    }
+  }
+}

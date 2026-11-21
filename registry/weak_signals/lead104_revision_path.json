@@ -4,24 +4,24 @@
     "lead104_earliest_changed_first_vs_half_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 13 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 15 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view against a constant 0.5 on games where the two views pick different sides, paired log-loss improvement; Weeks 7, 8, 9, 13 games; game bootstrap; graded at the pool's Tuesday line, record 9-4; within-week permutation p 0.394 upper, 0.612 lower (null mean +0.0088); one of 54 outcome looks in this run",
-      "effect": 0.0143,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view against a constant 0.5 on games where the two views pick different sides, paired log-loss improvement; Weeks 7, 8, 9, 10, 15 games; game bootstrap; graded at the pool's Tuesday line, record 9-6; within-week permutation p 0.506 upper, 0.497 lower (null mean +0.0075); one of 58 outcome looks in this run",
+      "effect": 0.0069,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0216,
-        0.0533
+        -0.0265,
+        0.0432
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the AI read's first look beat a coin flip in games where it later switched sides, on 13 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.7725,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the AI read's first look beat a coin flip in games where it later switched sides, on 15 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6463,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 13,
+      "sample_blocks": 4,
+      "sample_games": 15,
       "seasons": [
         2026,
         2026
@@ -32,24 +32,24 @@
     "lead104_earliest_changed_last_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 13 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 15 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view against the first view on games where the two views pick different sides, paired log-loss improvement; Weeks 7, 8, 9, 13 games; game bootstrap; graded at the pool's Tuesday line, record 4-9; within-week permutation p 0.899 upper, 0.112 lower (null mean -0.0171); one of 54 outcome looks in this run",
-      "effect": -0.0552,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view against the first view on games where the two views pick different sides, paired log-loss improvement; Weeks 7, 8, 9, 10, 15 games; game bootstrap; graded at the pool's Tuesday line, record 6-9; within-week permutation p 0.752 upper, 0.254 lower (null mean -0.0150); one of 58 outcome looks in this run",
+      "effect": -0.0333,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.1168,
-        0.0088
+        -0.0947,
+        0.0285
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the AI read's last look beat its first look in games where it switched sides, on 13 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0465,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the AI read's last look beat its first look in games where it switched sides, on 15 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.144,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 13,
+      "sample_blocks": 4,
+      "sample_games": 15,
       "seasons": [
         2026,
         2026
@@ -60,24 +60,24 @@
     "lead104_earliest_changed_last_vs_half_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 13 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 15 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view against a constant 0.5 on games where the two views pick different sides, paired log-loss improvement; Weeks 7, 8, 9, 13 games; game bootstrap; graded at the pool's Tuesday line, record 4-9; within-week permutation p 0.995 upper, 0.012 lower (null mean -0.0082); one of 54 outcome looks in this run",
-      "effect": -0.0409,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view against a constant 0.5 on games where the two views pick different sides, paired log-loss improvement; Weeks 7, 8, 9, 10, 15 games; game bootstrap; graded at the pool's Tuesday line, record 6-9; within-week permutation p 0.867 upper, 0.136 lower (null mean -0.0075); one of 58 outcome looks in this run",
+      "effect": -0.0264,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.073,
-        -0.0101
+        -0.0603,
+        0.0056
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the AI read's last look beat a coin flip in games where it had switched sides, on 13 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0033,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the AI read's last look beat a coin flip in games where it had switched sides, on 15 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.0548,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 13,
+      "sample_blocks": 4,
+      "sample_games": 15,
       "seasons": [
         2026,
         2026
@@ -88,24 +88,24 @@
     "lead104_earliest_changed_revision_direction_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 13 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 15 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view's side (the direction of the revision) against the cover side on games where the two views pick different sides, accuracy over 50 percent; Weeks 7, 8, 9, 13 games; game bootstrap; graded at the pool's Tuesday line, record 4-9; within-week permutation p 0.943 upper, 0.368 lower (null mean -7.8031); one of 54 outcome looks in this run",
-      "effect": -19.2308,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view's side (the direction of the revision) against the cover side on games where the two views pick different sides, accuracy over 50 percent; Weeks 7, 8, 9, 10, 15 games; game bootstrap; graded at the pool's Tuesday line, record 6-9; within-week permutation p 0.792 upper, 0.600 lower (null mean -6.6773); one of 58 outcome looks in this run",
+      "effect": -10.0,
       "effect_units": "accuracy_points",
       "family": "lead104_revision_path",
       "interval": [
-        -42.3077,
-        3.8462
+        -36.6667,
+        16.6667
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how often the AI read's later pick covered when it had switched sides during the week, on 13 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0711,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures how often the AI read's later pick covered when it had switched sides during the week, on 15 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.2126,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 13,
+      "sample_blocks": 4,
+      "sample_games": 15,
       "seasons": [
         2026,
         2026
@@ -116,24 +116,24 @@
     "lead104_earliest_first_plus_drift_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the fitted intercept of revision on move (the read's average drift toward the home team between views) against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 41 games; game bootstrap; graded at the pool's Tuesday line, record 25-16; within-week permutation p 1.000 upper, 1.000 lower (null mean -0.0076); one of 54 outcome looks in this run",
-      "effect": -0.0076,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the fitted intercept of revision on move (the read's average drift toward the home team between views) against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 10, 55 games; game bootstrap; graded at the pool's Tuesday line, record 30-25; within-week permutation p 1.000 upper, 1.000 lower (null mean -0.0084); one of 58 outcome looks in this run",
+      "effect": -0.0084,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0159,
-        0.0011
+        -0.0145,
+        -0.0021
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the AI read's general drift toward home teams between its first and last look improved on its first look, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0408,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the AI read's general drift toward home teams between its first and last look improved on its first look, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.0035,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -144,24 +144,24 @@
     "lead104_earliest_first_plus_move_part_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the fitted slope times the line move between the views (no intercept) against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 41 games; game bootstrap; graded at the pool's Tuesday line, record 20-21; within-week permutation p 0.855 upper, 0.185 lower (null mean +0.0007); one of 54 outcome looks in this run",
-      "effect": -0.0073,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the fitted slope times the line move between the views (no intercept) against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 10, 55 games; game bootstrap; graded at the pool's Tuesday line, record 28-27; within-week permutation p 0.701 upper, 0.362 lower (null mean +0.0025); one of 58 outcome looks in this run",
+      "effect": -0.0004,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0241,
-        0.0105
+        -0.0164,
+        0.0159
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether shifting the AI read's first look by the betting line's later move improved on it, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.2041,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether shifting the AI read's first look by the betting line's later move improved on it, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.4784,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -172,24 +172,24 @@
     "lead104_earliest_first_plus_residual_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the revision net of the line move against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 41 games; game bootstrap; graded at the pool's Tuesday line, record 24-17; within-week permutation p 0.695 upper, 0.305 lower (null mean -0.0031); one of 54 outcome looks in this run",
-      "effect": -0.0073,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the revision net of the line move against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 10, 55 games; game bootstrap; graded at the pool's Tuesday line, record 29-26; within-week permutation p 0.505 upper, 0.495 lower (null mean -0.0015); one of 58 outcome looks in this run",
+      "effect": -0.0019,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0242,
-        0.0081
+        -0.0168,
+        0.0118
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the part of the AI read's change that the betting line's move does not explain improved on its first look, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.1981,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the part of the AI read's change that the betting line's move does not explain improved on its first look, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.4104,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -200,24 +200,24 @@
     "lead104_earliest_first_plus_tracking_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the part of the revision fitted by the line move against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 41 games; game bootstrap; graded at the pool's Tuesday line, record 21-20; within-week permutation p 0.861 upper, 0.183 lower (null mean -0.0070); one of 54 outcome looks in this run",
-      "effect": -0.0151,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: first view plus the part of the revision fitted by the line move against the first view alone, paired log-loss improvement; Weeks 7, 8, 9, 10, 55 games; game bootstrap; graded at the pool's Tuesday line, record 28-27; within-week permutation p 0.702 upper, 0.358 lower (null mean -0.0059); one of 58 outcome looks in this run",
+      "effect": -0.0088,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0344,
-        0.0051
+        -0.0262,
+        0.0087
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the part of the AI read's change that follows the betting line improved on its first look, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0705,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the part of the AI read's change that follows the betting line improved on its first look, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.156,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -228,24 +228,24 @@
     "lead104_earliest_last_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 43 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 57 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view against the first view, paired log-loss improvement; Weeks 7, 8, 9, 43 games; game bootstrap; graded at the pool's Tuesday line, record 23-20; within-week permutation p 0.823 upper, 0.177 lower (null mean -0.0097); one of 54 outcome looks in this run",
-      "effect": -0.02,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: last view against the first view, paired log-loss improvement; Weeks 7, 8, 9, 10, 57 games; game bootstrap; graded at the pool's Tuesday line, record 31-26; within-week permutation p 0.589 upper, 0.411 lower (null mean -0.0072); one of 58 outcome looks in this run",
+      "effect": -0.0093,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0453,
-        0.0044
+        -0.0315,
+        0.0117
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the AI read's last look at a game beat its first look, on 43 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0575,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the AI read's last look at a game beat its first look, on 57 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.1983,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 43,
+      "sample_blocks": 4,
+      "sample_games": 57,
       "seasons": [
         2026,
         2026
@@ -256,24 +256,24 @@
     "lead104_earliest_move_direction_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 19 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 28 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: direction of the market line move between the two views against the cover side on games whose line moved, accuracy over 50 percent; Weeks 7, 8, 9, 19 games; game bootstrap; graded at the pool's Tuesday line, record 6-13; within-week permutation p 0.934 upper, 0.350 lower (null mean -9.3800); one of 54 outcome looks in this run",
-      "effect": -18.4211,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: direction of the market line move between the two views against the cover side on games whose line moved, accuracy over 50 percent; Weeks 7, 8, 9, 10, 28 games; game bootstrap; graded at the pool's Tuesday line, record 13-15; within-week permutation p 0.740 upper, 0.612 lower (null mean -2.1996); one of 58 outcome looks in this run",
+      "effect": -3.5714,
       "effect_units": "accuracy_points",
       "family": "lead104_revision_path",
       "interval": [
-        -39.4737,
-        2.6316
+        -21.4286,
+        14.2857
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how often the side the betting line moved toward between the two looks covered the pool's Tuesday number, on 19 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0463,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures how often the side the betting line moved toward between the two looks covered the pool's Tuesday number, on 28 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.3523,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 19,
+      "sample_blocks": 4,
+      "sample_games": 28,
       "seasons": [
         2026,
         2026
@@ -284,24 +284,24 @@
     "lead104_earliest_residual_alone_vs_half_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: the revision net of the line move as a probability against a constant 0.5, paired log-loss improvement; Weeks 7, 8, 9, 41 games; game bootstrap; graded at the pool's Tuesday line, record 20-21; within-week permutation p 0.698 upper, 0.302 lower (null mean -0.0051); one of 54 outcome looks in this run",
-      "effect": -0.0093,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: the revision net of the line move as a probability against a constant 0.5, paired log-loss improvement; Weeks 7, 8, 9, 10, 55 games; game bootstrap; graded at the pool's Tuesday line, record 29-26; within-week permutation p 0.507 upper, 0.493 lower (null mean -0.0034); one of 58 outcome looks in this run",
+      "effect": -0.0038,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0286,
-        0.0072
+        -0.0204,
+        0.0108
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the part of the AI read's change that the betting line's move does not explain pointed at the side that covered, weighted by its size, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.1496,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the part of the AI read's change that the betting line's move does not explain pointed at the side that covered, weighted by its size, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.3231,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -312,24 +312,24 @@
     "lead104_earliest_residual_direction_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: direction of the revision net of the line move (residual of revision on move, slope fitted without outcomes) against the cover side, accuracy over 50 percent; Weeks 7, 8, 9, 41 games; game bootstrap; graded at the pool's Tuesday line, record 20-21; within-week permutation p 0.683 upper, 0.619 lower (null mean -0.7239); one of 54 outcome looks in this run",
-      "effect": -1.2195,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: direction of the revision net of the line move (residual of revision on move, slope fitted without outcomes) against the cover side, accuracy over 50 percent; Weeks 7, 8, 9, 10, 55 games; game bootstrap; graded at the pool's Tuesday line, record 29-26; within-week permutation p 0.602 upper, 0.670 lower (null mean +2.2962); one of 58 outcome looks in this run",
+      "effect": 2.7273,
       "effect_units": "accuracy_points",
       "family": "lead104_revision_path",
       "interval": [
-        -15.8537,
-        13.4146
+        -10.0,
+        15.4545
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how often the part of the AI read's change that the betting line's move does not explain pointed at the side that covered, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.4372,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures how often the part of the AI read's change that the betting line's move does not explain pointed at the side that covered, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.6612,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -340,24 +340,24 @@
     "lead104_earliest_revision_alone_vs_half_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 36 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 49 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: the revision alone as a probability (logistic of last minus first) against a constant 0.5 on games whose read changed, paired log-loss improvement; Weeks 7, 8, 9, 36 games; game bootstrap; graded at the pool's Tuesday line, record 13-23; within-week permutation p 0.849 upper, 0.151 lower (null mean -0.0128); one of 54 outcome looks in this run",
-      "effect": -0.0262,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: the revision alone as a probability (logistic of last minus first) against a constant 0.5 on games whose read changed, paired log-loss improvement; Weeks 7, 8, 9, 10, 49 games; game bootstrap; graded at the pool's Tuesday line, record 19-30; within-week permutation p 0.628 upper, 0.372 lower (null mean -0.0090); one of 58 outcome looks in this run",
+      "effect": -0.0124,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0574,
-        0.0049
+        -0.0397,
+        0.014
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the direction and size of the AI read's change of mind pointed at the side that covered, on 36 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0488,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the direction and size of the AI read's change of mind pointed at the side that covered, on 49 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.18,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 36,
+      "sample_blocks": 4,
+      "sample_games": 49,
       "seasons": [
         2026,
         2026
@@ -368,24 +368,24 @@
     "lead104_earliest_revision_direction_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 36 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 49 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: direction of the revision against the cover side on games whose read changed, accuracy over 50 percent; Weeks 7, 8, 9, 36 games; game bootstrap; graded at the pool's Tuesday line, record 13-23; within-week permutation p 0.912 upper, 0.321 lower (null mean -8.2814); one of 54 outcome looks in this run",
-      "effect": -13.8889,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: direction of the revision against the cover side on games whose read changed, accuracy over 50 percent; Weeks 7, 8, 9, 10, 49 games; game bootstrap; graded at the pool's Tuesday line, record 19-30; within-week permutation p 0.758 upper, 0.525 lower (null mean -9.6553); one of 58 outcome looks in this run",
+      "effect": -11.2245,
       "effect_units": "accuracy_points",
       "family": "lead104_revision_path",
       "interval": [
-        -30.5556,
-        2.7778
+        -25.5102,
+        3.0612
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how often the AI read moved toward the side that went on to cover, on 36 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.049,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures how often the AI read moved toward the side that went on to cover, on 49 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.0546,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 36,
+      "sample_blocks": 4,
+      "sample_games": 49,
       "seasons": [
         2026,
         2026
@@ -396,24 +396,24 @@
     "lead104_earliest_revision_vs_move_correlation": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 41 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 55 games in 4 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, earliest view to the last view before each pick deadline: correlation of the read's revision (last view minus first view, logit of the home cover probability) with the market line move toward the home team between the views; Weeks 7, 8, 9, 41 games; game bootstrap; no outcomes used",
-      "effect": 0.7342,
+      "description": "LEAD-104, earliest view to the last view before each pick deadline: correlation of the read's revision (last view minus first view, logit of the home cover probability) with the market line move toward the home team between the views; Weeks 7, 8, 9, 10, 55 games; game bootstrap; no outcomes used",
+      "effect": 0.7519,
       "effect_units": "correlation",
       "family": "lead104_revision_path",
       "interval": [
-        0.4516,
-        0.9185
+        0.5451,
+        0.8878
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how closely the change in an AI model's read of a game during the week tracked the betting line's move, on 41 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "plain_summary": "Research only: this measures how closely the change in an AI model's read of a game during the week tracked the betting line's move, on 55 finished games. That is too few to tell luck from skill, so it changes no pick.",
       "probability_positive": 1.0,
-      "recorded_at": "2026-11-14",
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 3,
-      "sample_games": 41,
+      "sample_blocks": 4,
+      "sample_games": 55,
       "seasons": [
         2026,
         2026
@@ -424,24 +424,24 @@
     "lead104_tuesday_last_vs_first_ll": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 29 games in 2 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 43 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, Tuesday view to the last view before each pick deadline: last view against the first view, paired log-loss improvement; Weeks 7, 9, 29 games; game bootstrap; graded at the pool's Tuesday line, record 15-14; within-week permutation p 0.731 upper, 0.269 lower (null mean -0.0194); one of 54 outcome looks in this run",
-      "effect": -0.0279,
+      "description": "LEAD-104, Tuesday view to the last view before each pick deadline: last view against the first view, paired log-loss improvement; Weeks 7, 9, 10, 43 games; game bootstrap; graded at the pool's Tuesday line, record 23-20; within-week permutation p 0.440 upper, 0.560 lower (null mean -0.0132); one of 58 outcome looks in this run",
+      "effect": -0.0112,
       "effect_units": "log_loss_improvement",
       "family": "lead104_revision_path",
       "interval": [
-        -0.0594,
-        0.0036
+        -0.0368,
+        0.0146
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures whether the AI read's last look at a game beat its first look, on 29 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.0425,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures whether the AI read's last look at a game beat its first look, on 43 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.1988,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 2,
-      "sample_games": 29,
+      "sample_blocks": 3,
+      "sample_games": 43,
       "seasons": [
         2026,
         2026
@@ -452,24 +452,24 @@
     "lead104_tuesday_residual_direction_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 28 games in 2 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 42 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, Tuesday view to the last view before each pick deadline: direction of the revision net of the line move (residual of revision on move, slope fitted without outcomes) against the cover side, accuracy over 50 percent; Weeks 7, 9, 28 games; game bootstrap; graded at the pool's Tuesday line, record 16-12; within-week permutation p 0.784 upper, 0.576 lower (null mean +9.4568); one of 54 outcome looks in this run",
+      "description": "LEAD-104, Tuesday view to the last view before each pick deadline: direction of the revision net of the line move (residual of revision on move, slope fitted without outcomes) against the cover side, accuracy over 50 percent; Weeks 7, 9, 10, 42 games; game bootstrap; graded at the pool's Tuesday line, record 24-18; within-week permutation p 0.593 upper, 0.714 lower (null mean +6.2533); one of 58 outcome looks in this run",
       "effect": 7.1429,
       "effect_units": "accuracy_points",
       "family": "lead104_revision_path",
       "interval": [
-        -10.7143,
-        25.0
+        -7.1429,
+        21.4286
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how often the part of the AI read's change that the betting line's move does not explain pointed at the side that covered, on 28 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.7756,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures how often the part of the AI read's change that the betting line's move does not explain pointed at the side that covered, on 42 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 0.8265,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 2,
-      "sample_games": 28,
+      "sample_blocks": 3,
+      "sample_games": 42,
       "seasons": [
         2026,
         2026
@@ -480,24 +480,24 @@
     "lead104_tuesday_revision_vs_move_correlation": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Forward log only, 28 games in 2 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
+      "classification_evidence": "Forward log only, 42 games in 3 weeks; interval and probability_positive from a game bootstrap; the mechanism is not refuted, no split-half reliability of zero and no positive control bound exists for it, so no admissible closing ground applies and the cell stays unresolved.",
       "closing_ground": null,
-      "description": "LEAD-104, Tuesday view to the last view before each pick deadline: correlation of the read's revision (last view minus first view, logit of the home cover probability) with the market line move toward the home team between the views; Weeks 7, 9, 28 games; game bootstrap; no outcomes used",
-      "effect": 0.7018,
+      "description": "LEAD-104, Tuesday view to the last view before each pick deadline: correlation of the read's revision (last view minus first view, logit of the home cover probability) with the market line move toward the home team between the views; Weeks 7, 9, 10, 42 games; game bootstrap; no outcomes used",
+      "effect": 0.7283,
       "effect_units": "correlation",
       "family": "lead104_revision_path",
       "interval": [
-        0.294,
-        0.9347
+        0.4761,
+        0.8874
       ],
       "league": "nfl",
       "notes": "",
-      "plain_summary": "Research only: this measures how closely the change in an AI model's read of a game during the week tracked the betting line's move, on 28 finished games. That is too few to tell luck from skill, so it changes no pick.",
-      "probability_positive": 0.9994,
-      "recorded_at": "2026-11-14",
+      "plain_summary": "Research only: this measures how closely the change in an AI model's read of a game during the week tracked the betting line's move, on 42 finished games. That is too few to tell luck from skill, so it changes no pick.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
       "reliability": null,
-      "sample_blocks": 2,
-      "sample_games": 28,
+      "sample_blocks": 3,
+      "sample_games": 42,
       "seasons": [
         2026,
         2026

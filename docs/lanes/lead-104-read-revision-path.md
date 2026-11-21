@@ -3,30 +3,27 @@
 ## Goal
 View-to-view revision of the LEAD-99 read: does the change from the first view to the last view before each pick deadline carry information, or only track the line move (ROADMAP LEAD-104). Research only, nothing served. The LEAD-99 term of record stays the declared last view (2026-10-20); the first view is a monitor.
 
-## State (2026-11-14, unit 2; measured by `scripts/lead104_revision_path.py --weeks 7 8 9 10 --first-view earliest tuesday` unless marked)
-- Weeks 7, 8, 9 are settled; 10 is skipped as unsettled. Week 8 still has no Tuesday view (read, lead99-llm-read.md:34: the 13:30 job found no captured pool week on 2026-10-27), so its first view is Thursday. Primary construction: earliest view to the last view before min(kickoff, Sunday 16:00 ET), the ledger's `lead99_first_view` and `lead99`; 43 games, 42 with two distinct views, 41 with a quote in both. Strict Tuesday construction: Weeks 7 and 9, 29 games. Graded at the pool's Tuesday line (margin minus line; matches the feature table on 43 of 43; no pushes).
-- Revision against the line move between the views: r +0.734 [+0.452, +0.919], probability_positive 1.00; slope 0.134 logit a point [0.111, 0.158] (read, lead99 lane: the card's fitted move coefficient is 0.2204); intercept +0.059 logit toward home; residual SD 0.115, 1.56 times revision noise. Tuesday only: r +0.702 [+0.294, +0.935]. 28 revisions toward home, 8 away; 13 moves toward home, 6 away; home covered 17 of 43.
-- First view 28-15: +15.1 points [+1.2, +29.1] P+ .978, within-week permutation p .150 (null +6.2); log loss against 0.5 +0.0259 [+0.0051, +0.0474] P+ .993, p .037.
-- Last view 23-20: +3.5 points [-10.5, +17.4] P+ .676, p .442; +0.0059 [-0.0231, +0.0344] P+ .647, p .342. Last against first -0.0200 [-0.0453, +0.0044] P+ .058; outcomes shuffled within week give -0.0097, lower-tail p .177. By week, first / last: W7 9-5 / 9-5, W8 9-5 / 8-6, W9 10-5 / 6-9.
-- The 13 side changes: revision direction (the last view's side) 4-9, -19.2 points [-42.3, +3.8] P+ .071, null -7.8, lower-tail p .368, exact sign test .267. Log loss on the 13: first +0.0143 [-0.0216, +0.0533] P+ .773; last -0.0409 [-0.0730, -0.0101] P+ .003, lower-tail p .012; last against first -0.0552 [-0.1168, +0.0088] P+ .047, p .112. 8 of the 13 had a line move and all 8 went with it (2-6); 5 had none (2-3). Median size 0.20 logit, 2.7 times revision noise, so they are not read noise.
-- Net of the move: residual direction 20-21, -1.2 points [-15.9, +13.4] P+ .437, p .683 upper, .619 lower; first view plus residual against first view -0.0073 [-0.0242, +0.0081] P+ .198. A dead heat.
-- Where the -0.0200 sits, each piece added alone to the first view: slope times move -0.0073 [-0.0241, +0.0105] P+ .204; home drift -0.0076 [-0.0159, +0.0011] P+ .041 (a constant, so the within-week null cannot test it; it is the weeks' home cover rate); residual -0.0073. The move's own side against the Tuesday number on 19 moved games: 6-13, -18.4 points [-39.5, +2.6] P+ .046, null -9.4, lower-tail p .350.
-- Looks: 54 outcome looks this unit (19 cells in each of 2 constructions, 10 by-week records, 6 move splits) plus the Week 7 look; family lead104_revision_path. 19 cells in registry/weak_signals/lead104_revision_path.json, all unresolved_below_power; `pool` ran once, exit 0.
+## State (measured 2026-11-21 09:54 ET, unit 3: `scripts/lead104_revision_path.py --weeks 7 8 9 10 11 --first-view earliest tuesday`, exit 0; artifacts/lead104_revision_path/summary.json, per_game_*.csv)
+- Weeks 7-10 settled; 11 skipped as unsettled. Week 8 has no Tuesday view, so its first view is Thursday. Earliest construction: 57 games, 56 with two distinct views, 55 with a quote in both; pool line equals the feature table on 57 of 57, no pushes. Strict Tuesday construction: Weeks 7, 9, 10, 43 games. Home covered 20 of 57 (Week 10: 3 of 14, inferred from 17 of 43 before).
+- Decisive record first: 15 side changes, last view 6-9 (exact sign test .607); with the move 10 games 4-6, no move 5 games 2-3, against the move 0. Week 10 alone (first forward week): first 6-8, last 8-6.
+- Revision against the move between views: r +0.752 [+0.545, +0.888] P+ 1.00; slope 0.139 logit a point [0.112, 0.172] (served move coefficient 0.2204, artifacts/pick_probability/20261111T011859Z/coefficients.json); intercept +0.050 toward home; residual SD 0.115, 1.55 times revision noise.
+- First view 34-23: +9.6 points [-2.6, +21.9] P+ .934, within-week null +4.7, p .282; log loss vs 0.5 +0.0169 [-0.0016, +0.0355] P+ .966, p .112.
+- Last view 31-26: +4.4 [-7.9, +16.7] P+ .749; +0.0075 [-0.0187, +0.0340] P+ .710, p .265. Last against first -0.0093 [-0.0315, +0.0117] P+ .198 (was -0.0200 P+ .058 on Weeks 7-9); shuffled-outcome null -0.0072, lower p .411. On the 15 changes: -0.0333 [-0.0947, +0.0285] P+ .144, lower p .254.
+- Net of the move: residual direction 29-26, +2.7 points [-10.0, +15.5] P+ .661; first plus residual vs first -0.0019 [-0.0168, +0.0118] P+ .410, a dead heat. Pieces added to the first view: move part -0.0004 [-0.0164, +0.0159] P+ .478; drift -0.0084 [-0.0145, -0.0021] P+ .004 (a constant: equals the weeks' home cover rate, the within-week null cannot test it). Move side at the Tuesday number on 28 moved games 13-15, -3.6 [-21.4, +14.3] P+ .352.
+- Tuesday construction: last vs first -0.0112 [-0.0368, +0.0146] P+ .199; drift -0.0163 [-0.0234, -0.0084].
+- Looks: 58 outcome looks this run (19 cells x 2 constructions, by-week records, move splits), family lead104_revision_path; 18 cells re-recorded with `--replace` (exit 0), all unresolved_below_power.
 
 ## Reading (inferred)
-- The revision is the line move plus a drift toward home, and nothing measurable beyond them. The later view trails in these weeks where it followed the move (the move's side went 6-13 at the frozen number) and where it drifted home while home covered 17 of 43. Half of the deficit survives shuffling outcomes within a week, so it is weekly lean as much as game selection. 13 changed games cannot separate this from chance.
-- Following the move is the right direction at a frozen line: the side the market moves toward is the value side at the Tuesday number, and the six-season move fit says so. Three weeks of 6-13 do not contradict that fit.
-- The declared row would be the wrong term only if last against first resolves negative on the forward sample from Week 10 (whole interval below zero, within-week null agreeing) through one of: the move between views not predicting cover at the Tuesday number; the home drift being a standing bias rather than three weeks' home cover rate; the residual being negative rather than a dead heat. None is shown. Stacked on the card, the last view also overlaps the card's own move term (r .73); that bears on the stack design, not the declaration.
+- Week 10, the first forward week, went the other way (last view 8-6), halving the deficit. The revision is still the line move plus a home drift with nothing measurable beyond them (residual a dead heat). The only interval wholly below zero is the drift constant, which is the four weeks' 35 pct home cover rate, not a mechanism. Nothing is refuted; the declared last view stays.
 
 ## Tried
-- Unit 1 (2026-11-03, Week 7): r .885 [.699, .988], residual direction 7-6. Its grade was margin plus line, the wrong sign for a line that is positive for a home favourite; regraded it is again 7-6, +3.8 points [-19.2, +26.9] P+ .617, re-recorded with replace.
-- Script now takes `--weeks`, `--first-view` (tuesday, earliest), `--cells`, `--tag`, reads deadlines from `game_deadlines`, and writes artifacts/lead104_revision_path/ (summary.json, weak_signals_batch.json, per_game csv). ruff check and format clean.
+- Unit 1 (11-03, Week 7) regraded at the pool line: 7-6. Unit 2 (11-14): Weeks 7-9 (last vs first -0.0200). Unit 3 (11-21): Weeks 7-10, no code change.
 
 ## Next
-- Rerun with `--weeks 7 8 9 10` once Week 10 is settled (then each week), record the batch with `--replace`, run `pool` once. Weeks 7-9 are exploratory for this family; Week 10 onward is the forward sample.
-- From five weeks on, fit revision, slope times move and drift leave-one-week-out instead of the in-sample pieces above.
+- Rerun each Tuesday with the newly settled week, record with `--replace`, run `pool` once. Week 10 onward is the forward sample (1 week so far).
+- From five settled weeks (now four), fit revision, slope times move and drift leave-one-week-out instead of in-sample.
 
 ## Open
-- Slope and intercept are fitted on the scored games, without outcomes. Residual SD and its noise ratio have no registry unit and stay here.
-- registry/weak_signals_base_tags.csv has no rows for the new cells; not edited.
-- Zero crossing closes nothing. The one interval wholly below zero (last view on the 13) is one of 54 looks on a subset where one view must lose when the other wins; it closes nothing.
+- Slope and intercept are fitted on the scored games without outcomes; residual SD has no registry unit.
+- registry/weak_signals_base_tags.csv has no rows for these cells; not edited.
+- Zero crossing closes nothing.
