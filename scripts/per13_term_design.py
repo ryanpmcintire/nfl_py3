@@ -190,6 +190,11 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "term_design_cells.json").write_text(json.dumps(cells, indent=1))
     FWD.mkdir(parents=True, exist_ok=True)
+    if (FWD / "frozen_coefficients.json").exists():
+        print(
+            "frozen term exists; not rewritten; weekly refresh is scripts/per13_forward.py refresh"
+        )
+        return
     (FWD / "frozen_coefficients.json").write_text(
         json.dumps(
             {

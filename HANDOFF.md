@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:14:19.530492+00:00`
+Refreshed at: `2026-11-21T16:18:28.799080+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T16:14:19.530492+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `76bdd5ce82c1` — Refresh the handoff
-- Pending change set: 85 paths
+- Baseline commit: `8043d37c8034` — MOD-30 unblocked on the existing nfelo source; 2025 pregame-stamped look unresolved (changed picks 4-6, null percentile 76)
+- Pending change set: 95 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/lanes/mod-30-mod30-public-ratings.md`
+  - ` M docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - `A  docs/lanes/forward-log-coverage-2026-11-21.md`
+  - ` M docs/lanes/lead-106-injury-language-read.md`
+  - ` M docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
+  - `M  docs/lanes/per-13-per13-week17-rest-hazard.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - `A  registry/weak_signals/mod30_nfelo_stamped_2026_11_21.json`
+  - ` M registry/weak_signals/lead106.json`
+  - ` M registry/weak_signals/lead110_market_absorption.json`
+  - ` M registry/weak_signals/sim29_lineup.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/forward_ledger.py`
   - ` M scripts/lead106_forward_score.py`
-  - `A  scripts/mod30_nfelo_stamped_2025.py`
+  - `A  scripts/per13_forward.py`
+  - `M  scripts/per13_term_design.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
-  - `?? cdx_vipre2.json`
-  - `?? cdx_viweek.json`
-  - `?? cdx_wgdl.json`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 65 more
+  - ...and 75 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

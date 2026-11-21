@@ -30,6 +30,7 @@ TERM_DIRS = [
     "sky01snap",
     "surface",
     "mod35_cold_exposure",
+    "per13_locked_rest",
     "mod41_residual_load",
     "mod41_residual_load_served",
     "mod41_avgwin_served",

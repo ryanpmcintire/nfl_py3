@@ -1128,6 +1128,49 @@ SCHEDULE: tuple[Job, ...] = (
         for day, at, grace in (("tue", "21:00", 180), ("wed", "20:30", 120))
     ),
     Job(
+        "per13_forward_refresh_tue",
+        "tue",
+        "14:20",
+        360,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "per13_forward.py"),
+            "refresh",
+        ],
+        True,
+        "PER-13: weekly seed-lock and elimination probabilities from the newest schedule "
+        "snapshot, stamped as of the run, for the frozen Week 17-18 resting-hazard term.",
+        requires=("weekly_lock",),
+        added_on="2026-11-21",
+    ),
+    *(
+        Job(
+            f"per13_forward_log_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "per13_forward.py"),
+                "log",
+                "--week",
+                "auto",
+            ],
+            True,
+            "PER-13 forward log: frozen resting-hazard term for Weeks 17-18 beside the served "
+            "card, written before kickoff; skips outside the declared window.",
+            requires=("weekly_lock",) if day == "tue" else (),
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (("tue", "14:30", 360), ("sat", "11:00", 120), ("sun", "10:30", 60))
+    ),
+    Job(
         "lead112_forward_score_tue",
         "tue",
         "13:30",
