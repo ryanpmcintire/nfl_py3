@@ -1,0 +1,89 @@
+{
+  "family": "g55_combined",
+  "signals": {
+    "g55_u6_arm_c_all_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade; no refuted mechanism and no positive-control bound, so the result is recorded below power with probability_positive and the matched-null percentile.",
+      "closing_ground": null,
+      "description": "POST-SELECTION combined arm C: S_ALL_v2 deadline availability inputs plus MOD-23 unit 5a man/zone coverage matchup inputs in one walk-forward ridge, minus served base, all games, model alone at the Tuesday opener, season-block bootstrap; record 807-696 v base 802-701 v S_ALL_v2 812-691 (v S_ALL_v2 -0.33 pts, P+ 0.221); matched null wins percentile 88.0 over 50 within-season joint shuffles",
+      "effect": 0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "g55_combined",
+      "interval": [
+        -1.4396313028271637,
+        1.9020305017096797
+      ],
+      "league": "nfl",
+      "notes": "POST-SELECTION: both pieces were chosen after their own grades on these games, so the history grade is optimistic and only the forward read decides. G55-U6 declared look family g55_combined (all primary, quiet, moved = 3 looks); declaration in docs/lanes/goal-55-backwards-2026-11-21.md section G55-U6 declaration; serving candidate failed",
+      "plain_summary": "Gives the model the gameday inactive list, a pregame forecast of each active player's playing time, whether the expected quarterback is inactive, and how each offense has fared against the man or zone coverage its opponent tends to play.",
+      "probability_positive": 0.6375,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u6/results.json",
+      "standard_error": null
+    },
+    "g55_u6_arm_c_moved_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade; no refuted mechanism and no positive-control bound, so the result is recorded below power with probability_positive and the matched-null percentile.",
+      "closing_ground": null,
+      "description": "POST-SELECTION combined arm C: S_ALL_v2 deadline availability inputs plus MOD-23 unit 5a man/zone coverage matchup inputs in one walk-forward ridge, minus served base, moved games, model alone at the Tuesday opener, season-block bootstrap; record 353-300 v base 361-292 v S_ALL_v2 357-296 (v S_ALL_v2 -0.61 pts, P+ 0.138); matched null wins percentile 68.0 over 50 within-season joint shuffles",
+      "effect": -1.2251148545176112,
+      "effect_units": "accuracy_points",
+      "family": "g55_combined",
+      "interval": [
+        -3.875968992248062,
+        1.361573373676248
+      ],
+      "league": "nfl",
+      "notes": "POST-SELECTION: both pieces were chosen after their own grades on these games, so the history grade is optimistic and only the forward read decides. G55-U6 declared look family g55_combined (all primary, quiet, moved = 3 looks); declaration in docs/lanes/goal-55-backwards-2026-11-21.md section G55-U6 declaration; serving candidate failed",
+      "plain_summary": "Gives the model the gameday inactive list, a pregame forecast of each active player's playing time, whether the expected quarterback is inactive, and how each offense has fared against the man or zone coverage its opponent tends to play.",
+      "probability_positive": 0.171,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 653,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u6/results.json",
+      "standard_error": null
+    },
+    "g55_u6_arm_c_quiet_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade; no refuted mechanism and no positive-control bound, so the result is recorded below power with probability_positive and the matched-null percentile.",
+      "closing_ground": null,
+      "description": "POST-SELECTION combined arm C: S_ALL_v2 deadline availability inputs plus MOD-23 unit 5a man/zone coverage matchup inputs in one walk-forward ridge, minus served base, quiet games, model alone at the Tuesday opener, season-block bootstrap; record 450-387 v base 437-400 v S_ALL_v2 451-386 (v S_ALL_v2 -0.12 pts, P+ 0.319); matched null wins percentile 90.0 over 50 within-season joint shuffles",
+      "effect": 1.5531660692951015,
+      "effect_units": "accuracy_points",
+      "family": "g55_combined",
+      "interval": [
+        0.2849002849002849,
+        2.528735632183908
+      ],
+      "league": "nfl",
+      "notes": "POST-SELECTION: both pieces were chosen after their own grades on these games, so the history grade is optimistic and only the forward read decides. G55-U6 declared look family g55_combined (all primary, quiet, moved = 3 looks); declaration in docs/lanes/goal-55-backwards-2026-11-21.md section G55-U6 declaration; serving candidate failed",
+      "plain_summary": "Gives the model the gameday inactive list, a pregame forecast of each active player's playing time, whether the expected quarterback is inactive, and how each offense has fared against the man or zone coverage its opponent tends to play.",
+      "probability_positive": 0.989,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 837,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u6/results.json",
+      "standard_error": null
+    }
+  }
+}

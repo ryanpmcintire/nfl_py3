@@ -44,6 +44,9 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 - Arm C = S_ALL_v2 (frozen, U5a lane) plus the MOD-23 unit 5a man/zone coverage inputs exactly as frozen in scripts/mod23_unit5.py arm a (docs/mod23_unit5.md), in one walk-forward ridge, model alone at the Tuesday opener, 1,503 decisive 2020-25 games. Labelled POST-SELECTION: both pieces were chosen after their own grades on these games (5a 809-694, S_ALL_v2 812-691), so the history grade is optimistic and only the forward read decides.
 - Looks: all / quiet / moved = 3, family g55_combined. Same null (50 within-season shuffles of both input blocks together), same serving test (>= 827, null >= 95, log loss no worse). No variants, no re-tuning.
 
+## G55-U6 result (measured, root recomputed from artifacts/g55_u6/per_game.parquet)
+- Arm C 807-696 v base 802-701 (+0.33 [-1.44, +1.90], P+ .637, null 88th pct, log loss .69841 worse); v S_ALL_v2 -0.33 (changed 71, 33-38); quiet 450-387, moved 353-300. All three serving legs fail; 3 cells unresolved_below_power, family g55_combined, post-selection. The 5a arm alone now reads 806-697 on today's features (was 809-694 on 09-30; frozen terms reproduce, so shared inputs drifted, inferred). Adding coverage does not help: S_ALL_v2 812-691 stays the best servable model-alone record.
+
 ## G55-U7 (build only): frozen S_ALL_v2 forward logger for 2026 Weeks 12-18 at the opener beside the served model; needs 2026 snaps, live inactives (Tuesday patch) and Friday designations; scheduler jobs added by root Tuesday. Lane g55-u7-forward-logger-2026-11-21.md.
 
 ## Tried

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T20:38:32.878854+00:00`
+Refreshed at: `2026-11-21T20:50:45.242059+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-21T20:38:32.878854+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a80fc28b2e08` — G55-U5a: pregame usage forecast v2 (designations, practice, return ramp); G55-U5b grade declared before any outcome read
-- Pending change set: 93 paths
+- Baseline commit: `e3e84cbcc26d` — G55-U5b: S_ALL_v2 812-691 v base 802-701 at the opener, null 98th pct; serving test fails on wins and log loss; U6 combination declared
+- Pending change set: 95 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/index.html`
-  - `A  docs/lanes/g55-u5b-s-all-v2-grade-2026-11-21.md`
+  - `A  docs/lanes/g55-u6-combined-grade-2026-11-21.md`
   - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals/g55_deadline_availability.json`
-  - `A  scripts/g55_u5b_grade.py`
+  - `A  registry/weak_signals/g55_combined.json`
+  - `A  scripts/g55_u6_combined_grade.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-21T20:38:32.878854+00:00`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - ...and 73 more
+  - ...and 75 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
