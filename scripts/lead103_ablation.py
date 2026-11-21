@@ -155,6 +155,8 @@ def analyze(source):
             )
         for i in np.argsort(-a)[:3]:
             print(f"   {ids[i]} full {full[i]:+.3f} ablated {am[i]:+.3f} d {diff[i]:+.3f} z {diff[i] / se:+.1f}")
+        flips = [f"{ids[i]} {full[i]:+.3f}->{am[i]:+.3f}" for i in range(n) if np.sign(full[i]) != np.sign(am[i])]
+        print(f"   side flips (mean full v mean ablated) {len(flips)}: {flips}")
 
 
 def main():

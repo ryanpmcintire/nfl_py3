@@ -29,6 +29,62 @@
       "source": "docs/lanes/lead-103-read-block-ablation.md",
       "standard_error": null
     },
+    "lead103_w11_drop_injuries_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, 6 block looks this week in one family (market, beat_posts, injuries, injury_headlines, weather, rest); a full-versus-ablated agreement has no wrong-sign direction to resolve and no positive control or split-half reliability is measured for the block effect, so nothing closes.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off between the full LEAD-99 deadline read (mean of 4 reads) and the read with the injuries block removed (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games. Lower means the block moves the read more.",
+      "effect": 0.972,
+      "effect_units": "correlation",
+      "family": "lead103_read_block_ablation",
+      "interval": [
+        0.942,
+        0.995
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid, 16:52-17:02Z). Mean absolute logit shift 0.025 [0.015, 0.036]; null mean shift 0.032 at noise 0.052, ratio 0.79 [0.47, 1.14], matched-null percentile 0.178; at this week's measured pooled read SD 0.032, ratio 1.29 [0.76, 1.85], percentile 0.910. Signed shift -0.002 [-0.020, +0.016], P+ 0.428. Largest: LV_DEN -0.053. No side flips. Week 9 single-read look: mean shift 0.067.",
+      "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-103-read-block-ablation.md",
+      "standard_error": null
+    },
+    "lead103_w11_drop_injury_headlines_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, 6 block looks this week in one family (market, beat_posts, injuries, injury_headlines, weather, rest); a full-versus-ablated agreement has no wrong-sign direction to resolve and no positive control or split-half reliability is measured for the block effect, so nothing closes.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off between the full LEAD-99 deadline read (mean of 4 reads) and the read with the injury_headlines block removed (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games. Lower means the block moves the read more.",
+      "effect": 0.98,
+      "effect_units": "correlation",
+      "family": "lead103_read_block_ablation",
+      "interval": [
+        0.945,
+        0.995
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid, 16:54-17:03Z). Mean absolute logit shift 0.018 [0.010, 0.027]; null mean shift 0.032 at noise 0.052, ratio 0.58 [0.33, 0.86], matched-null percentile 0.018; at this week's measured pooled read SD 0.028, ratio 1.06 [0.60, 1.58], percentile 0.633. Signed shift -0.005 [-0.018, +0.008], P+ 0.235. Largest: LV_DEN -0.053. No side flips. Week 9 single-read look: mean shift 0.042.",
+      "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-103-read-block-ablation.md",
+      "standard_error": null
+    },
     "lead103_w11_drop_market_read_correlation": {
       "category": "control",
       "classification": "unresolved_below_power",
@@ -46,6 +102,62 @@
       "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid). Mean absolute logit shift 0.110 [0.053, 0.173]; null mean shift 0.032 at noise 0.052, ratio 3.46 [1.68, 5.47], matched-null percentile 1.000; at this week's measured pooled read SD 0.035, ratio 5.20 [2.52, 8.22], percentile 1.000. Signed shift +0.012 [-0.070, +0.103], P+ 0.600. Largest: NYJ_LAC +0.354, CIN_WAS +0.241, LV_DEN -0.227 (two cross zero). Week 9 single-read look: mean shift 0.095.",
       "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
       "probability_positive": 0.665,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-103-read-block-ablation.md",
+      "standard_error": null
+    },
+    "lead103_w11_drop_rest_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, 6 block looks this week in one family (market, beat_posts, injuries, injury_headlines, weather, rest); a full-versus-ablated agreement has no wrong-sign direction to resolve and no positive control or split-half reliability is measured for the block effect, so nothing closes.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off between the full LEAD-99 deadline read (mean of 4 reads) and the read with the rest block removed (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games. Lower means the block moves the read more.",
+      "effect": 0.978,
+      "effect_units": "correlation",
+      "family": "lead103_read_block_ablation",
+      "interval": [
+        0.893,
+        0.998
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid, 16:56-17:05Z). Mean absolute logit shift 0.018 [0.009, 0.028]; null mean shift 0.032 at noise 0.052, ratio 0.56 [0.29, 0.89], matched-null percentile 0.014; at this week's measured pooled read SD 0.029, ratio 1.02 [0.53, 1.61], percentile 0.558. Signed shift -0.001 [-0.013, +0.014], P+ 0.454. Largest: TB_DET +0.060. No side flips. Week 9 single-read look: mean shift 0.035.",
+      "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-103-read-block-ablation.md",
+      "standard_error": null
+    },
+    "lead103_w11_drop_weather_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, 6 block looks this week in one family (market, beat_posts, injuries, injury_headlines, weather, rest); a full-versus-ablated agreement has no wrong-sign direction to resolve and no positive control or split-half reliability is measured for the block effect, so nothing closes.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off between the full LEAD-99 deadline read (mean of 4 reads) and the read with the weather block removed (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games. Lower means the block moves the read more.",
+      "effect": 0.941,
+      "effect_units": "correlation",
+      "family": "lead103_read_block_ablation",
+      "interval": [
+        0.74,
+        0.993
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid, 16:55-17:04Z). Mean absolute logit shift 0.029 [0.014, 0.050]; null mean shift 0.032 at noise 0.052, ratio 0.91 [0.44, 1.57], matched-null percentile 0.362; at this week's measured pooled read SD 0.030, ratio 1.58 [0.76, 2.71], percentile 0.994. Signed shift +0.015 [-0.006, +0.041], P+ 0.911. Largest: NO_CHI +0.127. No side flips. Week 9 single-read look: mean shift 0.042.",
+      "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
+      "probability_positive": 1.0,
       "recorded_at": "2026-11-21",
       "reliability": null,
       "sample_blocks": null,

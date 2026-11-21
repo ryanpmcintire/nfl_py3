@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:56:37.780958+00:00`
+Refreshed at: `2026-11-21T17:07:25.700114+00:00`
 
 ## Start here
 
@@ -21,17 +21,14 @@ Refreshed at: `2026-11-21T16:56:37.780958+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3ae94d28037e` — LEAD-102 and LEAD-103 Week 11 reads: named and blinded agree within noise; dropping the market block changes the read 3.5 times noise
-- Pending change set: 86 paths
+- Baseline commit: `b6a17d6f159a` — SIM-29: opener sign error fixed and three cells re-recorded (all unresolved); forward log for Weeks 12-18 declared with Thursday and Saturday jobs and a Tuesday roster snapshot
+- Pending change set: 83 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - ` M docs/lanes/lead-103-read-block-ablation.md`
-  - `M  docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - `M  registry/weak_signals/sim29_lineup.json`
-  - `M  scripts/capture_scheduler.py`
-  - ` M scripts/lead103_ablation.py`
-  - `A  scripts/sim29_forward.py`
-  - `M  scripts/sim29_lineup_sim.py`
+  - `M  docs/lanes/lead-103-read-block-ablation.md`
+  - `M  registry/weak_signals/lead103_read_block_ablation.json`
+  - `M  scripts/lead103_ablation.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-21T16:56:37.780958+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 66 more
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - ...and 63 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
