@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:32:12.302235+00:00`
+Refreshed at: `2026-11-21T17:34:10.757520+00:00`
 
 ## Start here
 
@@ -21,20 +21,11 @@ Refreshed at: `2026-11-21T17:32:12.302235+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3f41146117ff` — Backlog lane: card republished under the refit model; pushed
-- Pending change set: 93 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
+- Baseline commit: `a3517c4b0cfc` — UI-33: board shows a 'Depends on' line only when the served probability changes side with the starting quarterback, keyed to the active model and card; producer jobs after card refreshes; card and site republished under the refit model
+- Pending change set: 84 paths
   - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
-  - `M  docs/model.html`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  tiebreaker.json`
+  - `M  docs/lanes/coordinators-lead28-per07-2026-11-02.md`
+  - `M  docs/lanes/lead80-81-forward-capture-2026-11-02.md`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +34,16 @@ Refreshed at: `2026-11-21T17:32:12.302235+00:00`
   - `?? cdx_wgdl.json`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 73 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - ...and 64 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
