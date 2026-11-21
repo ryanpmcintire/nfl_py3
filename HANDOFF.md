@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T19:11:50.149405+00:00`
+Refreshed at: `2026-11-21T19:19:42.378308+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-11-21T19:11:50.149405+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `50d93832f510` — Goal-55 lane: what 55% takes, worked backwards
-- Pending change set: 91 paths
+- Baseline commit: `41bca62f15d7` — Goal-55 lane: owner target is the model alone above 55%; route is deadline who-plays; G55-U3 grade declared before any outcome read
+- Pending change set: 94 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/index.html`
+  - `A  docs/lanes/g55-u1-deadline-actives-2026-11-21.md`
   - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
+  - `A  scripts/g55_u1_deadline_actives.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-21T19:11:50.149405+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 71 more
+  - ...and 74 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

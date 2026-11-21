@@ -19,6 +19,7 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 
 ## G55-U3 declaration (written 2026-11-21 ~14:00 EST, before any outcome read of a servable arm)
 - Arm S_ALL: P2-L harness (scripts/mod57_p2l_availability_ceiling.py), base walk-forward model, with U1 deadline actives replacing O1, U1 starting QB replacing O3, U2 expected snap share replacing O2, on games known_at_deadline; other games keep base inputs. No position selection, no reweighting, nothing tuned on 2020-25 outcomes.
+- Root pin 2026-11-21 ~14:55 EST after U1 (verified artifacts/g55_u1/summary.json: INA with snaps 0 of 19,847): O1 = gameday status from artifacts/g55_u1/deadline_actives.parquet per the U1 lane Next 1. O3 uses the actives list only: share 0 when the served projected QB is INA on a known_at_deadline game, else 1. Depth-chart starter is NOT used (pregame timing unverified, U1 Open).
 - Grade: model alone at the Tuesday opener, 1,503 decisive 2020-25 games, LOSO as P2-L. Looks: all (primary), quiet, moved = 3, family g55_deadline_availability. Controls: S_ALL shuffled within season (50 draws) for a matched-null percentile; base reproduced 802-701 first.
 - Serving candidate only if all of: S_ALL >= 827 wins, null percentile >= 95, log loss no worse than base. Then a forward read on 2026 Weeks 12-18 at the opener beside the served model, and landing in the pinned batch with validation re-enrolled. Anything else is recorded unresolved_below_power and the arm is not re-tuned on the same games.
 
