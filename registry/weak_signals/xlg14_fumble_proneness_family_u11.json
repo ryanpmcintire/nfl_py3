@@ -1,0 +1,257 @@
+{
+  "family": "xlg14_fumble_proneness_family_u11",
+  "signals": {
+    "xlg14_fumble_cfb_def_forced_fumble_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, def_forced_fumble_oe: the defence's forced fumbles on opponent scrimmage plays (whoever recovered), in excess of the league rate of each game's own week, per opponent scrimmage play over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 147, record 61-86; coefficient per SD +0.0063; earlier and later season-half coefficients +0.0071 and +0.0053; this metric sits at percentile 6.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.156863.",
+      "effect": -0.280112,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.526611,
+        -0.022409
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that knock the ball loose more often on defense, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0165,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_def_forced_fumble_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, def_forced_fumble_oe: the defence's forced fumbles on opponent scrimmage plays (whoever recovered), in excess of the league rate of each game's own week, per opponent scrimmage play over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 147, record 61-86; coefficient per SD +0.0063; earlier and later season-half coefficients +0.0071 and +0.0053; this metric sits at percentile 16.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000063.",
+      "effect": -6.1e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.000104,
+        -1.7e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that knock the ball loose more often on defense, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.003,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_def_forced_fumble_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, def_forced_fumble_oe: the defence's forced fumbles on opponent scrimmage plays (whoever recovered), in excess of the league rate of each game's own week, per opponent scrimmage play over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 147, record 61-86; coefficient per SD +0.0063; earlier and later season-half coefficients +0.0071 and +0.0053; this metric sits at percentile 16.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000127.",
+      "effect": -0.000122,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.000209,
+        -3.5e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that knock the ball loose more often on defense, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.003,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_fumble_net_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, fumble_net_oe: the sum of the offensive ball-security and defensive forced-fumble reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 107, record 49-58; coefficient per SD -0.0003; earlier and later season-half coefficients +0.0091 and -0.0130; this metric sits at percentile 35.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.100840.",
+      "effect": -0.10084,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.336134,
+        0.112045
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that come out ahead on fumbles committed versus forced, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.196,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_fumble_net_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, fumble_net_oe: the sum of the offensive ball-security and defensive forced-fumble reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 107, record 49-58; coefficient per SD -0.0003; earlier and later season-half coefficients +0.0091 and -0.0130; this metric sits at percentile 44.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000039.",
+      "effect": -3.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -6.6e-05,
+        -1.3e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that come out ahead on fumbles committed versus forced, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_fumble_net_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, fumble_net_oe: the sum of the offensive ball-security and defensive forced-fumble reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 107, record 49-58; coefficient per SD -0.0003; earlier and later season-half coefficients +0.0091 and -0.0130; this metric sits at percentile 44.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000078.",
+      "effect": -7.8e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.000133,
+        -2.6e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that come out ahead on fumbles committed versus forced, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_off_ball_security_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, off_ball_security_oe: minus the offence's fumbles on scrimmage plays (whoever recovered), in excess of the league rate of each game's own week, per own scrimmage play over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 184, record 92-92; coefficient per SD -0.0068; earlier and later season-half coefficients +0.0058 and -0.0227; this metric sits at percentile 61.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.011204.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.291317,
+        0.313725
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that put the ball on the ground less often, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.5142,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_off_ball_security_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, off_ball_security_oe: minus the offence's fumbles on scrimmage plays (whoever recovered), in excess of the league rate of each game's own week, per own scrimmage play over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 184, record 92-92; coefficient per SD -0.0068; earlier and later season-half coefficients +0.0058 and -0.0227; this metric sits at percentile 61.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000032.",
+      "effect": -2.9e-05,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -7.3e-05,
+        1.3e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that put the ball on the ground less often, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.0875,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_fumble_cfb_off_ball_security_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared ball-security mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first fumble-proneness family, off_ball_security_oe: minus the offence's fumbles on scrimmage plays (whoever recovered), in excess of the league rate of each game's own week, per own scrimmage play over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of the same season (interception-return fumbles excluded); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 184, record 92-92; coefficient per SD -0.0068; earlier and later season-half coefficients +0.0058 and -0.0227; this metric sits at percentile 61.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000065.",
+      "effect": -5.9e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_fumble_proneness_family_u11",
+      "interval": [
+        -0.000147,
+        2.6e-05
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_fumble_proneness_family_u11: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: no.",
+      "plain_summary": "Checks whether college teams that put the ball on the ground less often, beyond what their cover record already says, go on to beat the opening spread more or less often. No effect large enough for this test to see showed up.",
+      "probability_positive": 0.087,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u11-2026-11-21.md",
+      "standard_error": null
+    }
+  }
+}

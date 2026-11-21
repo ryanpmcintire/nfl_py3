@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:26:30.214118+00:00`
+Refreshed at: `2026-11-21T16:34:58.502327+00:00`
 
 ## Start here
 
@@ -21,11 +21,16 @@ Refreshed at: `2026-11-21T16:26:30.214118+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ab8afd59c6db` — History week chips wrap their sentences (desktop page no longer scrolls sideways); UI-33 served run flags no Week 11 pick; LEAD-109 forward weighting and LEAD-100 Week 11 repeat reads, all unresolved
-- Pending change set: 81 paths
-  - `M  docs/lanes/backlog-2026-11-21.md`
+- Baseline commit: `a6babe17ec24` — Backlog lane: queue and in-flight state
+- Pending change set: 86 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `A  docs/lanes/done/xlg-14-u11-2026-11-21.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
   - ` M registry/weak_signals/sim29_lineup.json`
+  - `A  registry/weak_signals/xlg14_fumble_proneness_family_u11.json`
+  - `A  scripts/xlg14_family_u11.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -38,12 +43,7 @@ Refreshed at: `2026-11-21T16:26:30.214118+00:00`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 61 more
+  - ...and 66 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
