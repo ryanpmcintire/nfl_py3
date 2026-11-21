@@ -1,0 +1,285 @@
+{
+  "family": "lead109_position_value_forward",
+  "signals": {
+    "lead109_fwd_wk9_10_filed_value_weighted_gain_des": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Value-weighted read gain vs designation ladder, games whose injury status was filed before the read only",
+      "effect": 0.0359,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0036,
+        0.0839
+      ],
+      "league": "nfl",
+      "notes": "560 rows; difference from unweighted 0.0113 [-0.0183, 0.0515] P+ 0.708; detectable size 0.063; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "With the games read before any tags were filed set aside, the wording read's edge shrinks but stays on the positive side; open.",
+      "probability_positive": 0.957,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 27,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_filed_value_weighted_gain_desprac": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Value-weighted read gain vs designation-by-practice ladder, games whose injury status was filed before the read only",
+      "effect": 0.0109,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0114,
+        0.0333
+      ],
+      "league": "nfl",
+      "notes": "560 rows; difference from unweighted -0.0029 [-0.0186, 0.0115] P+ 0.365; detectable size 0.032; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "With the games read before any tags were filed set aside, the wording read's edge shrinks but stays on the positive side; open.",
+      "probability_positive": 0.8235,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 27,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_ol_gain_des": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Read minus designation ladder log loss gain on P(plays), OL rows only",
+      "effect": -0.0088,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0113,
+        -0.0066
+      ],
+      "league": "nfl",
+      "notes": "24 rows; detectable size 0.003; all 24 verified OL rows are designated Out and none played, so the cell is the read's floor (0.01 to 0.02) against the ladder's Out rate (about 0.003); the interval is degenerate and carries no uncertain OL row; listed in the lane for adjudication, not closed; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "Every listed lineman was ruled out and sat, so the read had nothing to add; this cell cannot answer the question yet.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 14,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_ol_gain_desprac": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Read minus designation-by-practice ladder log loss gain on P(plays), OL rows only",
+      "effect": -0.0092,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0116,
+        -0.0069
+      ],
+      "league": "nfl",
+      "notes": "24 rows; detectable size 0.003; all 24 verified OL rows are designated Out and none played, so the cell is the read's floor (0.01 to 0.02) against the ladder's Out rate (about 0.003); the interval is degenerate and carries no uncertain OL row; listed in the lane for adjudication, not closed; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "Every listed lineman was ruled out and sat, so the read had nothing to add; this cell cannot answer the question yet.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 14,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_qb_gain_des": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Read minus designation ladder log loss gain on P(plays), QB rows only",
+      "effect": 0.1387,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0332,
+        0.4109
+      ],
+      "league": "nfl",
+      "notes": "27 rows; detectable size 0.334; two non-Out QB rows carry most of the gain (Week 9 MIN Murray, game read before status filed, and Week 9 ARI Brissett); LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "At quarterback the wording read leans better than the tags, carried by two players; too few rows to settle.",
+      "probability_positive": 0.882,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 21,
+      "sample_games": 17,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_qb_gain_desprac": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Read minus designation-by-practice ladder log loss gain on P(plays), QB rows only",
+      "effect": 0.0561,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0401,
+        0.2229
+      ],
+      "league": "nfl",
+      "notes": "27 rows; detectable size 0.203; two non-Out QB rows carry most of the gain (Week 9 MIN Murray, game read before status filed, and Week 9 ARI Brissett); LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "At quarterback the wording read leans better than the tags, carried by two players; too few rows to settle.",
+      "probability_positive": 0.758,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 21,
+      "sample_games": 17,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_value_weighted_gain_des": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Read minus designation ladder log loss gain on P(plays), weighted by absolute position spread value",
+      "effect": 0.085,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        0.0148,
+        0.1857
+      ],
+      "league": "nfl",
+      "notes": "607 rows; unweighted 0.0522; detectable size 0.127; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "Reading injury-report wording beat the official tags at guessing who plays, a little more so when big-value positions are counted heavier; two weeks cannot settle it.",
+      "probability_positive": 0.9955,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_value_weighted_gain_desprac": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Read minus designation-by-practice ladder log loss gain on P(plays), weighted by absolute position spread value",
+      "effect": 0.0365,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0067,
+        0.0985
+      ],
+      "league": "nfl",
+      "notes": "607 rows; unweighted 0.0226; detectable size 0.074; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "Reading injury-report wording beat the official tags at guessing who plays, a little more so when big-value positions are counted heavier; two weeks cannot settle it.",
+      "probability_positive": 0.944,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_weighted_minus_unweighted_des": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Value-weighted minus unweighted read gain vs designation ladder (does the gain concentrate in high-value positions)",
+      "effect": 0.0328,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0175,
+        0.1052
+      ],
+      "league": "nfl",
+      "notes": "607 rows; within-designation value-shuffle null one-sided p 0.165, two-sided 0.177; detectable size 0.090; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "Whether the wording read helps more at quarterback and line than at depth spots is not yet visible; the difference is small next to the noise.",
+      "probability_positive": 0.85,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    },
+    "lead109_fwd_wk9_10_weighted_minus_unweighted_desprac": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows, 58 team-week clusters, 2 forward weeks; 30 declared looks in family lead109_position_value_forward; no split-half reliability on forward weeks and no positive control; every observed effect is below its detectable size (2.8 bootstrap SE); the OL cells have an interval below zero only because all 24 OL rows were Out and sat (read floor vs ladder rate), which is not a resolved wrong sign of position value",
+      "closing_ground": null,
+      "description": "Value-weighted minus unweighted read gain vs designation-by-practice ladder (does the gain concentrate in high-value positions)",
+      "effect": 0.0139,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value_forward",
+      "interval": [
+        -0.0176,
+        0.0601
+      ],
+      "league": "nfl",
+      "notes": "607 rows; within-designation value-shuffle null one-sided p 0.238, two-sided 0.320; detectable size 0.057; LEAD-106 forward reads 2026 Weeks 9-10, every id-verified listed player (full population, all QB and OL rows), ladders fit on prior weeks only, position values from LEAD-110 2011-2025 OLS; scored 2026-11-21 by scripts/lead109_position_weights.py --forward-weeks 9 10, no model calls; team-week bootstrap 2000; one of 30 declared looks, family lead109_position_value_forward",
+      "plain_summary": "Whether the wording read helps more at quarterback and line than at depth spots is not yet visible; the difference is small next to the noise.",
+      "probability_positive": 0.7235,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 29,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/forward_report_weeks_9_10.json",
+      "standard_error": null
+    }
+  }
+}

@@ -20,6 +20,7 @@ Read dispersion as precision: between-read disagreement of the frozen language r
 ## Next
 - More games with at least 3 reads of the same packet are the only way to power this; no stored repeats exist beyond Week 9 Tuesday (measured: repeats/ holds 3 files, all of that packet). Root decides whether to queue K repeat reads of a later packet (API spend). Then rerun the script unchanged; it picks up every source run with repeats.
 - Split-half reliability of D itself (reads 1-2 vs 3-4) before any weight is fitted.
+- 2026-11-21 11:24 AM ET (LEAD-100 unit 2): Week 11 now has repeat reads for the dispersion test: 3 valid repeats of runs/2026-week-11-deadline-20261119T230145Z.json in artifacts/lead99_llm_read/repeats (4 reads per game; 12 games qualify, IND_HOU kicked off 11-19 before the repeats, so drop it). Measured: Week 11 between-read SD 0.029 logit, max 0.013 prob, so D has little range there. Outcomes not read. Rerun lead107_dispersion_error.py once Week 11 lines settle.
 
 ## Open
 - The later-line target goes through the served move coefficient; a discrete-margin mapping is the alternative and is not built.

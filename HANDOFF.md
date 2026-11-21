@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:21:43.352956+00:00`
+Refreshed at: `2026-11-21T16:25:54.612100+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T16:21:43.352956+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9f5d208e4482` — ENG-51 unit 3: opener-evaluation controls prepared for the season-boundary bundle (served 53.36% v opener-only 50.37%, P+ .96)
-- Pending change set: 89 paths
+- Baseline commit: `fa71f8f7ada5` — draftcap forward log re-enrolled as frozen v2 after the 11-17 feature rebuild broke the v1 refit; Week 11 Sunday/Monday logged; History week strip overflow queued
+- Pending change set: 96 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/lanes/backlog-2026-11-21.md`
-  - `M  docs/lanes/draftcap-forward-log.md`
-  - `M  docs/lanes/forward-log-coverage-2026-11-21.md`
-  - ` M docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
-  - `M  docs/lanes/mod23-unit10b-draft-capital-v2.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
+  - `M  docs/lanes/lead-107-read-dispersion-weight.md`
+  - `M  docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - `M  docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
+  - `M  docs/model.html`
+  - `A  registry/weak_signals/lead109_position_value_forward.json`
   - ` M registry/weak_signals/sim29_lineup.json`
-  - `M  scripts/draftcap_forward_log.py`
-  - ` M scripts/lead100_analyze.py`
-  - ` M scripts/lead109_position_weights.py`
+  - `M  scripts/lead100_analyze.py`
+  - `M  scripts/lead109_position_weights.py`
+  - `M  src/nfl_ats/board_interactive.css`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
-  - `?? cdx_vipre.json`
-  - `?? cdx_vipre2.json`
-  - `?? cdx_viweek.json`
-  - `?? cdx_wgdl.json`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - ...and 69 more
+  - ...and 76 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

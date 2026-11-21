@@ -2635,10 +2635,14 @@ def _week_strip_html(block: SeasonSoFar) -> str:
             )
             early_html = f'<span class="wk-name">Tuesday card {early_record}</span>'
         field_text = field_texts.get(week)
-        field_html = f'<span class="wk-name">{escape(field_text)}</span>' if field_text else ""
+        field_html = (
+            f'<span class="wk-name wk-note">{escape(field_text)}</span>' if field_text else ""
+        )
         half_point_text = half_point_texts.get(week)
         half_point_html = (
-            f'<span class="wk-name">{escape(half_point_text)}</span>' if half_point_text else ""
+            f'<span class="wk-name wk-note">{escape(half_point_text)}</span>'
+            if half_point_text
+            else ""
         )
         chips.append(
             f'<li class="wk-chip {tone}"><span class="wk-name">Week {week} final</span>'
