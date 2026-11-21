@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T14:45:28.046207+00:00`
+Refreshed at: `2026-11-21T14:47:01.204990+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-11-21T14:45:28.046207+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3eb29eab0c45` — Record the HOU Best Pick result, the flag-weight season-boundary item, the refreshed freshness audit, and repoint the FTN forward script at the locked raw card helper
+- Baseline commit: `a617de4ffc40` — Keep the counted flags through Week 18 and review per-flag weights at the season boundary; close the HOU Best Pick lane
 - Pending change set: 79 paths
-  - `R  docs/lanes/hou-best-pick-check-2026-11-18.md -> docs/lanes/done/hou-best-pick-check-2026-11-18.md`
+  - `M  docs/lanes/flag-gate-evaluation-2026-11-14.md`
   - ` M src/nfl_ats/pick_probability.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
