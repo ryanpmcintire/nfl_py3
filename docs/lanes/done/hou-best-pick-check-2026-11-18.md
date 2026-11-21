@@ -17,10 +17,12 @@ Owner asked whether HOU -11.5 (HOU 3-6) is a sane Week 11 Best Pick, then whethe
 ## Tried
 - Activating the no-flag fit was denied by the auto-mode permission check (2026-11-18). Source and pointer restored; nothing published changed.
 
-## Next (on owner approval to remove flags)
-1. `git apply tests\scratch\flag_set_freeze\flag_set_freeze.patch`; set `DECLARED_COUNTED_MEMBERS = ()` and the declaration (set 2026-11-18, review after Week 18 only, on games after 2026-11-18, against the flag-gate null); rule_gate_sentence needs a no-flags sentence (empty `playing`).
-2. `nfl-ats fit-pick-probability --market-move-feature-version leader_median_through_sunday_prekick_v1` (activates); then v11 protocol from v10 (start week 11), DEFAULT_STUDY (independent_validation.py:30) and enroll default (cli_commands/prospective.py:519); enroll reads the active fit (independent_validation.py:137), so fit first.
-3. `scripts/check_served_terms.py`, republish card and board, PICK-CHANGE notify for the star, commit, push.
+## Decision (2026-11-21, root; decided from rules and evidence)
+- Flags stay as served through Week 18; no mid-season removal. Grounds: flag-gate-evaluation-2026-11-14.md root decision (membership changes only as a declared change at a season boundary against its null and power tables); AGENTS.md (every parameter chosen out of season; a short record is neither a reason to serve nor a closing ground). Removing every flag now would be an in-season choice made on 2026 records, the same defect the gate has. The losing flags (coach 20-33, bye 6-10, cold visitor 1-5) already do not count; since the gate took effect in Week 7, gated v no-flag sides differ on 2 games, 1-0 (measured, flag-gate lane).
+- Season boundary: review per-flag weights (division and protection share one weight) with the flag-gate null and power tables; the no-flag fit 20261118T122855Z and the steps formerly listed here are the starting point.
+
+## Next
+- None in this lane; the season-boundary review is carried in flag-gate-evaluation-2026-11-14.md.
 
 ## Open
-- Owner approval for the live change; owner enters Splash picks and should not mark HOU as Best Pick before Thursday's kickoff.
+- None.
