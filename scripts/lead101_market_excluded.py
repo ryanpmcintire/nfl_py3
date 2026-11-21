@@ -61,7 +61,9 @@ def rows_of(d):
 
 def stamp(d):
     s = d.get("recorded_at_utc") or d.get("run_at_utc")
-    return datetime.strptime("".join(c for c in s if c.isdigit())[:14], "%Y%m%d%H%M%S").replace(tzinfo=UTC)
+    return datetime.strptime("".join(c for c in s if c.isdigit())[:14], "%Y%m%d%H%M%S").replace(
+        tzinfo=UTC
+    )
 
 
 def derived_prompt_bytes():
@@ -92,7 +94,10 @@ def enroll(args):
                 "tools": L.TOOLS,
                 "dropped_blocks": list(DROPPED_BLOCKS),
                 "line_pattern": LINE_PATTERN.pattern,
-                "line_pattern_applies_to": ["beat_posts[*].posts[*].text", "injury_headlines[*][*].headline"],
+                "line_pattern_applies_to": [
+                    "beat_posts[*].posts[*].text",
+                    "injury_headlines[*][*].headline",
+                ],
                 "reads_per_packet": K_DEFAULT,
                 "enrolled_at_utc": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             },
@@ -109,14 +114,27 @@ def ablate(packet):
             del g[b]
         for team, v in g["beat_posts"].items():
             hit = [x for x in v["posts"] if LINE_PATTERN.search(x["text"])]
-            removed += [{"game_id": g["game_id"], "block": "beat_posts", "team": team, "text": x["text"]} for x in hit]
+            removed += [
+                {"game_id": g["game_id"], "block": "beat_posts", "team": team, "text": x["text"]}
+                for x in hit
+            ]
             v["posts"] = [x for x in v["posts"] if not LINE_PATTERN.search(x["text"])]
             v["n_posts"] = len(v["posts"])
         for team, v in g["injury_headlines"].items():
             if isinstance(v, list):
                 hit = [x for x in v if LINE_PATTERN.search(x.get("headline", ""))]
-                removed += [{"game_id": g["game_id"], "block": "injury_headlines", "team": team, "text": x["headline"]} for x in hit]
-                g["injury_headlines"][team] = [x for x in v if not LINE_PATTERN.search(x.get("headline", ""))]
+                removed += [
+                    {
+                        "game_id": g["game_id"],
+                        "block": "injury_headlines",
+                        "team": team,
+                        "text": x["headline"],
+                    }
+                    for x in hit
+                ]
+                g["injury_headlines"][team] = [
+                    x for x in v if not LINE_PATTERN.search(x.get("headline", ""))
+                ]
     return packet, removed
 
 
@@ -130,7 +148,11 @@ def latest_source():
 
 def run(args):
     fz = json.loads(FROZEN.read_text())
-    if fz["prompt_sha256"] != L.sha256_bytes(PROMPT.read_bytes()) or fz["model"] != L.MODEL or fz["tools"] != L.TOOLS:
+    if (
+        fz["prompt_sha256"] != L.sha256_bytes(PROMPT.read_bytes())
+        or fz["model"] != L.MODEL
+        or fz["tools"] != L.TOOLS
+    ):
         raise SystemExit("prompt, model or tools differ from the frozen market-excluded enrollment")
     source = args.source or latest_source()
     d = load(source)
@@ -152,7 +174,13 @@ def run(args):
     cwd = ART / "cwd"
     cwd.mkdir(parents=True, exist_ok=True)
     RUNS.mkdir(parents=True, exist_ok=True)
-    print(source.name, "line-bearing items removed", len(removed), [(r["game_id"], r["text"][:80]) for r in removed], flush=True)
+    print(
+        source.name,
+        "line-bearing items removed",
+        len(removed),
+        [(r["game_id"], r["text"][:80]) for r in removed],
+        flush=True,
+    )
     for _ in range(k):
         attempts = []
         rows = None
@@ -189,7 +217,9 @@ def run(args):
                     "attempts": attempts,
                     "valid": rows is not None,
                     "parsed_rows": rows,
-                    "kept_before_deadline": [r["game_id"] for r in rows or [] if recorded < deadlines[r["game_id"]]],
+                    "kept_before_deadline": [
+                        r["game_id"] for r in rows or [] if recorded < deadlines[r["game_id"]]
+                    ],
                     "recorded_at_utc": t,
                 },
                 ensure_ascii=False,
@@ -201,8 +231,15 @@ def run(args):
 
 
 def boot_corr(x, y, idx):
-    cs = np.array([np.corrcoef(x[i], y[i])[0, 1] for i in idx if np.std(x[i]) > 0 and np.std(y[i]) > 0])
-    return float(np.corrcoef(x, y)[0, 1]), float(np.percentile(cs, 2.5)), float(np.percentile(cs, 97.5)), float((cs > 0).mean())
+    cs = np.array(
+        [np.corrcoef(x[i], y[i])[0, 1] for i in idx if np.std(x[i]) > 0 and np.std(y[i]) > 0]
+    )
+    return (
+        float(np.corrcoef(x, y)[0, 1]),
+        float(np.percentile(cs, 2.5)),
+        float(np.percentile(cs, 97.5)),
+        float((cs > 0).mean()),
+    )
 
 
 def within_sd(M):
@@ -213,7 +250,9 @@ def contamination(d, pool):
     hosts = 0
     rows = 0
     for r in d["parsed_rows"]:
-        hosts += sum(any(h in (s.get("url") or "").lower() for h in ODDS_HOSTS) for s in r["sources"])
+        hosts += sum(
+            any(h in (s.get("url") or "").lower() for h in ODDS_HOSTS) for s in r["sources"]
+        )
         txt = " ".join([r["mechanism"], *map(str, r["key_facts"])])
         nums = [float(n) for m in LINE_PATTERN.finditer(txt) for n in NUMBER.findall(m.group(0))]
         if any(n != abs(pool[r["game_id"]]) for n in nums):
@@ -230,15 +269,24 @@ def summarize(args):
     if not arm:
         raise SystemExit("no valid market-excluded read")
     inc = [src] + [
-        d for d in (load(p) for p in sorted((L.ART / "repeats").glob(source.stem + "-repeat-*.json"))) if d["valid"]
+        d
+        for d in (load(p) for p in sorted((L.ART / "repeats").glob(source.stem + "-repeat-*.json")))
+        if d["valid"]
     ]
     abl = [
-        d for d in (load(p) for p in sorted((L.ART / "ablations").glob(f"{source.stem}-drop-market-*.json"))) if d["valid"]
+        d
+        for d in (
+            load(p) for p in sorted((L.ART / "ablations").glob(f"{source.stem}-drop-market-*.json"))
+        )
+        if d["valid"]
     ]
     last = max(stamp(d) for d in arm)
     kick = {g["game_id"]: datetime.fromisoformat(g["kickoff_et"]) for g in src["packet"]["games"]}
     pool = {g["game_id"]: g["pool_line"]["home_spread"] for g in src["packet"]["games"]}
-    quote = {g["game_id"]: (g.get("market") or {}).get("home_spread_latest") for g in src["packet"]["games"]}
+    quote = {
+        g["game_id"]: (g.get("market") or {}).get("home_spread_latest")
+        for g in src["packet"]["games"]
+    }
     ids = sorted(g for g in rows_of(src) if kick[g] > last)
     out = {
         "source": source.name,
@@ -251,10 +299,10 @@ def summarize(args):
         "drop_market_ablation_reads": len(abl),
     }
     A = np.array([[rows_of(d)[g] for g in ids] for d in arm])
-    I = np.array([[rows_of(d)[g] for g in ids] for d in inc])
-    a, i, s = A.mean(axis=0), I.mean(axis=0), I[0]
+    inc_reads = np.array([[rows_of(d)[g] for g in ids] for d in inc])
+    a, i, s = A.mean(axis=0), inc_reads.mean(axis=0), inc_reads[0]
     out["within_read_sd_arm"] = within_sd(A)
-    out["within_read_sd_included"] = within_sd(I)
+    out["within_read_sd_included"] = within_sd(inc_reads)
     out["between_game_sd_arm"] = float(a.std(ddof=1))
     out["between_game_sd_included"] = float(i.std(ddof=1))
     rng = np.random.default_rng(SEED)
@@ -267,10 +315,17 @@ def summarize(args):
     dd = a - i
     sb = dd[idx].mean(axis=1)
     out["mean_abs_shift"] = float(np.abs(dd).mean())
-    out["signed_shift_toward_home"] = [float(dd.mean()), float(np.percentile(sb, 2.5)), float(np.percentile(sb, 97.5)), float((sb > 0).mean())]
+    out["signed_shift_toward_home"] = [
+        float(dd.mean()),
+        float(np.percentile(sb, 2.5)),
+        float(np.percentile(sb, 97.5)),
+        float((sb > 0).mean()),
+    ]
     flips = [ids[j] for j in range(len(ids)) if np.sign(a[j]) != np.sign(i[j])]
     out["side_differs_from_included_mean"] = flips
-    out["side_differs_from_scheduled_read"] = [ids[j] for j in range(len(ids)) if np.sign(a[j]) != np.sign(s[j])]
+    out["side_differs_from_scheduled_read"] = [
+        ids[j] for j in range(len(ids)) if np.sign(a[j]) != np.sign(s[j])
+    ]
     out["per_game"] = [
         {
             "game_id": g,

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:18:11.849977+00:00`
+Refreshed at: `2026-11-21T17:19:29.360514+00:00`
 
 ## Start here
 
@@ -21,13 +21,9 @@ Refreshed at: `2026-11-21T17:18:11.849977+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f83008908ed0` — LEAD-103 Week 11: injuries, headlines, weather and rest blocks move the read about as much as noise; only the market block moves it
-- Pending change set: 85 paths
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/lead-101-news-delta-read.md`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/lead101_market_excluded.py`
-  - `A  scripts/lead101_market_excluded_prompt.md`
+- Baseline commit: `73683893974c` — LEAD-101 market-excluded read arm enrolled with its first forward week and scheduler jobs
+- Pending change set: 82 paths
+  - `M  scripts/lead101_market_excluded.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-11-21T17:18:11.849977+00:00`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 65 more
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
+  - ...and 62 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
