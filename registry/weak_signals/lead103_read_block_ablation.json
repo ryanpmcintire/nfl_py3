@@ -1,0 +1,61 @@
+{
+  "family": "lead103_read_block_ablation",
+  "signals": {
+    "lead103_w11_drop_beat_posts_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, 2 block looks this week in one family (market, beat_posts); a full-versus-ablated agreement has no wrong-sign direction to resolve and no positive control or split-half reliability is measured for the block effect, so nothing closes.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off between the full LEAD-99 deadline read (mean of 4 reads) and the read with the beat_posts block removed (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games. Lower means the block moves the read more.",
+      "effect": 0.93,
+      "effect_units": "correlation",
+      "family": "lead103_read_block_ablation",
+      "interval": [
+        0.777,
+        0.991
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid). Mean absolute logit shift 0.036 [0.019, 0.062]; null mean shift 0.032 at noise 0.052, ratio 1.14 [0.60, 1.94], matched-null percentile 0.753; at this week's measured pooled read SD 0.030, ratio 2.01 [1.05, 3.41], percentile 1.000. Signed shift +0.030 [+0.008, +0.058], P+ 0.999 (dropping beat posts moves reads toward the home side). Largest: PIT_PHI +0.157. Week 9 single-read look: mean shift 0.072.",
+      "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-103-read-block-ablation.md",
+      "standard_error": null
+    },
+    "lead103_w11_drop_market_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, 2 block looks this week in one family (market, beat_posts); a full-versus-ablated agreement has no wrong-sign direction to resolve and no positive control or split-half reliability is measured for the block effect, so nothing closes.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off between the full LEAD-99 deadline read (mean of 4 reads) and the read with the market block removed (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games. Lower means the block moves the read more.",
+      "effect": 0.185,
+      "effect_units": "correlation",
+      "family": "lead103_read_block_ablation",
+      "interval": [
+        -0.553,
+        0.795
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z, IND_HOU excluded. Ablations under artifacts/lead99_llm_read/ablations/ (3 valid). Mean absolute logit shift 0.110 [0.053, 0.173]; null mean shift 0.032 at noise 0.052, ratio 3.46 [1.68, 5.47], matched-null percentile 1.000; at this week's measured pooled read SD 0.035, ratio 5.20 [2.52, 8.22], percentile 1.000. Signed shift +0.012 [-0.070, +0.103], P+ 0.600. Largest: NYJ_LAC +0.354, CIN_WAS +0.241, LV_DEN -0.227 (two cross zero). Week 9 single-read look: mean shift 0.095.",
+      "plain_summary": "Reruns the written game read with one kind of information left out, to see which kind actually moves the read and could become a cheaper measured input.",
+      "probability_positive": 0.665,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-103-read-block-ablation.md",
+      "standard_error": null
+    }
+  }
+}

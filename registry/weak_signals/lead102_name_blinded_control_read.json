@@ -28,6 +28,34 @@
       ],
       "source": "docs/lanes/lead-102-name-blinded-control-read.md",
       "standard_error": null
+    },
+    "lead102_w11_named_vs_blinded_read_correlation": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "12 games, second weekly look in one family; the named-minus-blinded mean logit gap +0.013 has bootstrap interval -0.002 to +0.029 with probability positive 0.950, not a resolved wrong sign; game-level gaps are no larger than read noise; no split-half reliability measured for the gap and no positive control proven.",
+      "closing_ground": null,
+      "description": "Correlation across 12 Week 11 games not yet kicked off at read time between the named LEAD-99 deadline read (mean of 4 reads) and the name-blinded read (mean of 3 reads), logit scale, frozen prompt and model; bootstrap 95 percent interval over games.",
+      "effect": 0.972,
+      "effect_units": "correlation",
+      "family": "lead102_name_blinded_control_read",
+      "interval": [
+        0.918,
+        0.993
+      ],
+      "league": "nfl",
+      "notes": "Week 11 deadline packet 2026-week-11-deadline-20261119T230145Z; IND_HOU excluded (kicked off before the reads). Reads under artifacts/lead99_llm_read/blinded/2026-week-11-deadline-20261119T230145Z/reads/. Named-minus-blinded mean +0.013 logit [-0.002, +0.029], probability positive 0.950 (no admissible unit for a mean logit gap). SD of game gaps 0.029 against a noise SE 0.040 at noise 0.052: excess beyond noise 0.000, matched-null percentile 0.109; 0 of 12 games beyond two noise SEs (1 of 12, LV_DEN +0.067, at this week's measured within-read SDs, SE 0.031). Looks in family: Week 9 (15 games) and Week 11 (12 games).",
+      "plain_summary": "Checks whether the written read of a game leans the same way once team and player names are hidden, to see how much of the read is reputation and how much is the facts.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/lead-102-name-blinded-control-read.md",
+      "standard_error": null
     }
   }
 }

@@ -220,8 +220,17 @@ class Blinder:
         return found
 
 
-def load_source():
-    d = json.loads(SOURCE.read_text(encoding="utf-8"))
+def bdir(source):
+    return BLIND if source == SOURCE else BLIND / source.stem
+
+
+def stamp(j):
+    s = j.get("recorded_at_utc") or j.get("run_at_utc")
+    return datetime.strptime(re.sub(r"\D", "", s)[:14], "%Y%m%d%H%M%S").replace(tzinfo=UTC)
+
+
+def load_source(source):
+    d = json.loads(source.read_text(encoding="utf-8"))
     fz = json.loads(L.FROZEN.read_text())
     if fz["prompt_sha256"] != L.prompt_sha() or fz["model"] != L.MODEL:
         raise SystemExit("prompt or model differs from frozen enrollment")
@@ -234,14 +243,20 @@ def load_source():
 
 
 def cmd_blind(a):
-    d = load_source()
+    d = load_source(a.source)
     b = Blinder(d["packet"])
     packet, mapping = b.blind()
     leaks = b.leaks(packet, mapping)
-    BLIND.mkdir(parents=True, exist_ok=True)
-    (BLIND / "blinded_packet.json").write_text(
+    bd = bdir(a.source)
+    bd.mkdir(parents=True, exist_ok=True)
+    (bd / "blinded_packet.json").write_text(
         json.dumps(
-            {"packet": packet, "mapping": mapping, "source_packet_sha256": d["packet_sha256"]},
+            {
+                "packet": packet,
+                "mapping": mapping,
+                "source_run": a.source.name,
+                "source_packet_sha256": d["packet_sha256"],
+            },
             ensure_ascii=False,
             indent=1,
         ),
@@ -254,15 +269,18 @@ def cmd_blind(a):
 
 
 def cmd_run(a):
-    d = load_source()
-    store = json.loads((BLIND / "blinded_packet.json").read_text(encoding="utf-8"))
+    d = load_source(a.source)
+    bd = bdir(a.source)
+    store = json.loads((bd / "blinded_packet.json").read_text(encoding="utf-8"))
+    if store["source_packet_sha256"] != d["packet_sha256"]:
+        raise SystemExit("blinded packet was built from a different source packet")
     packet = store["packet"]
     pt = json.dumps(packet, ensure_ascii=False, sort_keys=True)
     ids = [g["game_id"] for g in packet["games"]]
     prompt_text = L.PROMPT.read_text(encoding="utf-8")
     cwd = BLIND / "cwd"
     cwd.mkdir(parents=True, exist_ok=True)
-    out = BLIND / "reads"
+    out = bd / "reads"
     out.mkdir(parents=True, exist_ok=True)
     for _ in range(a.k):
         env, raw = L.call_claude(prompt_text, pt, str(cwd))
@@ -295,12 +313,14 @@ def cmd_run(a):
         print(path, rows is not None, flush=True)
 
 
-def reads(files, mapping=None):
+def reads(files, mapping=None, times=None):
     out = []
     for f in files:
         j = json.loads(Path(f).read_text(encoding="utf-8"))
         if not j.get("parsed_rows"):
             continue
+        if times is not None:
+            times.append(stamp(j))
         out.append(
             {
                 (mapping[r["game_id"]] if mapping else r["game_id"]): logit(
@@ -313,11 +333,28 @@ def reads(files, mapping=None):
 
 
 def cmd_analyze(a):
-    store = json.loads((BLIND / "blinded_packet.json").read_text(encoding="utf-8"))
+    src = json.loads(a.source.read_text(encoding="utf-8"))
+    store = json.loads((bdir(a.source) / "blinded_packet.json").read_text(encoding="utf-8"))
     mapping = store["mapping"]
-    named = reads([SOURCE, *sorted(glob.glob(str(REPEATS / "2026-week-09-tuesday-*.json")))])
-    blind = reads(sorted(glob.glob(str(BLIND / "reads" / "*.json"))), mapping)
-    ids = list(mapping.values())
+    times = []
+    named = reads(
+        [a.source, *sorted(glob.glob(str(REPEATS / f"{a.source.stem}-repeat-*.json")))],
+        times=times,
+    )
+    blind = reads(
+        sorted(glob.glob(str(bdir(a.source) / "reads" / "*.json"))), mapping, times=times
+    )
+    cutoff = max(times)
+    kick = {
+        g["game_id"]: datetime.fromisoformat(g["kickoff_et"])
+        for g in src["packet"]["games"]
+        if g.get("kickoff_et")
+    }
+    ids = [i for i in mapping.values() if i not in kick or kick[i] > cutoff]
+    print(
+        f"latest read {cutoff.isoformat()}; excluded as kicked off before it:",
+        sorted(set(mapping.values()) - set(ids)),
+    )
     N = np.array([[r[i] for i in ids] for r in named if all(i in r for i in ids)])
     B = np.array([[r[i] for i in ids] for r in blind if all(i in r for i in ids)])
     nm, bm = N.mean(0), B.mean(0)
@@ -347,6 +384,20 @@ def cmd_analyze(a):
     print(
         f"corr {np.corrcoef(nm, bm)[0, 1]:.3f}"
         f" boot95 [{np.percentile(cs, 2.5):.3f}, {np.percentile(cs, 97.5):.3f}]"
+        f" probability_positive {(cs > 0).mean():.3f}"
+    )
+    null_sd = rng.normal(0, pooled_se, (BOOT, n)).std(axis=1, ddof=1)
+    obs_sd = diff.std(ddof=1)
+    print(
+        f"noise-adjusted: excess SD of game diffs beyond noise"
+        f" {float(np.sqrt(max(0.0, obs_sd**2 - pooled_se**2))):.3f};"
+        f" matched-null percentile of the observed SD {(null_sd < obs_sd).mean():.3f};"
+        f" null SD 95th pct {np.percentile(null_sd, 95):.3f}"
+    )
+    meas_se = float(np.sqrt(sdn**2 / len(N) + sdb**2 / len(B)))
+    print(
+        f"sensitivity with this week's measured within-read SDs: SE {meas_se:.3f};"
+        f" games |z|>2: {int((np.abs(diff / meas_se) > 2).sum())}"
     )
     print(
         f"mean diff {diff.mean():+.3f}"
@@ -361,6 +412,7 @@ def cmd_analyze(a):
 
 def main():
     ap = argparse.ArgumentParser(description="LEAD-102 name-blinded control read")
+    ap.add_argument("--source", type=Path, default=SOURCE)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("blind").set_defaults(f=cmd_blind)
     r = sub.add_parser("run")

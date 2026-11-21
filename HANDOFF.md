@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:44:27.188933+00:00`
+Refreshed at: `2026-11-21T16:50:52.547069+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-11-21T16:44:27.188933+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `601e945f9650` — XLG-14 family 11 fumble proneness: no college survivor; family generation paused after eleven families
+- Baseline commit: `84daceeba44c` — SIM-29: known-absent starters removed from the surprise set; the opener slope falls from 1.92 to 0.22, all four cells unresolved
 - Pending change set: 87 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - ` M registry/weak_signals/lead102_name_blinded_control_read.json`
-  - `M  registry/weak_signals/sim29_lineup.json`
-  - ` M scripts/lead102_blinded_read.py`
-  - ` M scripts/lead103_ablation.py`
-  - `A  scripts/sim29_lineup_sim.py`
+  - `M  docs/lanes/lead-102-name-blinded-control-read.md`
+  - `M  docs/lanes/lead-103-read-block-ablation.md`
+  - `M  registry/weak_signals/lead102_name_blinded_control_read.json`
+  - `A  registry/weak_signals/lead103_read_block_ablation.json`
+  - `M  scripts/lead102_blinded_read.py`
+  - `M  scripts/lead103_ablation.py`
+  - ` M scripts/sim29_lineup_sim.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
