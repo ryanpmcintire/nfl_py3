@@ -37,6 +37,15 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 - Arm S_ALL_v2 exactly as frozen in docs/lanes/g55-u5a-usage-v2-2026-11-21.md (U3 harness, O2 from artifacts/g55_u5a/expected_snaps_v2.parquet; O1 and O3 as U3). Build MAE (not a look): one-score share .1197 v1 .1297.
 - Same grade, populations (all primary, quiet, moved = 3 looks, family g55_deadline_availability), 50-draw within-season null and the same serving test as U3 (>= 827 wins, null pct >= 95, log loss no worse than base). Also report v S_ALL (809-694). No variants, no re-tuning; a fail is recorded unresolved_below_power.
 
+## G55-U5b result (measured, root recomputed from artifacts/g55_u5b/per_game.parquet)
+- S_ALL_v2 812-691 v base 802-701 (+0.67 [-0.57, +1.56], P+ .867, null 98th pct, log loss .69881 v .69678 worse); quiet 451-386 (+1.67, null 96), moved 357-296 (-0.61); v S_ALL +0.20 (39 changed, 21-18); changed v base 94, 52-42; 5 of 6 seasons up, 2020 down. Serving test: wins FAIL, null PASS, log loss FAIL. 3 cells unresolved_below_power. Gap to 827: 15 wins.
+
+## G55-U6 declaration (root, before any outcome read of the combination)
+- Arm C = S_ALL_v2 (frozen, U5a lane) plus the MOD-23 unit 5a man/zone coverage inputs exactly as frozen in scripts/mod23_unit5.py arm a (docs/mod23_unit5.md), in one walk-forward ridge, model alone at the Tuesday opener, 1,503 decisive 2020-25 games. Labelled POST-SELECTION: both pieces were chosen after their own grades on these games (5a 809-694, S_ALL_v2 812-691), so the history grade is optimistic and only the forward read decides.
+- Looks: all / quiet / moved = 3, family g55_combined. Same null (50 within-season shuffles of both input blocks together), same serving test (>= 827, null >= 95, log loss no worse). No variants, no re-tuning.
+
+## G55-U7 (build only): frozen S_ALL_v2 forward logger for 2026 Weeks 12-18 at the opener beside the served model; needs 2026 snaps, live inactives (Tuesday patch) and Friday designations; scheduler jobs added by root Tuesday. Lane g55-u7-forward-logger-2026-11-21.md.
+
 ## Tried
 - Gaussian correlation mapping of residual to accuracy predicts 51.8% against 53.4% measured; not usable for sizing, dropped.
 
