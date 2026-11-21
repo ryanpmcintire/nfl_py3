@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:59:54.477173+00:00`
+Refreshed at: `2026-11-21T18:03:20.530833+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-11-21T17:59:54.477173+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `89c3b1ba557b` — Backlog lane: session state, Sunday and Tuesday steps, unloaded jobs list
+- Baseline commit: `b1131c9dd0b7` — Backlog lane: old scheduler stopped at the owner's request; new one awaits the owner's start
 - Pending change set: 83 paths
   - ` M docs/index.html`
   - `M  docs/lanes/backlog-2026-11-21.md`
