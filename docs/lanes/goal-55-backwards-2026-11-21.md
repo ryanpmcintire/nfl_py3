@@ -28,7 +28,7 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 
 ## Next
 1. Sunday 11-22: confirm zero card-v-formula mismatches after the 12:45 refresh (backlog-2026-11-21.md Next 2).
-2. G55-U1 and G55-U2 running (launched 2026-11-21 ~13:55 EST); on return verify, then launch G55-U3 (the one grade). The fights-the-move idea is dropped: market-side, capped at 54.76%.
+2. U1 done and verified (4368410f); U2 done (span 2, lambda ~0.5, MAE .119 v naive .125, build check only). G55-U3 grade launched ~15:05 EST (lane g55-u3-servable-all-grade-2026-11-21.md), with no who-plays information on games not known_at_deadline and no realized-snap fallback. G55-U1b live-capture alignment running (lane g55-u1b-live-inactives-2026-11-21.md, patches only). On U3 return: recompute the record from artifacts/g55_u3/per_game.parquet before reporting. The fights-the-move idea is dropped: market-side, capped at 54.76%.
 
 ## Open
 - None.
