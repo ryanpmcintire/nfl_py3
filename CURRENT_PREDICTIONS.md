@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 11
 
-Published from the synchronized weak stack model, 2026-11-21 17:23 UTC.
+Published from the synchronized weak stack model, 2026-11-21 18:51 UTC.
 
-<!-- publication: model_id=a8ea1dadc06c2405 published_at_utc=2026-11-21T17:23:15.322269+00:00 -->
+<!-- publication: model_id=bfc2027afe22dabc published_at_utc=2026-11-21T18:51:34.832929+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,7 +15,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 19 | IND at HOU | ★ HOU -11.5      | 60.2%          |
-| Sun, Nov 22 | ARI at KC  | KC -15.5         | 52.8%          |
+| Sun, Nov 22 | ARI at KC  | ARI +15.5        | 52.7%          |
 | Sun, Nov 22 | BAL at CAR | CAR -2.5         | 52.2%          |
 | Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.4%          |
 | Sun, Nov 22 | LV at DEN  | DEN -9.5         | 60.6%          |
@@ -24,25 +24,26 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.1%          |
 | Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 57.0%          |
 | Sun, Nov 22 | PIT at PHI | PIT -4.5         | 50.9%          |
-| Sun, Nov 22 | TB at DET  | TB +6.5          | 53.0%          |
+| Sun, Nov 22 | TB at DET  | TB +6.5          | 55.7%          |
 | Sun, Nov 22 | TEN at DAL | DAL -7.5         | 50.7%          |
 | Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.7%          |
 
 **Tiebreaker (last game, CIN at WAS):** WAS 24 - CIN 29, total 53 (market total 53.5) -- consistent with the WAS +5.5 pick.
 
-**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 53% and 52%. These broad groups do not establish a large advantage for the single highest estimate.
 
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-4 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
+| ARI at KC  | KC              | ARI        | 52.7%          |
 | BAL at CAR | BAL             | CAR        | 52.2%          |
 | CIN at WAS | CIN             | WAS        | 50.7%          |
 | JAX at NYG | JAX             | NYG        | 50.4%          |
-| TB at DET  | DET             | TB         | 53.0%          |
+| TB at DET  | DET             | TB         | 55.7%          |
 <!-- LATE_WEEK_REFRESH:END -->
