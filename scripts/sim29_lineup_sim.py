@@ -156,7 +156,7 @@ def games_2026():
     ]
     g = g.merge(led.drop_duplicates("game_id"), on="game_id", how="left")
     g["line"] = g["spread_line"].astype(float)
-    g["open_line"] = -g["card_line"].astype(float)
+    g["open_line"] = g["card_line"].astype(float)
     g["margin"] = g["home_score"].astype(float) - g["away_score"].astype(float)
     return g.dropna(subset=["line"])
 
@@ -296,6 +296,20 @@ def init_worker():
     _E["fit"] = json.loads(FIT.read_text())
 
 
+def sim_mean(eng, xd, c, seed, m, week):
+    s = eng.s
+    rng = np.random.default_rng(seed)
+    xh = 0.5 * xd + c[0] / s
+    xa = -0.5 * xd + c[1] / s
+    rh = (0.5 * s * xh, 0.5 * s * xa)
+    ra = (0.5 * s * xa, 0.5 * s * xh)
+    v = np.empty(m)
+    for k in range(m):
+        hs, as_, _, _, _, _ = eng.game(rng, (rh, ra), CONTEXT_SEASON, float(week))
+        v[k] = hs - as_
+    return float(v.mean())
+
+
 def sim_game(task):
     import sim08_market_anchored as ma
 
@@ -308,16 +322,7 @@ def sim_game(task):
     for c in todo:
         if c in res:
             continue
-        rng = np.random.default_rng(row["seed"])
-        xh = 0.5 * xd + c[0] / s
-        xa = -0.5 * xd + c[1] / s
-        rh = (0.5 * s * xh, 0.5 * s * xa)
-        ra = (0.5 * s * xa, 0.5 * s * xh)
-        v = np.empty(m)
-        for k in range(m):
-            hs, as_, _, _, _, _ = eng.game(rng, (rh, ra), CONTEXT_SEASON, float(row["week"]))
-            v[k] = hs - as_
-        res[c] = float(v.mean())
+        res[c] = sim_mean(eng, xd, c, row["seed"], m, row["week"])
     e_read = float(sum(f * res[tuple(c)] for c, f in zip(row["configs"], row["freq"], strict=True)))
     return {
         "game_id": row["game_id"],

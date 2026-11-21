@@ -1170,6 +1170,31 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day, at, grace in (("tue", "14:30", 360), ("sat", "11:00", 120), ("sun", "10:30", 60))
     ),
+    *(
+        Job(
+            f"sim29_forward_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "sim29_forward.py"),
+                "log",
+                "--week",
+                "auto",
+                "--workers",
+                "6",
+            ],
+            True,
+            "SIM-29 forward log: simulated lineup draws from the LEAD-106 reads, written "
+            "before kickoff; skips outside Weeks 12-18.",
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (("thu", "19:00", 60), ("sat", "20:30", 600))
+    ),
     Job(
         "lead112_forward_score_tue",
         "tue",
@@ -2441,7 +2466,7 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         _player_snapshot_job(day, "09:15", suffix="_0915")
-        for day in ("wed", "thu", "fri", "sat", "sun")
+        for day in ("tue", "wed", "thu", "fri", "sat", "sun")
     ),
     *(_nflverse_injuries_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
     *(_player_snapshot_pm_job(day) for day in ("wed", "thu", "fri", "sat")),

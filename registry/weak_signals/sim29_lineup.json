@@ -32,20 +32,20 @@
     "sim29_sim_out_against_read_gap": {
       "category": "health",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval on both sides of the null, no refuted mechanism or positive-control bound; 4 looks in the sim29 replacement-cost family; re-run after the known-absence fix (starters on reserve, released, retired or on another team in the last roster snapshot before the opener get read 0 and leave the surprise set); snapshots are Sunday captures, so Monday-Tuesday moves are still missed",
+      "classification_evidence": "Corrected 2026-11-21: the opener residual used open_line = -card_line (sign error; card_line is home-favoured positive, same sign as spread_line). Rescored the stored unit-2 games with open_line = +card_line (artifacts/sim29/opener_sign_fixed_rescore.json); earlier record +2.028 [-4.34, 8.96] P+ 0.713. No closing ground.",
       "closing_ground": null,
       "description": "Mean realised residual minus simulated surprise in opener games where a starter the read expected to play (and not known absent) was out, 2026 Weeks 4-9",
-      "effect": 2.028,
+      "effect": -0.8468437500000006,
       "effect_units": "ats_points",
       "family": "sim29_lineup",
       "interval": [
-        -4.34,
-        8.96
+        -5.086174726562501,
+        3.7577923632812382
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": "Where a starter the read expected to play sat out, the real result landed 2 points above the simulated shift, with a range from -4 to 9",
-      "probability_positive": 0.713,
+      "probability_positive": 0.329,
       "recorded_at": "2026-11-21",
       "reliability": null,
       "sample_blocks": null,
@@ -54,7 +54,7 @@
         2026,
         2026
       ],
-      "source": "artifacts/sim29/lineup_sim_known_absent.json",
+      "source": "artifacts/sim29/opener_sign_fixed_rescore.json",
       "standard_error": null
     },
     "sim29_sim_replacement_slope_close": {
@@ -88,20 +88,20 @@
     "sim29_sim_replacement_slope_open": {
       "category": "health",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval on both sides of the null, no refuted mechanism or positive-control bound; 4 looks in the sim29 replacement-cost family; re-run after the known-absence fix (starters on reserve, released, retired or on another team in the last roster snapshot before the opener get read 0 and leave the surprise set); snapshots are Sunday captures, so Monday-Tuesday moves are still missed",
+      "classification_evidence": "Corrected 2026-11-21: the opener residual used open_line = -card_line (sign error; card_line is home-favoured positive, same sign as spread_line). Rescored the stored unit-2 games with open_line = +card_line (artifacts/sim29/opener_sign_fixed_rescore.json); earlier record +0.215 [-1.95, 2.94] P+ 0.575. No closing ground.",
       "closing_ground": null,
       "description": "Slope of realised home margin minus Tuesday pool line on the simulated margin surprise (realised QB/OL lineup minus read-weighted draws, engine replacement costs, known absences read 0), 2026 Weeks 4-9",
-      "effect": 0.215,
+      "effect": 0.13678592069512607,
       "effect_units": "slope_difference",
       "family": "sim29_lineup",
       "interval": [
-        -1.95,
-        2.94
+        -1.3746927166507,
+        1.927595691416419
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": "After removing players already known to be out, games where the simulator expected a weaker lineup than the read finished about the same against the opener, about 0.2 points per simulated point, range -2 to 3",
-      "probability_positive": 0.575,
+      "probability_positive": 0.583,
       "recorded_at": "2026-11-21",
       "reliability": null,
       "sample_blocks": null,
@@ -110,26 +110,26 @@
         2026,
         2026
       ],
-      "source": "artifacts/sim29/lineup_sim_known_absent.json",
+      "source": "artifacts/sim29/opener_sign_fixed_rescore.json",
       "standard_error": null
     },
     "sim29_sim_starter_out_gap": {
       "category": "health",
       "classification": "unresolved_below_power",
-      "classification_evidence": "interval on both sides of the null, no refuted mechanism or positive-control bound; 4 looks in the sim29 replacement-cost family; re-run after the known-absence fix (starters on reserve, released, retired or on another team in the last roster snapshot before the opener get read 0 and leave the surprise set); snapshots are Sunday captures, so Monday-Tuesday moves are still missed",
+      "classification_evidence": "Corrected 2026-11-21: the opener residual used open_line = -card_line (sign error; card_line is home-favoured positive, same sign as spread_line). Rescored the stored unit-2 games with open_line = +card_line (artifacts/sim29/opener_sign_fixed_rescore.json); earlier record +0.493 [-5.31, 6.2] P+ 0.559. No closing ground.",
       "closing_ground": null,
       "description": "Mean realised residual minus simulated surprise in opener games with a QB or OL starter out who was not known absent before the opener, 2026 Weeks 4-9",
-      "effect": 0.493,
+      "effect": -2.340655555555556,
       "effect_units": "ats_points",
       "family": "sim29_lineup",
       "interval": [
-        -5.31,
-        6.2
+        -6.365523524305556,
+        1.920444687499999
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": "In games where a starter not already known to be out sat, the real result landed 0.5 points above the simulated shift, with a range of about 6 points either way",
-      "probability_positive": 0.559,
+      "probability_positive": 0.1445,
       "recorded_at": "2026-11-21",
       "reliability": null,
       "sample_blocks": null,
@@ -138,7 +138,7 @@
         2026,
         2026
       ],
-      "source": "artifacts/sim29/lineup_sim_known_absent.json",
+      "source": "artifacts/sim29/opener_sign_fixed_rescore.json",
       "standard_error": null
     }
   }
