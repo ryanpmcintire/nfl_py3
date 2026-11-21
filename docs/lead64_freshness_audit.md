@@ -1,7 +1,7 @@
 # Friday designation freshness audit
 
-**Measured:** archive frozen at 2026-11-03T19:26:04+00:00. Command: .tools/uv.exe run --no-sync
-python scripts/lead64_freshness_audit.py --as-of 2026-11-03T19:26:04+00:00.
+**Measured:** archive frozen at 2026-11-20T15:00:46+00:00. Command: .tools/uv.exe run --no-sync
+python scripts/lead64_freshness_audit.py --as-of 2026-11-20T15:00:46+00:00.
 
 **Inferred decision:** no audited source has demonstrated a fresh final Friday team report at a
 Friday cutoff. Capture time dates the fetch, not the report. Retain the kickoff guard and defer
@@ -32,15 +32,15 @@ correlated, so these are not independent-game intervals. Unchanged does not itse
 
 | Source | Captures/pages | First capture UTC | Last capture UTC | Empty | Rows with native update field | Official report-to-capture lag |
 | --- | --- | --- | --- | --- | --- | --- |
-| NBC Sports headlines | 340 | 2026-09-10T02:52:33.878893+00:00 | 2026-11-03T01:01:09.949543+00:00 | 2 | 23887 | unknown; n=0 official pairs |
-| NFL.com inactives | 108 | 2026-09-06T15:35:20+00:00 | 2026-11-01T20:20:05+00:00 | 108 | 0 | unknown; n=0 official pairs |
+| NBC Sports headlines | 436 | 2026-09-10T02:52:33.878893+00:00 | 2026-11-20T13:00:52.671931+00:00 | 2 | 43455 | unknown; n=0 official pairs |
+| NFL.com inactives | 134 | 2026-09-06T15:35:20+00:00 | 2026-11-19T23:50:39+00:00 | 134 | 0 | unknown; n=0 official pairs |
 | NFL.com weekly | 3 | 2026-08-21T22:34:01+00:00 | 2026-08-25T19:42:02+00:00 | 3 | 0 | unknown; n=0 official pairs |
-| RotoWire inactives | 58 | 2026-09-24T18:46:17+00:00 | 2026-11-01T20:20:05+00:00 | 17 | 0 | unknown; n=0 official pairs |
-| nflverse | 137 | 2026-08-26T12:28:53+00:00 | 2026-11-03T19:26:03+00:00 | 2 | 0 | unknown; n=0 official pairs |
+| RotoWire inactives | 84 | 2026-09-24T18:46:17+00:00 | 2026-11-19T23:50:39+00:00 | 26 | 0 | unknown; n=0 official pairs |
+| nflverse | 175 | 2026-08-26T12:28:53+00:00 | 2026-11-20T14:01:12+00:00 | 2 | 0 | unknown; n=0 official pairs |
 | Sportradar | 0 | -- | -- | -- | -- | no local snapshot |
 
 **Measured:** other-season weekly row observations: NFL.com weekly: 17,483; nflverse:
-12,433,024. NFL.com has historical backfill and empty current-season attempts. Historical
+15,881,600. NFL.com has historical backfill and empty current-season attempts. Historical
 date_modified and fetch times cannot measure current Friday latency.
 
 ## Designation transitions by source and weekday
@@ -50,35 +50,35 @@ archived capture for that source.
 
 | Source | ET weekday | Captures | Rows | First | Changed | Same | Cleared | Practice | Same share, 95% Wilson |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| NBC Sports headlines | Monday | 48 | 4246 | 26 | 0 | 4220 | 0 | 0 | 4220/4220 (100.0%; 95% 99.9-100.0%) |
-| NBC Sports headlines | Tuesday | 14 | 1153 | 24 | 0 | 1129 | 0 | 0 | 1129/1129 (100.0%; 95% 99.7-100.0%) |
-| NBC Sports headlines | Wednesday | 44 | 3272 | 23 | 0 | 3249 | 0 | 0 | 3249/3249 (100.0%; 95% 99.9-100.0%) |
-| NBC Sports headlines | Thursday | 82 | 3242 | 9 | 0 | 3233 | 0 | 0 | 3233/3233 (100.0%; 95% 99.9-100.0%) |
-| NBC Sports headlines | Friday | 48 | 3393 | 116 | 0 | 3275 | 0 | 0 | 3275/3275 (100.0%; 95% 99.9-100.0%) |
-| NBC Sports headlines | Saturday | 47 | 3747 | 45 | 0 | 3702 | 0 | 0 | 3702/3702 (100.0%; 95% 99.9-100.0%) |
-| NBC Sports headlines | Sunday | 57 | 4834 | 18 | 0 | 4816 | 0 | 0 | 4816/4816 (100.0%; 95% 99.9-100.0%) |
+| NBC Sports headlines | Monday | 60 | 6762 | 31 | 0 | 6731 | 0 | 0 | 6731/6731 (100.0%; 95% 99.9-100.0%) |
+| NBC Sports headlines | Tuesday | 20 | 2346 | 36 | 0 | 2310 | 0 | 0 | 2310/2310 (100.0%; 95% 99.8-100.0%) |
+| NBC Sports headlines | Wednesday | 62 | 6897 | 34 | 0 | 6863 | 0 | 0 | 6863/6863 (100.0%; 95% 99.9-100.0%) |
+| NBC Sports headlines | Thursday | 100 | 6918 | 12 | 0 | 6906 | 0 | 0 | 6906/6906 (100.0%; 95% 99.9-100.0%) |
+| NBC Sports headlines | Friday | 63 | 6417 | 137 | 0 | 6278 | 0 | 0 | 6278/6278 (100.0%; 95% 99.9-100.0%) |
+| NBC Sports headlines | Saturday | 59 | 6180 | 57 | 0 | 6123 | 0 | 0 | 6123/6123 (100.0%; 95% 99.9-100.0%) |
+| NBC Sports headlines | Sunday | 72 | 7935 | 22 | 0 | 7913 | 0 | 0 | 7913/7913 (100.0%; 95% 100.0-100.0%) |
 | NFL.com inactives | Monday | 6 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| NFL.com inactives | Wednesday | 34 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| NFL.com inactives | Thursday | 26 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| NFL.com inactives | Saturday | 14 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| NFL.com inactives | Sunday | 28 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
+| NFL.com inactives | Wednesday | 37 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
+| NFL.com inactives | Thursday | 35 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
+| NFL.com inactives | Saturday | 18 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
+| NFL.com inactives | Sunday | 38 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
 | NFL.com weekly | Tuesday | 2 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
 | NFL.com weekly | Friday | 1 | 0 | 0 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| RotoWire inactives | Wednesday | 5 | 3 | 3 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| RotoWire inactives | Thursday | 18 | 50 | 28 | 0 | 0 | 0 | 0 | not estimable (n=0) |
-| RotoWire inactives | Saturday | 12 | 152 | 8 | 0 | 126 | 0 | 0 | 126/126 (100.0%; 95% 97.0-100.0%) |
-| RotoWire inactives | Sunday | 23 | 2559 | 413 | 0 | 1762 | 0 | 0 | 1762/1762 (100.0%; 95% 99.8-100.0%) |
+| RotoWire inactives | Wednesday | 8 | 3 | 3 | 0 | 0 | 0 | 0 | not estimable (n=0) |
+| RotoWire inactives | Thursday | 27 | 74 | 36 | 0 | 0 | 0 | 0 | not estimable (n=0) |
+| RotoWire inactives | Saturday | 16 | 196 | 12 | 0 | 157 | 0 | 0 | 157/157 (100.0%; 95% 97.6-100.0%) |
+| RotoWire inactives | Sunday | 33 | 3501 | 511 | 0 | 2416 | 0 | 0 | 2416/2416 (100.0%; 95% 99.8-100.0%) |
 | nflverse | Monday | 1 | 734 | 0 | 0 | 285 | 0 | 0 | 285/285 (100.0%; 95% 98.7-100.0%) |
 | nflverse | Tuesday | 7 | 2525 | 0 | 0 | 1067 | 0 | 0 | 1067/1067 (100.0%; 95% 99.6-100.0%) |
-| nflverse | Wednesday | 32 | 23835 | 5 | 0 | 9799 | 0 | 0 | 9799/9799 (100.0%; 95% 100.0-100.0%) |
-| nflverse | Thursday | 25 | 28744 | 59 | 0 | 9897 | 0 | 28 | 9897/9897 (100.0%; 95% 100.0-100.0%) |
-| nflverse | Friday | 23 | 29904 | 13 | 0 | 9969 | 0 | 472 | 9969/9969 (100.0%; 95% 100.0-100.0%) |
-| nflverse | Saturday | 32 | 32412 | 912 | 0 | 12380 | 0 | 624 | 12380/12380 (100.0%; 95% 100.0-100.0%) |
-| nflverse | Sunday | 17 | 20835 | 83 | 13 | 8708 | 5 | 56 | 8708/8721 (99.9%; 95% 99.7-99.9%) |
+| nflverse | Wednesday | 41 | 49401 | 5 | 0 | 20839 | 0 | 0 | 20839/20839 (100.0%; 95% 100.0-100.0%) |
+| nflverse | Thursday | 34 | 56429 | 88 | 0 | 20994 | 1 | 40 | 20994/20994 (100.0%; 95% 100.0-100.0%) |
+| nflverse | Friday | 33 | 60494 | 25 | 0 | 22005 | 0 | 652 | 22005/22005 (100.0%; 95% 100.0-100.0%) |
+| nflverse | Saturday | 38 | 50367 | 1188 | 0 | 19871 | 0 | 803 | 19871/19871 (100.0%; 95% 100.0-100.0%) |
+| nflverse | Sunday | 21 | 32813 | 108 | 19 | 13903 | 6 | 71 | 13903/13922 (99.9%; 95% 99.8-99.9%) |
 
-**Measured:** nflverse has 138,989 current-season row observations, 0 nonnull date_modified
+**Measured:** nflverse has 252,763 current-season row observations, 0 nonnull date_modified
 values. New-week repeated designations among keys with an observed designated immediately
-preceding week: 256/390 (65.6%; 95% 60.8-70.2%). Recurrence across report weeks does not prove
+preceding week: 349/523 (66.7%; 95% 62.6-70.6%). Recurrence across report weeks does not prove
 the previous report was reused.
 
 ## Friday nflverse capture detail
@@ -112,6 +112,16 @@ fetch clocks do not measure official publication lag.
 | 2026-10-30T06:00:50-04:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 12 |
 | 2026-10-30T09:00:34-04:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 12 |
 | 2026-10-30T16:30:33-04:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 12 |
+| 2026-11-06T06:00:29-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 7 |
+| 2026-11-06T09:00:59-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 7 |
+| 2026-11-06T16:30:36-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 7 |
+| 2026-11-06T20:00:21-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 7 |
+| 2026-11-13T06:01:00-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 154; W10: 9 |
+| 2026-11-13T09:00:18-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 154; W10: 9 |
+| 2026-11-13T16:30:05-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 154; W10: 18 |
+| 2026-11-13T20:00:27-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 154; W10: 18 |
+| 2026-11-20T06:00:46-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 154; W10: 171; W11: 15 |
+| 2026-11-20T09:01:12-05:00 | W1: 61; W2: 105; W3: 119; W4: 138; W5: 178; W6: 181; W7: 153; W8: 132; W9: 154; W10: 171; W11: 15 |
 
 | Report week | Last Friday capture ET | Friday / latest designation counts |
 | --- | --- | --- |
@@ -123,6 +133,9 @@ fetch clocks do not measure official publication lag.
 | 6 | 2026-10-16T16:30:19-04:00 | 6 / 181 |
 | 7 | 2026-10-23T16:30:39-04:00 | 15 / 153 |
 | 8 | 2026-10-30T16:30:33-04:00 | 12 / 132 |
+| 9 | 2026-11-06T20:00:21-05:00 | 7 / 154 |
+| 10 | 2026-11-13T20:00:27-05:00 | 18 / 171 |
+| 11 | 2026-11-20T09:01:12-05:00 | 15 / 15 |
 
 **Measured:** the last Friday run is around 16:30 ET in each observed week. Later Friday
 coverage is unmeasured. This comparison uses the latest weekly count as a reference, not
@@ -132,9 +145,9 @@ independently verified official completeness.
 
 | HTML source | Archived pages | Pages with timestamp markers |
 | --- | --- | --- |
-| NFL.com inactives | 108 | 0 |
+| NFL.com inactives | 134 | 0 |
 | NFL.com weekly | 56 | 0 |
-| RotoWire inactives | 58 | 0 |
+| RotoWire inactives | 84 | 0 |
 
 **Measured:** marker scan checks datePublished/dateModified, article publish/modify metadata,
 time elements, last-updated labels, report date/time and publication time. Matches retain
@@ -158,36 +171,36 @@ median/range/interval are not estimable. No fetch/lastmod proxy is substituted.
 
 ## Scheduler corroboration
 
-**Measured:** 194 distinct snapshot stamps in relevant completion/skip lines; 246/646 audited
-source captures match a stamp. Events span 2026-09-06 15:35:20+00:00 to 2026-11-03
-01:01:10+00:00. These include manual reruns, not unique publications. Missing log matches do not
+**Measured:** 257 distinct snapshot stamps in relevant completion/skip lines; 335/832 audited
+source captures match a stamp. Events span 2026-09-06 15:35:20+00:00 to 2026-11-20
+14:01:12+00:00. These include manual reruns, not unique publications. Missing log matches do not
 invalidate manifests; successful fetches do not prove freshness.
 
 | Job family | ET weekday | OK | Failures | SKIP |
 | --- | --- | --- | --- | --- |
 | inactives | Monday | 6 | 0 | 0 |
-| inactives | Saturday | 14 | 0 | 0 |
-| inactives | Sunday | 23 | 0 | 0 |
-| inactives | Thursday | 25 | 0 | 0 |
-| inactives | Wednesday | 8 | 0 | 0 |
-| injury_news | Friday | 47 | 0 | 0 |
-| injury_news | Monday | 48 | 0 | 0 |
-| injury_news | Saturday | 44 | 0 | 0 |
-| injury_news | Sunday | 54 | 0 | 0 |
-| injury_news | Thursday | 82 | 0 | 0 |
-| injury_news | Tuesday | 14 | 0 | 0 |
-| injury_news | Wednesday | 41 | 0 | 0 |
-| nflverse_injuries | Friday | 22 | 0 | 0 |
-| nflverse_injuries | Saturday | 28 | 0 | 0 |
-| nflverse_injuries | Sunday | 16 | 0 | 0 |
-| nflverse_injuries | Thursday | 25 | 0 | 0 |
+| inactives | Saturday | 18 | 0 | 0 |
+| inactives | Sunday | 33 | 0 | 0 |
+| inactives | Thursday | 34 | 0 | 0 |
+| inactives | Wednesday | 11 | 0 | 0 |
+| injury_news | Friday | 62 | 0 | 0 |
+| injury_news | Monday | 60 | 0 | 0 |
+| injury_news | Saturday | 56 | 0 | 0 |
+| injury_news | Sunday | 69 | 0 | 0 |
+| injury_news | Thursday | 100 | 0 | 0 |
+| injury_news | Tuesday | 20 | 0 | 0 |
+| injury_news | Wednesday | 59 | 0 | 0 |
+| nflverse_injuries | Friday | 32 | 0 | 0 |
+| nflverse_injuries | Saturday | 34 | 0 | 0 |
+| nflverse_injuries | Sunday | 20 | 0 | 0 |
+| nflverse_injuries | Thursday | 34 | 0 | 0 |
 | nflverse_injuries | Tuesday | 5 | 0 | 0 |
-| nflverse_injuries | Wednesday | 22 | 0 | 0 |
+| nflverse_injuries | Wednesday | 30 | 0 | 0 |
 
 ## Season-ending IR question
 
-**Measured:** injury archive data/raw/nflverse_injuries/20261103T192549Z/injuries.parquet joined
-to roster archive data/players/raw/20261101T141534Z/weekly_rosters.parquet by
+**Measured:** injury archive data/raw/nflverse_injuries/20261120T140109Z/injuries.parquet joined
+to roster archive data/players/raw/20261120T141534Z/weekly_rosters.parquet by
 season/week/team/GSIS ID, regular season only. Denominator is limited to season/weeks present in
 the injury archive; 0 missing roster IDs excluded; LA/JAC/WSH aliases normalized. RES is a
 reserve code, not an explicit season-ending-IR flag.
@@ -208,25 +221,37 @@ reserve code, not an explicit season-ending-IR flag.
 | 6 | ACT | 1344 | 262/1344 (19.5%; 95% 17.5-21.7%) |
 | 7 | RES | 271 | 25/271 (9.2%; 95% 6.3-13.3%) |
 | 7 | ACT | 1344 | 239/1344 (17.8%; 95% 15.8-19.9%) |
-| 8 | RES | 254 | 20/254 (7.9%; 95% 5.2-11.8%) |
-| 8 | ACT | 1507 | 292/1507 (19.4%; 95% 17.5-21.4%) |
+| 8 | RES | 253 | 19/253 (7.5%; 95% 4.9-11.4%) |
+| 8 | ACT | 1345 | 228/1345 (17.0%; 95% 15.0-19.1%) |
+| 9 | RES | 293 | 31/293 (10.6%; 95% 7.6-14.6%) |
+| 9 | ACT | 1440 | 243/1440 (16.9%; 95% 15.0-18.9%) |
+| 10 | RES | 277 | 30/277 (10.8%; 95% 7.7-15.0%) |
+| 10 | ACT | 1344 | 234/1344 (17.4%; 95% 15.5-19.5%) |
+| 11 | RES | 256 | 26/256 (10.2%; 95% 7.0-14.5%) |
+| 11 | ACT | 1362 | 254/1362 (18.6%; 95% 16.7-20.8%) |
 
-**Measured:** all overlapping archived seasons' reserve-coded report inclusion: 6597/66310
-(9.9%; 95% 9.7-10.2%). This is same-week co-occurrence, not an exclusion policy or timestamped
+**Measured:** all overlapping archived seasons' reserve-coded report inclusion: 6683/67135
+(10.0%; 95% 9.7-10.2%). This is same-week co-occurrence, not an exclusion policy or timestamped
 IR transition.
 
 | Season-ending headline match | First locally seen UTC | Roster / injury-row presence |
 | --- | --- | --- |
-| Jake Tonges | 2026-09-16T20:01:15.821511+00:00 | W1 ACT: absent; W2 RES: absent; W3 RES: absent; W4 RES: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent |
-| Avonte Maddox | 2026-09-21T16:22:53.389818+00:00 | W1 ACT: absent; W2 ACT: absent; W3 RES: absent; W4 RES: absent; W5 RES: absent; W7 RES: absent; W8 RES: absent |
-| Zach Bako-Bewele | 2026-09-22T20:01:22.203536+00:00 | W1 ACT: present; W2 ACT: present; W3 INA: present; W4 RES: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent; W8 RES: absent |
-| Jaxson Dart | 2026-09-23T16:21:22.186971+00:00 | W1 ACT: absent; W2 ACT: absent; W3 RES: present; W4 RES: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent |
-| Leo Chenal | 2026-09-28T16:24:38.013648+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: present; W4 RES: absent; W5 RES: absent; W6 RES: absent; W8 RES: absent |
-| Durham Smythe | 2026-10-06T20:01:11.696495+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: present; W5 RES: present; W6 RES: absent; W7 RES: absent; W8 RES: absent |
-| Braxton Berrios | 2026-10-07T04:01:07.978539+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent |
-| Tom Kennedy | 2026-10-12T20:01:25.995883+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W7 RES: absent; W8 RES: absent |
-| Tremaine Edmunds | 2026-10-24T00:01:59.962173+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W6 ACT: absent; W7 RES: present |
-| Daron Payne | 2026-10-31T17:31:21.385522+00:00 | W1 ACT: present; W2 ACT: present; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W6 ACT: absent; W8 ACT: present |
+| Jake Tonges | 2026-09-16T20:01:15.821511+00:00 | W1 ACT: absent; W2 RES: absent; W3 RES: absent; W4 RES: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Avonte Maddox | 2026-09-21T16:22:53.389818+00:00 | W1 ACT: absent; W2 ACT: absent; W3 RES: absent; W4 RES: absent; W5 RES: absent; W7 RES: absent; W8 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Zach Bako-Bewele | 2026-09-22T20:01:22.203536+00:00 | W1 ACT: present; W2 ACT: present; W3 INA: present; W4 RES: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent; W8 RES: absent; W9 RES: absent; W10 RES: absent |
+| Jaxson Dart | 2026-09-23T16:21:22.186971+00:00 | W1 ACT: absent; W2 ACT: absent; W3 RES: present; W4 RES: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Leo Chenal | 2026-09-28T16:24:38.013648+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: present; W4 RES: absent; W5 RES: absent; W6 RES: absent; W8 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Durham Smythe | 2026-10-06T20:01:11.696495+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: present; W5 RES: present; W6 RES: absent; W7 RES: absent; W8 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Braxton Berrios | 2026-10-07T04:01:07.978539+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 RES: absent; W6 RES: absent; W7 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Tom Kennedy | 2026-10-12T20:01:25.995883+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W7 RES: absent; W8 RES: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Tremaine Edmunds | 2026-10-24T00:01:59.962173+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W6 ACT: absent; W7 RES: present; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Daron Payne | 2026-10-31T17:31:21.385522+00:00 | W1 ACT: present; W2 ACT: present; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W6 ACT: absent; W8 INA: present; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Jimmy Rolder | 2026-11-03T01:01:09.949543+00:00 | W1 INA: present; W2 INA: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W7 ACT: absent; W8 ACT: absent; W9 RES: absent; W10 RES: absent; W11 RES: absent |
+| Jaylen Watson | 2026-11-05T01:01:37.736616+00:00 | W1 ACT: present; W2 ACT: absent; W3 ACT: absent; W4 INA: present; W5 ACT: present; W6 ACT: absent; W7 ACT: absent; W8 ACT: absent; W9 RES: present; W10 RES: absent |
+| Gracen Halton | 2026-11-09T01:00:51.883753+00:00 | W1 ACT: present; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W6 ACT: present; W7 ACT: absent; W9 ACT: absent; W10 RES: absent; W11 RES: absent |
+| Gardner Minshew | 2026-11-10T01:01:28.005938+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W6 ACT: absent; W7 ACT: absent; W8 ACT: absent; W9 ACT: absent; W10 RES: absent; W11 RES: absent |
+| Aidan Hutchinson | 2026-11-16T17:29:27.575141+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W7 ACT: absent; W8 ACT: present; W9 ACT: absent; W10 ACT: absent; W11 RES: absent |
+| Jordan Phillips | 2026-11-18T01:01:17.534319+00:00 | W1 ACT: absent; W2 ACT: absent; W3 ACT: absent; W4 ACT: absent; W5 ACT: absent; W7 ACT: absent; W8 ACT: absent; W9 ACT: absent; W10 ACT: absent; W11 RES: absent |
 
 **Measured:** examples require an explicit season-ending headline phrase, exact normalized
 roster-name match and local first capture before the roster snapshot. Headlines are **reported**

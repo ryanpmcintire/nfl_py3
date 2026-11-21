@@ -60,7 +60,7 @@ def apply_frozen(path, frame):
 
 def locked_inputs(served26):
     dl = wj.deadlines_for(served26)
-    locked = wj.locked_served(list(served26["game_id"]), dl)
+    locked = wj.locked_raw_card(list(served26["game_id"]), dl)
     rows = {}
     for gid, info in locked.items():
         folder = wj.FORECASTS / info["folder"]
