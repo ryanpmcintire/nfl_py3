@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T19:20:42.031671+00:00`
+Refreshed at: `2026-11-21T19:29:04.668639+00:00`
 
 ## Start here
 
@@ -21,14 +21,14 @@ Refreshed at: `2026-11-21T19:20:42.031671+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4368410f959a` — ï»¿G55-U1: gameday actives table for the who-plays route; O3 pinned to the actives list before the grade
-- Pending change set: 92 paths
+- Baseline commit: `10ae8f489e41` — G55-U2: expected snap share from earlier games given gameday actives; G55-U3 grade launched
+- Pending change set: 94 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/index.html`
-  - `A  docs/lanes/g55-u2-expected-snaps-2026-11-21.md`
+  - `A  docs/lanes/g55-u1b-live-inactives-2026-11-21.md`
   - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
-  - `A  scripts/g55_u2_expected_snaps.py`
+  - ` M scripts/g55_u2_expected_snaps.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-21T19:20:42.031671+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 72 more
+  - ...and 74 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
