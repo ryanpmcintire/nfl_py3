@@ -1,0 +1,42 @@
+# UI-33 pick depends on a status (2026-11-21)
+
+## Goal
+One plain board line when a starter's unresolved designation could change the pick: "If <player> sits, the pick would change to <team>." Informational only; the served side stays the one fitted probability. This unit: the producer only (no board edits). Prior lanes: `docs/lanes/ui-33-pick-depends-on-status.md`, `docs/lanes/done/injury-scenario-producer.md`.
+
+## State
+2026-11-21 10:59 -0500: `scripts/ui33_scenario_producer.py` written (ruff check and format clean).
+Week 11 run (measured, `.\.tools\uv.exe run --no-sync python scripts/ui33_scenario_producer.py --week 11`, exit 0, under a minute): `artifacts/ui33_scenarios/2026_week11_20261121T155951Z.json`, model 592dc27ca1835b3e, pick probability `pick_probability/20261120T171725Z`, injury capture 20261121T140108Z, 12 open games (IND@HOU past cutoff), every card row from the active forecast, every line from Splash (equal to the card line), zero-shift error at most 6.5e-9, 26 candidates, 0 with the wrong sign (sitting always moves toward the opponent). Flagged 4 games (home probability in / out at the pool line):
+- ARI@KC +15.5, card KC .518: Carson Beck (ARI QB, Questionable, DNP, ladder play .47) in .473 / out .559 -> "If Carson Beck plays, the pick would change to ARI."
+- TB@DET +6.5, card TB (home .468): Baker Mayfield (TB QB, Questionable, Limited, .65) in .441 / out .519 -> "If Baker Mayfield sits, the pick would change to DET."
+- JAX@NYG -5.5, card NYG .505: Isaiah Likely (NYG TE, no designation in capture, DNP, .74) in .507 / out .499 -> "If Isaiah Likely sits, the pick would change to JAX."
+- CIN@WAS -5.5 (Monday), card WAS .508: Rachaad White (WAS RB, designation pending, Limited, .95) in .508 / out .498 -> "If Rachaad White sits, the pick would change to CIN."
+The two QB flags move about 8 points; the two pending ones sit on a card within 1 point of 50% and move under 1 point.
+
+Design (read from the code it reuses; nothing fitted here):
+- Base = the active model's card probability, `lead108_mixture_forward.card()` (last `published_picks.parquet` row per game before now, same source as the LEAD-108 logger). Keyed by `active_model_id`, `pick_probability_artifact` and `active_forecast_artifact` from `artifacts/active_ats_model.json` / `active_pick_probability.json` (exits if the two disagree); per game `card_from_active_forecast` = card row's `baseline_forecast_artifact` equals the active weekly forecast.
+- Line = the logger's rule (Splash pool line, else card spread, else Tuesday opener); `line_source`, `pool_line`, `card_line` logged.
+- Population = every player on the latest nflverse injury capture before now for the two teams; others held at ladder availability (k+1)/(n+2) by designation x practice status (`ladder_table()`, LEAD-108 declaration 2 population). Value per Out = LEAD-110 by position group.
+- Candidate = starter (max offense/defense snap share in his latest prior 2026 game above one half, LEAD-108 unit 2 definition) with designation Questionable or Doubtful, or, when his team has no designations yet (Monday teams before the Saturday final report), practice DNP or Limited. Kickers and punters never qualify (no offense/defense snaps), disclosed.
+- In/out: `lead108_full_mixture.mixtures()` called unchanged; the target's read slot set to 1 (plays) or 0 (sits), everyone else's read slot empty so it falls back to the ladder. Centre bisected so the zero shift reproduces the card probability; both scenarios centred on the full-ladder expected shift; discrete lattice band conditioned on the line (multimodal margins). All scenarios go in one call via synthetic keys.
+- Flag = in and out on opposite sides of 50% at that line. Sentence: "If X sits, the pick would change to T." when the card side matches the plays scenario, else "If X plays, ...". Team codes as the board shows them, no numbers.
+
+## Tried
+Reused, not rebuilt: LEAD-108 `mixtures()`, `card()`, `splash()`, `history_pool()`, `ladder_table()`, `admissible_reads()` (reads recorded per candidate as `read_play_probability` only; the task holds others at the ladder).
+
+## Next
+Board-render plan for a later unit (no board files edited here):
+1. `src/nfl_ats/board_content.py`: new `GameRow` field `status_line: str = ""` beside `qb_practice_flag` (line 233). New helper `_status_scenario_lines(artifacts_root, ordered, active_model_id) -> dict[str, str]` modelled on `_quarterback_practice_flags` (line 3825): newest `artifacts/ui33_scenarios/{season}_week{NN}_*.json`; fail closed (empty) unless `active_model_id` equals the active model, the game's `card_from_active_forecast` is true and its `card_published_at_utc` equals the card row being rendered; returns `board_line` for games with `flagged_players`. Compute beside `qb_practice_flags` (lines 4402-4403) and pass `status_line=` in the `GameRow(...)` call next to `qb_practice_flag=` (line 4546).
+2. `src/nfl_ats/board_terminal.py`: in the pick cell after the QB flag block (lines 1007-1016) add a `best-flag` pill "Depends on <player>" with the sentence as its title, skipped when `game.final`; append `status_line` to the dive-panel explanation join after `pool_line_note` (lines 1553-1560). Check at 1440 and 390 widths.
+3. Root: schedule the producer after each card refresh and after the Saturday final injury capture (Sun morning before the 12:40 last call); the board reads whatever file is newest, so a stale file must fail the `card_published_at_utc` match, not render.
+4. The Markdown prediction card line is a separate later unit.
+
+ROADMAP UI-33 update: 2026-11-21: producer built and stored (`scripts/ui33_scenario_producer.py` -> `artifacts/ui33_scenarios/2026_weekNN_<UTC>.json`, keyed to the active model and pick-probability artifact): per open game, each unresolved starter in and out on the LEAD-108 discrete lattice mixture (others at ladder availability), flagged when the two fall on opposite sides of 50% at the pool line, with the reader sentence. Week 11 run: 12 games, 26 candidates, 4 flagged (ARI@KC Carson Beck, TB@DET Baker Mayfield, JAX@NYG Isaiah Likely, CIN@WAS Rachaad White). Display only; no served side changes. Next: render the line in board_content.py and board_terminal.py per the plan in `docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`, and schedule the producer.
+
+## Open
+- NYG (Sunday game) has no game-status rows in capture 20261121T140108Z (all 8 rows practice-only, `date_modified` empty, same shape as the Monday teams CIN and WAS), so Isaiah Likely was treated as designation pending. If NYG's Friday report cleared everyone, that flag is spurious; the next capture decides. Pending players use the ladder's "no designation" cell, which on a final report means cleared, so their play chance (and the background) is overstated before the final report (inferred).
+Rules: one fitted probability selects the side; this line never flips one. Per-player in/out only (no joint two-player scenarios). Card probability is defined at the card line; the logger's rule treats it as the pool line (equal for all Week 11 games, read: Splash `2026_week11_20261117_1637.json` vs card `market_spread`).
+
+## Root decision (2026-11-21 11:02 EST): do not render this producer's lines
+- The in/out swings come from the LEAD-108 PER-10 lattice mixture, a research arm the served model does not use. A board line that says the pick would change must describe what the served probability itself does under that status (AGENTS.md: one calibrated probability decides every pick; every displayed number comes from an artifact keyed to the active model). The served formula reacts to quarterback status through its quarterback input and has no availability term for other positions, so the TE and RB flags (JAX at NYG, CIN at WAS, both within .01 of even) would describe nothing the card can do.
+- Next unit: rebuild the producer on the served path: for each game whose projected starting QB carries an unresolved designation, recompute the served probability with the starter in and with the next QB in through the served pipeline's own quarterback input (read-only calls; no pinned edits), and flag only side changes. Non-QB statuses are out of scope until a served availability term exists.
+

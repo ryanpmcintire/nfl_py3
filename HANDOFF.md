@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:58:59.649435+00:00`
+Refreshed at: `2026-11-21T16:02:06.618471+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T15:58:59.649435+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a336cf652809` — Repair test_cli_data_workflow after the 11-17 pregame-weather landing: the fixture data root now carries a pool_decision forecast archive and venue columns
-- Pending change set: 97 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/lanes/card-fidelity-divergence-2026-11-21.md`
-  - `M  docs/lanes/per-11-per11-acquired-player-ramp.md`
+- Baseline commit: `1956c2e87243` — Card checks: recorder comparison waits for a recorder run after the latest refresh, and the recorder and check share one slot table (recorder first); pool-line badge reads a half-point-to-a-point range when Tuesday books split; PER-11 dated arrivals graded on the served probability, 8 cells unresolved
+- Pending change set: 90 paths
+  - ` M docs/lanes/backlog-2026-11-21.md`
+  - ` M docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - `A  docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
   - ` M docs/lanes/xlg-15-xlg15-reliability-transfer.md`
-  - `M  registry/weak_signals/per11_arrival_rampup.json`
   - ` M registry/weak_signals/xlg15_cfb_trait_reliability.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/card_fidelity_check.py`
-  - `A  scripts/per11_arrival_dates.py`
-  - `M  src/nfl_ats/board_content.py`
+  - `A  scripts/ui33_scenario_producer.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
   - `?? cdx_vipre2.json`
   - `?? cdx_viweek.json`
   - `?? cdx_wgdl.json`
-  - ...and 77 more
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - ...and 70 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
