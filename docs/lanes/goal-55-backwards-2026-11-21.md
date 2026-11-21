@@ -23,6 +23,11 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 - Grade: model alone at the Tuesday opener, 1,503 decisive 2020-25 games, LOSO as P2-L. Looks: all (primary), quiet, moved = 3, family g55_deadline_availability. Controls: S_ALL shuffled within season (50 draws) for a matched-null percentile; base reproduced 802-701 first.
 - Serving candidate only if all of: S_ALL >= 827 wins, null percentile >= 95, log loss no worse than base. Then a forward read on 2026 Weeks 12-18 at the opener beside the served model, and landing in the pinned batch with validation re-enrolled. Anything else is recorded unresolved_below_power and the arm is not re-tuned on the same games.
 
+## G55-U3 result (measured, root recomputed from artifacts/g55_u3/per_game.parquet; 492af846)
+- S_ALL 809-694 v base 802-701 (+0.47 pts [-0.77, +1.47], P+ .785, null 87th pct, log loss .69904 v .69678 worse); quiet 450-387 v 437-400 (+1.55, P+ .99), moved 355-298 v 361-292 (-0.92); changed 95, 51-44. Serving test FAILS on all three legs; 3 cells unresolved_below_power (g55_deadline_availability). Not re-tuned.
+- Inferred: the oracle's extra +26 wins over the servable arm sit in realized snap share, which carries game script (starters rest in blowouts), i.e. part of the 835 ceiling is the result leaking. G55-U4 measures that: oracle O2 rebuilt from one-score game states only (lane g55-u4-neutral-usage-ceiling-2026-11-21.md).
+- Forward: S_ALL is a candidate for a frozen forward log Weeks 12-18 after Tuesday's capture patch (needs 2026 snap counts in the player snapshot).
+
 ## Tried
 - Gaussian correlation mapping of residual to accuracy predicts 51.8% against 53.4% measured; not usable for sizing, dropped.
 
