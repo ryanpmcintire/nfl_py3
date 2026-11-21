@@ -1,0 +1,34 @@
+# g55-u7-forward-logger-2026-11-21
+
+## Goal
+Frozen forward log of S_ALL_v2 (frozen in g55-u5a-usage-v2-2026-11-21.md, graded in U5b 812-691) on 2026 Weeks 12-18, model alone at the Tuesday opener beside the frozen base and the served card. BUILD ONLY: no 2026 outcome read, nothing fitted on 2026. Parent: goal-55-backwards-2026-11-21.md G55-U7. Not a look until score runs on Weeks 12-18.
+
+## Frozen-parameter declaration (2026-11-21 15:39 EST start, written before freeze ran)
+- Margin ridge (base and arm): the walk-forward fit the U3/U5b harness makes for 2026 Week 1, i.e. clv.fit_margin_model on every completed REG game before the first 2026 gameday, served features + artifacts/g55_u5b/servable_features.parquet, BASE_CONFIG, alpha BASE_ALPHA. Home-side offsets: fit_home_side_offsets on the harness's own walk-forward stream through the last 2025 week (captured from clv.opener_pick_evaluation). Discrete push pool: the harness's prior_pool (2025 and earlier results only). Check: the same harness run must reproduce artifacts/g55_u5b/per_game.parquet p_base/p_arm.
+- U2 v1: span from the v1 manifest (2, every fold); redistribution fraction refit once on all 2020-25 actives (U2's fit_fraction, forward scheme for held 2026).
+- U5a v2: one LAD regression per role on all 2020-25 actives (U5a's forward scheme with held season 2026), one-score target, same design and clip [0, max training target]. One-score EWMA state nb frozen per player from the pinned pbp participation (U4 snapshot); 2026 participation coverage recorded in frozen.json.
+- Everything pickled in artifacts/g55_s_all_v2_forward/frozen.pkl; frozen.json holds its sha256 and the checks. Files with another sha are never scored.
+
+## State
+- Status 2026-11-21 15:55: build done; measured checks in Tried.
+- scripts/g55_s_all_v2_forward.py (ruff format + check clean, no comments): freeze / pregame [--week N|auto] [--dry] / score / slots.
+- pregame: games before their cutoff min(kickoff, pick deadline); live actives = latest prior-week 2026 roster (ACT/INA on the 53) minus the INA rows of the latest capture per team-game taken in [kickoff - 90 min, cutoff) and at or before the run (90 = league posting time, reported, docs/inactives_channel.md:202-220); gsis_id from the capture when present (U1b patch), else suffix-stripped exact name match on that roster (unmatched counted). Designations and practice from the latest player snapshot at or before the run, seen <= cutoff. Snap history from data/players/forward_snaps/snap_counts_2026_before_week_WW.parquet (strictly earlier weeks, guarded). Team-games without a valid capture get zero terms (base inputs, as history). Opener = the Splash pool line for the week (load_splash_capture). Writes artifacts/g55_s_all_v2_forward/2026_weekWW_<stamp>.json (dry: dry_run/).
+- score: last admissible file per game (created and mtime before cutoff, frozen sha matches), graded at the logged opener line, pushes out; arm v frozen base v card; exit 0 when nothing to grade.
+
+## Tried
+- First freeze launch stopped at ruff (RUF059); fixed.
+- Freeze (measured, 15:48:58-15:51:07 EST, exit 0, artifacts/g55_s_all_v2_forward/freeze.log, frozen.pkl, frozen.json): sha256 9d9c6638e7e7e9b9cded24d7ae888e468582420ae3fc4767a3c309cff5794f36; train 4,431 games through 2026-01-04 (cutoff 2026-09-09); harness reproduces U5b p_base and p_arm on 1,503 games, max abs diff 0.0 both; offset stream 1,537 rows through 2025-18; U2 span 2, fraction 0.3386 refit 2020-25; U5a role fits stored; nb state 5,882 players; 2026 participation team-games 0 (nb frozen at 2025; 2026 rookies nb_missing).
+- score (measured): exit 0, nothing graded. slots (measured): pregame argv [.tools/uv.exe, run, --no-sync, python, scripts/g55_s_all_v2_forward.py, pregame] at each inactives_* slot after its capture job (wed 18:50; thu 11:35, 15:05, 18:50; sat 15:30, 18:50; sun 08:35, 11:35, 12:20, 14:40, 15:20); score [..., score] tue 09:25.
+- Dry Week 11 (measured, exit 0, 3 s): 13 games, 0 captures in window yet, all base inputs; dry_run/2026_week11_20261121T205118Z.json.
+- Dry Week 10 first run: captures_used 0. Cause (measured): capture status text is 'Inactive' (125 rows, 12 games); filter matched 'INA' only; fixed to prefix match.
+- Dry Week 10 after the fix (measured, stamped 2026-11-21 15:55): exit 0; 2026_week10_20261121T205156Z.json; 14 games; inputs {"unmatched_names": 5, "captures_used": 18, "player_snapshot": "20261121T181046Z", "forward_snaps": "snap_counts_2026_before_week_10.parquet", "known_team_games": 18, "participation_team_games_2026": 0, "usage_role_fallbacks": 0, "role_rows": {"team_games": 9560, "deadline_list": 18, "no_deadline_list": 9542}}; games with a nonzero term 12 (by term {'diff_servable_o1': 12, 'diff_servable_o2': 12, 'diff_servable_o3': 1}); arm v frozen base side changes 1
+
+## Next
+1. Root: review, commit scripts/g55_s_all_v2_forward.py (artifacts stay untracked).
+2. Tuesday 11-24 after the U1b capture patch: add scheduler jobs from `slots` (pregame queued after each inactives_* capture and its refresh-picks job; score Tue 09:25). No refit; frozen sha 9d9c6638...4f36.
+3. After Week 12: `score` each Tuesday; grade v frozen base and v card at the logged opener; record once at the end of Week 18 as one declared look.
+
+## Open
+- Data gap (2026 snaps): SOLVED. Player snapshots (20261108, 20261121) hold no 2026 snaps, but scripts/mod24_forward_log.py:330-349 already writes data/players/forward_snaps/snap_counts_2026_before_week_WW.parquet weekly from the nflverse snap_counts_2026 release (config/source_policies.json "nflverse": green, acquisition allowed; nfl_ats/nflverse_current_season.py:112-131 guard). Week 11 file: 14,004 2026 rows, Weeks 1-10, 150 games (measured).
+- Live actives exclude players moved off the 53 after the prior week's roster (IR, cuts): they count as active (gap; U1 history used the same-week list).
+- Friday 15:00 game (Week 12) has no inactives job: base inputs. SNF/MNF: deadline before T-90, base inputs (as history).
