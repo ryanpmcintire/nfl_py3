@@ -16,7 +16,9 @@ from nfl_ats.cli_commands import operations as operations_cmds
 from nfl_ats.cli_commands import publishing as publishing_cmds
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json
+from nfl_ats.nfl_week import pool_decision_cutoff
 from nfl_ats.pick_refresh import load_pick_revisions
+from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import write_snapshot
 from nfl_ats.weak_signals import read_registry_payload
 
@@ -138,6 +140,7 @@ def test_cli_data_workflow(
     assert _last_json(capsys.readouterr().out)["latest_snapshot"] is None
 
     schedules, stats = schedules_and_stats
+    schedules = schedules.assign(stadium="Test Field", roof="outdoors")
 
     def fake_fetch(seasons: list[int], raw_root: Path, team_stat_seasons: list[int]):
         return write_snapshot(
@@ -156,6 +159,46 @@ def test_cli_data_workflow(
 
     assert cli.main(["doctor"]) == 0
     assert _last_json(capsys.readouterr().out)["latest_snapshot"] is not None
+
+    kickoffs = pd.to_datetime(schedules["gameday"]) + pd.Timedelta(hours=17)
+    kickoffs = kickoffs.dt.tz_localize("UTC")
+    forecast_dir = data_root / "raw" / "forecast_archive" / "pool_decision_2009_2025_aware"
+    forecast_dir.mkdir(parents=True)
+    forecast_rows = pd.DataFrame(
+        {
+            "game_id": schedules["game_id"].astype(str),
+            "kickoff_utc": kickoffs.map(lambda value: value.isoformat()),
+            "decision_cutoff_utc": kickoffs.map(
+                lambda value: pd.Timestamp(pool_decision_cutoff(value.to_pydatetime())).isoformat()
+            ),
+            "issuance_runtime_utc": (kickoffs - pd.Timedelta(hours=5)).map(
+                lambda value: value.isoformat()
+            ),
+            "cutoff_mode": "pool_decision",
+            "fetch_status": "ok",
+            "roof": "outdoors",
+            "forecast_temp_f": 65.0,
+            "forecast_wind_mph": 8.0,
+            "forecast_precip_prob_pct": 10.0,
+        }
+    )
+    forecast_path = forecast_dir / "forecasts.parquet"
+    forecast_rows.to_parquet(forecast_path, index=False)
+    (forecast_dir / "manifest.json").write_text(
+        json.dumps(
+            {
+                "cutoff_mode": "pool_decision",
+                "mos_model": "GFS",
+                "files": {
+                    "forecasts.parquet": {
+                        "rows": len(forecast_rows),
+                        "sha256": sha256_file(forecast_path),
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
     assert cli.main(["build-features", "--ewm-span", "3", "--min-periods", "1"]) == 0
     feature_output = _last_json(capsys.readouterr().out)

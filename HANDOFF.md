@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:54:25.354387+00:00`
+Refreshed at: `2026-11-21T15:54:44.851955+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T15:54:25.354387+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f2597d274925` — Every recorded refresh rewrites the card's numbers, not only side or Best Pick changes: the card kept Friday 13:30's line-move step while the board moved on (four games 2.6-2.8 points apart, sides equal); republish the board with the served numbers and the leader panel
-- Pending change set: 99 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
+- Baseline commit: `ac57a84afb20` — Sunday odds tape ends 12:25 ET so jobs queued behind it clear before the 12:40/12:45 last-call refresh; LEAD-108 read-mixture forward arm declared for Weeks 12-18 with its logger and jobs
+- Pending change set: 91 paths
   - ` M docs/findings.html`
-  - `MM docs/lanes/backlog-2026-11-21.md`
-  - `M  docs/lanes/lead-108-wording-read-availability-inside-the-inj.md`
-  - `M  docs/lanes/lead108-forward-2026-11-16.md`
+  - `M  docs/lanes/backlog-2026-11-21.md`
   - ` M docs/lanes/per-11-per11-acquired-player-ramp.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
   - ` M docs/lanes/xlg-15-xlg15-reliability-transfer.md`
   - ` M registry/weak_signals/xlg15_cfb_trait_reliability.json`
-  - `M  scripts/capture_odds_tape.py`
-  - `M  scripts/capture_scheduler.py`
   - ` M scripts/card_fidelity_check.py`
-  - `A  scripts/lead108_mixture_forward.py`
-  - ` M tests/test_cli.py`
+  - `M  tests/test_cli.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
   - `?? cdx_vipre2.json`
-  - ...and 79 more
+  - `?? cdx_viweek.json`
+  - `?? cdx_wgdl.json`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - ...and 71 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
