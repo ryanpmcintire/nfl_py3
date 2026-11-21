@@ -1,6 +1,62 @@
 {
   "family": "mod57_availability_ceiling",
   "signals": {
+    "g55_u4_ALL_neutral_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak ceiling diagnostic; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus ALL_neutral (realised snap share counted only while the score is within 8, one possession) minus served base, all games, model alone at the Tuesday opener, season-block bootstrap; record 823-680 v base 802-701; full-game ALL rerun 830-673",
+      "effect": 1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        0.20804438280166435,
+        2.4787997390737115
+      ],
+      "league": "nfl",
+      "notes": "G55-U4 declared looks (ALL_neutral and O2_neutral, all games = 2); declaration in docs/lanes/g55-u4-neutral-usage-ceiling-2026-11-21.md; ALL rerun is a reference",
+      "plain_summary": "Tells the model after the fact how much each player played while the game was still within one score, to see how much of the perfect who-plays ceiling is the final score leaking through playing time.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u4/results.json",
+      "standard_error": null
+    },
+    "g55_u4_O2_neutral_all_accuracy_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Deliberate-leak ceiling diagnostic; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, DELIBERATE LEAK, NOT SERVABLE: base plus O2_neutral (realised snap share counted only while the score is within 8, one possession) minus served base, all games, model alone at the Tuesday opener, season-block bootstrap; record 802-701 v base 802-701; full-game ALL rerun 830-673",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod57_availability_ceiling",
+      "interval": [
+        -0.7472826086956522,
+        0.7232084155161078
+      ],
+      "league": "nfl",
+      "notes": "G55-U4 declared looks (ALL_neutral and O2_neutral, all games = 2); declaration in docs/lanes/g55-u4-neutral-usage-ceiling-2026-11-21.md; ALL rerun is a reference",
+      "plain_summary": "Tells the model after the fact how much each player played while the game was still within one score, to see how much of the perfect who-plays ceiling is the final score leaking through playing time.",
+      "probability_positive": 0.46475,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u4/results.json",
+      "standard_error": null
+    },
     "mod57_p2l_ALL_three_all_accuracy_points": {
       "category": "health",
       "classification": "unresolved_below_power",

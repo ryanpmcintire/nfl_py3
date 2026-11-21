@@ -28,6 +28,11 @@ Owner 2026-11-21: get the MODEL's accuracy above 55% (model alone, walk-forward,
 - Inferred: the oracle's extra +26 wins over the servable arm sit in realized snap share, which carries game script (starters rest in blowouts), i.e. part of the 835 ceiling is the result leaking. G55-U4 measures that: oracle O2 rebuilt from one-score game states only (lane g55-u4-neutral-usage-ceiling-2026-11-21.md).
 - Forward: S_ALL is a candidate for a frozen forward log Weeks 12-18 after Tuesday's capture patch (needs 2026 snap counts in the player snapshot).
 
+## G55-U4 result (measured, root recomputed from artifacts/g55_u4/per_game.parquet)
+- Today's inputs: base 802-701; ALL oracle rerun 830-673; ALL_neutral (one-score usage) 823-680 (+1.40 [0.21, 2.48], P+ .998, log loss .69222 v .69678); O2_neutral alone 802-701; S_ALL 809-694. Game script was 7 of the 21-win oracle gap; 14 wins (an upper bound: still holds in-game injuries) remain for a better pregame usage forecast.
+- Consequence: the who-plays route tops out at 823 even with leaky in-game usage, and the market hindsight route also at 823. Neither reaches 827 alone; 55% needs who-plays near its ceiling plus an independent source.
+- Next units: G55-U5a pregame usage forecaster v2 (designations, practice status, return ramp; build only, lane g55-u5a-usage-v2-2026-11-21.md); G55-U5b one declared grade of S_ALL_v2; then a declared combined arm with the other model-alone positive (MOD-23 unit 5a man/zone, 809-694), labelled post-selection, graded once and logged forward.
+
 ## Tried
 - Gaussian correlation mapping of residual to accuracy predicts 51.8% against 53.4% measured; not usable for sizing, dropped.
 

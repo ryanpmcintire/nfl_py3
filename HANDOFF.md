@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T19:50:05.922400+00:00`
+Refreshed at: `2026-11-21T20:03:58.258234+00:00`
 
 ## Start here
 
@@ -21,12 +21,15 @@ Refreshed at: `2026-11-21T19:50:05.922400+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `492af846906c` — G55-U3: servable who-plays arm 809-694 v base 802-701 at the opener; declared serving test fails, recorded unresolved
-- Pending change set: 90 paths
+- Baseline commit: `fed6a3a58acc` — Goal-55 lane: U3 result and U4 game-script check of the who-plays ceiling
+- Pending change set: 93 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/index.html`
+  - `A  docs/lanes/g55-u4-neutral-usage-ceiling-2026-11-21.md`
   - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
+  - `M  registry/weak_signals/mod57_availability_ceiling.json`
+  - `A  scripts/g55_u4_neutral_usage_ceiling.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-21T19:50:05.922400+00:00`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 70 more
+  - ...and 73 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
