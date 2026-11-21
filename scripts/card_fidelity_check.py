@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
 from datetime import UTC, date, datetime, time, timedelta
+from functools import cache
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +42,7 @@ CARD_ROW = re.compile(
 PICK_TEAM = re.compile(r"\b([A-Z]{2,3})\b\s+(?:[+-]?\d|PK)")
 ONE_OFF_JOB = re.compile(r"_\d{8}$")
 JOB_SCRIPT = re.compile(r"[\\/]([\w.]+\.(?:py|ps1))")
+AGE_GUARD_FLAG = "--max-age-minutes"
 
 
 def week_tuesday(kickoffs: pd.Series) -> date:
@@ -79,14 +82,45 @@ def move_capture_slots(
     tuesday: date, leader_quotes: pd.DataFrame
 ) -> list[tuple[scheduler.Job, pd.Timestamp]]:
     jobs = [job for job in enabled("odds_") if "halves" not in job.name]
-    observed = pd.to_datetime(leader_quotes["observed_at_utc"], utc=True)
-    feeding: set[str] = set()
+    observed = pd.to_datetime(leader_quotes["observed_at_utc"], utc=True).reset_index(drop=True)
+    covered: dict[str, pd.Series] = {}
     for job in jobs:
         start = slot_time(tuesday, job)
         window = observed.ge(start) & observed.le(start + timedelta(minutes=job.grace_minutes))
-        if bool(window.any()):
-            feeding.add(job_script(job))
+        script = job_script(job)
+        covered[script] = covered[script] | window if script in covered else window
+    owners = pd.concat(covered.values(), axis=1).sum(axis=1) if covered else observed.lt(observed)
+    feeding = {script for script, window in covered.items() if bool((window & owners.eq(1)).any())}
     return [(job, slot_time(tuesday, job)) for job in jobs if job_script(job) in feeding]
+
+
+@cache
+def script_age_guard(script: Path) -> int:
+    if not script.is_file():
+        return 0
+    for node in ast.walk(ast.parse(script.read_text(encoding="utf-8"))):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "add_argument"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and node.args[0].value == AGE_GUARD_FLAG
+        ):
+            for keyword in node.keywords:
+                if keyword.arg == "default" and isinstance(keyword.value, ast.Constant):
+                    return int(keyword.value.value)
+    return 0
+
+
+def capture_skip_minutes(job: scheduler.Job) -> int:
+    argv = [str(part) for part in job.command]
+    if AGE_GUARD_FLAG in argv[:-1]:
+        guard = int(argv[argv.index(AGE_GUARD_FLAG) + 1])
+    else:
+        scripts = [Path(part) for part in argv if part.endswith(".py")]
+        guard = script_age_guard(scripts[-1]) if scripts else 0
+    return max(job.dedupe_minutes, guard)
 
 
 def parse_card(path: Path, season: int, week: int) -> dict[str, dict[str, Any]] | str:
@@ -258,7 +292,7 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
         if refresh is not None:
             capture = latest(captures, refresh[1])
             if capture is not None:
-                required = capture[1] - timedelta(minutes=capture[0].dedupe_minutes)
+                required = capture[1] - timedelta(minutes=capture_skip_minutes(capture[0]))
                 if newest is None or newest < required:
                     found.append(
                         f"newest move quote {newest} older than capture {capture[0].name} "

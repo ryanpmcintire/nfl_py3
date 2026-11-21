@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:43:32.909502+00:00`
+Refreshed at: `2026-11-21T17:52:42.648765+00:00`
 
 ## Start here
 
@@ -21,14 +21,12 @@ Refreshed at: `2026-11-21T17:43:32.909502+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e67e223e4989` — LEAD-29 and LEAD-81 input checks: Week 11 coordinator input lost to the since-fixed policy error; travel captures complete
-- Pending change set: 87 paths
+- Baseline commit: `a924802ef8a1` — Scorers for the team home edge and LEAD-108 forward logs written before any outcome; both refuse early scoring and dry-run on synthetic outcomes
+- Pending change set: 85 paths
   - `M  ROADMAP.md`
   - ` M docs/index.html`
-  - `M  docs/lanes/lead108-forward-2026-11-16.md`
-  - `M  docs/lanes/team-hfa-forward-2026-11-21.md`
-  - `M  scripts/lead108_mixture_forward.py`
-  - `M  scripts/team_hfa_forward.py`
+  - `M  docs/lanes/card-fidelity-divergence-2026-11-21.md`
+  - `M  scripts/card_fidelity_check.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-21T17:43:32.909502+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 67 more
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - ...and 65 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
