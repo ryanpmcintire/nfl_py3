@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:53:13.205847+00:00`
+Refreshed at: `2026-11-21T17:59:54.477173+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-11-21T17:53:13.205847+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5998071f1af2` — Fidelity check: count only captures that feed the move term and respect each capture script's age guard; the noon move-staleness alarm was false (served move recomputes equal)
+- Baseline commit: `89c3b1ba557b` — Backlog lane: session state, Sunday and Tuesday steps, unloaded jobs list
 - Pending change set: 83 paths
   - ` M docs/index.html`
   - `M  docs/lanes/backlog-2026-11-21.md`
