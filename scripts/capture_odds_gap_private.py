@@ -12,6 +12,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.market_data import NFL_TEAM_NAMES, QUOTE_COLUMNS, write_market_snapshot
+from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
 from nfl_ats.source_policy import require_acquisition, require_private_raw_destination
 
 REPO = Path(__file__).resolve().parents[1]
@@ -36,10 +37,26 @@ def _rows(
     schedule = schedule.loc[schedule["kickoff"].gt(scanned)]
     if schedule.empty:
         raise ValueError("No upcoming current-week games in local schedule")
-    week = schedule.sort_values("kickoff").iloc[0]
-    current = schedule.loc[
-        schedule["season"].eq(week["season"]) & schedule["week"].eq(week["week"])
-    ]
+    keys = ["season", "week"]
+    weeks = pd.MultiIndex.from_frame(schedule[keys])
+    every = features.assign(kickoff=pd.to_datetime(features["kickoff"], utc=True))
+    every = every.loc[pd.MultiIndex.from_frame(every[keys]).isin(weeks)]
+    locks = every.groupby(keys)["kickoff"].agg(sunday_pick_lock)
+    deadline = pd.Series(
+        [
+            pick_deadline(kickoff, locks.loc[(season, week)])
+            for season, week, kickoff in zip(
+                schedule["season"], schedule["week"], schedule["kickoff"], strict=True
+            )
+        ],
+        index=schedule.index,
+    )
+    ordered = schedule.sort_values("kickoff")
+    chosen = {tuple(ordered.iloc[0][keys])}
+    still_open = ordered.loc[deadline.loc[ordered.index].gt(scanned)]
+    if not still_open.empty:
+        chosen.add(tuple(still_open.iloc[0][keys]))
+    current = schedule.loc[weeks.isin(list(chosen))]
     ids = current.set_index(["home_team", "away_team"])
     rows: list[dict[str, Any]] = []
     for event in decoded.get("games", []):

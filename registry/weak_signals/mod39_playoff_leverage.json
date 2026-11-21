@@ -113,6 +113,62 @@
       "source": "artifacts/mod39/mod39_results.json",
       "standard_error": 0.487
     },
+    "mod39_levdiff_plus_stakes_loso_accuracy_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; interval spans both signs.",
+      "closing_ground": null,
+      "description": "Elimination difference and clinch difference (home minus away) from the weeks 10-16 standings Monte Carlo (scripts/sim09_stakes.py team-weeks); stakes_only fits both terms jointly, levdiff_plus_stakes adds the playoff-swing difference",
+      "effect": -0.675676,
+      "effect_units": "accuracy_points",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -3.378378,
+        2.027027
+      ],
+      "league": "nfl",
+      "notes": "LOSO logistic offset=opener model prob, swing, elimination and clinch differences jointly vs intercept-only, weeks 10-16; decisive 68: term 32, control 36; in-sample logloss gain 0.00121 gap 0.0044; elimination and clinch not separable in the artifact",
+      "plain_summary": "Teams facing elimination or having clinched were compared with the rest in weeks 10-16; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.2888,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": null
+    },
+    "mod39_levdiff_plus_stakes_loso_logloss_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; interval spans both signs.",
+      "closing_ground": null,
+      "description": "Elimination difference and clinch difference (home minus away) from the weeks 10-16 standings Monte Carlo (scripts/sim09_stakes.py team-weeks); stakes_only fits both terms jointly, levdiff_plus_stakes adds the playoff-swing difference",
+      "effect": -0.003158,
+      "effect_units": "log_loss_improvement",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -0.00785,
+        0.001644
+      ],
+      "league": "nfl",
+      "notes": "LOSO logistic offset=opener model prob, swing, elimination and clinch differences jointly vs intercept-only, weeks 10-16; decisive 68: term 32, control 36; in-sample logloss gain 0.00121 gap 0.0044; elimination and clinch not separable in the artifact",
+      "plain_summary": "Teams facing elimination or having clinched were compared with the rest in weeks 10-16; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.0986,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": null
+    },
     "mod39_levdiff_served_loso_accuracy_2020_25": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -167,6 +223,62 @@
         2025
       ],
       "source": "artifacts/forward_terms/mod39_levdiff_served/frozen_coefficients.json",
+      "standard_error": null
+    },
+    "mod39_stakes_only_loso_accuracy_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; interval spans both signs.",
+      "closing_ground": null,
+      "description": "Elimination difference and clinch difference (home minus away) from the weeks 10-16 standings Monte Carlo (scripts/sim09_stakes.py team-weeks); stakes_only fits both terms jointly, levdiff_plus_stakes adds the playoff-swing difference",
+      "effect": 0.844595,
+      "effect_units": "accuracy_points",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -1.689189,
+        3.378378
+      ],
+      "league": "nfl",
+      "notes": "LOSO logistic offset=opener model prob, elimination and clinch differences jointly vs intercept-only, weeks 10-16; decisive 57: term 31, control 26; in-sample logloss gain 0.00114 gap 0.0024; elimination and clinch not separable in the artifact",
+      "plain_summary": "Teams facing elimination or having clinched were compared with the rest in weeks 10-16; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.7208,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": null
+    },
+    "mod39_stakes_only_loso_logloss_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; interval spans both signs.",
+      "closing_ground": null,
+      "description": "Elimination difference and clinch difference (home minus away) from the weeks 10-16 standings Monte Carlo (scripts/sim09_stakes.py team-weeks); stakes_only fits both terms jointly, levdiff_plus_stakes adds the playoff-swing difference",
+      "effect": -0.001272,
+      "effect_units": "log_loss_improvement",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -0.005762,
+        0.003195
+      ],
+      "league": "nfl",
+      "notes": "LOSO logistic offset=opener model prob, elimination and clinch differences jointly vs intercept-only, weeks 10-16; decisive 57: term 31, control 26; in-sample logloss gain 0.00114 gap 0.0024; elimination and clinch not separable in the artifact",
+      "plain_summary": "Teams facing elimination or having clinched were compared with the rest in weeks 10-16; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.2904,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
       "standard_error": null
     }
   }

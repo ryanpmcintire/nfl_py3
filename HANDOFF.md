@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T14:53:19.743675+00:00`
+Refreshed at: `2026-11-21T14:59:01.276356+00:00`
 
 ## Start here
 
@@ -21,9 +21,16 @@ Refreshed at: `2026-11-21T14:53:19.743675+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fdc0d460637a` — Record the owner decision: winning flags stay on, losing flags stay off
-- Pending change set: 78 paths
-  - `A  docs/lanes/done/validation-v10-crlf-2026-11-21.md`
+- Baseline commit: `fdc0025c6e98` — Restore the validation v10 capture: the pinned pick_probability.py had lost its enrolled line endings on 11-18; four captures lost, none back-filled
+- Pending change set: 88 paths
+  - `A  docs/lanes/eng62-monday-capture-2026-11-21.md`
+  - ` M docs/lanes/lead-107-read-dispersion-weight.md`
+  - `A  docs/lanes/registry-catchup-2026-11-21.md`
+  - ` M registry/weak_signals/lead101_news_delta_read.json`
+  - ` M registry/weak_signals/lead104_revision_path.json`
+  - `M  registry/weak_signals/mod39_playoff_leverage.json`
+  - `M  scripts/capture_odds_gap_private.py`
+  - ` M scripts/pool07_standings_policy.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -36,14 +43,7 @@ Refreshed at: `2026-11-21T14:53:19.743675+00:00`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
-  - ...and 58 more
+  - ...and 68 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
