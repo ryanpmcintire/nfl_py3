@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:07:25.700114+00:00`
+Refreshed at: `2026-11-21T17:18:11.849977+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-11-21T17:07:25.700114+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b6a17d6f159a` — SIM-29: opener sign error fixed and three cells re-recorded (all unresolved); forward log for Weeks 12-18 declared with Thursday and Saturday jobs and a Tuesday roster snapshot
-- Pending change set: 83 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
+- Baseline commit: `f83008908ed0` — LEAD-103 Week 11: injuries, headlines, weather and rest blocks move the read about as much as noise; only the market block moves it
+- Pending change set: 85 paths
   - `M  ROADMAP.md`
-  - `M  docs/lanes/lead-103-read-block-ablation.md`
-  - `M  registry/weak_signals/lead103_read_block_ablation.json`
-  - `M  scripts/lead103_ablation.py`
+  - `M  docs/lanes/lead-101-news-delta-read.md`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/lead101_market_excluded.py`
+  - `A  scripts/lead101_market_excluded_prompt.md`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-21T17:07:25.700114+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - ...and 63 more
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - ...and 65 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `592dc27ca1835b3e`
+- Model ID: `a8ea1dadc06c2405`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261120T171639Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261121T171727Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,164 / 2,225 (52.31%)**
-- Linked forecast: **2026 Week 11**, created `2026-11-20T17:12:26.660213+00:00`
+- Linked forecast: **2026 Week 11**, created `2026-11-21T17:14:13.132647+00:00`
 
 The 52.31% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `592dc27ca1835b3e`, published `2026-11-20T17:21:52.934756+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `592dc27ca1835b3e`, published `2026-11-20T17:21:52.934756+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
 
 ## Local reproducibility inventory
 

@@ -1195,6 +1195,27 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day, at, grace in (("thu", "19:00", 60), ("sat", "20:30", 600))
     ),
+    *(
+        Job(
+            f"lead101_market_excluded_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead101_market_excluded.py"),
+                "run",
+            ],
+            True,
+            "LEAD-101 market-excluded arm: frozen read of the week's deadline packet with the "
+            "market block removed, written before kickoff; scored after Week 18.",
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (("thu", "19:15", 60), ("sun", "09:30", 60))
+    ),
     Job(
         "lead112_forward_score_tue",
         "tue",

@@ -44,7 +44,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`592dc27ca1835b3e`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`a8ea1dadc06c2405`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.81%, 55.85%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.31%** (1,164 of 2,225 non-push games), week-blocked 95% interval [50.26%, 54.57%].
