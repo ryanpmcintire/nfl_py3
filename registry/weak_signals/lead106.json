@@ -1,6 +1,902 @@
 {
   "family": "lead106",
   "signals": {
+    "lead106_forward_wk10_brier_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, Brier score on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0053,
+      "effect_units": "brier_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0083,
+        0.0188
+      ],
+      "league": "nfl",
+      "notes": "298 rows in 28 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.776,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_brier_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, Brier score on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0041,
+      "effect_units": "brier_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0034,
+        0.0132
+      ],
+      "league": "nfl",
+      "notes": "298 rows in 28 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.8365,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0198,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0251,
+        0.0677
+      ],
+      "league": "nfl",
+      "notes": "298 rows in 28 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.779,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_des_doubtful": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset Doubtful, id-joined verified outcomes",
+      "effect": -0.111,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1548,
+        -0.0714
+      ],
+      "league": "nfl",
+      "notes": "8 rows in 6 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_des_none": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset none, id-joined verified outcomes",
+      "effect": 0.0565,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0004,
+        0.1249
+      ],
+      "league": "nfl",
+      "notes": "151 rows in 27 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.9775,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 27,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_des_out": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset Out, id-joined verified outcomes",
+      "effect": -0.0098,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0121,
+        -0.0074
+      ],
+      "league": "nfl",
+      "notes": "66 rows in 22 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_des_questionable": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset Questionable, id-joined verified outcomes",
+      "effect": -0.0149,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1428,
+        0.0942
+      ],
+      "league": "nfl",
+      "notes": "73 rows in 22 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.39,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_des_status_filed_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset status_filed_games, id-joined verified outcomes",
+      "effect": 0.0021,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0342,
+        0.0404
+      ],
+      "league": "nfl",
+      "notes": "276 rows in 26 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.548,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 26,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0084,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0158,
+        0.0345
+      ],
+      "league": "nfl",
+      "notes": "298 rows in 28 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.7535,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_desprac_doubtful": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset Doubtful, id-joined verified outcomes",
+      "effect": -0.0925,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1466,
+        -0.0467
+      ],
+      "league": "nfl",
+      "notes": "8 rows in 6 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_desprac_none": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset none, id-joined verified outcomes",
+      "effect": 0.0179,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0176,
+        0.0598
+      ],
+      "league": "nfl",
+      "notes": "151 rows in 27 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.8245,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 27,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_desprac_out": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset Out, id-joined verified outcomes",
+      "effect": -0.0069,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0102,
+        -0.0032
+      ],
+      "league": "nfl",
+      "notes": "66 rows in 22 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_desprac_questionable": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset Questionable, id-joined verified outcomes",
+      "effect": 0.0134,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0387,
+        0.0595
+      ],
+      "league": "nfl",
+      "notes": "73 rows in 22 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.6915,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_ll_desprac_status_filed_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset status_filed_games, id-joined verified outcomes",
+      "effect": 0.0118,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0075,
+        0.0362
+      ],
+      "league": "nfl",
+      "notes": "276 rows in 26 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.859,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 26,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_mae_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation ladder fit on prior weeks, mean absolute error of snap share, subset all, id-joined verified outcomes",
+      "effect": 0.0055,
+      "effect_units": "mae_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0103,
+        0.0208
+      ],
+      "league": "nfl",
+      "notes": "298 rows in 28 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted how much each player would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.7545,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk10_mae_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Week 10 census: LLM wording read vs designation x practice ladder fit on prior weeks, mean absolute error of snap share, subset all, id-joined verified outcomes",
+      "effect": 0.0079,
+      "effect_units": "mae_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.007,
+        0.0227
+      ],
+      "league": "nfl",
+      "notes": "298 rows in 28 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted how much each player would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.839,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_brier_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, Brier score on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0135,
+      "effect_units": "brier_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0022,
+        0.0263
+      ],
+      "league": "nfl",
+      "notes": "607 rows in 58 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.9905,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_brier_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, Brier score on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0082,
+      "effect_units": "brier_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0005,
+        0.0176
+      ],
+      "league": "nfl",
+      "notes": "607 rows in 58 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.9855,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0522,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0116,
+        0.1005
+      ],
+      "league": "nfl",
+      "notes": "607 rows in 58 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.996,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_des_doubtful": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset Doubtful, id-joined verified outcomes",
+      "effect": -0.1003,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1429,
+        -0.0699
+      ],
+      "league": "nfl",
+      "notes": "12 rows in 8 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_des_none": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset none, id-joined verified outcomes",
+      "effect": 0.1133,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0507,
+        0.1827
+      ],
+      "league": "nfl",
+      "notes": "331 rows in 57 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 57,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_des_out": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset Out, id-joined verified outcomes",
+      "effect": -0.0102,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.012,
+        -0.0084
+      ],
+      "league": "nfl",
+      "notes": "129 rows in 45 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 45,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_des_questionable": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset Questionable, id-joined verified outcomes",
+      "effect": -0.0245,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1011,
+        0.05
+      ],
+      "league": "nfl",
+      "notes": "135 rows in 47 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.2725,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 47,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_des_status_filed_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset status_filed_games, id-joined verified outcomes",
+      "effect": 0.0246,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0068,
+        0.0596
+      ],
+      "league": "nfl",
+      "notes": "560 rows in 54 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.935,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0226,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0015,
+        0.0484
+      ],
+      "league": "nfl",
+      "notes": "607 rows in 58 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.965,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_desprac_doubtful": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset Doubtful, id-joined verified outcomes",
+      "effect": -0.0783,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.1304,
+        -0.0431
+      ],
+      "league": "nfl",
+      "notes": "12 rows in 8 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_desprac_none": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset none, id-joined verified outcomes",
+      "effect": 0.0556,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0172,
+        0.0942
+      ],
+      "league": "nfl",
+      "notes": "331 rows in 57 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 57,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_desprac_out": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset Out, id-joined verified outcomes",
+      "effect": -0.0073,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0095,
+        -0.0051
+      ],
+      "league": "nfl",
+      "notes": "129 rows in 45 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 45,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_desprac_questionable": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset Questionable, id-joined verified outcomes",
+      "effect": -0.0209,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.062,
+        0.0195
+      ],
+      "league": "nfl",
+      "notes": "135 rows in 47 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play worse than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.163,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 47,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_ll_desprac_status_filed_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset status_filed_games, id-joined verified outcomes",
+      "effect": 0.0138,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0042,
+        0.0354
+      ],
+      "league": "nfl",
+      "notes": "560 rows in 54 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.9265,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_mae_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation ladder fit on prior weeks, mean absolute error of snap share, subset all, id-joined verified outcomes",
+      "effect": 0.0159,
+      "effect_units": "mae_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0042,
+        0.0265
+      ],
+      "league": "nfl",
+      "notes": "607 rows in 58 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted how much each player would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_forward_wk9_10_mae_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Forward 2026 Weeks 9-10 census, cumulative: LLM wording read vs designation x practice ladder fit on prior weeks, mean absolute error of snap share, subset all, id-joined verified outcomes",
+      "effect": 0.0165,
+      "effect_units": "mae_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0053,
+        0.0267
+      ],
+      "league": "nfl",
+      "notes": "607 rows in 58 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted how much each player would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
     "lead106_forward_wk9_brier_des_all": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -503,6 +1399,62 @@
         2026
       ],
       "source": "artifacts/per03/lead106_complete/score_ids.json",
+      "standard_error": null
+    },
+    "lead106_pooled_wk2_10_ll_des_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Pooled 2026 weeks 2-8 stratified sample (weighted to population) plus forward Weeks 9-10 census: LLM wording read vs designation ladder fit on prior weeks, log loss on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0619,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0201,
+        0.1135
+      ],
+      "league": "nfl",
+      "notes": "901 rows in 201 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official injury tag in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 201,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
+      "standard_error": null
+    },
+    "lead106_pooled_wk2_10_ll_desprac_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "607 id-verified forward rows in 58 team-week clusters over 2 forward week(s); 102 looks this run in family lead106; no split-half reliability on forward weeks and no positive control; week, cumulative and pooled cells overlap and are not independent votes; sub-cells with the whole interval below zero are listed in the lane for adjudication, not closed here",
+      "closing_ground": null,
+      "description": "Pooled 2026 weeks 2-8 stratified sample (weighted to population) plus forward Weeks 9-10 census: LLM wording read vs designation x practice ladder fit on prior weeks, log loss on played or not, subset all, id-joined verified outcomes",
+      "effect": 0.0326,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0016,
+        0.0708
+      ],
+      "league": "nfl",
+      "notes": "901 rows in 201 team-week clusters; scored 2026-11-21 by scripts/lead106_forward_score.py --week 10; reads scored as frozen, no model calls; ladders expand over every prior week (2461 rows); one of 102 looks this run, family lead106",
+      "plain_summary": "Reading the wording of injury reports predicted who would play better than the official tag plus practice participation in this sample. Too few weeks to settle it, so the question stays open.",
+      "probability_positive": 0.977,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 201,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/forward_score/2026_week10.json",
       "standard_error": null
     },
     "lead106_pooled_wk2_9_ll_des_all": {

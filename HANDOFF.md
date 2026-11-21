@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:18:28.799080+00:00`
+Refreshed at: `2026-11-21T16:19:17.659157+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T16:18:28.799080+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8043d37c8034` — MOD-30 unblocked on the existing nfelo source; 2025 pregame-stamped look unresolved (changed picks 4-6, null percentile 76)
-- Pending change set: 95 paths
+- Baseline commit: `4827103074bd` — PER-13 frozen term pinned by hash and runnable weekly (refresh and Weeks 17-18 log jobs, forward ledger entry); forward-log coverage audit of every 2026 forward job
+- Pending change set: 89 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
   - ` M docs/lanes/eng-51-opener-input-provenance-guard.md`
-  - `A  docs/lanes/forward-log-coverage-2026-11-21.md`
-  - ` M docs/lanes/lead-106-injury-language-read.md`
-  - ` M docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
-  - `M  docs/lanes/per-13-per13-week17-rest-hazard.md`
+  - `M  docs/lanes/lead-106-injury-language-read.md`
+  - `M  docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - ` M registry/weak_signals/lead106.json`
-  - ` M registry/weak_signals/lead110_market_absorption.json`
+  - `M  registry/weak_signals/lead106.json`
+  - `M  registry/weak_signals/lead110_market_absorption.json`
   - ` M registry/weak_signals/sim29_lineup.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/forward_ledger.py`
-  - ` M scripts/lead106_forward_score.py`
-  - `A  scripts/per13_forward.py`
-  - `M  scripts/per13_term_design.py`
+  - ` M scripts/draftcap_forward_log.py`
+  - `M  scripts/lead106_forward_score.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
-  - ...and 75 more
+  - `?? cdx_vipre2.json`
+  - `?? cdx_viweek.json`
+  - `?? cdx_wgdl.json`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - ...and 69 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

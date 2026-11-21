@@ -19,6 +19,31 @@ INJ = L.ROOT / "data" / "raw" / "nflverse_injuries"
 OUT = L.ART / "forward_score"
 AGG = {"n": ("played", "size"), "k": ("played", "sum"), "m": ("snap_share", "mean")}
 METRICS = ("log_loss_improvement", "brier_improvement", "mae_improvement")
+PRIOR_COLS = ["week", "designation", "practice_status", "played", "snap_share"]
+SHORT_METRIC = {
+    "log_loss_improvement": "ll",
+    "brier_improvement": "brier",
+    "mae_improvement": "mae",
+}
+SHORT_LADDER = {"designation": "des", "designation_x_practice": "desprac"}
+METRIC_TEXT = {
+    "log_loss_improvement": "log loss on played or not",
+    "brier_improvement": "Brier score on played or not",
+    "mae_improvement": "mean absolute error of snap share",
+}
+METRIC_PLAIN = {
+    "log_loss_improvement": "who would play",
+    "brier_improvement": "who would play",
+    "mae_improvement": "how much each player would play",
+}
+LADDER_TEXT = {
+    "designation": "designation ladder",
+    "designation_x_practice": "designation x practice ladder",
+}
+LADDER_PLAIN = {
+    "designation": "the official injury tag",
+    "designation_x_practice": "the official tag plus practice participation",
+}
 
 
 def stamp(s):
@@ -214,6 +239,116 @@ def strata_subsets(s, headline):
     return subsets + [(st, d == st) for st in L.STRATA]
 
 
+def forward_frames(week):
+    out = []
+    for w in range(L.LAST_WEEK + 1, week):
+        f = OUT / f"{L.SEASON}_week{w:02d}_scored.parquet"
+        if not f.exists():
+            raise SystemExit(f"score week {w} before week {week}: missing {f}")
+        out.append(pd.read_parquet(f))
+    return out
+
+
+def game_gain(fv, nm):
+    y = fv["played"].to_numpy()
+
+    def nll(p):
+        return -(y * np.log(p) + (1 - y) * np.log(1 - p))
+
+    d = pd.Series(nll(fv[f"lp_{nm}"].to_numpy()) - nll(fv["rp"].to_numpy()), index=fv.index)
+    g = d.groupby(fv["game_id"]).sum().sort_values(ascending=False)
+    return {str(k): round(float(v), 3) for k, v in g.items()}
+
+
+def keep_split(c):
+    if c["subset"] == "all":
+        return True
+    return c["metric"] == "log_loss_improvement" and c["subset"] != "headline_rows"
+
+
+def keep_pooled(c):
+    return c["subset"] == "all" and c["metric"] == "log_loss_improvement"
+
+
+def batch_cells(cells, prefix, scope, keep, note):
+    out = []
+    for c in cells:
+        if not keep(c):
+            continue
+        better = "better" if c["estimate"] > 0 else "worse"
+        out.append(
+            {
+                "name": f"{prefix}_{SHORT_METRIC[c['metric']]}_{SHORT_LADDER[c['baseline']]}_"
+                f"{c['subset'].lower()}",
+                "description": f"{scope}: LLM wording read vs {LADDER_TEXT[c['baseline']]} fit on "
+                f"prior weeks, {METRIC_TEXT[c['metric']]}, subset {c['subset']}, id-joined "
+                "verified outcomes",
+                "effect": round(c["estimate"], 4),
+                "effect_units": c["metric"],
+                "interval_low": round(c["low"], 4),
+                "interval_high": round(c["high"], 4),
+                "probability_positive": round(c["probability_positive"], 4),
+                "sample_blocks": c["clusters"],
+                "notes": f"{c['rows']} rows in {c['clusters']} team-week clusters; {note}",
+                "plain_summary": f"Reading the wording of injury reports predicted "
+                f"{METRIC_PLAIN[c['metric']]} {better} than {LADDER_PLAIN[c['baseline']]} in "
+                "this sample. Too few weeks to settle it, so the question stays open.",
+            }
+        )
+    return out
+
+
+def batch(rep, week):
+    first = L.LAST_WEEK + 1
+    total = sum(v for k, v in rep["looks"].items() if k != "family")
+    cum = rep["forward_cumulative"]
+    note = (
+        f"scored {datetime.now(UTC).date()} by scripts/lead106_forward_score.py --week {week}; "
+        f"reads scored as frozen, no model calls; ladders expand over every prior week "
+        f"({rep['ladder_prior_rows']} rows); one of {total} looks this run, family lead106"
+    )
+    cells = batch_cells(
+        rep["forward"]["cells"],
+        f"lead106_forward_wk{week}",
+        f"Forward 2026 Week {week} census",
+        keep_split,
+        note,
+    )
+    if week > first:
+        cells += batch_cells(
+            cum["cells"],
+            f"lead106_forward_wk{first}_{week}",
+            f"Forward 2026 Weeks {first}-{week} census, cumulative",
+            keep_split,
+            note,
+        )
+    cells += batch_cells(
+        rep["pooled_weeks_2_to_forward"]["cells"],
+        f"lead106_pooled_wk2_{week}",
+        f"Pooled 2026 weeks 2-8 stratified sample (weighted to population) plus forward Weeks "
+        f"{first}-{week} census",
+        keep_pooled,
+        note,
+    )
+    return {
+        "family": "lead106",
+        "league": "nfl",
+        "season_start": L.SEASON,
+        "season_end": L.SEASON,
+        "classification": "unresolved_below_power",
+        "classification_evidence": (
+            f"{cum['rows']} id-verified forward rows in {cum['clusters']} team-week clusters over "
+            f"{len(cum['weeks'])} forward week(s); {total} looks this run in family lead106; no "
+            "split-half reliability on forward weeks and no positive control; week, cumulative and "
+            "pooled cells overlap and are not independent votes; sub-cells with the whole "
+            "interval below zero are listed in the lane for adjudication, not closed here"
+        ),
+        "source": f"artifacts/lead106_injury_language/forward_score/{L.SEASON}_week{week:02d}.json",
+        "category": "health",
+        "cells": cells,
+    }
+
+
 def line(c):
     return (
         f"{c['subset']:<14}{c['baseline']:<24}{c['metric']:<22}rows {c['rows']:>4} "
@@ -253,7 +388,11 @@ def main():
     fv["status_filed"] = fv["game_id"].map(filed).astype(bool)
     fsubsets = strata_subsets(fv, False)
     fsubsets.append(("status_filed_games", fv["status_filed"].to_numpy()))
-    prior = ver[ver["week"] < week]
+    earlier = forward_frames(week)
+    prior = pd.concat(
+        [ver[ver["week"] < week][PRIOR_COLS], *[f[PRIOR_COLS] for f in earlier]],
+        ignore_index=True,
+    )
     for nm, keys in LADDERS.items():
         tab = {week: (prior.groupby(keys).agg(**AGG), prior.groupby("designation").agg(**AGG))}
         pr = [L.ladder_pred(r, tab, keys) for _, r in fv.iterrows()]
@@ -261,7 +400,11 @@ def main():
         fv[f"ls_{nm}"] = [q[1] for q in pr]
     cols = ["team", "week", "designation", "played", "snap_share", "rp", "rs", "w"]
     cols += [f"{k}_{nm}" for nm in LADDERS for k in ("lp", "ls")]
-    both = pd.concat([hs[cols], fv[cols]], ignore_index=True)
+    cum = pd.concat([*earlier, fv], ignore_index=True)
+    cum["status_filed"] = cum["status_filed"].astype(bool)
+    csubsets = strata_subsets(cum, False)
+    csubsets.append(("status_filed_games", cum["status_filed"].to_numpy()))
+    both = pd.concat([hs[cols], cum[cols]], ignore_index=True)
     stored = json.loads((L.ART / "score_ids.json").read_text())["cells"]
     rep = {
         "season": L.SEASON,
@@ -297,7 +440,18 @@ def main():
                 for d, g in fv.groupby("designation")
             },
             "games_without_filed_status": sorted(filed.index[~filed]),
+            "log_loss_gain_by_game_vs_designation": game_gain(fv, "designation"),
+            "log_loss_gain_by_game_vs_practice": game_gain(fv, "designation_x_practice"),
             "cells": score_cells(fv, fsubsets),
+        },
+        "ladder_prior_weeks": sorted(int(w) for w in prior["week"].unique()),
+        "ladder_prior_rows": len(prior),
+        "forward_cumulative": {
+            "weeks": sorted(int(w) for w in cum["week"].unique()),
+            "rows": len(cum),
+            "clusters": int((cum["team"] + cum["week"].astype(str)).nunique()),
+            "games": int(cum["game_id"].nunique()),
+            "cells": score_cells(cum, csubsets),
         },
         "historical_weeks_2_8": {
             "rows": len(hs),
@@ -313,19 +467,27 @@ def main():
     rep["looks"] = {
         "family": "lead106",
         "forward": len(rep["forward"]["cells"]),
+        "forward_cumulative": len(rep["forward_cumulative"]["cells"]) if earlier else 0,
         "pooled": len(rep["pooled_weeks_2_to_forward"]["cells"]),
     }
     OUT.mkdir(parents=True, exist_ok=True)
     fv.to_parquet(OUT / f"{L.SEASON}_week{week:02d}_scored.parquet")
     (OUT / f"{L.SEASON}_week{week:02d}.json").write_text(json.dumps(rep, indent=1))
-    head = {k: v for k, v in rep.items() if k not in ("forward", "historical_weeks_2_8")}
-    head.pop("pooled_weeks_2_to_forward")
+    reg = batch(rep, week)
+    (OUT / f"{L.SEASON}_week{week:02d}_registry_batch.json").write_text(json.dumps(reg, indent=1))
+    skip = ("forward", "historical_weeks_2_8", "pooled_weeks_2_to_forward", "forward_cumulative")
+    head = {k: v for k, v in rep.items() if k not in skip}
     print(json.dumps(head, indent=1))
     fwd = {k: v for k, v in rep["forward"].items() if k != "cells"}
     print(json.dumps(fwd, indent=1))
     print("FORWARD")
     for c in rep["forward"]["cells"]:
         print(line(c))
+    cm = rep["forward_cumulative"]
+    print("CUMULATIVE", cm["weeks"], cm["rows"], cm["clusters"], cm["games"])
+    for c in cm["cells"]:
+        print(line(c))
+    print("BATCH CELLS", len(reg["cells"]))
     print("HISTORICAL recomputed", len(hs))
     for c in rep["historical_weeks_2_8"]["cells"]:
         if c["subset"] == "all":
