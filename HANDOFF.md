@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:25:54.612100+00:00`
+Refreshed at: `2026-11-21T16:26:30.214118+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T16:25:54.612100+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fa71f8f7ada5` — draftcap forward log re-enrolled as frozen v2 after the 11-17 feature rebuild broke the v1 refit; Week 11 Sunday/Monday logged; History week strip overflow queued
-- Pending change set: 96 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
-  - `M  docs/lanes/lead-107-read-dispersion-weight.md`
-  - `M  docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
+- Baseline commit: `ab8afd59c6db` — History week chips wrap their sentences (desktop page no longer scrolls sideways); UI-33 served run flags no Week 11 pick; LEAD-109 forward weighting and LEAD-100 Week 11 repeat reads, all unresolved
+- Pending change set: 81 paths
+  - `M  docs/lanes/backlog-2026-11-21.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - `M  docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
-  - `M  docs/model.html`
-  - `A  registry/weak_signals/lead109_position_value_forward.json`
   - ` M registry/weak_signals/sim29_lineup.json`
-  - `M  scripts/lead100_analyze.py`
-  - `M  scripts/lead109_position_weights.py`
-  - `M  src/nfl_ats/board_interactive.css`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
-  - ...and 76 more
+  - `?? cdx_vipre.json`
+  - `?? cdx_vipre2.json`
+  - `?? cdx_viweek.json`
+  - `?? cdx_wgdl.json`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - ...and 61 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
