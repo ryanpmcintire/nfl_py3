@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:05:49.420709+00:00`
+Refreshed at: `2026-11-21T15:22:06.235619+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-21T15:05:49.420709+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a14998693576` — XLG-14 unit 9 penalty discipline: no college survivor, 9 cells; LEAD-101/104 rescored and LEAD-107 unit 1 from stored reads, all unresolved; ROADMAP reconciled
-- Pending change set: 100 paths
+- Baseline commit: `0c07c4c78010` — Pool field reruns at Week 10: hook over-pick +5.5 pp, Best Pick hook lean, leave-one-week-out standings cut +0.54 pp first-place chance (challenger); POOL-05 team form closed on a week-clustered check
+- Pending change set: 106 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - ` M docs/lanes/eng-54-outcome-label-default-audit.md`
-  - ` M docs/lanes/lead75.md`
-  - `M  docs/lanes/pool-05-ownership-proxy-v2.md`
-  - `M  docs/lanes/pool-07-standings-variance-policy.md`
-  - `M  docs/lanes/pool-08-hook-side-field-share.md`
-  - `M  docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
-  - `M  docs/lanes/pool-10-best-pick-placement-on-half-point-sides.md`
-  - `A  docs/lanes/pool-reruns-w10-2026-11-21.md`
-  - `M  registry/weak_signals/pool05_ownership_v2.json`
-  - `M  registry/weak_signals/pool07_standings_policy.json`
-  - `M  registry/weak_signals/pool08_hook_field_share.json`
-  - `M  registry/weak_signals/pool09_hook_value_slope.json`
-  - `M  registry/weak_signals/pool10_best_pick_hooks.json`
-  - `M  scripts/pool07_standings_policy.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - `?? an.csv`
-  - `?? cdx_tspread.json`
-  - ...and 80 more
+  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
+  - `M  docs/lanes/eng-55-pool-line-inference-audit.md`
+  - `M  docs/lanes/lead75.md`
+  - `A  docs/lanes/leak-label-audit-2026-11-21.md`
+  - `M  docs/lanes/mkt-26-move-size-dispersion.md`
+  - `A  docs/lanes/team-hfa-forward-2026-11-21.md`
+  - ` M docs/lanes/ui-29-where-we-trail-leader.md`
+  - `M  registry/weak_signals/lead75_paired_wind.json`
+  - `M  registry/weak_signals/mkt26_move_dispersion.json`
+  - `M  registry/weak_signals/mod10_graph_blitz.json`
+  - `M  registry/weak_signals/mod23_unit12_ftn_scheme.json`
+  - `M  registry/weak_signals/opener_error_transfer_v3.json`
+  - `A  registry/weak_signals/team_hfa_served_2026_11_21.json`
+  - ` M scripts/capture_scheduler.py`
+  - `A  scripts/eng54_unit4_defaults.py`
+  - `A  scripts/lead75_interim_bootstrap.py`
+  - `A  scripts/lead75_leak_rows.py`
+  - ...and 86 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

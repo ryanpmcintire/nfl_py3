@@ -4,21 +4,21 @@
     "opener_error_transfer_added_term_vs_base_v3_2020_2025_subset": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Corrected rerun 2026-11-14: +0.6653 [-0.3199, +1.4966] P+ 0.9191 accuracy_points, n 1503. No closing ground is met. The earlier record read +0.2661 [-0.5316, +0.8748] P+ 0.7735, unresolved_below_power.",
+      "classification_evidence": "Repaired rerun 2026-11-21: +0.5988 [+0.1289, +0.9804] P+ 0.9944 accuracy_points, n 1503, 6 season blocks; decisive 19 games, term 14-5 v base 5-14. No closing ground is met; the orchestrator adjudicates any promotion. The 2026-11-14 record read +0.6653 [-0.3199, +1.4966] P+ 0.9191, unresolved_below_power.",
       "closing_ground": null,
-      "description": "Same 5th-term LOSO cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) used by Units 1-2, for direct comparability Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.2661 [-0.5316, +0.8748] P+ 0.7735, unresolved_below_power.",
-      "effect": 0.6653359946773074,
+      "description": "Same 5th-term LOSO cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) used by Units 1-2, for direct comparability Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.2661 [-0.5316, +0.8748] P+ 0.7735, unresolved_below_power. Repaired 2026-11-21 (ENG-54 unit 4): the script filled the NFL open move with 0 on every 2011-2019 row, so the prior-move feature was 0 for the whole SBR era; it now takes the SBR close minus open from data/processed/sbr_odds.parquet, the file whose opener the script already used (proxy opener equals the SBR open on 2231 of 2231 rows); no move is defaulted. The 2026-11-14 record read +0.6653 [-0.3199, +1.4966] P+ 0.9191 accuracy_points.",
+      "effect": 0.5988023952095856,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v3",
       "interval": [
-        -0.31994912947882215,
-        1.4965986394557818
+        0.12894906511928816,
+        0.9803921568627416
       ],
       "league": "nfl",
       "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "Looking only at the last six NFL seasons (the same window used before), the college-football transfer signal again nudges toward helping the pick, but the range of plausible outcomes still includes no effect at all -- unresolved, not served.",
-      "probability_positive": 0.919125,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.994375,
+      "recorded_at": "2026-11-21",
       "reliability": 0.14132263925353555,
       "sample_blocks": 6,
       "sample_games": 1503,
@@ -26,27 +26,27 @@
         2020,
         2025
       ],
-      "source": "artifacts/opener_error_transfer_unit3/20261114T225530Z/summary.json",
+      "source": "artifacts/opener_error_transfer_unit3/20261121T151245Z/summary.json",
       "standard_error": null
     },
     "opener_error_transfer_added_term_vs_base_v3_all_graded": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Corrected rerun 2026-11-14: +0.9586 [+0.2711, +1.6511] P+ 0.9945 accuracy_points, n 3234. No closing ground is met. The corrected interval sits wholly on one side of zero; left unresolved here because a worker does not open a new closure, the orchestrator adjudicates. The earlier record read +0.1237 [-0.4593, +0.6839] P+ 0.6694, unresolved_below_power.",
+      "classification_evidence": "Repaired rerun 2026-11-21: +0.6184 [-0.3038, +1.4233] P+ 0.9121 accuracy_points, n 3234, 13 season blocks; decisive 124 games, term 72-52 v base 52-72. No closing ground is met; the orchestrator adjudicates any promotion. The 2026-11-14 record read +0.9586 [+0.2711, +1.6511] P+ 0.9945, unresolved_below_power.",
       "closing_ground": null,
-      "description": "CFB-trained opener-error logit (season-specific, point-in-time CFB training strictly preceding each held-out NFL season) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base, on the extended 2011-2025 NFL population restricted to the 13 seasons a preceding local CFB season exists for (2013-2025) Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.1237 [-0.4593, +0.6839] P+ 0.6694, unresolved_below_power.",
-      "effect": 0.95856524427953,
+      "description": "CFB-trained opener-error logit (season-specific, point-in-time CFB training strictly preceding each held-out NFL season) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base, on the extended 2011-2025 NFL population restricted to the 13 seasons a preceding local CFB season exists for (2013-2025) Corrected 2026-11-14: rerun after two sign repairs in the research scripts. The NFL home-favourite flag was opener < 0, the reverse of the repository sign (a positive home spread means the home team is favoured), and the college prior-move feature ran opposite to the NFL one (college close minus open in betting notation against NFL close minus open in repository notation). The earlier record read +0.1237 [-0.4593, +0.6839] P+ 0.6694, unresolved_below_power. Repaired 2026-11-21 (ENG-54 unit 4): the script filled the NFL open move with 0 on every 2011-2019 row, so the prior-move feature was 0 for the whole SBR era; it now takes the SBR close minus open from data/processed/sbr_odds.parquet, the file whose opener the script already used (proxy opener equals the SBR open on 2231 of 2231 rows); no move is defaulted. The 2026-11-14 record read +0.9586 [+0.2711, +1.6511] P+ 0.9945 accuracy_points.",
+      "effect": 0.618429189857761,
       "effect_units": "accuracy_points",
       "family": "opener_error_transfer_v3",
       "interval": [
-        0.27108229666634565,
-        1.651090342679129
+        -0.30381079185753124,
+        1.4233224579430326
       ],
       "league": "nfl",
       "notes": "Inferred: the change from the earlier record mixes the 2026-11-14 sign repair with any change in the served base since the first run; it is not an isolated effect of the repair.",
       "plain_summary": "We tested whether a model trained on college football's own opening-line errors helps predict which side covers the NFL opener, now checked back to 2013 instead of just 2020. The extra signal points the right direction almost every year, but it is still too small and too noisy to say for sure it helps -- so the pick stays exactly as it would be without it.",
-      "probability_positive": 0.9945,
-      "recorded_at": "2026-11-14",
+      "probability_positive": 0.912125,
+      "recorded_at": "2026-11-21",
       "reliability": 0.14132263925353555,
       "sample_blocks": 13,
       "sample_games": 3234,
@@ -54,7 +54,7 @@
         2013,
         2025
       ],
-      "source": "artifacts/opener_error_transfer_unit3/20261114T225530Z/summary.json",
+      "source": "artifacts/opener_error_transfer_unit3/20261121T151245Z/summary.json",
       "standard_error": null
     }
   }

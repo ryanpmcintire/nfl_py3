@@ -50,7 +50,9 @@ EXTENDED_POPULATION_PATH = (
 )
 SBR_SCORED_ARTIFACT = REPO / "artifacts/sbr_era_opener_eval/20260819T233013Z/scored.parquet"
 FEATURES_PATH = REPO / "data/processed/game_features_weak_stack.parquet"
+SBR_ODDS_PATH = REPO / "data/processed/sbr_odds.parquet"
 LOOKS: list[str] = []
+MOVE_SOURCE_AUDIT: dict[str, Any] = {}
 
 
 def record_look(label: str) -> None:
@@ -167,15 +169,50 @@ def load_extended_nfl_population() -> tuple[pd.DataFrame, dict[str, Any], dict[s
     sbr["game_id"] = sbr["game_id"].astype(str)
     sbr_join = sbr[["game_id", "gameday", "proxy_open_home_spread"]]
 
+    sbr_odds = pd.read_parquet(
+        SBR_ODDS_PATH, columns=["game_id", "season", "open_home_spread", "close_home_spread"]
+    )
+    sbr_odds = sbr_odds.loc[sbr_odds["game_id"].notna() & sbr_odds["season"].le(2019)].copy()
+    sbr_odds["game_id"] = sbr_odds["game_id"].astype(str)
+    sbr_odds = sbr_odds.dropna(subset=["open_home_spread", "close_home_spread"])
+    sbr_odds = sbr_odds.drop_duplicates(subset="game_id")
+    sbr_odds["sbr_open_move"] = sbr_odds["close_home_spread"] - sbr_odds["open_home_spread"]
+
     extended = extended.merge(true_join, on="game_id", how="left")
     extended = extended.merge(sbr_join, on="game_id", how="left", suffixes=("", "_sbr"))
+    extended = extended.merge(
+        sbr_odds[["game_id", "open_home_spread", "sbr_open_move"]], on="game_id", how="left"
+    )
     extended["gameday"] = extended["gameday"].fillna(extended["gameday_sbr"])
     extended["home_open"] = extended["tue_open_home_spread"].fillna(
         extended["proxy_open_home_spread"]
     )
-    extended["open_move"] = extended["open_move"].fillna(0.0)
+    proxy_rows = (
+        extended["proxy_open_home_spread"].notna() & extended["tue_open_home_spread"].isna()
+    )
+    MOVE_SOURCE_AUDIT["proxy_open_rows"] = int(proxy_rows.sum())
+    MOVE_SOURCE_AUDIT["proxy_open_equals_sbr_odds_open"] = int(
+        (
+            extended.loc[proxy_rows, "proxy_open_home_spread"]
+            - extended.loc[proxy_rows, "open_home_spread"]
+        )
+        .abs()
+        .lt(1e-9)
+        .sum()
+    )
+    extended["open_move"] = extended["open_move"].fillna(extended["sbr_open_move"])
+    MOVE_SOURCE_AUDIT["open_move_missing_by_season"] = {
+        str(int(k)): int(v)
+        for k, v in extended.groupby("season")["open_move"].apply(lambda s: s.isna().sum()).items()
+    }
     extended = extended.drop(
-        columns=["gameday_sbr", "tue_open_home_spread", "proxy_open_home_spread"]
+        columns=[
+            "gameday_sbr",
+            "tue_open_home_spread",
+            "proxy_open_home_spread",
+            "open_home_spread",
+            "sbr_open_move",
+        ]
     )
 
     extended["home_favorite"] = extended["home_open"].gt(0.0).astype(float)
@@ -453,6 +490,7 @@ def main() -> None:
         "base_four_term_loso_fold_betas": base_fold_betas,
         "look_count": len(LOOKS),
         "look_log": LOOKS,
+        "move_source_audit": MOVE_SOURCE_AUDIT,
         "nfl_provenance": nfl_provenance,
     }
     (out_dir / "summary.json").write_text(
@@ -483,6 +521,7 @@ def main() -> None:
     print("added_term_vs_base_2020_2025_subset", json.dumps(cell_2020_2025))
     print("cfb_direct_vs_base_all_graded_context", json.dumps(cfb_direct_all))
     print("look_count", len(LOOKS))
+    print("move_source_audit", json.dumps(MOVE_SOURCE_AUDIT))
 
 
 if __name__ == "__main__":

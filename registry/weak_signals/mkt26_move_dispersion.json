@@ -280,6 +280,174 @@
       ],
       "source": "artifacts/mkt26/result.json",
       "standard_error": 0.001746609782162329
+    },
+    "mkt26u2_D1_excess_abs_resid_per_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "OLS on 2013-2025 open-close pairs n 3361, lattice E|r| removed; 7 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 2: 2013-2025 dispersion slopes and move-class lattice reads; 7 looks",
+      "effect": 0.088914875354398,
+      "effect_units": "ats_points",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.10711802082147023,
+        0.27674263591983733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a bigger opener-to-close spread move means the final margin lands farther from the line, and whether reading the margin distribution from games with the same kind of move improves the cover probability.",
+      "probability_positive": 0.8045,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit2_result.json",
+      "standard_error": 0.09802676382684018
+    },
+    "mkt26u2_D2_excess_key_landing_per_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "OLS n 3361, lattice key mass removed; 7 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 2: 2013-2025 dispersion slopes and move-class lattice reads; 7 looks",
+      "effect": 0.1087114731531722,
+      "effect_units": "rate_pp",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -1.052562527729822,
+        1.2074551965534708
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a bigger opener-to-close spread move means the final margin lands farther from the line, and whether reading the margin distribution from games with the same kind of move improves the cover probability.",
+      "probability_positive": 0.584,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit2_result.json",
+      "standard_error": 0.5889931903529056
+    },
+    "mkt26u2_L1_market_lattice_move_class": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "opener-graded 2013-2025, same-class pool vs full pool, nothing fitted; 7 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 2: 2013-2025 dispersion slopes and move-class lattice reads; 7 looks",
+      "effect": -0.00017267086853605803,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0010155817980624497,
+        0.0006476290654125046
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a bigger opener-to-close spread move means the final margin lands farther from the line, and whether reading the margin distribution from games with the same kind of move improves the cover probability.",
+      "probability_positive": 0.332,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit2_result.json",
+      "standard_error": 0.0004280419462548987
+    },
+    "mkt26u2_L2_deadline_reserve_opener_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "re-served lattice at deadline line 2023-25, opener-graded; 7 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 2: 2013-2025 dispersion slopes and move-class lattice reads; 7 looks",
+      "effect": 0.0008169619803485563,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0013700082854442343,
+        0.003007576873669895
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a bigger opener-to-close spread move means the final margin lands farther from the line, and whether reading the margin distribution from games with the same kind of move improves the cover probability.",
+      "probability_positive": 0.76,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit2_result.json",
+      "standard_error": 0.001137620308153631
+    },
+    "mkt26u2_L3_deadline_reserve_deadline_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "re-served lattice at deadline line 2023-25, deadline-graded; 7 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 2: 2013-2025 dispersion slopes and move-class lattice reads; 7 looks",
+      "effect": 0.00017927294170155662,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0019864377947246274,
+        0.002491322727019484
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a bigger opener-to-close spread move means the final margin lands farther from the line, and whether reading the margin distribution from games with the same kind of move improves the cover probability.",
+      "probability_positive": 0.553,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit2_result.json",
+      "standard_error": 0.0011395706356243389
+    },
+    "mkt26u2_L4_loso_logit_x_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO season folds 2013-2025; 7 looks family mkt26_move_dispersion; no positive control",
+      "closing_ground": null,
+      "description": "Unit 2: 2013-2025 dispersion slopes and move-class lattice reads; 7 looks",
+      "effect": -4.658737818403197e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0006480874807271828,
+        0.0005515845916547903
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a bigger opener-to-close spread move means the final margin lands farther from the line, and whether reading the margin distribution from games with the same kind of move improves the cover probability.",
+      "probability_positive": 0.441,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/mkt26/unit2_result.json",
+      "standard_error": 0.0003115178280262644
     }
   }
 }

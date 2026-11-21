@@ -4,21 +4,21 @@
     "lead75_paired_wind_interim_wk7": {
       "category": "environment",
       "classification": "unresolved_below_power",
-      "classification_evidence": "7 settled MEX pairs, innovation sd 1.3 mph, 5 nonzero terms; far below declared power; one interim look of one declared term; no closing ground",
+      "classification_evidence": "7 settled MEX pairs, 5 nonzero terms; versioned bootstrap +49.35 [-513.05, +186.22] P+ 0.6524. Declared sign negative and the estimate is positive, but the interval reaches both sides of zero, so wrong_sign_resolved is not admissible; no positive control; split-half reliability not measured; one interim look of one declared term; far below declared power; no closing ground.",
       "closing_ground": null,
-      "description": "LEAD-75 interim look 1: MEX wind revision x home-minus-away pass-rate diff vs home ATS margin, Week 7 outdoor pairs",
-      "effect": 46.26,
+      "description": "LEAD-75 interim look 1: MEX wind revision x home-minus-away pass-rate diff vs home ATS margin, Week 7 outdoor pairs. Replaced 2026-11-21 with the versioned run: pairing and input from scripts/lead75_leak_rows.py (artifacts/lead75/leak_rows.json, pbp snapshot 20261117T221807Z), estimate and interval from scripts/lead75_interim_bootstrap.py: game-level bootstrap with replacement, 4000 draws, seed 20261121, 95% percentile interval, P+ the share of draws above zero, 1 all-zero-term draw dropped. The earlier record +46.26 [-496.90, +184.30] P+ 0.6400 SE 180 came from an unversioned script on the same 7 games.",
+      "effect": 49.35166495971705,
       "effect_units": "ats_points",
       "family": "lead75_paired_wind",
       "interval": [
-        -496.9,
-        184.3
+        -513.0477476523887,
+        186.21830188870013
       ],
       "league": "nfl",
       "notes": "Slope of ats_margin on term through origin; declared expected sign negative; Week 8 unsettled in game_features; Weeks 4-6 had no Tuesday receipts; GFS only 1 pair",
       "plain_summary": null,
-      "probability_positive": 0.64,
-      "recorded_at": "2026-11-03",
+      "probability_positive": 0.6524131032758189,
+      "recorded_at": "2026-11-21",
       "reliability": null,
       "sample_blocks": 1,
       "sample_games": 7,
@@ -26,8 +26,8 @@
         2026,
         2026
       ],
-      "source": "docs/lanes/lead75.md",
-      "standard_error": 180.0
+      "source": "artifacts/lead75/interim_wk7_bootstrap.json",
+      "standard_error": 176.07920051515532
     }
   }
 }

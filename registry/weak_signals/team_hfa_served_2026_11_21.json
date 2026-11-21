@@ -1,0 +1,61 @@
+{
+  "family": "team_hfa_served_2026_11_21",
+  "signals": {
+    "team_hfa_served_opener_posthoc_accuracy": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; week-block interval spans both signs at this sample; no refuted mechanism and no positive control bounds an effect this size on the served stage.",
+      "closing_ground": null,
+      "description": "Team-and-stadium home edge (scripts/team_hfa.py construction), one offset-logistic coefficient per SD on the QW served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out with nested offsets. Full coefficient +0.0563/SD, folds positive 6/6, halves +0.0885/+0.0361; record 841-662 v QW 836-667; changed 149 (76-71 v 71-76); in-sample minus held-out log loss +0.00036; intercept-only -0.00000.",
+      "effect": 0.332668,
+      "effect_units": "accuracy_points",
+      "family": "team_hfa_served_2026_11_21",
+      "interval": [
+        -1.332736,
+        1.950433
+      ],
+      "league": "nfl",
+      "notes": "Family team_hfa_served_2026_11_21: post-hoc served read made only to freeze the out-of-season coefficient for the 2026 Weeks 12-18 forward log; follows the close screen family team_hfa_2026_11_16, whose declared served look was not run (screen not a survivor). Not gating, not served.",
+      "plain_summary": "Adds each stadium's own past home edge to the model's pick probability for 2020-25 and checks the picks it would have changed.",
+      "probability_positive": 0.6678,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/team-hfa-forward-2026-11-21.md",
+      "standard_error": null
+    },
+    "team_hfa_served_opener_posthoc_log_loss": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared sign; week-block interval spans both signs at this sample; no refuted mechanism and no positive control bounds an effect this size on the served stage.",
+      "closing_ground": null,
+      "description": "Team-and-stadium home edge (scripts/team_hfa.py construction), one offset-logistic coefficient per SD on the QW served stage at the opener 2020-25, pushes kept at 0.5, leave-one-season-out with nested offsets. Full coefficient +0.0563/SD, folds positive 6/6, halves +0.0885/+0.0361; record 841-662 v QW 836-667; changed 149 (76-71 v 71-76); in-sample minus held-out log loss +0.00036; intercept-only -0.00000.",
+      "effect": 3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "team_hfa_served_2026_11_21",
+      "interval": [
+        -0.001381,
+        0.001475
+      ],
+      "league": "nfl",
+      "notes": "Family team_hfa_served_2026_11_21: post-hoc served read made only to freeze the out-of-season coefficient for the 2026 Weeks 12-18 forward log; follows the close screen family team_hfa_2026_11_16, whose declared served look was not run (screen not a survivor). Not gating, not served.",
+      "plain_summary": "Adds each stadium's own past home edge to the model's pick probability for 2020-25 and checks the picks it would have changed.",
+      "probability_positive": 0.523,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/team-hfa-forward-2026-11-21.md",
+      "standard_error": null
+    }
+  }
+}
