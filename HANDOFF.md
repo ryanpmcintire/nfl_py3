@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:26:13.187583+00:00`
+Refreshed at: `2026-11-21T17:26:34.303278+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-21T17:26:13.187583+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `41ed0e468912` — Backlog lane: push pending on the refit model publication
+- Baseline commit: `0875a662a9a4` — Refresh the handoff for the refit model
 - Pending change set: 89 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-2026-11-21.md`
   - ` M docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
