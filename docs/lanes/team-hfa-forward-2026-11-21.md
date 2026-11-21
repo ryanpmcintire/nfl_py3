@@ -17,6 +17,9 @@ Freeze the team-and-stadium home edge (done/team-hfa-2026-11-16.md: +1.32 accura
 - Week 11 smoke (`log --week 11 --smoke`), 2026_week11_20261121T150628Z.json: 13 games, 13 on the served card, MIN_SF neutral (x 0). The informational with-term side differs on ARI_KC, JAX_NYG and CIN_WAS; served sides are untouched.
 - Week 12 (`log --week 12`), 2026_week12_20261121T150632Z.json: 16 games, all at primary venues. No Week 12 card yet, so served is null.
 
+- 2026-11-21 ~17:40Z (dry-run stamp 20261121T174025Z): `score` added to scripts/team_hfa_forward.py (insertions only; ruff clean). It follows procedure.md. Population: card rows Weeks 12-18. Base: the played card (last publication at or before the deadline). x comes from the latest log with `smoke_test` false, frozen sha matching, and logged_at and mtime before min(kickoff, deadline); the logged shift must equal the frozen recompute. y: home cover at the card line, push 0.5. Report order: changed-pick record, log-loss gain (week-block bootstrap, P+), Brier, reliability, then the intercept-only control (one QW-offset intercept fitted on history_games.parquet 2020-25, logit +0.00335). Accuracy is reported, not recorded. Batch: 1 cell, `team_hfa_served_forward_wk12_18_log_loss` → artifacts/forward_terms/team_hfa/weak_signals_batch_forward.json (not recorded). The script refuses while any week 12-18 lacks a result in game_features (measured: real `score` exit 1 "weeks [12, ...] are not final").
+- Dry-run (measured, exit 0). Input: a relabelled copy of the Week 11 smoke in tests/scratch/score_modes/team_hfa_input/. The untouched smoke copy was excluded as `smoke`. 12 graded; IND_HOU skipped (`no_log_before_cutoff`). Outcomes were synthetic Bernoulli(card); no real outcome was graded. Outputs: tests/scratch/score_modes/team_hfa_out/.
+
 ## Tried
 - Mirrored expert_rankings_forward.py (fit rule, card rule, batch) instead of new helpers.
 
@@ -39,7 +42,8 @@ Freeze the team-and-stadium home edge (done/team-hfa-2026-11-16.md: +1.32 accura
 +        for day, at, grace in (("tue", "14:00", 360), ("sun", "12:15", 30))
 +    ),
 ```
-- Next subtask: before Week 18 ends, add a `score` mode following procedure.md, which reads only non-smoke logs written before each cutoff. After Week 18, score once, record in family team_hfa_served_2026_11_21, and move this lane to done/.
+- Next subtask: once Week 18 is final, run `.\.tools\uv.exe run --no-sync python scripts\team_hfa_forward.py score` (no flags). Record weak_signals_batch_forward.json in family team_hfa_served_2026_11_21, run `pool` once, then move this lane to done/.
+- ROADMAP MOD-57 update: the team home edge forward scorer exists (`team_hfa_forward.py score`, 1 verdict look, log loss). It scores once after Week 18 2026 and serves nothing.
 - ROADMAP update: no row names this term (commit e93fc8f1 touched no ROADMAP row). Its history sits in goal-65-2026-11-16.md, which supersedes MOD-57's lane, so note it on MOD-57 (ROADMAP.md:940).
 
 ## Open

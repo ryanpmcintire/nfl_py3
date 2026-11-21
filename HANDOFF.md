@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:34:10.757520+00:00`
+Refreshed at: `2026-11-21T17:43:32.909502+00:00`
 
 ## Start here
 
@@ -21,11 +21,14 @@ Refreshed at: `2026-11-21T17:34:10.757520+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a3517c4b0cfc` — UI-33: board shows a 'Depends on' line only when the served probability changes side with the starting quarterback, keyed to the active model and card; producer jobs after card refreshes; card and site republished under the refit model
-- Pending change set: 84 paths
+- Baseline commit: `e67e223e4989` — LEAD-29 and LEAD-81 input checks: Week 11 coordinator input lost to the since-fixed policy error; travel captures complete
+- Pending change set: 87 paths
   - `M  ROADMAP.md`
-  - `M  docs/lanes/coordinators-lead28-per07-2026-11-02.md`
-  - `M  docs/lanes/lead80-81-forward-capture-2026-11-02.md`
+  - ` M docs/index.html`
+  - `M  docs/lanes/lead108-forward-2026-11-16.md`
+  - `M  docs/lanes/team-hfa-forward-2026-11-21.md`
+  - `M  scripts/lead108_mixture_forward.py`
+  - `M  scripts/team_hfa_forward.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-21T17:34:10.757520+00:00`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - ...and 64 more
+  - ...and 67 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

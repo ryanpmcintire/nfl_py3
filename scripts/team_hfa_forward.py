@@ -26,6 +26,7 @@ SCREEN = T.OUT / "screen.json"
 SCREEN_TS = T.OUT / "team_seasons.parquet"
 SCREEN_GAMES = T.OUT / "screen_games.parquet"
 PUBLISHED = ROOT / "artifacts/clv_ledger/published_picks.parquet"
+GAME_FEATURES = ROOT / "data/processed/game_features.parquet"
 SEASON = 2026
 FIRST_WEEK = 12
 LAST_WEEK = 18
@@ -464,6 +465,323 @@ def cmd_batch(a):
     print(path, len(cells))
 
 
+def utc(v):
+    t = pd.Timestamp(v)
+    return t.tz_localize("UTC") if t.tzinfo is None else t.tz_convert("UTC")
+
+
+def stamp_time(s):
+    return pd.Timestamp(datetime.strptime(s, STAMP).replace(tzinfo=UTC))
+
+
+def file_time(path):
+    return pd.Timestamp(Path(path).stat().st_mtime, unit="s", tz="UTC")
+
+
+def score_paths(a):
+    window = list(range(FIRST_WEEK, LAST_WEEK + 1))
+    if not a.dry_run:
+        if a.log_dir or a.out_dir or a.weeks:
+            raise SystemExit("--log-dir, --out-dir and --weeks are allowed only with --dry-run")
+        return OUT, OUT, window
+    if not (a.log_dir and a.out_dir):
+        raise SystemExit("--dry-run needs --log-dir and --out-dir")
+    out = Path(a.out_dir).resolve()
+    art = (ROOT / "artifacts").resolve()
+    if out == art or art in out.parents:
+        raise SystemExit("--dry-run output must stay outside artifacts/")
+    weeks = [int(w) for w in a.weeks.split(",")] if a.weeks else window
+    return Path(a.log_dir).resolve(), out, weeks
+
+
+def week_outcomes(weeks, dry):
+    cols = ["season", "week", "game_id", "game_type"] + ([] if dry else ["result"])
+    gf = pd.read_parquet(GAME_FEATURES, columns=cols)
+    gf = gf.loc[gf["season"].eq(SEASON) & gf["game_type"].eq("REG") & gf["week"].isin(weeks)]
+    gf = gf.assign(game_id=gf["game_id"].astype(str)).set_index("game_id")
+    if dry:
+        return gf, []
+    done = gf.groupby("week")["result"].apply(lambda s: bool(s.notna().all()))
+    return gf, [w for w in weeks if not done.get(w, False)]
+
+
+def forward_logs(log_dir, weeks, dry, frozen_sha):
+    rows, files = [], []
+    for f in sorted(log_dir.glob(f"{SEASON}_week*_*.json")):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        why = None
+        if d.get("smoke_test", True):
+            why = "smoke"
+        elif d.get("test_input") and not dry:
+            why = "test_input"
+        elif d.get("frozen_sha256") != frozen_sha:
+            why = "frozen_sha256_differs"
+        elif d.get("week") not in weeks:
+            why = "outside_window"
+        mt = file_time(f)
+        files.append(
+            {
+                "file": f.name,
+                "week": d.get("week"),
+                "logged_at_utc": d.get("logged_at_utc"),
+                "modified_utc": mt.strftime(STAMP),
+                "excluded": why,
+            }
+        )
+        if why:
+            continue
+        logged = stamp_time(d["logged_at_utc"])
+        for g in d["games"]:
+            rows.append(
+                {
+                    "game_id": str(g["game_id"]),
+                    "logged": logged,
+                    "modified": mt,
+                    "file": f.name,
+                    "term_points": float(g["term_points"]),
+                    "logit_shift": float(g["logit_shift"]),
+                    "at_primary_venue": bool(g["at_primary_venue"]),
+                }
+            )
+    cols = [
+        "game_id",
+        "logged",
+        "modified",
+        "file",
+        "term_points",
+        "logit_shift",
+        "at_primary_venue",
+    ]
+    return pd.DataFrame(rows, columns=cols), files
+
+
+def interval_text(b):
+    lo, hi = b["interval_low"], b["interval_high"]
+    if lo < 0 < hi:
+        return "interval spans both signs"
+    return "whole interval below zero" if hi < 0 else "whole interval at or above zero"
+
+
+def forward_cell(look, n_games, weeks, text, dry):
+    b = look["log_loss_gain"]
+    span = interval_text(b)
+    entry = {
+        "name": "team_hfa_served_forward_wk12_18_log_loss",
+        "description": text,
+        "source": LANE,
+        "effect": round(b["effect"], 6),
+        "effect_units": "log_loss_improvement",
+        "classification": "unresolved_below_power",
+        "league": "nfl",
+        "season_start": SEASON,
+        "season_end": SEASON,
+        "family": FAMILY,
+        "category": "environment",
+        "classification_evidence": (
+            f"Declared forward look, post-hoc label; {n_games} games of 2026 weeks "
+            f"{weeks[0]}-{weeks[-1]} graded at the card line with pushes at 0.5; changed "
+            f"{look['changed']} ({look['changed_record_term']} v {look['changed_record_base']}) "
+            f"on decisive games; week-block bootstrap over {b['blocks']} weeks; {span}; no "
+            "refuted mechanism and no positive control bounds an effect this size."
+        ),
+        "notes": (
+            "Scored by scripts/team_hfa_forward.py score under "
+            "artifacts/forward_terms/team_hfa/procedure.md: frozen term and coefficient, "
+            "x from the latest non-smoke log written before min(kickoff, pick deadline), base = "
+            "played card home probability. One verdict look (log loss); changed-pick record, "
+            "Brier, accuracy and the intercept-only control are reported, not recorded. "
+            "Serves nothing." + (" DRY RUN on synthetic outcomes: never record." if dry else "")
+        ),
+        "interval_low": round(b["interval_low"], 6),
+        "interval_high": round(b["interval_high"], 6),
+        "probability_positive": round(b["probability_positive"], 4),
+        "sample_games": int(n_games),
+        "sample_blocks": int(b["blocks"]),
+        "plain_summary": (
+            "Adds each stadium's own past home edge to the card's pick probability for the last "
+            "seven regular-season weeks, frozen before they were played, and checks the result."
+        ),
+    }
+    if entry["interval_high"] < 0:
+        entry["classification"] = "refuted_mechanism"
+        entry["closing_ground"] = "wrong_sign_resolved"
+        entry["classification_evidence"] = (
+            "Declared positive; the whole week-block interval lies below zero. "
+            + entry["classification_evidence"]
+        )
+    return entry
+
+
+def cmd_score(a):
+    now = datetime.now(UTC)
+    dry = a.dry_run
+    log_dir, out_dir, weeks = score_paths(a)
+    fz = json.loads(FROZEN.read_text(encoding="utf-8"))
+    frozen_sha = sha_file(FROZEN)
+    outcome, open_weeks = week_outcomes(weeks, dry)
+    if open_weeks:
+        raise SystemExit(
+            f"weeks {open_weeks} are not final; the procedure scores once, after Week "
+            f"{LAST_WEEK} {SEASON} results settle"
+        )
+    sched, snap = latest_schedule(SEASON)
+    kick = sched.set_index("game_id")["kickoff_utc"]
+    logs, files = forward_logs(log_dir, weeks, dry, frozen_sha)
+    hist = pd.read_parquet(OUT / "history_games.parquet")
+    b_int = XF.offset_fit(
+        np.ones(len(hist)), hist["y"].to_numpy(float), PS.logit(hist["qw"].to_numpy(float))
+    )
+    synth = np.random.default_rng(T.SEED)
+    rows, skipped = [], {}
+    for w in weeks:
+        played = card(SEASON, w, now)
+        for gid, c in played.iterrows():
+            dl = utc(c["pick_deadline_utc"])
+            ko = kick.get(gid)
+            cut = dl if ko is None or pd.isna(ko) else min(utc(ko), dl)
+            if utc(c["published_at_utc"]) > cut:
+                skipped[gid] = "card_after_cutoff"
+                continue
+            cand = logs.loc[
+                logs["game_id"].eq(gid) & logs["logged"].lt(cut) & logs["modified"].lt(cut)
+            ]
+            if cand.empty:
+                skipped[gid] = "no_log_before_cutoff"
+                continue
+            lg = cand.sort_values(["logged", "file"]).iloc[-1]
+            z = (lg["term_points"] - fz["term_mean_points"]) / fz["term_sd_points"]
+            shift = fz["coefficient_logit_per_sd"] * z
+            if shift != lg["logit_shift"]:
+                raise SystemExit(f"{gid}: logged shift differs from the frozen term")
+            base = float(c["served_home_p"])
+            line = float(c["market_spread"])
+            if dry:
+                result, y = None, float(synth.binomial(1, base))
+            else:
+                result = outcome["result"].get(gid, np.nan)
+                if pd.isna(result) or np.isnan(line):
+                    raise SystemExit(f"{gid}: no final result or no card line")
+                result = float(result)
+                y = 1.0 if result > line else 0.0 if result < line else XF.PUSH
+            rows.append(
+                {
+                    "game_id": gid,
+                    "week": w,
+                    "cutoff_utc": cut.isoformat(),
+                    "log_file": lg["file"],
+                    "logged_utc": lg["logged"].strftime(STAMP),
+                    "at_primary_venue": bool(lg["at_primary_venue"]),
+                    "term_points": float(lg["term_points"]),
+                    "term_sd_units": float(z),
+                    "logit_shift": float(shift),
+                    "played_published_at_utc": str(c["published_at_utc"]),
+                    "played_pick_team": c["pick_team"],
+                    "base_home_probability": base,
+                    "card_line": line,
+                    "result": result,
+                    "y": y,
+                }
+            )
+    if not rows:
+        raise SystemExit("no graded game: no card row has a non-smoke log before its cutoff")
+    g = pd.DataFrame(rows)
+    base = g["base_home_probability"].to_numpy(float)
+    y = g["y"].to_numpy(float)
+    wk = g["week"].to_numpy(int)
+    off = PS.logit(base)
+    p_term = expit(off + g["logit_shift"].to_numpy(float))
+    p_int = expit(off + b_int)
+    g["with_term_home_probability"] = p_term
+    g["with_term_differs_from_played_side"] = (p_term >= 0.5) != (base >= 0.5)
+    rng = np.random.default_rng(T.SEED)
+    ev = XF.evaluate(p_term, base, y, wk, rng)
+    ctrl = XF.evaluate(p_int, base, y, wk, rng)
+    decided = y != XF.PUSH
+    stamp = now.strftime(STAMP)
+    text = (
+        "Team-and-stadium home edge, frozen 2026-11-21 (post-hoc label) with its out-of-season "
+        f"coefficient {fz['coefficient_logit_per_sd']:+.4f} logit/SD, added to the played card "
+        "home probability; log loss gain (card minus card with term) at the card line, pushes "
+        f"0.5, 2026 weeks {weeks[0]}-{weeks[-1]}; record {ev['record_term']} v card "
+        f"{ev['record_base']}; Brier gain {ev['brier_gain']['effect']:+.5f}; intercept-only "
+        f"control log loss gain {ctrl['log_loss_gain']['effect']:+.5f}."
+    )
+    body = {
+        "term": fz["term"],
+        "label": "post_hoc",
+        "family": FAMILY,
+        "procedure": (OUT / "procedure.md").relative_to(ROOT).as_posix(),
+        "dry_run": dry,
+        "real_outcomes_graded": not dry,
+        "outcomes": (
+            "synthetic Bernoulli(played card home probability); no real outcome read"
+            if dry
+            else "data/processed/game_features.parquet result, every scored week final"
+        ),
+        "scored_at_utc": stamp,
+        "weeks": weeks,
+        "log_dir": str(log_dir),
+        "frozen_sha256": frozen_sha,
+        "code_sha256": sha_file(__file__),
+        "schedule_snapshot": snap,
+        "coefficient_logit_per_sd": fz["coefficient_logit_per_sd"],
+        "term_mean_points": fz["term_mean_points"],
+        "term_sd_points": fz["term_sd_points"],
+        "looks": {
+            "verdict": 1,
+            "family": FAMILY,
+            "detail": "log loss gain only; record, Brier, accuracy and controls are reported",
+        },
+        "changed_pick_record_decisive": {
+            "changed": ev["changed"],
+            "changed_pushes": ev["changed_pushes"],
+            "term_side": ev["changed_record_term"],
+            "card_side": ev["changed_record_base"],
+        },
+        "log_loss_gain_card_minus_term": ev["log_loss_gain"],
+        "mean_log_loss": ev["mean_log_loss"],
+        "brier_gain_card_minus_term": ev["brier_gain"],
+        "mean_brier": {
+            "card": float(((base - y) ** 2).mean()),
+            "term": float(((p_term - y) ** 2).mean()),
+        },
+        "reliability_term": ev["reliability_term"],
+        "reliability_card": PS.reliability(base[decided], y[decided]),
+        "intercept_only_control": {
+            "rule": (
+                "one offset-logistic intercept on the QW served stage over the frozen 2020-25 "
+                "history (history_games.parquet), added to the played card"
+            ),
+            "intercept_logit": float(b_int),
+            "log_loss_gain": ctrl["log_loss_gain"],
+            "brier_gain": ctrl["brier_gain"],
+            "changed": ctrl["changed"],
+        },
+        "accuracy_points_reported": ev["accuracy_points"],
+        "record_term": ev["record_term"],
+        "record_card": ev["record_base"],
+        "population": {
+            "graded": len(g),
+            "decided": ev["decided"],
+            "pushes": ev["pushes"],
+            "nonzero_term": int((g["term_points"] != 0).sum()),
+            "skipped": skipped,
+        },
+        "log_files": files,
+        "games": json.loads(g.to_json(orient="records")),
+    }
+    out_dir.mkdir(parents=True, exist_ok=True)
+    prefix = "dry_run_" if dry else ""
+    res = out_dir / f"{prefix}score_forward_{stamp}.json"
+    res.write_text(json.dumps(body, indent=1, default=str), encoding="utf-8")
+    batch = out_dir / f"{prefix}weak_signals_batch_forward.json"
+    cells = [forward_cell(ev, len(g), weeks, text, dry)]
+    batch.write_text(json.dumps({"cells": cells}, indent=1), encoding="utf-8")
+    print(json.dumps({k: v for k, v in body.items() if k not in ("games", "log_files")}, indent=1))
+    print(res)
+    print(batch, len(cells), "cell, not recorded")
+
+
 def main():
     p = argparse.ArgumentParser(
         description=(
@@ -480,6 +798,19 @@ def main():
     lg.add_argument("--smoke", action="store_true")
     lg.set_defaults(fn=cmd_log)
     sp.add_parser("batch").set_defaults(fn=cmd_batch)
+    sc = sp.add_parser(
+        "score",
+        help="grade the Weeks 12-18 logs once after Week 18 settles, per procedure.md",
+    )
+    sc.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="synthetic outcomes, no finality or date check, output outside artifacts/",
+    )
+    sc.add_argument("--log-dir", default=None, help="dry-run only: folder of log files")
+    sc.add_argument("--out-dir", default=None, help="dry-run only: output folder")
+    sc.add_argument("--weeks", default=None, help="dry-run only: comma-separated weeks")
+    sc.set_defaults(fn=cmd_score)
     a = p.parse_args()
     a.fn(a)
 
