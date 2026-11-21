@@ -118,8 +118,13 @@ from nfl_ats.tiebreaker_history import settled_tiebreakers
 
 _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
 
-POOL_EDGE_SHORT = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt", 1.0: "1 pt"}
-POOL_EDGE_LONG = {0.5: "Half a point", 1.0: "A full point"}
+POOL_EDGE_SHORT = {0.25: "up to ½ pt", 0.5: "½ pt", 0.75: "½ to 1 pt", 1.0: "1 pt"}
+POOL_EDGE_LONG = {
+    0.25: "Up to half a point",
+    0.5: "Half a point",
+    0.75: "Half a point to a full point",
+    1.0: "A full point",
+}
 EXPLANATION_NOT_RECORDED_TEXT = "Explanation not recorded for this forecast."
 
 _WEEK_LABELS = {

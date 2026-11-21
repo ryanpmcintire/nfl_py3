@@ -156,6 +156,30 @@ DEADLINE_ODDS_CAPTURE = [*PRIVATE_SUNDAY_ODDS_CAPTURE, "--max-age-minutes", "1"]
 
 SUNDAY_EARLY_LAST_CALL_AT = "12:40"
 SUNDAY_TAPE_END_AT = "12:25"
+CARD_CHECK_SLOTS: tuple[tuple[str, str], ...] = (
+    ("tue", "12:45"),
+    ("wed", "12:20"),
+    ("wed", "18:20"),
+    ("wed", "19:20"),
+    ("thu", "12:00"),
+    ("thu", "15:05"),
+    ("thu", "15:30"),
+    ("thu", "19:20"),
+    ("fri", "12:45"),
+    ("fri", "13:35"),
+    ("fri", "15:20"),
+    ("fri", "19:05"),
+    ("sat", "10:35"),
+    ("sat", "12:20"),
+    ("sat", "15:55"),
+    ("sat", "19:20"),
+    ("sun", "08:35"),
+    ("sun", "10:05"),
+    ("sun", "12:00"),
+    ("sun", "12:50"),
+    ("sun", "15:05"),
+    ("sun", "15:40"),
+)
 
 ODDS_TAPE_CAPTURE = [
     str(UV),
@@ -762,22 +786,7 @@ SCHEDULE: tuple[Job, ...] = (
             added_on="2026-11-16",
             catch_up=True,
         )
-        for day, at in (
-            ("tue", "12:45"),
-            ("wed", "18:25"),
-            ("wed", "19:25"),
-            ("thu", "12:05"),
-            ("thu", "15:35"),
-            ("thu", "19:25"),
-            ("sat", "10:40"),
-            ("sat", "16:00"),
-            ("sat", "19:25"),
-            ("sun", "10:10"),
-            ("sun", "12:05"),
-            ("sun", "12:55"),
-            ("sun", "15:10"),
-            ("sun", "15:45"),
-        )
+        for day, at in CARD_CHECK_SLOTS
     ),
     *(
         Job(
@@ -920,29 +929,7 @@ SCHEDULE: tuple[Job, ...] = (
             "on a disagreement.",
             added_on="2026-11-16",
         )
-        for day, at in (
-            ("wed", "12:20"),
-            ("wed", "18:20"),
-            ("wed", "19:20"),
-            ("thu", "12:00"),
-            ("thu", "15:05"),
-            ("thu", "15:30"),
-            ("thu", "19:20"),
-            ("fri", "12:45"),
-            ("fri", "13:35"),
-            ("fri", "15:20"),
-            ("fri", "19:05"),
-            ("sat", "10:35"),
-            ("sat", "12:20"),
-            ("sat", "15:55"),
-            ("sat", "19:20"),
-            ("sun", "08:35"),
-            ("sun", "10:05"),
-            ("sun", "12:00"),
-            ("sun", "12:50"),
-            ("sun", "15:05"),
-            ("sun", "15:40"),
-        )
+        for day, at in CARD_CHECK_SLOTS
     ),
     *(
         Job(

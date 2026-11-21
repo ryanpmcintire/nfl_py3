@@ -108,12 +108,28 @@ def parse_card(path: Path, season: int, week: int) -> dict[str, dict[str, Any]] 
     return rows
 
 
-def recorder_rows(season: int, week: int) -> tuple[str, pd.DataFrame]:
+def recorder_rows(season: int, week: int) -> tuple[str, pd.Timestamp | None, pd.DataFrame]:
     files = sorted((CARD_TERMS_ROOT / f"{season}_week_{week:02d}").glob("*.parquet"))
     if not files:
-        return "", pd.DataFrame()
+        return "", None, pd.DataFrame()
     frame = pd.read_parquet(files[-1])
-    return files[-1].name, frame.assign(game_id=frame["game_id"].astype(str)).set_index("game_id")
+    recorded = pd.to_datetime(frame["run_at_utc"], utc=True).max()
+    return (
+        files[-1].name,
+        None if pd.isna(recorded) else recorded,
+        frame.assign(game_id=frame["game_id"].astype(str)).set_index("game_id"),
+    )
+
+
+def written_before(
+    refresh: tuple[scheduler.Job, pd.Timestamp] | None,
+    card_written: pd.Timestamp,
+    limit: pd.Timestamp,
+) -> tuple[str, pd.Timestamp] | None:
+    writes = [("card write", card_written)]
+    if refresh is not None:
+        writes.append((refresh[0].name, refresh[1]))
+    return latest(writes, limit)
 
 
 def depth_starters(as_of: pd.Timestamp) -> dict[str, str]:
@@ -141,7 +157,8 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
     tuesday = week_tuesday(pd.Series([game.kickoff for game in games]))
     card_file = parse_card(CARD_PATH, season, week)
     ledger = recorder.ledger_card_sides(artifacts, [game.game_id for game in games])
-    term_file, terms = recorder_rows(season, week)
+    term_file, recorded_at, terms = recorder_rows(season, week)
+    card_written = pd.Timestamp(CARD_PATH.stat().st_mtime, unit="s", tz="UTC")
     include_sunday = card.pick_probability.market_move_feature_version == (
         MARKET_MOVE_FEATURE_SUNDAY
     )
@@ -187,9 +204,11 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
     starters_by_instant: dict[pd.Timestamp, dict[str, str]] = {}
     problems: list[str] = []
     locked: list[str] = []
+    pending: list[str] = []
     rows: list[dict[str, Any]] = []
     for game in games:
         gid = game.game_id
+        label = f"{game.away_team} at {game.home_team}"
         found: list[str] = []
         row = served.loc[gid]
         side = str(row[CALIBRATED_PICK_SIDE_COLUMN])
@@ -215,7 +234,13 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
         ledger_side = ledger.get(gid, game.published_pick_side or game.previous_pick_side)
         if ledger_side != side:
             found.append(f"ledger side {ledger_side} != recomputed {side}")
-        if gid not in terms.index:
+        refresh = refresh_at[gid]
+        written = written_before(refresh, card_written, as_of[gid])
+        recorder_pending = written is not None and (recorded_at is None or recorded_at < written[1])
+        if recorder_pending:
+            after = written[1].tz_convert(scheduler.ET).strftime("%a %H:%M ET")
+            pending.append(f"{label}: recorder pending after {written[0]} ({after})")
+        elif gid not in terms.index:
             found.append("no card-term recorder row")
         else:
             term = terms.loc[gid]
@@ -224,7 +249,6 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
             gap = abs(float(term["home_cover_probability"]) - home_probability)
             if gap > recorder.PROBABILITY_TOLERANCE:
                 found.append(f"recorder probability differs by {gap:.4f}")
-        refresh = refresh_at[gid]
         own = quotes.loc[quotes["nflverse_game_id"].astype(str).eq(gid)]
         own = own.loc[own["observed"].lt(cutoff[gid])]
         newest = own["observed"].max() if not own.empty else None
@@ -270,7 +294,6 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
                 found.append(f"{team} has no depth-chart QB")
             elif str(projected) != starter:
                 found.append(f"{team} QB input {projected} != depth starter {starter}")
-        label = f"{game.away_team} at {game.home_team}"
         (problems if game.eligible else locked).extend(f"{label}: {item}" for item in found)
         rows.append(
             {
@@ -285,6 +308,7 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
                 else round((refresh[1] - newest).total_seconds() / 60.0),
                 "move_books": books,
                 "open_air": bool(open_air.get(gid, False)),
+                "recorder": "pending" if recorder_pending else "compared",
                 "problems": len(found),
             }
         )
@@ -293,9 +317,12 @@ def check(season: int, week: int, now: pd.Timestamp) -> dict[str, Any]:
         "week": week,
         "checked_at_utc": now.isoformat(),
         "recorder_file": term_file,
+        "recorder_written_utc": recorded_at.isoformat() if recorded_at is not None else None,
+        "card_written_utc": card_written.isoformat(),
         "games": rows,
         "problems": problems,
         "locked": locked,
+        "pending": pending,
     }
 
 
@@ -335,6 +362,8 @@ def main() -> int:
         args.season, args.week = int(resolved[0]), int(resolved[1])
     result = check(args.season, args.week, pd.Timestamp(datetime.now(UTC)))
     print(json.dumps(result, default=str))
+    for line in result.get("pending", []):
+        print(line)
     for problem in result["problems"]:
         print(problem, file=sys.stderr)
     if not result["problems"]:

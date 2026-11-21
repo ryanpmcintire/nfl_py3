@@ -1,6 +1,230 @@
 {
   "family": "per11_arrival_rampup",
   "signals": {
+    "per11_dated_all_g12_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 51.3; planted detectable size at 80 percent power: 0.260 logit per sd, true +1.17 accuracy points, +0.00780 log loss. One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term all_g12 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": -0.199601,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.798403,
+        0.399202
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 90; served record on flagged 50-40; arrival team cover 44-46; changed sides 8-11. Log loss -0.000515 P+ 0.084 (null pct 40.0); out minus in +0.00081; fold coefficients [[-0.097], [-0.1807], [-0.0251], [-0.0196], [0.0145], [-0.2103]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.2512,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_all_g1_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 14.2; planted detectable size at 80 percent power: 0.208 logit per sd, true +0.29 accuracy points, +0.00469 log loss. One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term all_g1 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": -0.399202,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.93147,
+        0.133067
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 45; served record on flagged 20-25; arrival team cover 23-22; changed sides 5-11. Log loss -0.001197 P+ 0.005 (null pct 5.0); out minus in +0.00144; fold coefficients [[-0.0461], [-0.1016], [0.0686], [-0.0139], [0.1945], [-0.3753]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.0625,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_ol_g12_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 36.5; planted detectable size at 80 percent power: 0.260 logit per sd, true +0.26 accuracy points, +0.00330 log loss. One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term ol_g12 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": -0.066534,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.199601,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 8; served record on flagged 6-2; arrival team cover 5-3; changed sides 0-1. Log loss -0.000096 P+ 0.380 (null pct 69.5); out minus in +0.00039; fold coefficients [[0.4153], [0.2908], [0.3121], [0.4339], [-0.0407], [0.3156]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.1835,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_ol_g1_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 11.5; planted detectable size at 80 percent power: not reached by 0.520 logit per sd (share 0.59). One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term ol_g1 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": -0.133067,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.332668,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 4; served record on flagged 3-1; arrival team cover 2-2; changed sides 0-2. Log loss -0.000620 P+ 0.044 (null pct 67.0); out minus in +0.00090; fold coefficients [[-1.2444], [-0.385], [-0.3451], [0.2065], [0.0507], [-0.3398]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.0668,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_qb_g12_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 54.2; planted detectable size at 80 percent power: not reached by 0.520 logit per sd (share 0.35). One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term qb_g12 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.199601,
+        0.199601
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 4; served record on flagged 2-2; arrival team cover 2-2; changed sides 1-1. Log loss -0.000002 P+ 0.475 (null pct 76.5); out minus in +0.00025; fold coefficients [[0.1342], [0.1362], [0.1945], [0.128], [0.1418], [0.0488]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.4918,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_qb_g1_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 27.2; planted detectable size at 80 percent power: not reached by 0.520 logit per sd (share 0.12). One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term qb_g1 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": -0.066534,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.199601,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 2; served record on flagged 1-1; arrival team cover 1-1; changed sides 0-1. Log loss -0.017388 P+ 0.106 (null pct 41.0); out minus in +0.01763; fold coefficients [[0.1141], [0.1158], [33.4085], [0.1088], [0.1205], [-33.1996]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.1762,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_rush_g12_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 22.0; planted detectable size at 80 percent power: 0.208 logit per sd, true +0.12 accuracy points, +0.00377 log loss. One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term rush_g12 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": -0.199601,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.532269,
+        0.133067
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 21; served record on flagged 12-9; arrival team cover 10-11; changed sides 2-5. Log loss -0.000833 P+ 0.042 (null pct 27.5); out minus in +0.00118; fold coefficients [[0.094], [-0.5065], [-0.0569], [-0.2235], [-0.2432], [-0.5422]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.1237,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
+    "per11_dated_rush_g1_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Matched null (200 within-season shuffles) percentile 74.0; planted detectable size at 80 percent power: 0.208 logit per sd, true -0.04 accuracy points, +0.00343 log loss. One-term add-ons cannot see effects under about 1.5 accuracy points. No refuted mechanism and no positive control at this size.",
+      "closing_ground": null,
+      "description": "Date-honest arrival term rush_g1 (trade or waiver arrival of a prior-team starter, dated by article publication or earliest sitemap lastmod, first games whose Tuesday-noon prediction time follows the date), signed home minus away, added as a free slope to the served out-of-season logit, leave-one-season-out 2020-2025 opener games.",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.266134,
+        0.399202
+      ],
+      "league": "nfl",
+      "notes": "scripts/per11_arrival_dates.py, artifacts/per11_arrival_rampup/dated_results.json. Flagged games 11; served record on flagged 4-7; arrival team cover 4-7; changed sides 4-3. Log loss -0.000915 P+ 0.201 (null pct 22.0); out minus in +0.00164; fold coefficients [[-0.1987], [-1.0863], [-0.5935], [-0.6413], [-0.5783], [-1.4641]]. Looks 8 (4 groups x 2 windows).",
+      "plain_summary": null,
+      "probability_positive": 0.6452,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/per-11-per11-acquired-player-ramp.md",
+      "standard_error": null
+    },
     "per11_defense_arrivals_def_epa_vs_placebo_all_k123": {
       "category": "onfield",
       "classification": "unresolved_below_power",
