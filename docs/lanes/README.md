@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [goal-55-backwards-2026-11-21](goal-55-backwards-2026-11-21.md) - 2026-11-21: what 55% takes. Model alone at the opener 802-701 (53.4%) needs +25 wins; perfect hindsight of the closing line reaches only 54.8%; live card 77-73 lost 8 wins to card-v-formula drift (fixed Week 10).
 - [full-steam-2026-11-14](full-steam-2026-11-14.md) - START HERE 2026-11-14: simulator final run finished and graded 20:10 ET (SIM-08 and SIM-30 closed, nothing served); Sunday and Tuesday lists in its Next; roadmap reconcile of 100 stale rows in four groups; dashboard unit; pool-standing alarm; refill queue in its Next.
 - [pool-standing-refresh](pool-standing-refresh.md) - 2026-11-12: weekly refresh of the dashboard's pool-standing panel (Splash standings read, three scripts, publish); Week 9 done (rank 65 of 250, 70 points); scheduler staleness check still to add.
 - [sim-finish-2026-11-11](done/sim-finish-2026-11-11.md) - DONE 2026-11-14 20:10 ET: final forecaster run graded and recorded; SIM-08 and SIM-30 closed, the simulator serves nothing; summary in docs/sim_engine_summary.md. Only SIM-29 remains for the simulator (lane sim-29-simulated-lineup-from-the-wording-read.md, forward weeks from about Week 12, also carries the push-mass forward log).
