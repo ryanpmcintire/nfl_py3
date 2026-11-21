@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:52:42.648765+00:00`
+Refreshed at: `2026-11-21T17:53:13.205847+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-11-21T17:52:42.648765+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a924802ef8a1` — Scorers for the team home edge and LEAD-108 forward logs written before any outcome; both refuse early scoring and dry-run on synthetic outcomes
-- Pending change set: 85 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `5998071f1af2` — Fidelity check: count only captures that feed the move term and respect each capture script's age guard; the noon move-staleness alarm was false (served move recomputes equal)
+- Pending change set: 83 paths
   - ` M docs/index.html`
-  - `M  docs/lanes/card-fidelity-divergence-2026-11-21.md`
-  - `M  scripts/card_fidelity_check.py`
+  - `M  docs/lanes/backlog-2026-11-21.md`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-21T17:52:42.648765+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - ...and 65 more
+  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
+  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
+  - ...and 63 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
