@@ -20,18 +20,18 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 19 | IND at HOU | ★ HOU -11.5      | 60.2%          |
-| Sun, Nov 22 | ARI at KC  | KC -15.5         | 51.8%          |
-| Sun, Nov 22 | BAL at CAR | CAR -2.5         | 54.0%          |
-| Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.5%          |
-| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 57.7%          |
-| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 51.2%          |
-| Sun, Nov 22 | MIN at SF  | MIN +3.5         | 51.3%          |
-| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.2%          |
+| Sun, Nov 22 | ARI at KC  | KC -15.5         | 52.8%          |
+| Sun, Nov 22 | BAL at CAR | CAR -2.5         | 52.2%          |
+| Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.4%          |
+| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 60.6%          |
+| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 50.6%          |
+| Sun, Nov 22 | MIN at SF  | MIN +3.5         | 51.0%          |
+| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.1%          |
 | Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 57.0%          |
-| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 56.3%          |
-| Sun, Nov 22 | TB at DET  | DET -6.5         | 55.1%          |
-| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 53.7%          |
-| Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.8%          |
+| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 50.9%          |
+| Sun, Nov 22 | TB at DET  | TB +6.5          | 53.0%          |
+| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 50.7%          |
+| Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.7%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->

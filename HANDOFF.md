@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T17:19:29.360514+00:00`
+Refreshed at: `2026-11-21T17:20:02.619058+00:00`
 
 ## Start here
 
@@ -21,9 +21,12 @@ Refreshed at: `2026-11-21T17:19:29.360514+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `73683893974c` — LEAD-101 market-excluded read arm enrolled with its first forward week and scheduler jobs
-- Pending change set: 82 paths
-  - `M  scripts/lead101_market_excluded.py`
+- Baseline commit: `9182dddd45f6` — LEAD-101 market-excluded script: format and rename an ambiguous variable (summarize reproduces)
+- Pending change set: 85 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  docs/lanes/backlog-2026-11-21.md`
+  - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-21T17:19:29.360514+00:00`
   - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T184500Z/manifest.json`
   - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
-  - `?? data/raw_schedules/20261105T140035Z/manifest.json`
-  - `?? data/raw_schedules/20261105T140035Z/schedules.parquet`
-  - `?? data/raw_schedules/20261106T140053Z/manifest.json`
-  - ...and 62 more
+  - ...and 65 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -63,7 +63,7 @@ The 52.31% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `592dc27ca1835b3e`, published `2026-11-20T17:21:52.934756+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `a8ea1dadc06c2405`, published `2026-11-21T17:19:24.134269+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
