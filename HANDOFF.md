@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T14:59:31.791908+00:00`
+Refreshed at: `2026-11-21T15:01:27.639386+00:00`
 
 ## Start here
 
@@ -21,14 +21,21 @@ Refreshed at: `2026-11-21T14:59:31.791908+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5155c93f91c8` — ENG-62: the Monday odds capture keeps the coming week (11-16 would have held 14 games, not 1); MOD-39 stakes cells recorded; three other pending records were already in the registry
-- Pending change set: 88 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
+- Baseline commit: `8f686ad412f7` — Refresh the handoff
+- Pending change set: 99 paths
+  - `M  ROADMAP.md`
+  - ` M docs/lanes/eng-54-outcome-label-default-audit.md`
+  - ` M docs/lanes/lead-101-news-delta-read.md`
+  - ` M docs/lanes/lead-104-read-revision-path.md`
   - ` M docs/lanes/lead-107-read-dispersion-weight.md`
+  - ` M docs/lanes/pool-07-standings-variance-policy.md`
+  - ` M docs/lanes/pool-08-hook-side-field-share.md`
+  - ` M docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
   - ` M registry/weak_signals/lead101_news_delta_read.json`
   - ` M registry/weak_signals/lead104_revision_path.json`
+  - ` M registry/weak_signals/pool07_standings_policy.json`
   - ` M registry/weak_signals/pool08_hook_field_share.json`
+  - ` M registry/weak_signals/pool09_hook_value_slope.json`
   - ` M scripts/pool07_standings_policy.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
@@ -36,14 +43,7 @@ Refreshed at: `2026-11-21T14:59:31.791908+00:00`
   - `?? cdx_vipre2.json`
   - `?? cdx_viweek.json`
   - `?? cdx_wgdl.json`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 68 more
+  - ...and 79 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
