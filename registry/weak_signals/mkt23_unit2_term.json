@@ -1,6 +1,174 @@
 {
   "family": "mkt23_unit2_term",
   "signals": {
+    "mkt23_u3_pool_line_history_c_direction_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "pool line, 816 games, matched-null percentile 18.0, detectable beta 0.304 logit, accuracy -0.37 pts, decisive 30.5-38.5; 16 looks; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Unit 2 terms re-tested at the pool line on the served probability (leave-one-season-out); 16 looks",
+      "effect": -0.0021557122052411953,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.004178736756320641,
+        -0.0001165139126873474
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the served cover probability at the pool line.",
+      "probability_positive": 0.018,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/unit3_pool_line.json",
+      "standard_error": 0.001024870261445069
+    },
+    "mkt23_u3_pool_line_history_d_one_team_direction_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "pool line, 816 games, matched-null percentile 29.0, detectable beta 0.790 logit, accuracy -0.18 pts, decisive 16-22.5; 16 looks; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Unit 2 terms re-tested at the pool line on the served probability (leave-one-season-out); 16 looks",
+      "effect": -0.0017214949212431352,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.004555528458740267,
+        0.0012822357531014957
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the served cover probability at the pool line.",
+      "probability_positive": 0.1345,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/unit3_pool_line.json",
+      "standard_error": 0.0014972859817720865
+    },
+    "mkt23_u3_pool_line_history_e_both_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "pool line, 816 games, matched-null percentile 29.5, two-term arm, no ladder, accuracy -0.37 pts, decisive 25.5-33.5; 16 looks; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Unit 2 terms re-tested at the pool line on the served probability (leave-one-season-out); 16 looks",
+      "effect": -0.0029204994873202315,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.006241784191835722,
+        0.00018866684564394418
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the served cover probability at the pool line.",
+      "probability_positive": 0.033,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/unit3_pool_line.json",
+      "standard_error": 0.0016759048125515623
+    },
+    "mkt23_u3_pool_line_live_2026_c_direction_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "pool line, 150 games, matched-null percentile 66.5, detectable beta 0.710 logit, accuracy +0.00 pts, decisive 1-3; 16 looks; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Unit 2 terms re-tested at the pool line on the served probability (fit on 2023-25, scored on the played card); 16 looks",
+      "effect": 0.0002460292117285471,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.0007293760271979511,
+        0.0013060382728507067
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the served cover probability at the pool line.",
+      "probability_positive": 0.701,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mkt23/unit3_pool_line.json",
+      "standard_error": 0.0005120890654316954
+    },
+    "mkt23_u3_pool_line_live_2026_d_one_team_direction_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "pool line, 150 games, matched-null percentile 42.5, detectable beta 1.186 logit, accuracy +1.33 pts, decisive 2-2; 16 looks; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Unit 2 terms re-tested at the pool line on the served probability (fit on 2023-25, scored on the played card); 16 looks",
+      "effect": -0.00016733084708074071,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.004341891645458498,
+        0.0037341688328076258
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the served cover probability at the pool line.",
+      "probability_positive": 0.4485,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mkt23/unit3_pool_line.json",
+      "standard_error": 0.0020875479449432182
+    },
+    "mkt23_u3_pool_line_live_2026_e_both_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "pool line, 150 games, matched-null percentile 52.5, two-term arm, no ladder, accuracy +1.33 pts, decisive 3-3; 16 looks; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Unit 2 terms re-tested at the pool line on the served probability (fit on 2023-25, scored on the played card); 16 looks",
+      "effect": -0.0003820916014243273,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.004475981941245713,
+        0.003981706701562062
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the served cover probability at the pool line.",
+      "probability_positive": 0.446,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/mkt23/unit3_pool_line.json",
+      "standard_error": 0.0021591124734130687
+    },
     "mkt23_unit2_c_direction_vs_refit_base": {
       "category": "market",
       "classification": "unresolved_below_power",
