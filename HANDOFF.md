@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:45:45.687651+00:00`
+Refreshed at: `2026-11-21T15:50:26.394844+00:00`
 
 ## Start here
 
@@ -21,13 +21,17 @@ Refreshed at: `2026-11-21T15:45:45.687651+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6671c7d6ca46` — Odds tape ends before the Sunday 12:40 last-call jobs by default, so the running daemon's argv also stops in time; ENG-54 served-base re-grades of six families (14 cells, all unresolved); LEAD-76 pooled read as a replacement closed wrong-sign on the served base
-- Pending change set: 83 paths
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `A  docs/lanes/backlog-2026-11-21.md`
-  - ` M docs/model.html`
+- Baseline commit: `95c33dddc046` — Session lane for the 2026-11-21 backlog run
+- Pending change set: 91 paths
+  - `M  HANDOFF.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/card-fidelity-divergence-2026-11-21.md`
+  - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - ` M docs/lanes/xlg-15-xlg15-reliability-transfer.md`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-11-21T15:45:45.687651+00:00`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
-  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
-  - ...and 63 more
+  - ...and 71 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
