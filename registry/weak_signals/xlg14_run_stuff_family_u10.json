@@ -1,0 +1,509 @@
+{
+  "family": "xlg14_run_stuff_family_u10",
+  "signals": {
+    "xlg14_run_stuff_cfb_def_stuff_rate_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, def_stuff_rate_oe: the defence's stops of opponent designed runs at or behind the line of scrimmage, in excess of the league rate of each game's own week, per opponent designed run over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1495, record 782-713; coefficient per SD +0.0850; earlier and later season-half coefficients +0.0741 and +0.0931; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out -0.112045.",
+      "effect": 0.773109,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.045098,
+        1.613725
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that stuff opposing runs at the line more often, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.9677,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_def_stuff_rate_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, def_stuff_rate_oe: the defence's stops of opponent designed runs at or behind the line of scrimmage, in excess of the league rate of each game's own week, per opponent designed run over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1495, record 782-713; coefficient per SD +0.0850; earlier and later season-half coefficients +0.0741 and +0.0931; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000062.",
+      "effect": 0.000382,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -3.2e-05,
+        0.000839
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that stuff opposing runs at the line more often, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.9625,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_def_stuff_rate_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, def_stuff_rate_oe: the defence's stops of opponent designed runs at or behind the line of scrimmage, in excess of the league rate of each game's own week, per opponent designed run over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1495, record 782-713; coefficient per SD +0.0850; earlier and later season-half coefficients +0.0741 and +0.0931; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000126.",
+      "effect": 0.000767,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -6.8e-05,
+        0.001691
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that stuff opposing runs at the line more often, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.962,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_off_stuff_avoid_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, off_stuff_avoid_oe: minus the offence's designed runs stopped at or behind the line of scrimmage, in excess of the league rate of each game's own week, per own designed run over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1261, record 644-617; coefficient per SD +0.0629; earlier and later season-half coefficients +0.0929 and +0.0408; this metric sits at percentile 92.5 of 200 within-season shuffles of the same column; in-sample minus held-out -0.011204.",
+      "effect": 0.302521,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.448459,
+        1.064706
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that get stuffed at the line less often when they run, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.7835,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_off_stuff_avoid_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, off_stuff_avoid_oe: minus the offence's designed runs stopped at or behind the line of scrimmage, in excess of the league rate of each game's own week, per own designed run over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1261, record 644-617; coefficient per SD +0.0629; earlier and later season-half coefficients +0.0929 and +0.0408; this metric sits at percentile 99.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000035.",
+      "effect": 0.000211,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -9.5e-05,
+        0.000546
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that get stuffed at the line less often when they run, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8915,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_off_stuff_avoid_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, off_stuff_avoid_oe: minus the offence's designed runs stopped at or behind the line of scrimmage, in excess of the league rate of each game's own week, per own designed run over earlier weeks, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1261, record 644-617; coefficient per SD +0.0629; earlier and later season-half coefficients +0.0929 and +0.0408; this metric sits at percentile 99.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000071.",
+      "effect": 0.00042,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.000199,
+        0.001091
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that get stuffed at the line less often when they run, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.8895,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_run_stuff_net_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, run_stuff_net_oe: the sum of the offensive and defensive run-stuff reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1836, record 958-878; coefficient per SD +0.1096; earlier and later season-half coefficients +0.1119 and +0.1075; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out -0.123249.",
+      "effect": 0.896359,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.078431,
+        1.860224
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that win the line of scrimmage on running plays on both sides of the ball, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.9657,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_run_stuff_net_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, run_stuff_net_oe: the sum of the offensive and defensive run-stuff reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1836, record 958-878; coefficient per SD +0.1096; earlier and later season-half coefficients +0.1119 and +0.1075; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000037.",
+      "effect": 0.000703,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        0.000115,
+        0.001283
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that win the line of scrimmage on running plays on both sides of the ball, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.992,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_cfb_run_stuff_net_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign for the declared line-of-scrimmage mechanism, split-half reliability of the trait not measured, and no positive control bounds an effect this small: the college add-one harness shows about .08 to .11 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "College-first run-stuff family, run_stuff_net_oe: the sum of the offensive and defensive run-stuff reads, residualised on the team's own ATS margin to date. Built from strictly earlier weeks of seasons with a kneel-down flag (2014 on; 2012-13 games carry 0); the residualising slope from team-games strictly before the target week; home minus away; one offset-logistic coefficient on a leave-one-season-out ridge cover probability with the opener as input and grade, 13 seasons; declared sign positive. Changed picks 1836, record 958-878; coefficient per SD +0.1096; earlier and later season-half coefficients +0.1119 and +0.1075; this metric sits at percentile 100.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000076.",
+      "effect": 0.001405,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        0.000214,
+        0.002576
+      ],
+      "league": "cfb",
+      "notes": "Family xlg14_run_stuff_family_u10: 3 candidates x 3 metrics = 9 recorded cells; 3 gating reads (log-loss percentile in the matched null), 6 season-half coefficients and 2 control reads; survivor rule declared in the lane before any outcome was joined; survivor: yes.",
+      "plain_summary": "Checks whether college teams that win the line of scrimmage on running plays on both sides of the ball, beyond what their cover record already says, go on to beat the opening spread more or less often. It stood out from chance and earns one declared pro-football check.",
+      "probability_positive": 0.992,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_def_stuff_rate_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor def_stuff_rate_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 49, record 16-33; coefficient per SD +0.0024 [-0.0999, +0.1041], positive in 3 of 6 folds (expected positive, the college sign); this metric sits at percentile 15.2 of 200 within-season shuffles of the same column; in-sample minus held-out +1.197605.",
+      "effect": -1.131071,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -2.062542,
+        -0.266134
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro defences that stuff designed runs at the line more often go on to beat the opening spread more often, as college teams did. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.0047,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_def_stuff_rate_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor def_stuff_rate_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 49, record 16-33; coefficient per SD +0.0024 [-0.0999, +0.1041], positive in 3 of 6 folds (expected positive, the college sign); this metric sits at percentile 45.0 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000231.",
+      "effect": -0.000231,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.000466,
+        -2e-06
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro defences that stuff designed runs at the line more often go on to beat the opening spread more often, as college teams did. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.0245,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_def_stuff_rate_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor def_stuff_rate_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 49, record 16-33; coefficient per SD +0.0024 [-0.0999, +0.1041], positive in 3 of 6 folds (expected positive, the college sign); this metric sits at percentile 46.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000467.",
+      "effect": -0.000466,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.000944,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: not confirmed. Not served.",
+      "plain_summary": "Checks whether pro defences that stuff designed runs at the line more often go on to beat the opening spread more often, as college teams did. The pro games did not show the pattern clearly enough to tell it from chance; nothing is ruled out and no pick changes.",
+      "probability_positive": 0.0255,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_off_stuff_avoid_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor off_stuff_avoid_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 86, record 34-52; coefficient per SD -0.0251 [-0.1276, +0.0711], positive in 2 of 6 folds (expected positive, the college sign); this metric sits at percentile 11.8 of 200 within-season shuffles of the same column; in-sample minus held-out +0.332668.",
+      "effect": -1.197605,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -2.39521,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro offences that get stuffed at the line less often on designed runs go on to beat the opening spread more often, as college teams did. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0232,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_off_stuff_avoid_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor off_stuff_avoid_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 86, record 34-52; coefficient per SD -0.0251 [-0.1276, +0.0711], positive in 2 of 6 folds (expected positive, the college sign); this metric sits at percentile 10.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000561.",
+      "effect": -0.000531,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.000994,
+        -6.4e-05
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro offences that get stuffed at the line less often on designed runs go on to beat the opening spread more often, as college teams did. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.016,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_off_stuff_avoid_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor off_stuff_avoid_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 86, record 34-52; coefficient per SD -0.0251 [-0.1276, +0.0711], positive in 2 of 6 folds (expected positive, the college sign); this metric sits at percentile 12.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.001124.",
+      "effect": -0.001046,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.001977,
+        -9.4e-05
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro offences that get stuffed at the line less often on designed runs go on to beat the opening spread more often, as college teams did. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0185,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_run_stuff_net_oe_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor run_stuff_net_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 58, record 17-41; coefficient per SD -0.0162 [-0.1151, +0.0876], positive in 1 of 6 folds (expected positive, the college sign); this metric sits at percentile 5.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.731870.",
+      "effect": -1.596806,
+      "effect_units": "accuracy_points",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -2.528277,
+        -0.598802
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro teams that win the line of scrimmage on designed runs on both sides go on to beat the opening spread more often, as college teams did. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_run_stuff_net_oe_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor run_stuff_net_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 58, record 17-41; coefficient per SD -0.0162 [-0.1151, +0.0876], positive in 1 of 6 folds (expected positive, the college sign); this metric sits at percentile 38.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000292.",
+      "effect": -0.00028,
+      "effect_units": "brier_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.000595,
+        3.8e-05
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro teams that win the line of scrimmage on designed runs on both sides go on to beat the opening spread more often, as college teams did. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0445,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    },
+    "xlg14_run_stuff_nfl_run_stuff_net_oe_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (the coefficient's interval is not wholly negative), split-half reliability of the trait not measured, and no positive control bounds an effect this small: the NFL add-one harness shows about .26 logit per SD four times in five (docs/lanes/xlg-harness-power-2026-11-14.md).",
+      "closing_ground": null,
+      "description": "NFL confirmation of the college-first survivor run_stuff_net_oe: designed runs (play_type run, not a dropback or kneel) gaining zero or fewer yards, centred on the league rate of each game's own week, per run over earlier weeks of the season, residualised on own ATS margin to date; home minus away; one offset-logistic coefficient per SD on the served out-of-season probability, opener grade 2020-2025, leave-one-season-out. Nonzero games 1415; changed picks 58, record 17-41; coefficient per SD -0.0162 [-0.1151, +0.0876], positive in 1 of 6 folds (expected positive, the college sign); this metric sits at percentile 39.5 of 200 within-season shuffles of the same column; in-sample minus held-out +0.000581.",
+      "effect": -0.000548,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg14_run_stuff_family_u10",
+      "interval": [
+        -0.001183,
+        9.3e-05
+      ],
+      "league": "nfl",
+      "notes": "Family xlg14_run_stuff_family_u10: one of the three pre-declared NFL confirmations of the college survivors; 3 gating reads (log-loss percentile in the matched null with the full-sample coefficient sign), 3 recorded cells each; terms declared in the lane before any outcome was joined; outcome: opposite sign. Not served.",
+      "plain_summary": "Checks whether pro teams that win the line of scrimmage on designed runs on both sides go on to beat the opening spread more often, as college teams did. The pro games leaned the other way, though not clearly enough to rule the idea out; no pick changes.",
+      "probability_positive": 0.0495,
+      "recorded_at": "2026-11-21",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/xlg-14-u10-2026-11-21.md",
+      "standard_error": null
+    }
+  }
+}
