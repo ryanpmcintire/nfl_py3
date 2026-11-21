@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:08:28.932746+00:00`
+Refreshed at: `2026-11-21T16:09:23.338527+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-11-21T16:08:28.932746+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e2268b380013` — MKT-24 holiday forward look declared for Thanksgiving and Christmas 2026 before kickoff, with its logger and scheduler jobs
-- Pending change set: 87 paths
+- Baseline commit: `556f9db9a5db` — POOL-06: Splash shows entrants' tiebreak guesses after lock (checked in Chrome)
+- Pending change set: 88 paths
+  - `M  docs/lanes/backlog-2026-11-21.md`
   - ` M docs/lanes/mkt-23-spread-total-move-decomposition.md`
   - ` M docs/lanes/mod-30-mod30-public-ratings.md`
-  - `M  docs/lanes/pool-06-tiebreak-field-guess.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
   - ` M docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
+  - `A  docs/season_boundary_bundle_2026.md`
   - ` M registry/weak_signals/mkt23_unit2_term.json`
   - ` M scripts/mkt23_move_decomposition.py`
   - ` M scripts/mkt23_unit2_term.py`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-21T16:08:28.932746+00:00`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? data/raw_schedules/20261103T233105Z/manifest.json`
   - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
-  - ...and 67 more
+  - ...and 68 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
