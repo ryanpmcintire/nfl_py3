@@ -129,7 +129,7 @@ def sentence(name, scen, team):
     return f"If {name} {verb}, the pick would change to {team}."
 
 
-def cmd_run(a):
+def cmd_mixture(a):
     now = datetime.now(UTC)
     model = active_model()
     week = MF.resolve(a.week, now)
@@ -257,7 +257,8 @@ def cmd_run(a):
         )
     doc = {
         "row": "UI-33",
-        "purpose": "informational only; never changes a served side",
+        "basis": "research_mixture_lead108",
+        "purpose": "research only; not the served probability; never rendered",
         **model,
         "season": SEASON,
         "week": week,
@@ -281,8 +282,8 @@ def cmd_run(a):
         "flagged_games": [x["game_id"] for x in out_games if x["flagged_players"]],
         "games": out_games,
     }
-    OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / f"{SEASON}_week{week:02d}_{now.strftime(STAMP)}.json"
+    (OUT / "research_mixture").mkdir(parents=True, exist_ok=True)
+    path = OUT / "research_mixture" / f"{SEASON}_week{week:02d}_{now.strftime(STAMP)}.json"
     path.write_text(json.dumps(doc, indent=1, default=str))
     print(path)
     print(
@@ -305,17 +306,385 @@ def cmd_run(a):
             )
 
 
+def _side_team(value, home, away):
+    if value in (home, away):
+        return value
+    return {"home": home, "away": away}.get(str(value).lower(), str(value))
+
+
+def _qb_view(state, debut):
+    if state is None:
+        return debut[0], debut[1], 0.0
+    epa = state["state_qb_epa_per_dropback"]
+    cpoe = state["state_qb_cpoe"]
+    return (
+        float(epa) if pd.notna(epa) else debut[0],
+        float(cpoe) if pd.notna(cpoe) else debut[1],
+        float(state["career_dropbacks"]),
+    )
+
+
+def cmd_served(a):
+    import math
+    import tempfile
+
+    from nfl_ats import players as P
+    from nfl_ats.cli_common import _resolve_pbp_snapshot, _resolve_player_snapshot
+    from nfl_ats.constants import PLAYER_QB_STATE_METRICS
+    from nfl_ats.pbp import load_pbp_snapshot
+    from nfl_ats.pick_refresh import plan_refresh
+    from nfl_ats.quarterbacks import (
+        build_qb_game_metrics,
+        build_qb_states,
+        depth_snapshot_from_root,
+        load_depth_snapshot,
+    )
+    from nfl_ats.weekly import CARD_PATH_TABLES
+
+    now = datetime.now(UTC)
+    model = active_model()
+    week = MF.resolve(a.week, now)
+    if week is None:
+        print("SKIP: no unplayed week")
+        return
+    ats = json.loads((ROOT / "artifacts" / "active_ats_model.json").read_text())
+    data_root = ROOT / "data"
+    artifacts_root = ROOT / "artifacts"
+    table = data_root / "processed" / CARD_PATH_TABLES[ats["feature_profile"]]
+    manifest = json.loads(table.with_name(f"{table.stem}.manifest.json").read_text())
+    feats = pd.read_parquet(table)
+    feats["game_id"] = feats["game_id"].astype(str)
+    sched = LF.schedule(week)
+    base = MF.card(week, now)
+    open_ids, skipped = [], {}
+    for r in sched.itertuples():
+        if r.cutoff_utc <= pd.Timestamp(now):
+            skipped[r.game_id] = "past_cutoff"
+        elif r.game_id not in base.index:
+            skipped[r.game_id] = "no_published_card"
+        else:
+            open_ids.append(r.game_id)
+    if not open_ids:
+        print("no open game with a published card; nothing written")
+        return
+    wk = feats[feats["game_id"].isin(open_ids)].set_index("game_id")
+    snap = _resolve_player_snapshot(manifest["source_player_snapshot"])
+    snap_inj = pd.read_parquet(snap.injuries_path)
+    snap_inj = snap_inj[(snap_inj["season"] == SEASON) & (snap_inj["week"] == week)].copy()
+    snap_inj["gsis_id"] = snap_inj["gsis_id"].astype(str)
+    latest_inj, latest_cap = injury_capture(week, now)
+    latest_inj["gsis_id"] = latest_inj["gsis_id"].astype(str)
+    depth = load_depth_snapshot(
+        depth_snapshot_from_root(
+            data_root / "quarterbacks" / "depth" / "raw" / manifest["source_depth_snapshot"]
+        )
+    )
+    depth["observed_at_utc"] = pd.to_datetime(depth["observed_at_utc"], utc=True, errors="coerce")
+    depth["pos_rank"] = pd.to_numeric(depth["pos_rank"], errors="coerce")
+    depth = depth.dropna(subset=["observed_at_utc", "team", "gsis_id", "pos_rank"]).copy()
+    depth["gsis_id"] = depth["gsis_id"].astype(str)
+    names = dict(zip(depth["gsis_id"], depth["player_name"], strict=False))
+    names.update(dict(zip(latest_inj["gsis_id"], latest_inj["full_name"], strict=False)))
+    pbp = load_pbp_snapshot(_resolve_pbp_snapshot(manifest["source_pbp_snapshot"]))
+    games_frame = feats.copy()
+    games_frame["gameday"] = pd.to_datetime(games_frame["gameday"])
+    qb_games = build_qb_game_metrics(pbp)
+    qb_states = build_qb_states(
+        qb_games,
+        games_frame,
+        span=a.qb_span,
+        min_dropbacks=a.qb_min_dropbacks,
+        offseason_retention=a.offseason_retention,
+    )
+    histories = {
+        str(k): grp.sort_values(["gameday", "game_id"]).reset_index(drop=True)
+        for k, grp in qb_states.groupby("player_id", sort=False)
+    }
+    debut = P._debut_qb_fill(qb_states, [SEASON])[SEASON]
+    gamedays = dict(zip(games_frame["game_id"], games_frame["gameday"], strict=False))
+    qb_games = qb_games.assign(_gd=qb_games["game_id"].astype(str).map(gamedays))
+
+    identity, cands = [], []
+    for gid, row in wk.iterrows():
+        gday = pd.Timestamp(row["gameday"])
+        decision_at = pd.Timestamp(row["kickoff"]) - pd.Timedelta(hours=a.decision_hours)
+        for side in ("home", "away"):
+            team = str(row[f"{side}_team"])
+            pid = row[f"{side}_projected_qb_id"]
+            if pd.isna(pid):
+                continue
+            pid = str(pid)
+            epa, cpoe, exp = _qb_view(P._latest_qb_state(histories, pid, gday), debut)
+            identity.append(
+                max(
+                    abs(epa - float(row[f"{side}_qb_starter_epa_per_dropback"])),
+                    abs(cpoe - float(row[f"{side}_qb_starter_cpoe"])),
+                    abs(math.log1p(exp) - float(row[f"{side}_qb_starter_experience_log"])),
+                )
+            )
+            sp = float(row[f"{side}_qb_start_probability"])
+            vis = snap_inj[snap_inj["team"] == team]
+            srow = vis[vis["gsis_id"] == pid]
+            lrow = latest_inj[(latest_inj["team"] == team) & (latest_inj["gsis_id"] == pid)]
+            latest_des = str(lrow["designation"].iloc[-1]) if len(lrow) else "none"
+            if not (sp < 1.0 or latest_des in UNRESOLVED):
+                continue
+            listed_out = set(P._qb_ids_listed_out(vis)) | {pid}
+            dvis = depth[(depth["team"] == team) & (depth["observed_at_utc"] <= decision_at)]
+            backup, backup_rule = None, ""
+            if len(dvis):
+                dvis = dvis.sort_values(["observed_at_utc", "pos_rank"], ascending=[False, True])
+                newest = dvis[dvis["observed_at_utc"].eq(dvis["observed_at_utc"].iloc[0])]
+                elig = newest[~newest["gsis_id"].isin(listed_out)]
+                if len(elig):
+                    backup, backup_rule = str(elig["gsis_id"].iloc[0]), "depth_chart_next"
+            if backup is None:
+                prior = qb_games[(qb_games["team"] == team) & (qb_games["_gd"] < gday)]
+                if len(prior):
+                    last = prior[prior["_gd"].eq(prior["_gd"].max())]
+                    order = last.sort_values("qb_dropbacks", ascending=False)["player_id"]
+                    rest = [str(x) for x in order if str(x) not in listed_out]
+                    if rest:
+                        backup, backup_rule = rest[0], "latest_game_dropback_order"
+            if backup is None:
+                skipped[f"{gid}:{team}"] = "no_next_quarterback"
+                continue
+            bepa, bcpoe, bexp = _qb_view(P._latest_qb_state(histories, backup, gday), debut)
+            brow = vis[vis["gsis_id"] == backup]
+            bun = P._injury_unavailability(brow.iloc[-1]) if len(brow) else 0.0
+            bsp = 1.0 - bun if np.isfinite(bun) else math.nan
+            starter_epa = float(row[f"{side}_qb_starter_epa_per_dropback"])
+            cands.append(
+                {
+                    "game_id": gid,
+                    "side": side,
+                    "team": team,
+                    "player_id": pid,
+                    "player": names.get(pid, pid),
+                    "served_designation": (
+                        str(srow["report_status"].iloc[-1]) if len(srow) else "none"
+                    ),
+                    "served_practice_status": (
+                        str(srow["practice_status"].iloc[-1]) if len(srow) else "none"
+                    ),
+                    "served_start_probability": sp,
+                    "latest_capture_designation": latest_des,
+                    "latest_capture_practice_status": (
+                        str(lrow["practice_status"].iloc[-1]) if len(lrow) else "none"
+                    ),
+                    "starter_epa_per_dropback": starter_epa,
+                    "served_expected_epa_per_dropback": float(
+                        row[f"{side}_qb_expected_epa_per_dropback"]
+                    ),
+                    "next_qb_id": backup,
+                    "next_qb": names.get(backup, backup),
+                    "next_qb_rule": backup_rule,
+                    "next_qb_epa_per_dropback": bepa,
+                    "next_qb_start_probability": bsp,
+                    "in": {
+                        "projected_qb_id": pid,
+                        "qb_start_probability": 1.0,
+                        "qb_expected_epa_per_dropback": starter_epa,
+                    },
+                    "out": {
+                        "projected_qb_id": backup,
+                        "qb_starter_epa_per_dropback": bepa,
+                        "qb_starter_cpoe": bcpoe,
+                        "qb_starter_experience_log": math.log1p(bexp),
+                        "qb_start_probability": bsp,
+                        "qb_expected_epa_per_dropback": (
+                            bsp * bepa + (1.0 - bsp) * P._REPLACEMENT_QB_EPA
+                        ),
+                    },
+                }
+            )
+
+    def run(frame, tmp, tag):
+        path = Path(tmp) / f"{tag}.parquet"
+        frame.to_parquet(path)
+        res = plan_refresh(
+            artifacts_root, data_root, season=SEASON, week=week, features_path=path, now=now
+        )
+        return {
+            str(g.game_id): (
+                float(g.new_home_cover_probability),
+                g.new_pick_side,
+                float(g.decision_home_spread),
+            )
+            for g in res.games
+        }
+
+    def scenario(c, which):
+        frame = feats.copy()
+        mask = frame["game_id"].eq(c["game_id"])
+        for k, v in c[which].items():
+            frame.loc[mask, f"{c['side']}_{k}"] = v
+        for m in PLAYER_QB_STATE_METRICS:
+            frame.loc[mask, f"diff_{m}"] = frame.loc[mask, f"home_{m}"].astype(float) - frame.loc[
+                mask, f"away_{m}"
+            ].astype(float)
+        return frame
+
+    with tempfile.TemporaryDirectory() as tmp:
+        base_run = run(feats, tmp, "base")
+        for i, c in enumerate(cands):
+            c["_in"] = run(scenario(c, "in"), tmp, f"in{i}")
+            c["_out"] = run(scenario(c, "out"), tmp, f"out{i}")
+
+    out_games, other_moves = [], 0.0
+    for gid in open_ids:
+        row = wk.loc[gid]
+        home, away = str(row["home_team"]), str(row["away_team"])
+        b = base.loc[gid]
+        p0, side0, line = base_run.get(gid, (math.nan, "", math.nan))
+        clist, lines = [], []
+        for c in [c for c in cands if c["game_id"] == gid]:
+            pin, sin, _ = c["_in"][gid]
+            pout, sout, _ = c["_out"][gid]
+            for k, v in base_run.items():
+                if k != gid:
+                    other_moves = max(
+                        other_moves, abs(c["_in"][k][0] - v[0]), abs(c["_out"][k][0] - v[0])
+                    )
+            side_in = _side_team(sin, home, away)
+            side_out = _side_team(sout, home, away)
+            flagged = side_in != side_out
+            text = ""
+            if flagged:
+                scen, team = ("out", side_out) if side_in == b["pick_team"] else ("in", side_in)
+                text = sentence(c["player"], scen, team)
+                lines.append(text)
+            clist.append(
+                {
+                    **{k: v for k, v in c.items() if not k.startswith("_") and k != "game_id"},
+                    "home_probability_in": pin,
+                    "home_probability_out": pout,
+                    "side_if_plays": side_in,
+                    "side_if_sits": side_out,
+                    "flagged": bool(flagged),
+                    "sentence": text,
+                }
+            )
+        out_games.append(
+            {
+                "game_id": gid,
+                "away_team": away,
+                "home_team": home,
+                "pick_team": b["pick_team"],
+                "card_published_at_utc": str(b["published_at_utc"]),
+                "card_forecast_artifact": b["baseline_forecast_artifact"],
+                "card_from_active_forecast": bool(
+                    b["baseline_forecast_artifact"] == model["active_forecast_artifact"]
+                ),
+                "card_home_probability": float(b["p_home"]),
+                "decision_home_spread": float(line),
+                "served_home_probability_now": p0,
+                "served_side_now": _side_team(side0, home, away),
+                "served_minus_card": p0 - float(b["p_home"]),
+                "home_projected_qb": names.get(str(row["home_projected_qb_id"]), ""),
+                "away_projected_qb": names.get(str(row["away_projected_qb_id"]), ""),
+                "home_qb_start_probability": float(row["home_qb_start_probability"]),
+                "away_qb_start_probability": float(row["away_qb_start_probability"]),
+                "candidates": clist,
+                "flagged_players": [c["player"] for c in clist if c["flagged"]],
+                "board_line": " ".join(lines),
+            }
+        )
+    stamp = now.strftime(STAMP)
+    doc = {
+        "row": "UI-33",
+        "basis": "served_qb_input",
+        "purpose": "informational only; never changes a served side",
+        **model,
+        "card_published_at_utc": max(g["card_published_at_utc"] for g in out_games),
+        "season": SEASON,
+        "week": week,
+        "created_at_utc": stamp,
+        "code_sha256": {
+            c: sha(c)
+            for c in (
+                "scripts/ui33_scenario_producer.py",
+                "src/nfl_ats/players.py",
+                "src/nfl_ats/pick_refresh.py",
+            )
+        },
+        "served_path": "nfl_ats.pick_refresh.plan_refresh (refresh-picks planning, unrecorded)",
+        "feature_table": str(table.relative_to(ROOT)),
+        "feature_table_sha256": hashlib.sha256(table.read_bytes()).hexdigest(),
+        "feature_table_built_at_utc": manifest["built_at_utc"],
+        "served_player_snapshot": manifest["source_player_snapshot"],
+        "served_depth_snapshot": manifest["source_depth_snapshot"],
+        "served_pbp_snapshot": manifest["source_pbp_snapshot"],
+        "latest_injury_capture": latest_cap,
+        "replacement_qb_epa": P._REPLACEMENT_QB_EPA,
+        "candidate_rule": (
+            "projected starting QB whose served start probability is below one, or whom the "
+            "latest injury capture lists Questionable or Doubtful"
+        ),
+        "scenario_rule": (
+            "in: start probability one, expected EPA = starter EPA; out: starter treated as "
+            "listed Out, next QB by the served rule (newest depth chart before the decision "
+            "time, else latest game dropback order) with his own state and injury row"
+        ),
+        "starter_state_identity_max_abs": max(identity) if identity else None,
+        "other_games_max_move": other_moves,
+        "skipped": skipped,
+        "candidates_total": len(cands),
+        "flagged_games": [x["game_id"] for x in out_games if x["flagged_players"]],
+        "games": out_games,
+    }
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = OUT / f"{SEASON}_week{week:02d}_{stamp}.json"
+    path.write_text(json.dumps(doc, indent=1, default=str))
+    print(path)
+    print(
+        f"model {model['active_model_id']} week {week} games {len(out_games)} candidates "
+        f"{len(cands)} identity {doc['starter_state_identity_max_abs']} other_moves "
+        f"{other_moves:.2e} flagged {doc['flagged_games']}"
+    )
+    for x in out_games:
+        print(
+            f"{x['game_id']:<16} pick {x['pick_team']:<3} card {x['card_home_probability']:.4f} "
+            f"served {x['served_home_probability_now']:.4f} side {x['served_side_now']:<3} "
+            f"line {x['decision_home_spread']:+5.1f} qb {x['away_projected_qb']}/"
+            f"{x['home_projected_qb']} sp {x['away_qb_start_probability']:.2f}/"
+            f"{x['home_qb_start_probability']:.2f}"
+        )
+        for c in x["candidates"]:
+            print(
+                f"    {c['player']:<20} {c['team']:<3} served {c['served_designation']}/"
+                f"{c['served_practice_status']} sp {c['served_start_probability']:.3f} latest "
+                f"{c['latest_capture_designation']} next {c['next_qb']} ({c['next_qb_rule']}, "
+                f"epa {c['next_qb_epa_per_dropback']:+.3f} v {c['starter_epa_per_dropback']:+.3f}) "
+                f"in {c['home_probability_in']:.4f} out {c['home_probability_out']:.4f} "
+                f"{'FLAG ' + c['sentence'] if c['flagged'] else ''}"
+            )
+
+
 def main():
     p = argparse.ArgumentParser(
         description=(
-            "UI-33 producer: for each open game on the active model's card, the served side's "
-            "probability at the pool line with each unresolved starter in and out, others at "
-            "ladder availability, on the LEAD-108 discrete lattice mixture. Informational only."
+            "UI-33 producer: for each open game on the active model's card whose projected "
+            "starting quarterback carries an unresolved status, the served probability "
+            "recomputed through the refresh-picks planning path with the starter in and with "
+            "the next quarterback in; flags games whose served side differs. Informational only."
         )
     )
     p.add_argument("--week", default="auto", help="week number or auto (first unplayed week)")
+    p.add_argument(
+        "--research-mixture",
+        action="store_true",
+        help="run the LEAD-108 lattice mixture research path instead (never rendered)",
+    )
+    p.add_argument("--decision-hours", type=int, default=24, help="served build default")
+    p.add_argument("--qb-span", type=int, default=12, help="served build default")
+    p.add_argument("--qb-min-dropbacks", type=int, default=20, help="served build default")
+    p.add_argument("--offseason-retention", type=float, default=0.75, help="served build default")
     a = p.parse_args()
-    cmd_run(a)
+    if a.research_mixture:
+        cmd_mixture(a)
+    else:
+        cmd_served(a)
 
 
 if __name__ == "__main__":

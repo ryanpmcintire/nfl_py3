@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T16:10:47.976384+00:00`
+Refreshed at: `2026-11-21T16:12:46.080865+00:00`
 
 ## Start here
 
@@ -21,15 +21,12 @@ Refreshed at: `2026-11-21T16:10:47.976384+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `759f8f2481cf` — MKT-23 unit 3: spread and total move terms at the pool line on 2026 live captures, 6 cells unresolved; totals thin in 2026
-- Pending change set: 86 paths
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/eng-51-opener-input-provenance-guard.md`
+- Baseline commit: `48407a6bf01a` — ENG-51 unit 2b opener-input guard prepared for the season-boundary bundle; closing-line-only control 54.03% at the opener shows the false-lead mechanism
+- Pending change set: 85 paths
   - ` M docs/lanes/mod-30-mod30-public-ratings.md`
   - ` M docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - ` M docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
-  - `M  docs/season_boundary_bundle_2026.md`
-  - ` M scripts/ui33_scenario_producer.py`
+  - `M  docs/lanes/ui-33-pick-depends-on-status-2026-11-21.md`
+  - `M  scripts/ui33_scenario_producer.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-21T16:10:47.976384+00:00`
   - `?? data/raw_schedules/20261103T233624Z/manifest.json`
   - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
   - `?? data/raw_schedules/20261104T133337Z/manifest.json`
-  - ...and 66 more
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - `?? data/raw_schedules/20261104T184500Z/schedules.parquet`
+  - ...and 65 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
