@@ -1216,6 +1216,35 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day, at, grace in (("thu", "19:15", 60), ("sun", "09:30", 60))
     ),
+    *(
+        Job(
+            f"ui33_scenarios_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "ui33_scenario_producer.py"),
+                "--week",
+                "auto",
+            ],
+            True,
+            "UI-33: after a card refresh, recompute each open game's served probability with "
+            "the starting quarterback in and out; the board shows a line only when the side "
+            "would change and the file matches the active model and card.",
+            added_on="2026-11-21",
+        )
+        for day, at, grace in (
+            ("thu", "19:40", 45),
+            ("sat", "16:10", 60),
+            ("sat", "19:35", 60),
+            ("sun", "08:50", 40),
+            ("sun", "10:20", 40),
+        )
+    ),
     Job(
         "lead112_forward_score_tue",
         "tue",

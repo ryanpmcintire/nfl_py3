@@ -1014,6 +1014,11 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                     f'<span class="best-flag" title="{escape(flag_title)}">'
                     f"{escape(flag_label)}</span>"
                 )
+            if game.status_line and game.status_players and not game.final:
+                pick_cell += (
+                    f'<span class="best-flag" title="{escape(game.status_line)}">'
+                    f"Depends on {escape(' and '.join(game.status_players))}</span>"
+                )
             pick_cell += (
                 '<details class="pick-explanation">'
                 f'<summary aria-label="Why this pick: {pick_text}">Why this pick</summary>'
@@ -1555,6 +1560,11 @@ def _inspector_section(content: BoardContent, *, archived: bool = False) -> str:
                     for part in (
                         row_by_id[dive.game_id].explanation_text,
                         row_by_id[dive.game_id].pool_line_note,
+                        (
+                            ""
+                            if row_by_id[dive.game_id].final
+                            else row_by_id[dive.game_id].status_line
+                        ),
                         row_by_id[dive.game_id].schedule_text,
                     )
                     if part

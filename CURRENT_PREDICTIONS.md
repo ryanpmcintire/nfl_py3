@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 11
 
-Published from the synchronized weak stack model, 2026-11-20 17:21 UTC.
+Published from the synchronized weak stack model, 2026-11-21 17:23 UTC.
 
-<!-- publication: model_id=592dc27ca1835b3e published_at_utc=2026-11-20T17:21:52.934756+00:00 -->
+<!-- publication: model_id=a8ea1dadc06c2405 published_at_utc=2026-11-21T17:23:15.322269+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,20 +15,20 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Nov 19 | IND at HOU | ★ HOU -11.5      | 60.2%          |
-| Sun, Nov 22 | ARI at KC  | KC -15.5         | 51.8%          |
-| Sun, Nov 22 | BAL at CAR | CAR -2.5         | 54.0%          |
-| Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.5%          |
-| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 57.7%          |
-| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 51.2%          |
-| Sun, Nov 22 | MIN at SF  | MIN +3.5         | 51.3%          |
-| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.2%          |
+| Sun, Nov 22 | ARI at KC  | KC -15.5         | 52.8%          |
+| Sun, Nov 22 | BAL at CAR | CAR -2.5         | 52.2%          |
+| Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.4%          |
+| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 60.6%          |
+| Sun, Nov 22 | MIA at BUF | BUF -16.5        | 50.6%          |
+| Sun, Nov 22 | MIN at SF  | MIN +3.5         | 51.0%          |
+| Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.1%          |
 | Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 57.0%          |
-| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 53.6%          |
-| Sun, Nov 22 | TB at DET  | TB +6.5          | 53.2%          |
-| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 53.7%          |
-| Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.8%          |
+| Sun, Nov 22 | PIT at PHI | PIT -4.5         | 50.9%          |
+| Sun, Nov 22 | TB at DET  | TB +6.5          | 53.0%          |
+| Sun, Nov 22 | TEN at DAL | DAL -7.5         | 50.7%          |
+| Mon, Nov 23 | CIN at WAS | WAS +5.5         | 50.7%          |
 
-**Tiebreaker (last game, CIN at WAS):** WAS 24 - CIN 29, total 53 (market total 54) -- consistent with the WAS +5.5 pick.
+**Tiebreaker (last game, CIN at WAS):** WAS 24 - CIN 29, total 53 (market total 53.5) -- consistent with the WAS +5.5 pick.
 
 **Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
@@ -41,8 +41,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| BAL at CAR | BAL             | CAR        | 54.0%          |
-| CIN at WAS | CIN             | WAS        | 50.8%          |
-| JAX at NYG | JAX             | NYG        | 50.5%          |
-| TB at DET  | DET             | TB         | 53.2%          |
+| BAL at CAR | BAL             | CAR        | 52.2%          |
+| CIN at WAS | CIN             | WAS        | 50.7%          |
+| JAX at NYG | JAX             | NYG        | 50.4%          |
+| TB at DET  | DET             | TB         | 53.0%          |
 <!-- LATE_WEEK_REFRESH:END -->

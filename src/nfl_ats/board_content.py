@@ -95,6 +95,8 @@ from nfl_ats.public_board import (
     waterfall_games_by_id,
 )
 from nfl_ats.published_picks import (
+    SCORE_PLACES,
+    FrozenPick,
     frozen_picks,
     game_deadlines,
     locked_best_pick,
@@ -231,6 +233,8 @@ class GameRow:
     market_now_high: float | None = None
     qb_note: str | None = None
     qb_practice_flag: tuple[str, str] | None = None
+    status_line: str = ""
+    status_players: tuple[str, ...] = ()
     pool_edge: float | None = None
     pool_hook_effect: float | None = None
     move_reason: str = ""
@@ -3873,6 +3877,96 @@ def _quarterback_practice_flags(
     return flags
 
 
+STATUS_SCENARIO_DIRECTORY = "ui33_scenarios"
+STATUS_SCENARIO_BASIS = "served_qb_input"
+
+
+@dataclass(frozen=True)
+class StatusScenario:
+    line: str
+    players: tuple[str, ...]
+    pick_team: str
+    card_published_at_utc: pd.Timestamp
+
+
+def _status_scenarios(
+    scenario_root: Path,
+    artifacts_root: Path,
+    *,
+    active: Mapping[str, Any],
+    forecast_artifact: str,
+    season: float | None,
+    week: float | None,
+) -> dict[str, StatusScenario]:
+    if season is None or week is None:
+        return {}
+    paths = sorted(scenario_root.glob(f"{int(season)}_week{int(week):02d}_*.json"))
+    if not paths:
+        return {}
+    try:
+        payload: Any = read_json(paths[-1])
+        pointer: Any = read_json(artifacts_root / "active_pick_probability.json")
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(payload, Mapping) or not isinstance(pointer, Mapping):
+        return {}
+    model_id = str(active.get("model_id") or "")
+    pick_probability_artifact = str(pointer.get("artifact") or "")
+    keys_match = (
+        payload.get("basis") == STATUS_SCENARIO_BASIS
+        and bool(model_id)
+        and bool(pick_probability_artifact)
+        and str(payload.get("active_model_id") or "") == model_id
+        and str(pointer.get("active_model_id") or "") == model_id
+        and str(payload.get("pick_probability_artifact") or "") == pick_probability_artifact
+        and str(payload.get("active_forecast_artifact") or "") == forecast_artifact
+    )
+    if not keys_match:
+        return {}
+    scenarios: dict[str, StatusScenario] = {}
+    for game in payload.get("games") or []:
+        if not isinstance(game, Mapping) or game.get("card_from_active_forecast") is not True:
+            continue
+        line = str(game.get("board_line") or "").strip()
+        players = tuple(str(player) for player in game.get("flagged_players") or [] if player)
+        if not line or not players:
+            continue
+        try:
+            published = pd.Timestamp(str(game.get("card_published_at_utc") or ""))
+        except ValueError:
+            continue
+        if pd.isna(published) or published.tzinfo is None:
+            continue
+        scenarios[str(game.get("game_id"))] = StatusScenario(
+            line=line,
+            players=players,
+            pick_team=str(game.get("pick_team") or ""),
+            card_published_at_utc=published,
+        )
+    return scenarios
+
+
+def _shown_status(
+    scenario: StatusScenario | None,
+    card: FrozenPick | None,
+    *,
+    pick_team: str,
+    market_spread: float,
+    probability: float,
+    word: str,
+) -> StatusScenario | None:
+    if scenario is None or card is None:
+        return None
+    same_card = (
+        card.published_at_utc == scenario.card_published_at_utc
+        and card.pick_team == pick_team == scenario.pick_team
+        and card.market_spread == market_spread
+        and round(card.displayed_score, SCORE_PLACES) == round(probability, SCORE_PLACES)
+        and card.strength_word == word
+    )
+    return scenario if same_card else None
+
+
 def _played_side_explanation(explanation: str, *, pick_team: str, model_team: str) -> str:
     if pick_team == model_team:
         return explanation
@@ -4401,6 +4495,25 @@ def load_board_content(
     )
     qb_notes = _quarterback_notes(artifacts_root, ordered)
     qb_practice_flags = _quarterback_practice_flags(artifacts_root, ordered)
+    status_scenarios = _status_scenarios(
+        artifacts_root / STATUS_SCENARIO_DIRECTORY,
+        artifacts_root,
+        active=artifacts.active,
+        forecast_artifact=baseline_forecast_artifact,
+        season=season_number,
+        week=week_number,
+    )
+    open_cards = (
+        frozen_picks(
+            artifacts_root,
+            now=generated,
+            season=int(season_number) if season_number is not None else None,
+            week=int(week_number) if week_number is not None else None,
+            include_open=True,
+        )
+        if status_scenarios
+        else {}
+    )
     best_pick_ranking, best_pick_ranking_as_of = load_best_pick_ranking(
         artifacts_root, season=season_number, week=week_number, now=generated
     )
@@ -4478,6 +4591,18 @@ def load_board_content(
             home_score=home_score,
             away_score=away_score,
         )
+        status_scenario = (
+            None
+            if frozen_pick is not None or is_game_final
+            else _shown_status(
+                status_scenarios.get(game_id),
+                open_cards.get(game_id),
+                pick_team=team,
+                market_spread=market_spread,
+                probability=probability,
+                word=word,
+            )
+        )
         market_now = market_now_by_game.get(game_id)
         tuesday_line = tuesday_market.get(game_id)
         pool_hook_effect = (
@@ -4544,6 +4669,8 @@ def load_board_content(
                 market_now_high=market_now[4] if market_now is not None else None,
                 qb_note=qb_notes.get(game_id),
                 qb_practice_flag=qb_practice_flags.get(game_id),
+                status_line=status_scenario.line if status_scenario is not None else "",
+                status_players=status_scenario.players if status_scenario is not None else (),
                 pool_edge=pool_edge,
                 pool_hook_effect=pool_hook_effect,
             )
