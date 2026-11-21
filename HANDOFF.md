@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-21T15:42:55.121579+00:00`
+Refreshed at: `2026-11-21T15:45:45.687651+00:00`
 
 ## Start here
 
@@ -21,20 +21,13 @@ Refreshed at: `2026-11-21T15:42:55.121579+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2507899488aa` — Scheduler: Sunday odds tape stops before the 12:40 last-call jobs (it blocked the 12:45 pre-deadline refresh on 11-15); team home-edge forward jobs, auto week skips outside the window. UI-29 leader panel on the current rank-1 entry. ENG-55: pool copies FanDuel, hook keeps the consensus anchor. POOL-07, MKT-26 unit 3, LEAD-108 unit 2 recorded, all unresolved
-- Pending change set: 89 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
-  - `M  registry/weak_signals/lead76_rule_prior.json`
-  - `M  registry/weak_signals/mkt27_total_lattice.json`
-  - `M  registry/weak_signals/mod42_ol_continuity.json`
-  - `M  registry/weak_signals/mod43_qb_learning_curve.json`
-  - `M  registry/weak_signals/mod44_coach_tenure.json`
-  - `M  registry/weak_signals/mod47_short_week_slope.json`
-  - `M  scripts/capture_odds_tape.py`
-  - `A  scripts/eng54_served_regrade.py`
+- Baseline commit: `6671c7d6ca46` — Odds tape ends before the Sunday 12:40 last-call jobs by default, so the running daemon's argv also stops in time; ENG-54 served-base re-grades of six families (14 cells, all unresolved); LEAD-76 pooled read as a replacement closed wrong-sign on the served base
+- Pending change set: 83 paths
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `A  docs/lanes/backlog-2026-11-21.md`
+  - ` M docs/model.html`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +36,14 @@ Refreshed at: `2026-11-21T15:42:55.121579+00:00`
   - `?? cdx_wgdl.json`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 69 more
+  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
+  - `?? data/raw_schedules/20261103T233624Z/manifest.json`
+  - `?? data/raw_schedules/20261103T233624Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T133337Z/manifest.json`
+  - `?? data/raw_schedules/20261104T133337Z/schedules.parquet`
+  - `?? data/raw_schedules/20261104T184500Z/manifest.json`
+  - ...and 63 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
