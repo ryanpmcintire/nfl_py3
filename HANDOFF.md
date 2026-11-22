@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-22T11:30:08.790281+00:00`
+Refreshed at: `2026-11-22T11:41:45.469756+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-22T11:30:08.790281+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fa9f47e8fcd4` — G55-M1: model plus deadline line move in one fitted probability 832-671 (55.4%) at the opener, held out by season; who-plays adds nothing on top; registry family g55_move_combined
-- Pending change set: 95 paths
+- Baseline commit: `74652dd70f3d` — G55-U8: who-plays news priced by the historical line move, served without the market, 820-683 at the opener (null 100th pct, log loss better); U8b on top of S_ALL_v2 809-694; G55-U9 lane opened
+- Pending change set: 114 paths
+  - `M  config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/g55-u8-move-priced-availability-2026-11-22.md`
-  - `A  docs/lanes/g55-u9-who-clears-55-2026-11-22.md`
+  - `M  docs/lanes/g55-u9-who-clears-55-2026-11-22.md`
   - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/g55_u8_move_priced_availability.json`
-  - `A  registry/weak_signals/g55_u8b_combined.json`
+  - `A  scripts/g55_u9_cbs_records.py`
+  - `A  scripts/g55_u9_repeatability.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
   - `?? cdx_vipre2.json`
   - `?? cdx_viweek.json`
   - `?? cdx_wgdl.json`
-  - `?? data/external/g55_u9/cdx_westgate.txt`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? data/raw_schedules/20261103T233105Z/manifest.json`
-  - `?? data/raw_schedules/20261103T233105Z/schedules.parquet`
-  - ...and 75 more
+  - `?? data/external/g55_u9/cbs/cbs_ats_2020_20210222032649.html`
+  - `?? data/external/g55_u9/cbs/cbs_ats_2021_20220219021233.html`
+  - `?? data/external/g55_u9/cbs/cbs_ats_2022_20230213234647.html`
+  - `?? data/external/g55_u9/cbs/cbs_ats_2023_20240219202320.html`
+  - `?? data/external/g55_u9/cbs/cbs_ats_2024_20250212224450.html`
+  - ...and 94 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
