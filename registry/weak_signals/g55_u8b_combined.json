@@ -1,0 +1,89 @@
+{
+  "family": "g55_u8b_combined",
+  "signals": {
+    "g55_u8b_all_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade with season-block bootstrap and matched null; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "POST-SELECTION U8 stage 2 with S_ALL_v2 logit in place of base logit; cell all; arm 809-694 v base 802-701 all games; log loss 0.69282 v 0.69678; matched null wins percentile 95.0 over 50 within-season joint shuffles",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "g55_u8b_combined",
+      "interval": [
+        -2.244039270687237,
+        3.0638852672750976
+      ],
+      "league": "nfl",
+      "notes": "POST-SELECTION: S_ALL_v2 and U8 both chosen after their own grades; declared in the U8 lane before this grade; looks all/quiet/moved = 3; all three serving legs fail on wins.",
+      "plain_summary": "Same as the move-priced who-plays term but on top of the who-plays model instead of the base model.",
+      "probability_positive": 0.627,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u8b/results.json",
+      "standard_error": null
+    },
+    "g55_u8b_moved_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade with season-block bootstrap and matched null; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "POST-SELECTION U8 stage 2 with S_ALL_v2 logit in place of base logit; cell moved; arm 809-694 v base 802-701 all games; log loss 0.69282 v 0.69678; matched null wins percentile 95.0 over 50 within-season joint shuffles",
+      "effect": 1.323918799646955,
+      "effect_units": "accuracy_points",
+      "family": "g55_u8b_combined",
+      "interval": [
+        -1.5301530153015301,
+        4.023972602739726
+      ],
+      "league": "nfl",
+      "notes": "POST-SELECTION: S_ALL_v2 and U8 both chosen after their own grades; declared in the U8 lane before this grade; looks all/quiet/moved = 3; all three serving legs fail on wins.",
+      "plain_summary": "Same as the move-priced who-plays term but on top of the who-plays model instead of the base model.",
+      "probability_positive": 0.7975,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u8b/results.json",
+      "standard_error": null
+    },
+    "g55_u8b_quiet_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade with season-block bootstrap and matched null; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "POST-SELECTION U8 stage 2 with S_ALL_v2 logit in place of base logit; cell quiet; arm 809-694 v base 802-701 all games; log loss 0.69282 v 0.69678; matched null wins percentile 95.0 over 50 within-season joint shuffles",
+      "effect": -2.1621621621621623,
+      "effect_units": "accuracy_points",
+      "family": "g55_u8b_combined",
+      "interval": [
+        -7.458563535911603,
+        3.3333333333333335
+      ],
+      "league": "nfl",
+      "notes": "POST-SELECTION: S_ALL_v2 and U8 both chosen after their own grades; declared in the U8 lane before this grade; looks all/quiet/moved = 3; all three serving legs fail on wins.",
+      "plain_summary": "Same as the move-priced who-plays term but on top of the who-plays model instead of the base model.",
+      "probability_positive": 0.2165,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u8b/results.json",
+      "standard_error": null
+    }
+  }
+}

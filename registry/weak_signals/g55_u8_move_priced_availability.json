@@ -1,0 +1,89 @@
+{
+  "family": "g55_u8_move_priced_availability",
+  "signals": {
+    "g55_u8_all_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade with season-block bootstrap and matched null; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "nested LOSO: stage 1 OLS of Tuesday-to-deadline line move on deadline who-plays deltas (actives value, snap share, QB out), stage 2 logistic of cover on base model logit plus predicted move, minus served base, model alone at the Tuesday opener; cell all; arm 820-683 v base 802-701 all games; log loss 0.69148 v 0.69678; matched null wins percentile 100.0 over 50 within-season joint shuffles",
+      "effect": 1.1976047904191618,
+      "effect_units": "accuracy_points",
+      "family": "g55_u8_move_priced_availability",
+      "interval": [
+        -1.3736263736263736,
+        3.542061986084757
+      ],
+      "league": "nfl",
+      "notes": "Declared in docs/lanes/g55-u8-move-priced-availability-2026-11-22.md before any outcome read; looks all/quiet/moved = 3; serving test fails on wins (820 < 827), passes null and log loss.",
+      "plain_summary": "Prices each piece of late who-plays news by how much the betting line has historically moved on it, then uses that price without reading the line.",
+      "probability_positive": 0.8065,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u8/results.json",
+      "standard_error": null
+    },
+    "g55_u8_moved_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade with season-block bootstrap and matched null; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "nested LOSO: stage 1 OLS of Tuesday-to-deadline line move on deadline who-plays deltas (actives value, snap share, QB out), stage 2 logistic of cover on base model logit plus predicted move, minus served base, model alone at the Tuesday opener; cell moved; arm 820-683 v base 802-701 all games; log loss 0.69148 v 0.69678; matched null wins percentile 100.0 over 50 within-season joint shuffles",
+      "effect": 1.5887025595763458,
+      "effect_units": "accuracy_points",
+      "family": "g55_u8_move_priced_availability",
+      "interval": [
+        -0.273224043715847,
+        3.691585881183195
+      ],
+      "league": "nfl",
+      "notes": "Declared in docs/lanes/g55-u8-move-priced-availability-2026-11-22.md before any outcome read; looks all/quiet/moved = 3; serving test fails on wins (820 < 827), passes null and log loss.",
+      "plain_summary": "Prices each piece of late who-plays news by how much the betting line has historically moved on it, then uses that price without reading the line.",
+      "probability_positive": 0.939,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u8/results.json",
+      "standard_error": null
+    },
+    "g55_u8_quiet_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared grade with season-block bootstrap and matched null; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "nested LOSO: stage 1 OLS of Tuesday-to-deadline line move on deadline who-plays deltas (actives value, snap share, QB out), stage 2 logistic of cover on base model logit plus predicted move, minus served base, model alone at the Tuesday opener; cell quiet; arm 820-683 v base 802-701 all games; log loss 0.69148 v 0.69678; matched null wins percentile 100.0 over 50 within-season joint shuffles",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "g55_u8_move_priced_availability",
+      "interval": [
+        -5.5045871559633035,
+        5.788684765170312
+      ],
+      "league": "nfl",
+      "notes": "Declared in docs/lanes/g55-u8-move-priced-availability-2026-11-22.md before any outcome read; looks all/quiet/moved = 3; serving test fails on wins (820 < 827), passes null and log loss.",
+      "plain_summary": "Prices each piece of late who-plays news by how much the betting line has historically moved on it, then uses that price without reading the line.",
+      "probability_positive": 0.482,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_u8/results.json",
+      "standard_error": null
+    }
+  }
+}
