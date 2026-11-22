@@ -1,0 +1,61 @@
+{
+  "family": "g55_move_combined",
+  "signals": {
+    "g55_move_a_model_plus_deadline_move_v_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Fitted grade with season-block bootstrap; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "one fitted probability: served-base model logit plus the opener-to-close line move (zeroed on Sunday-night and Monday games, whose close comes after the pool deadline), leave-one-season-out logistic, minus base model alone, at the Tuesday opener; record 832-671 v 802-701; log loss 0.6873 v 0.6968; move-only control 804-699",
+      "effect": 1.996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "g55_move_combined",
+      "interval": [
+        0.70704024183931,
+        3.066332916145181
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC: 7 hard follow-rule looks were read before these 4 fitted arms (A model+move, B who-plays+move, C sign of move, D move only); 11 looks in family g55_move_combined. The move term already serves in the pick probability (MKT-16); A re-measures it on the 2020-25 model-alone population. Late-game moves zeroed because the close comes after the pool deadline.",
+      "plain_summary": "Feeds the model how far the betting line moved between Tuesday and our pick deadline, as one more input to the same probability.",
+      "probability_positive": 0.9955,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_move/batch.json",
+      "standard_error": null
+    },
+    "g55_move_b_who_plays_on_top_of_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Fitted grade with season-block bootstrap; no refuted mechanism and no positive-control bound, so recorded below power with probability_positive.",
+      "closing_ground": null,
+      "description": "same fitted probability with the S_ALL_v2 who-plays model logit in place of the base logit, minus arm A; record 829-674 v 832-671",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "g55_move_combined",
+      "interval": [
+        -1.4647137150466045,
+        0.8736559139784945
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC: 7 hard follow-rule looks were read before these 4 fitted arms (A model+move, B who-plays+move, C sign of move, D move only); 11 looks in family g55_move_combined. The move term already serves in the pick probability (MKT-16); A re-measures it on the 2020-25 model-alone population. Late-game moves zeroed because the close comes after the pool deadline.",
+      "plain_summary": "Feeds the model how far the betting line moved between Tuesday and our pick deadline, as one more input to the same probability.",
+      "probability_positive": 0.371,
+      "recorded_at": "2026-11-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/g55_move/batch.json",
+      "standard_error": null
+    }
+  }
+}
