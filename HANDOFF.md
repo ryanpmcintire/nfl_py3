@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-22T12:03:35.621338+00:00`
+Refreshed at: `2026-11-22T12:03:50.339792+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-11-22T12:03:35.621338+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e02a9051584f` — G55-U9 part 2: Circa Sports Million entries 2020-25 (24,736 full-season entry-seasons, 2.14M picks) show no repeat ATS skill; last season's 55% entries go 50.1% the next
-- Pending change set: 136 paths
+- Baseline commit: `905959505f13` — G55-U8 forward: freeze, pregame and score now log the U8 move-priced who-plays arm beside S_ALL_v2 for Weeks 12-18; same argv, no new scheduler jobs
+- Pending change set: 135 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/g55-u8-move-priced-availability-2026-11-22.md`
+  - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
-  - `M  scripts/g55_s_all_v2_forward.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-22T12:03:35.621338+00:00`
   - `?? data/external/g55_u9/cbs/cbs_ats_2025_20260216200521.html`
   - `?? data/external/g55_u9/cbs_records.csv`
   - `?? data/external/g55_u9/cdx_cbs_ats.txt`
-  - ...and 116 more
+  - `?? data/external/g55_u9/cdx_cbs_old.txt`
+  - ...and 115 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
