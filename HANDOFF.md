@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-22T12:03:50.339792+00:00`
+Refreshed at: `2026-11-22T17:43:49.940370+00:00`
 
 ## Start here
 
@@ -21,13 +21,15 @@ Refreshed at: `2026-11-22T12:03:50.339792+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `905959505f13` — G55-U8 forward: freeze, pregame and score now log the U8 move-priced who-plays arm beside S_ALL_v2 for Weeks 12-18; same argv, no new scheduler jobs
-- Pending change set: 135 paths
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
-  - ` M docs/model.html`
+- Baseline commit: `a3d388c45314` — goal-55 lane: U8 forward logging built; Tuesday step unchanged
+- Pending change set: 148 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-22T12:03:50.339792+00:00`
   - `?? data/external/g55_u9/cbs/cbs_ats_2024_20250212224450.html`
   - `?? data/external/g55_u9/cbs/cbs_ats_2025_20260216200521.html`
   - `?? data/external/g55_u9/cbs_records.csv`
-  - `?? data/external/g55_u9/cdx_cbs_ats.txt`
-  - `?? data/external/g55_u9/cdx_cbs_old.txt`
-  - ...and 115 more
+  - ...and 128 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `bfc2027afe22dabc`
+- Model ID: `fb0e66331c5ea75b`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261121T184544Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261122T171458Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,164 / 2,225 (52.31%)**
-- Linked forecast: **2026 Week 11**, created `2026-11-21T18:42:21.344872+00:00`
+- Linked forecast: **2026 Week 11**, created `2026-11-22T17:11:35.016987+00:00`
 
 The 52.31% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `bfc2027afe22dabc`, published `2026-11-21T18:51:34.832929+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 11** from model `fb0e66331c5ea75b`, published `2026-11-22T17:19:53.376623+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
