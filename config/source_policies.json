@@ -41,6 +41,16 @@
       "derived_publication": "aggregates_only",
       "conditions": ["research_use_only", "capture_timestamp_required", "polite_crawl_required", "minimum_delay_seconds_4", "generic_user_agent", "no_direct_cbssports_fetch_terms_prohibit_scraping", "no_direct_footballguys_fetch_terms_prohibit_scraping", "nflpickwatch_robots_disallow_named_bots_only_terms_unreviewed"]
     },
+    "internet_archive_handicapping_contest_entries": {
+      "risk": "yellow",
+      "terms_url": "https://archive.org/about/terms.php",
+      "terms_reviewed_on": "2026-11-22",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["research_use_only", "capture_timestamp_required", "polite_crawl_required", "minimum_delay_seconds_4", "generic_user_agent", "wayback_only_no_direct_contest_site_fetch", "circasports_vsin_westgate_terms_unreviewed_treat_as_prohibited", "no_direct_vegasinsider_fetch", "no_login_no_payment", "entry_names_never_published_aggregates_only"]
+    },
     "internet_archive_pfr_boxscores": {
       "risk": "yellow",
       "terms_url": "https://archive.org/about/terms.php",

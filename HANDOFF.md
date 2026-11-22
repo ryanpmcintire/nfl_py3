@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-22T11:41:45.469756+00:00`
+Refreshed at: `2026-11-22T11:55:33.946091+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-11-22T11:41:45.469756+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `74652dd70f3d` — G55-U8: who-plays news priced by the historical line move, served without the market, 820-683 at the opener (null 100th pct, log loss better); U8b on top of S_ALL_v2 809-694; G55-U9 lane opened
-- Pending change set: 114 paths
+- Baseline commit: `4ca9b05cea08` — G55-U9: CBS every-game expert panel 2020-25 shows no repeat ATS skill (50.1% pooled, season correlation 0.006, 0 writers at 55%+ twice v 0.26 by luck)
+- Pending change set: 141 paths
   - `M  config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
@@ -30,8 +30,10 @@ Refreshed at: `2026-11-22T11:41:45.469756+00:00`
   - `M  docs/lanes/g55-u9-who-clears-55-2026-11-22.md`
   - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
   - ` M docs/model.html`
-  - `A  scripts/g55_u9_cbs_records.py`
-  - `A  scripts/g55_u9_repeatability.py`
+  - `A  scripts/g55_u9_circa_records.py`
+  - `A  scripts/g55_u9_followup.py`
+  - `M  scripts/g55_u9_repeatability.py`
+  - `A  scripts/g55_u9_wayback.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-22T11:41:45.469756+00:00`
   - `?? data/external/g55_u9/cbs/cbs_ats_2020_20210222032649.html`
   - `?? data/external/g55_u9/cbs/cbs_ats_2021_20220219021233.html`
   - `?? data/external/g55_u9/cbs/cbs_ats_2022_20230213234647.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2023_20240219202320.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2024_20250212224450.html`
-  - ...and 94 more
+  - ...and 121 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
