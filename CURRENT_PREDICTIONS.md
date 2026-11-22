@@ -18,9 +18,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 22 | ARI at KC  | ARI +15.5        | 52.7%          |
 | Sun, Nov 22 | BAL at CAR | CAR -2.5         | 52.2%          |
 | Sun, Nov 22 | JAX at NYG | NYG +5.5         | 50.4%          |
-| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 63.2%          |
+| Sun, Nov 22 | LV at DEN  | DEN -9.5         | 65.7%          |
 | Sun, Nov 22 | MIA at BUF | BUF -16.5        | 50.6%          |
-| Sun, Nov 22 | MIN at SF  | MIN +3.5         | 51.0%          |
+| Sun, Nov 22 | MIN at SF  | SF -3.5          | 51.8%          |
 | Sun, Nov 22 | NO at CHI  | CHI -11.5        | 54.1%          |
 | Sun, Nov 22 | NYJ at LAC | NYJ +3.5         | 57.0%          |
 | Sun, Nov 22 | PIT at PHI | PIT -4.5         | 50.9%          |
@@ -37,7 +37,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-6 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+7 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
@@ -45,6 +45,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | BAL at CAR | BAL             | CAR        | 52.2%          |
 | CIN at WAS | CIN             | WAS        | 50.9%          |
 | JAX at NYG | JAX             | NYG        | 50.4%          |
+| MIN at SF  | MIN             | SF         | 51.8%          |
 | TB at DET  | DET             | TB         | 61.1%          |
 | TEN at DAL | DAL             | TEN        | 52.1%          |
 <!-- LATE_WEEK_REFRESH:END -->
