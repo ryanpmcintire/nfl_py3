@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import QuantileRegressor
+from sklearn.linear_model import LinearRegression, LogisticRegression, QuantileRegressor
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -70,6 +70,15 @@ OPEN_COLUMNS = ("tue_open_home_spread", "open_home_spread", "spread_at_open", "o
 ROSTER_ON_53 = ("ACT", "INA")
 SCORE_SLOT = ("tue", "09:25")
 SUFFIX = re.compile(r"\b(jr|sr|ii|iii|iv|v)\b")
+U8_FROZEN = OUT / "u8_frozen.json"
+U8_OPENER_EVAL = ROOT / "artifacts/opener_evaluation/20261121T171727Z/per_game.parquet"
+U8_GAME_SLOTS = DATA / "processed/game_features.parquet"
+U8_SUNDAY = "Sunday"
+U8_SUNDAY_CLOSE_AFTER_DEADLINE = "17:00"
+U8_CLOSE_AFTER_DEADLINE_DAYS = ("Monday",)
+U8_LOGIT_CLIP = 1e-6
+U8_UNPENALIZED_C = 1e6
+U8_MAX_ITER = 1000
 
 
 def sha_file(path):
@@ -256,9 +265,117 @@ def freeze_usage():
     }
 
 
+def logit(p):
+    p = np.clip(np.asarray(p, dtype=float), U8_LOGIT_CLIP, 1.0 - U8_LOGIT_CLIP)
+    return np.log(p / (1.0 - p))
+
+
+def u8_frame():
+    games = pd.read_parquet(U5B_PER_GAME, columns=["game_id", "season", "home_covered", "p_base"])
+    synth = pd.read_parquet(SYNTH_V2, columns=["game_id", *u3.COLUMNS, "deadline_known"])
+    lines = pd.read_parquet(
+        U8_OPENER_EVAL, columns=["game_id", "tue_open_home_spread", "close_home_spread"]
+    )
+    slots = pd.read_parquet(U8_GAME_SLOTS, columns=["game_id", "weekday", "gametime"])
+    d = games.merge(synth, on="game_id", how="left")
+    d = d.merge(lines, on="game_id", how="left").merge(slots, on="game_id", how="left")
+    d = d.reset_index(drop=True)
+    if len(d) != len(games):
+        raise SystemExit("U8 inputs duplicate a game")
+    known = d["deadline_known"].fillna(False).astype(bool)
+    for column in u3.COLUMNS:
+        d[column] = d[column].fillna(0.0).where(known, 0.0)
+    sunday_night = d["weekday"].eq(U8_SUNDAY) & d["gametime"].ge(U8_SUNDAY_CLOSE_AFTER_DEADLINE)
+    late = sunday_night | d["weekday"].isin(U8_CLOSE_AFTER_DEADLINE_DAYS)
+    d["move"] = d["close_home_spread"] - d["tue_open_home_spread"]
+    d["pre_deadline"] = ~late
+    return d
+
+
+def fit_u8(d, train):
+    x = d[list(u3.COLUMNS)].to_numpy(float)
+    first = train & d["pre_deadline"].to_numpy(bool)
+    stage1 = LinearRegression().fit(x[first], d["move"].to_numpy(float)[first])
+    z = np.c_[logit(d["p_base"]), stage1.predict(x)]
+    stage2 = LogisticRegression(C=U8_UNPENALIZED_C, max_iter=U8_MAX_ITER)
+    stage2.fit(z[train], d["home_covered"].astype(int).to_numpy()[train])
+    return {
+        "stage1_intercept": float(stage1.intercept_),
+        "stage1_coef": dict(zip(u3.COLUMNS, map(float, stage1.coef_), strict=True)),
+        "stage1_rows": int(first.sum()),
+        "stage2_intercept": float(stage2.intercept_[0]),
+        "stage2_logit_base": float(stage2.coef_[0][0]),
+        "stage2_predicted_move": float(stage2.coef_[0][1]),
+        "stage2_rows": int(train.sum()),
+    }
+
+
+def u8_probability(coefs, p_base, x):
+    weights = np.array([coefs["stage1_coef"][c] for c in u3.COLUMNS])
+    move = coefs["stage1_intercept"] + np.asarray(x, dtype=float) @ weights
+    z = (
+        coefs["stage2_intercept"]
+        + coefs["stage2_logit_base"] * logit(p_base)
+        + coefs["stage2_predicted_move"] * move
+    )
+    return 1.0 / (1.0 + np.exp(-z)), move
+
+
+def freeze_u8(stamp):
+    d = u8_frame()
+    x = d[list(u3.COLUMNS)].to_numpy(float)
+    y = d["home_covered"].astype(int).to_numpy()
+    seasons = d["season"].to_numpy()
+    coefs = fit_u8(d, np.ones(len(d), bool))
+    inside, _ = u8_probability(coefs, d["p_base"], x)
+    held = np.zeros(len(d))
+    for season in np.unique(seasons):
+        fold = seasons == season
+        held[fold] = u8_probability(fit_u8(d, ~fold), d.loc[fold, "p_base"], x[fold])[0]
+    p_base = d["p_base"].to_numpy(float)
+    doc = {
+        "created_at_utc": stamp,
+        "declaration": "G55-U8 frozen: stage 1 OLS of the Tuesday-open-to-close home line move "
+        "on the three deadline who-plays deltas (zero when not deadline_known), games closing "
+        "before the pool deadline only; stage 2 logistic home cover on logit(frozen base p) "
+        "and the stage-1 predicted move. Both fitted once on all 2020-25 decisive games; "
+        "nothing fitted on 2026. Serving input: the frozen base probability and the live "
+        "pregame deltas; no market quantity.",
+        "inputs": {
+            str(p.relative_to(ROOT)): sha_file(p)
+            for p in (U5B_PER_GAME, SYNTH_V2, U8_OPENER_EVAL, U8_GAME_SLOTS)
+        },
+        "coefficients": coefs,
+        "check": {
+            "games": len(d),
+            "in_sample_record": record(inside, y),
+            "in_sample_log_loss": log_loss(inside, y),
+            "loso_record": record(held, y),
+            "loso_log_loss": log_loss(held, y),
+            "base_record": record(p_base, y),
+            "base_log_loss": log_loss(p_base, y),
+        },
+    }
+    OUT.mkdir(parents=True, exist_ok=True)
+    U8_FROZEN.write_text(json.dumps(doc, indent=1), encoding="utf-8")
+    print(json.dumps({**doc, "u8_sha256": sha_file(U8_FROZEN)}, indent=1))
+
+
+def load_u8():
+    if not U8_FROZEN.is_file():
+        return None, None
+    return json.loads(U8_FROZEN.read_text(encoding="utf-8"))["coefficients"], sha_file(U8_FROZEN)
+
+
 def cmd_freeze(a):
-    start = time.time()
     stamp = datetime.now(UTC).strftime(STAMP)
+    if not a.u8_only:
+        freeze_s_all(stamp)
+    freeze_u8(stamp)
+
+
+def freeze_s_all(stamp):
+    start = time.time()
     u3.SYNTH_TABLE = SYNTH_V2
     features = u3.load_features()
     frozen = freeze_margin(features, stamp)
@@ -631,6 +748,14 @@ def cmd_pregame(a):
                     strict=True,
                 )
             )
+    u8_coefs, u8_sha = load_u8()
+    u8, u8_move = {}, {}
+    if len(priced) and u8_coefs is not None:
+        p_base = priced["game_id"].map(probs["base"]).to_numpy(float)
+        x = priced[list(u3.COLUMNS)].fillna(0.0).to_numpy(float)
+        p8, move8 = u8_probability(u8_coefs, p_base, x)
+        u8 = dict(zip(priced["game_id"], p8.tolist(), strict=True))
+        u8_move = dict(zip(priced["game_id"], move8.tolist(), strict=True))
     out_games = []
     for game in games.itertuples(index=False):
         gid = str(game.game_id)
@@ -654,6 +779,11 @@ def cmd_pregame(a):
                 "frozen_base_home_probability": probs.get("base", {}).get(gid),
                 "arm_home_probability": probs.get("arm", {}).get(gid),
                 "card_home_probability": card.get(gid),
+                "u8_home_probability": u8.get(gid),
+                "u8_predicted_move": u8_move.get(gid),
+                "u8_side": None
+                if gid not in u8
+                else (game.home_team if u8[gid] >= 0.5 else game.away_team),
                 "missing": lacks,
             }
         )
@@ -662,6 +792,7 @@ def cmd_pregame(a):
         "week": week,
         "created_at_utc": now.strftime(STAMP),
         "frozen_sha256": frozen_sha,
+        "u8_sha256": u8_sha,
         "inputs": info,
         "games": out_games,
     }
@@ -673,7 +804,8 @@ def cmd_pregame(a):
     for g in out_games:
         print(
             f"{g['game_id']:<18} line {g['opener_home_line']} base "
-            f"{g['frozen_base_home_probability']} arm {g['arm_home_probability']} card "
+            f"{g['frozen_base_home_probability']} arm {g['arm_home_probability']} u8 "
+            f"{g['u8_home_probability']} {g['u8_side']} card "
             f"{g['card_home_probability']} missing {g['missing']}"
         )
     print(path)
@@ -684,8 +816,44 @@ def record(p, y):
     return f"{int(hit.sum())}-{int((~hit).sum())}"
 
 
+def log_loss(p, y):
+    p = np.clip(np.asarray(p, dtype=float), 1e-9, 1 - 1e-9)
+    return float(-np.mean(y * np.log(p) + (1 - y) * np.log1p(-p)))
+
+
+def settle(t, sch):
+    t = t.sort_values("created").drop_duplicates("game_id", keep="last").copy()
+    t["result"] = pd.to_numeric(t["game_id"].map(sch["result"]), errors="coerce")
+    t = t.dropna(subset=["result", "opener_home_line"])
+    return t.loc[t["result"] != t["opener_home_line"]]
+
+
+def u8_report(t, sha):
+    y = (t["result"] > t["opener_home_line"]).astype(float).to_numpy()
+    u8 = t["u8_home_probability"].to_numpy(float)
+    base = t["frozen_base_home_probability"].to_numpy(float)
+    arm = t["arm_home_probability"].to_numpy(float)
+    card = pd.to_numeric(t["card_home_probability"], errors="coerce").to_numpy(float)
+    changed = (u8 >= 0.5) != (base >= 0.5)
+    has_card = np.isfinite(card)
+    return {
+        "games": len(t),
+        "weeks": sorted(int(w) for w in t["week"].unique()),
+        "u8_record": record(u8, y),
+        "frozen_base_record_same_games": record(base, y),
+        "arm_record_same_games": record(arm, y),
+        "card_record_same_games": record(card[has_card], y[has_card]),
+        "u8_record_card_games": record(u8[has_card], y[has_card]),
+        "changed_v_frozen_base": int(changed.sum()),
+        "changed_record_u8": record(u8[changed], y[changed]) if changed.any() else "0-0",
+        "log_loss": {"u8": log_loss(u8, y), "base": log_loss(base, y)},
+        "u8_sha256": sha,
+    }
+
+
 def cmd_score(a):
     sha = sha_file(FROZEN) if FROZEN.is_file() else None
+    _coefs, u8_sha = load_u8()
     rows = []
     for f in sorted(OUT.glob(f"{SEASON}_week*_*.json")):
         d = json.loads(f.read_text(encoding="utf-8"))
@@ -693,31 +861,31 @@ def cmd_score(a):
             continue
         made = stamp_time(d["created_at_utc"])
         mtime = pd.Timestamp(f.stat().st_mtime, unit="s", tz="UTC")
+        u8_file = u8_sha is not None and d.get("u8_sha256") == u8_sha
         for g in d["games"]:
             cut = min(pd.Timestamp(g["kickoff_utc"]), pd.Timestamp(g["pick_deadline_utc"]))
             if made < cut and mtime < cut and g["arm_home_probability"] is not None:
-                rows.append({**g, "week": d["week"], "created": d["created_at_utc"]})
+                u8_ok = u8_file and g.get("u8_home_probability") is not None
+                rows.append(
+                    {**g, "week": d["week"], "created": d["created_at_utc"], "u8_ok": u8_ok}
+                )
     if not rows:
         print("no admissible forward rows yet; nothing graded")
         return
-    t = pd.DataFrame(rows).sort_values("created").drop_duplicates("game_id", keep="last")
     sch = schedules().set_index("game_id")
-    t["result"] = pd.to_numeric(t["game_id"].map(sch["result"]), errors="coerce")
-    t = t.dropna(subset=["result", "opener_home_line"])
-    t = t.loc[t["result"] != t["opener_home_line"]]
+    every = pd.DataFrame(rows)
+    t = settle(every, sch)
     if t.empty:
         print("no settled forward game at the opener yet; nothing graded")
         return
+    t8 = settle(every.loc[every["u8_ok"]], sch)
     y = (t["result"] > t["opener_home_line"]).astype(float).to_numpy()
     arm = t["arm_home_probability"].to_numpy(float)
     base = t["frozen_base_home_probability"].to_numpy(float)
     card = pd.to_numeric(t["card_home_probability"], errors="coerce").to_numpy(float)
     changed = (arm >= 0.5) != (base >= 0.5)
     has_card = np.isfinite(card)
-    loss = {
-        k: float(-np.mean(y * np.log(p) + (1 - y) * np.log1p(-p)))
-        for k, p in (("arm", np.clip(arm, 1e-9, 1 - 1e-9)), ("base", np.clip(base, 1e-9, 1 - 1e-9)))
-    }
+    loss = {"arm": log_loss(arm, y), "base": log_loss(base, y)}
     report = {
         "games": len(t),
         "weeks": sorted(int(w) for w in t["week"].unique()),
@@ -729,6 +897,7 @@ def cmd_score(a):
         "changed_record_arm": record(arm[changed], y[changed]) if changed.any() else "0-0",
         "log_loss": loss,
         "frozen_sha256": sha,
+        "u8": u8_report(t8, u8_sha) if len(t8) else "no admissible U8 rows",
     }
     (OUT / "score.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(json.dumps(report, indent=1))
@@ -764,12 +933,19 @@ def cmd_slots(a):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="G55-U7 frozen S_ALL_v2 forward log for 2026 weeks 12-18: model alone at "
-        "the Tuesday opener beside the frozen base and the served card; freeze, pregame, score "
-        "and slots. Research only; reads no 2026 outcome before score."
+        description="G55-U7 frozen S_ALL_v2 and G55-U8 move-priced who-plays forward log for "
+        "2026 weeks 12-18: model alone at the Tuesday opener beside the frozen base and the "
+        "served card; freeze, pregame, score and slots. Research only; reads no 2026 outcome "
+        "before score."
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("freeze").set_defaults(fn=cmd_freeze)
+    frz = sub.add_parser("freeze")
+    frz.add_argument(
+        "--u8-only",
+        action="store_true",
+        help="refit only the U8 coefficients; leaves the S_ALL_v2 frozen.pkl untouched",
+    )
+    frz.set_defaults(fn=cmd_freeze)
     pre = sub.add_parser("pregame")
     pre.add_argument("--week", default="auto")
     pre.add_argument("--dry", action="store_true", help="any week; writes under dry_run/")

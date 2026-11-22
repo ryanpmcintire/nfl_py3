@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-22T11:55:33.946091+00:00`
+Refreshed at: `2026-11-22T12:03:35.621338+00:00`
 
 ## Start here
 
@@ -21,19 +21,14 @@ Refreshed at: `2026-11-22T11:55:33.946091+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4ca9b05cea08` — G55-U9: CBS every-game expert panel 2020-25 shows no repeat ATS skill (50.1% pooled, season correlation 0.006, 0 writers at 55%+ twice v 0.26 by luck)
-- Pending change set: 141 paths
-  - `M  config/source_policies.json`
+- Baseline commit: `e02a9051584f` — G55-U9 part 2: Circa Sports Million entries 2020-25 (24,736 full-season entry-seasons, 2.14M picks) show no repeat ATS skill; last season's 55% entries go 50.1% the next
+- Pending change set: 136 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/g55-u9-who-clears-55-2026-11-22.md`
-  - `M  docs/lanes/goal-55-backwards-2026-11-21.md`
+  - `M  docs/lanes/g55-u8-move-priced-availability-2026-11-22.md`
   - ` M docs/model.html`
-  - `A  scripts/g55_u9_circa_records.py`
-  - `A  scripts/g55_u9_followup.py`
-  - `M  scripts/g55_u9_repeatability.py`
-  - `A  scripts/g55_u9_wayback.py`
+  - `M  scripts/g55_s_all_v2_forward.py`
   - `?? an.csv`
   - `?? cdx_tspread.json`
   - `?? cdx_vipre.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-11-22T11:55:33.946091+00:00`
   - `?? data/external/g55_u9/cbs/cbs_ats_2020_20210222032649.html`
   - `?? data/external/g55_u9/cbs/cbs_ats_2021_20220219021233.html`
   - `?? data/external/g55_u9/cbs/cbs_ats_2022_20230213234647.html`
-  - ...and 121 more
+  - `?? data/external/g55_u9/cbs/cbs_ats_2023_20240219202320.html`
+  - `?? data/external/g55_u9/cbs/cbs_ats_2024_20250212224450.html`
+  - `?? data/external/g55_u9/cbs/cbs_ats_2025_20260216200521.html`
+  - `?? data/external/g55_u9/cbs_records.csv`
+  - `?? data/external/g55_u9/cdx_cbs_ats.txt`
+  - ...and 116 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

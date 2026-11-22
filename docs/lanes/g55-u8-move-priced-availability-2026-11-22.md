@@ -22,13 +22,17 @@ Parent: goal-55-backwards-2026-11-21.md. Learn what each piece of late who-plays
 - 809-694, +0.47 [-2.24, +3.06] P+ .627, log loss .69282, null 95.0 pct; quiet 191-179 (base 199-171), moved 618-515. Worse than U8 alone: the S_ALL_v2 quiet-game gain does not survive one fitted slope. Recorded unresolved_below_power (family g55_u8b_combined).
 
 ## State
-U8 and U8b done and recorded (registry/weak_signals g55_u8_move_priced_availability, g55_u8b_combined). U8 820-683 is the best no-market record.
+U8 and U8b done and recorded (registry/weak_signals g55_u8_move_priced_availability, g55_u8b_combined). U8 820-683 is the best no-market record. Forward logging of U8 for 2026 Weeks 12-18 is BUILT inside scripts/g55_s_all_v2_forward.py (uncommitted): `freeze` also writes artifacts/g55_s_all_v2_forward/u8_frozen.json (`freeze --u8-only` refits only U8, leaving frozen.pkl alone); `pregame` writes u8_home_probability, u8_predicted_move, u8_side per game and u8_sha256 per file; `score` adds a "u8" block (last admissible file per game whose u8_sha256 matches, v frozen base, arm, card; log loss). Same argv as U7, so the Tuesday scheduler step needs no new jobs.
 
 ## Tried
-- None.
+- Freeze (measured 2026-11-22 06:58 EST, `freeze --u8-only`, exit 0, freeze_u8.log): u8 sha 1f338bcd4d38c35355f7c0467b4c913ea3999be45246447ffeae5a950bc508e7. Stage 1 (1,290 pre-deadline rows): int 0.0927, o1 -0.1425, o2 0.0955, o3 -4.5407. Stage 2 (1,503): int -0.0183, logit(p_base) 0.3377, predicted move 0.3312. In-sample 816-687 (log loss .69015); LOSO rebuilt from the same frame 820-683 (.69148) = the graded result; base 802-701 (.69678). frozen.pkl sha still 9d9c6638...4f36.
+- Dry Week 10 (measured, exit 0, dry_run/2026_week10_20261122T115858Z.json): 14 games, U8 rows 14 = arm rows 14; base and arm max abs diff 0.0 v the U7 dry file 20261121T205156Z (player snapshot newer); U8 recomputed from the frozen file diff 0.0; sides consistent; 3 U8 v base side changes; predicted moves -0.56 to +0.41.
+- `score` exit 0 (no forward rows yet); u8_report smoke on synthetic outcomes ran (scratchpad g55_u8_fwd_compare.py, no 2026 result read); `slots` exit 0; `ruff check` and `ruff format --check` clean; no comments.
 
 ## Next
-1. Move the scratchpad grade into scripts/g55_u8_move_priced.py if U8 joins the forward log beside S_ALL_v2 (frozen stage-1 prices from 2020-25; needs only the U7 pregame deltas).
+1. Root: review and commit scripts/g55_s_all_v2_forward.py with the U7 script (artifacts stay untracked).
+2. Tuesday 11-24: the U7 scheduler jobs (pregame after each inactives_* capture, score Tue 09:25) log U8 too; no extra argv.
+3. After Week 18: one declared U8 forward look from score.json "u8" (record v frozen base at the logged opener, log loss), recorded once in family g55_u8_move_priced_availability.
 
 ## Open
-- None.
+- Inferred from the coefficients: with zero deltas U8 picks home when p_base > 0.4908 (fitted intercepts; logit slope 0.338 shrinks p_base), so a quiet game with p_base in (0.4908, 0.5) changes side v base.
