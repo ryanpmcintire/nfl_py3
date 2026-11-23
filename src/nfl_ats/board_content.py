@@ -242,6 +242,7 @@ class GameRow:
     market_move_toward_pick: float | None = None
     forecast_text: str = ""
     schedule_text: str = ""
+    team_record_text: str = ""
 
     @property
     def pool_edge_text(self) -> str:
@@ -2851,6 +2852,37 @@ def _with_schedule_facts(
     ]
 
 
+def _with_team_records(
+    games: list[GameRow],
+    artifacts_root: Path,
+    decisions: pd.DataFrame,
+    outcomes: pd.DataFrame,
+    season: float | None,
+    week: float | None,
+) -> list[GameRow]:
+    from dataclasses import replace
+
+    from nfl_ats.board_team_record import build_team_records
+
+    if season is None or week is None:
+        return games
+    try:
+        records = build_team_records(
+            Path(artifacts_root),
+            decisions,
+            outcomes,
+            season=int(season),
+            week=int(week),
+            picks={game.game_id: game.pick_team for game in games},
+        )
+    except Exception:
+        return games
+    return [
+        replace(game, team_record_text=records[game.game_id]) if game.game_id in records else game
+        for game in games
+    ]
+
+
 def _with_move_reasons(
     games: list[GameRow], data_root: Path | None, season: float | None, week: float | None
 ) -> list[GameRow]:
@@ -4698,6 +4730,9 @@ def load_board_content(
 
     paper_decisions = load_paper_decisions(artifacts_root)
     served_decisions = served_paper_decisions(artifacts_root)
+    games = _with_team_records(
+        games, artifacts_root, served_decisions, outcomes, season_number, week_number
+    )
     challenger_decisions = load_challenger_decisions(artifacts_root)
     prospective_scoreboard = _build_prospective_scoreboard(
         served_decisions, challenger_decisions, outcomes

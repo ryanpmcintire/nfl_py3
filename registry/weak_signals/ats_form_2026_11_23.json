@@ -1,0 +1,419 @@
+{
+  "family": "ats_form_2026_11_23",
+  "signals": {
+    "ats_form_follow_ats_margin_diff": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero in the declared follow-form direction and beyond the matched shuffle null; momentum/market-lag mechanism resolved wrong sign. The reverse (fade) direction is a new post-screen hypothesis, not closed.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Follow-form (momentum, market-lag) screen, declared sign +1: season-to-date mean ATS margin vs opener, home minus away. OLS slope of home cover per SD in accuracy points vs the opener, REG 2011-2025, pushes dropped. Halves {'2011-2018': -2.182975003976133, '2019-2025': -2.1675334856784945}; null percentile 0.0 of 200 within-season shuffles; follow-form record 1740-1813; 4/15 seasons positive.",
+      "effect": -2.178876,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -3.783561,
+        -0.663148
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Picking the team that has beaten the spread by more this season lost over 15 seasons; the line overreacts rather than lags.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 3565,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_follow_ats_margin_diff_weeks_2_8": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero in the declared follow-form direction and beyond the matched shuffle null; momentum/market-lag mechanism resolved wrong sign. The reverse (fade) direction is a new post-screen hypothesis, not closed.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Follow-form (momentum, market-lag) screen, declared sign +1: season-to-date mean ATS margin diff, weeks 2-8 only. OLS slope of home cover per SD in accuracy points vs the opener, REG 2011-2025, pushes dropped. Halves {'2011-2018': -5.074668201110663, '2019-2025': -3.4287159803414027}; null percentile 0.0 of 200 within-season shuffles; follow-form record 708-811; 4/15 seasons positive.",
+      "effect": -4.307863,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -6.783945,
+        -1.878068
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "In weeks 2-8, picking the team that has beaten the spread by more lost clearly; early-season streaks are overpriced, mostly for road teams.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 1525,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_follow_ats_margin_diff_weeks_9_plus": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; no resolved wrong sign and no positive control bounds this size.",
+      "closing_ground": null,
+      "description": "Follow-form (momentum, market-lag) screen, declared sign +1: season-to-date mean ATS margin diff, weeks 9+ only. OLS slope of home cover per SD in accuracy points vs the opener, REG 2011-2025, pushes dropped. Halves {'2011-2018': 1.519152449183063, '2019-2025': -0.4223388031460865}; null percentile 70.0 of 200 within-season shuffles; follow-form record 1032-1002; 8/15 seasons positive.",
+      "effect": 0.693729,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -1.435955,
+        2.581971
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "From week 9 on, recent form against the spread was not clearly useful either way.",
+      "probability_positive": 0.73,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 2040,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_follow_ats_pct_diff": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero in the declared follow-form direction and beyond the matched shuffle null; momentum/market-lag mechanism resolved wrong sign. The reverse (fade) direction is a new post-screen hypothesis, not closed.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Follow-form (momentum, market-lag) screen, declared sign +1: season-to-date ATS cover rate vs opener, home minus away. OLS slope of home cover per SD in accuracy points vs the opener, REG 2011-2025, pushes dropped. Halves {'2011-2018': -1.386809281970942, '2019-2025': -2.7228229630702043}; null percentile 0.5 of 200 within-season shuffles; follow-form record 1420-1550; 4/15 seasons positive.",
+      "effect": -1.985248,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -3.607774,
+        -0.226244
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Picking the team with the better record against the spread so far this season lost over 15 seasons; the colder team covered more.",
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 3546,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_follow_ats_streak_diff": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; no resolved wrong sign and no positive control bounds this size.",
+      "closing_ground": null,
+      "description": "Follow-form (momentum, market-lag) screen, declared sign +1: signed current ATS streak vs opener, home minus away. OLS slope of home cover per SD in accuracy points vs the opener, REG 2011-2025, pushes dropped. Halves {'2011-2018': -0.28453832055656014, '2019-2025': -0.5893662537351676}; null percentile 34.0 of 200 within-season shuffles; follow-form record 1439-1444; 6/15 seasons positive.",
+      "effect": -0.425837,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -1.632701,
+        0.74194
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Picking the team on the longer covering streak was not clearly better or worse.",
+      "probability_positive": 0.2405,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 3796,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_follow_home_ats_pct_c": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; no resolved wrong sign and no positive control bounds this size.",
+      "closing_ground": null,
+      "description": "Follow-form (momentum, market-lag) screen, declared sign +1: home team season-to-date ATS cover rate vs opener, minus 0.5. OLS slope of home cover per SD in accuracy points vs the opener, REG 2011-2025, pushes dropped. Halves {'2011-2018': 0.26438664465273387, '2019-2025': -1.871061921632739}; null percentile 22.5 of 200 within-season shuffles; follow-form record 1486-1521; 4/15 seasons positive.",
+      "effect": -0.694718,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -2.580893,
+        1.298198
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "A home team's record against the spread this season said nothing clear about its next game.",
+      "probability_positive": 0.2465,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 3553,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_on_model_ats_margin_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; matched null below the 95th percentile; no positive control.",
+      "closing_ground": null,
+      "description": "One term added to the model-alone probability, leave-one-season-out logistic, Tuesday opener, 1,503 decisive 2020-2025 games (opener_evaluation/20261122T171458Z). Record 787-716 vs LOSO base 810-693; null percentile 13 of 200; log loss 0.69223 vs 0.69223; halves {'2020-2022': 0.14204545454545456, '2023-2025': -3.0037546933667083}; changed 299 (138-161); fold coefficients {'2020': -0.09485905324643795, '2021': -0.06990206720315055, '2022': -0.0463654027216706, '2023': -0.09820976176270024, '2024': -0.13660742995594607, '2025': -0.09535810289922236}.",
+      "effect": -1.530273,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -3.48612,
+        0.466045
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Adding how far each team has beaten the spread this season did not improve the model's picks.",
+      "probability_positive": 0.065,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_on_model_ats_pct_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; matched null below the 95th percentile; no positive control.",
+      "closing_ground": null,
+      "description": "One term added to the model-alone probability, leave-one-season-out logistic, Tuesday opener, 1,503 decisive 2020-2025 games (opener_evaluation/20261122T171458Z). Record 800-703 vs LOSO base 810-693; null percentile 54 of 200; log loss 0.69177 vs 0.69223; halves {'2020-2022': -0.4261363636363636, '2023-2025': -0.8760951188986232}; changed 290 (140-150); fold coefficients {'2020': -0.0955665915553206, '2021': -0.08782406721595536, '2022': -0.08448710845409255, '2023': -0.0973508911542031, '2024': -0.14171938344999904, '2025': -0.06720946851430085}.",
+      "effect": -0.665336,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -3.195739,
+        1.919469
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Adding this season's records against the spread to the model did not improve its picks.",
+      "probability_positive": 0.2955,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_on_model_ats_streak_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bootstrap interval sits below zero but the matched null of shuffled terms is at the 8th percentile: a random added term loses about as much, so this is not a resolved wrong sign of the mechanism.",
+      "closing_ground": null,
+      "description": "One term added to the model-alone probability, leave-one-season-out logistic, Tuesday opener, 1,503 decisive 2020-2025 games (opener_evaluation/20261122T171458Z). Record 784-719 vs LOSO base 810-693; null percentile 8 of 200; log loss 0.69239 vs 0.69223; halves {'2020-2022': -0.5681818181818182, '2023-2025': -2.753441802252816}; changed 184 (79-105); fold coefficients {'2020': -0.05398981027356, '2021': -0.014530096262787442, '2022': -0.04709980312700861, '2023': -0.03033078949042091, '2024': -0.06686838116108489, '2025': -0.041981627338693206}.",
+      "effect": -1.729874,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -2.770619,
+        -0.624133
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Adding covering streaks to the model made its picks slightly worse, about as much as a random input would.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_on_model_home_ats_pct_c": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; matched null below the 95th percentile; no positive control.",
+      "closing_ground": null,
+      "description": "One term added to the model-alone probability, leave-one-season-out logistic, Tuesday opener, 1,503 decisive 2020-2025 games (opener_evaluation/20261122T171458Z). Record 790-713 vs LOSO base 810-693; null percentile 29 of 200; log loss 0.69325 vs 0.69223; halves {'2020-2022': -0.9943181818181818, '2023-2025': -1.6270337922403004}; changed 232 (106-126); fold coefficients {'2020': -0.07843283696952001, '2021': -0.02527403298347197, '2022': -0.05403587481335959, '2023': -0.07926716565036487, '2024': -0.13493519459532838, '2025': -0.04395095423973015}.",
+      "effect": -1.330672,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -4.470743,
+        1.699346
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Adding the home team's record against the spread did not improve the model's picks.",
+      "probability_positive": 0.1975,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_on_model_model_pick_rate_toward_home": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; matched null below the 95th percentile; no positive control.",
+      "closing_ground": null,
+      "description": "One term added to the model-alone probability, leave-one-season-out logistic, Tuesday opener, 1,503 decisive 2020-2025 games (opener_evaluation/20261122T171458Z). Record 794-709 vs LOSO base 810-693; null percentile 34 of 200; log loss 0.69411 vs 0.69223; halves {'2020-2022': -1.9886363636363635, '2023-2025': -0.2503128911138924}; changed 164 (74-90); fold coefficients {'2020': 0.14711977622389563, '2021': 0.026237943061977693, '2022': 0.039852677631415936, '2023': 0.0306311603480124, '2024': 0.031436396368759265, '2025': 0.05360779421841043}.",
+      "effect": -1.064538,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -2.758621,
+        0.446654
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Trusting the model more on teams it has picked well, and less on teams it has picked badly, did not improve its picks.",
+      "probability_positive": 0.076,
+      "recorded_at": "2026-11-23",
+      "reliability": 0.304,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_on_model_model_team_bias_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; matched null below the 95th percentile; no positive control.",
+      "closing_ground": null,
+      "description": "One term added to the model-alone probability, leave-one-season-out logistic, Tuesday opener, 1,503 decisive 2020-2025 games (opener_evaluation/20261122T171458Z). Record 784-719 vs LOSO base 810-693; null percentile 11 of 200; log loss 0.69241 vs 0.69223; halves {'2020-2022': -2.130681818181818, '2023-2025': -1.376720901126408}; changed 224 (99-125); fold coefficients {'2020': -0.10552688987250834, '2021': -0.06997943179360894, '2022': -0.03050851114725046, '2023': -0.06786976384500198, '2024': -0.055123999265229776, '2025': -0.05801690078406825}.",
+      "effect": -1.729874,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -3.607102,
+        0.1321
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Adjusting for how much the model has misjudged each team before did not improve its picks.",
+      "probability_positive": 0.0295,
+      "recorded_at": "2026-11-23",
+      "reliability": 0.304,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "ats_form_opener_lag1_autocorrelation": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; tightly bounded (upper 0.028); season-to-date r -0.0013. Not a refutation without a positive control.",
+      "closing_ground": null,
+      "description": "Market-lag mechanism check: lag-1 correlation of a team's ATS margin vs the opener with its previous game's, same season, REG 2011-2025, both teams per game.",
+      "effect": 0.001875,
+      "effect_units": "correlation",
+      "family": "ats_form_2026_11_23",
+      "interval": [
+        -0.023859,
+        0.02797
+      ],
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "A team that beat the spread by a lot last week does not beat the next opening line by more than usual: the line does not lag in points.",
+      "probability_positive": 0.5695,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 7358,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "model_team_record_fade_below_500_rule": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point loss of 8 games with no interval computed for a descriptive rule; not a closure.",
+      "closing_ground": null,
+      "description": "Descriptive forced-pick look (inadmissible as a served rule): flip the model's pick when its expanding prior record picking that team is below .500. 718-638 vs model 726-630 on the same games, 476 flipped, 2020-2025 at the opener.",
+      "effect": -0.589971,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_2026_11_23",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "Going against the model on teams where its past record is below .500 would have lost 8 more games over 2020-2025.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-23",
+      "reliability": 0.3042,
+      "sample_blocks": 6,
+      "sample_games": 1356,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    },
+    "model_team_record_split_half": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "At the null 95th percentile edge; the fitted uses of it did not improve held-out picks.",
+      "closing_ground": null,
+      "description": "Does the model's hit rate when picking a team persist? Split-half r 2020-22 vs 2023-25 across 32 teams 0.304 (null percentile 95.3, p95 0.298); dispersion chi-square 44.9 vs null mean 30.9 (percentile 95.5); season-to-next r [0.21352516956855913, 0.19926019525288818, 0.0722649488077479, 0.15462100383085062, -0.1834390266454046].",
+      "effect": 0.304171,
+      "effect_units": "correlation",
+      "family": "ats_form_2026_11_23",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Family ats_form_2026_11_23, 16 looks declared in docs/lanes/ats-form-and-team-record-2026-11-23.md before outcomes. Form from same-season prior games vs the Tuesday opener (SBR open fallback).",
+      "plain_summary": "The model's record by team is a little more spread out and a little more repeatable than luck alone, but not enough to use for picks yet.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-23",
+      "reliability": 0.3042,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/summary.json",
+      "standard_error": null
+    }
+  }
+}

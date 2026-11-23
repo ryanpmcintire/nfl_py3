@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-23T05:31:51.364190+00:00`
+Refreshed at: `2026-11-23T15:13:35.145659+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-23T05:31:51.364190+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `201f92bc8c12` — Republish the site with the latest settled results
-- Pending change set: 145 paths
+- Baseline commit: `001b1292b2a6` — Republish the site with the latest settled results
+- Pending change set: 274 paths
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/ats-form-and-team-record-2026-11-23.md`
   - `M  docs/model.html`
-  - `?? an.csv`
-  - `?? cdx_tspread.json`
-  - `?? cdx_vipre.json`
-  - `?? cdx_vipre2.json`
-  - `?? cdx_viweek.json`
-  - `?? cdx_wgdl.json`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2020_20210222032649.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2021_20220219021233.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2022_20230213234647.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2023_20240219202320.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2024_20250212224450.html`
-  - `?? data/external/g55_u9/cbs/cbs_ats_2025_20260216200521.html`
-  - `?? data/external/g55_u9/cbs_records.csv`
-  - `?? data/external/g55_u9/cdx_cbs_ats.txt`
-  - `?? data/external/g55_u9/cdx_cbs_old.txt`
-  - `?? data/external/g55_u9/cdx_cbs_old2.txt`
-  - ...and 125 more
+  - `A  registry/weak_signals/ats_form_2026_11_23.json`
+  - `A  registry/weak_signals/ats_form_early_2026_11_23.json`
+  - `A  registry/weak_signals/ats_form_streak_early_2026_11_23.json`
+  - ` M scripts/armb_forward_log.py`
+  - `A  scripts/ats_form_and_team_record.py`
+  - `A  scripts/ats_form_early_away.py`
+  - `A  scripts/ats_form_streak_early.py`
+  - ` M scripts/eng54_served_regrade.py`
+  - ` M scripts/futures_anchor.py`
+  - ` M scripts/lead102_blinded_read.py`
+  - ` M scripts/lead76_rule_prior.py`
+  - ` M scripts/lead89_stage_features.py`
+  - ` M scripts/mod23_unit10b.py`
+  - ` M scripts/mod23_unit10r_wide.py`
+  - ...and 254 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

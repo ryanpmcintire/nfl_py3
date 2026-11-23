@@ -1,0 +1,61 @@
+{
+  "family": "ats_form_early_2026_11_23",
+  "signals": {
+    "ats_form_early_on_model_early_away_margin": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; null percentile below 95; log loss improves and fold signs are stable, so not refuted.",
+      "closing_ground": null,
+      "description": "Post-screen follow-up: away team's season-to-date opener ATS margin, weeks 2-8 only (post-hoc, chosen from the decomposition) as one term on the model-alone probability, LOSO logistic at the Tuesday opener, 1,503 decisive 2020-25 games. Record 809-694 v LOSO base 810-693; null pct 77.5; log loss 0.69128 v 0.69223; halves {'2020-2022': -1.9886363636363635, '2023-2025': 1.6270337922403004}; fold coefficients {'2020': 0.11719653785068368, '2021': 0.15822814766587945, '2022': 0.09326670894106656, '2023': 0.09539715729920456, '2024': 0.12036693477585934, '2025': 0.10455570284316776}.",
+      "effect": -0.066534,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_early_2026_11_23",
+      "interval": [
+        -2.33677,
+        2.714784
+      ],
+      "league": "nfl",
+      "notes": "Declared in docs/lanes/ats-form-and-team-record-2026-11-23.md 2026-11-23T14:51:01Z before the read; 2 looks; post-screen.",
+      "plain_summary": "Fading a road team that has been beating the spread early in the season, added to the model, sharpened its probabilities slightly but did not win more picks.",
+      "probability_positive": 0.4535,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/early_away.json",
+      "standard_error": null
+    },
+    "ats_form_early_on_model_early_margin_diff": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; null percentile below 95; log loss improves and fold signs are stable, so not refuted.",
+      "closing_ground": null,
+      "description": "Post-screen follow-up: season-to-date opener ATS margin, home minus away, weeks 2-8 only as one term on the model-alone probability, LOSO logistic at the Tuesday opener, 1,503 decisive 2020-25 games. Record 806-697 v LOSO base 810-693; null pct 65.0; log loss 0.69134 v 0.69223; halves {'2020-2022': -0.5681818181818182, '2023-2025': 0.0}; fold coefficients {'2020': -0.11487174105801162, '2021': -0.09210370103753471, '2022': -0.07200850192277831, '2023': -0.09585522203339504, '2024': -0.11770045631408521, '2025': -0.09825090512955702}.",
+      "effect": -0.266134,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_early_2026_11_23",
+      "interval": [
+        -1.578947,
+        1.381579
+      ],
+      "league": "nfl",
+      "notes": "Declared in docs/lanes/ats-form-and-team-record-2026-11-23.md 2026-11-23T14:51:01Z before the read; 2 looks; post-screen.",
+      "plain_summary": "Fading the team that has beaten the spread by more in weeks 2-8, added to the model, sharpened its probabilities slightly but did not win more picks.",
+      "probability_positive": 0.342,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/early_away.json",
+      "standard_error": null
+    }
+  }
+}

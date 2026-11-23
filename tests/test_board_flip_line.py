@@ -184,5 +184,5 @@ def test_board_renders_the_flips_at_column() -> None:
     assert "coach fade rule backs IND whichever side the model leans" in html
     assert "at any line" not in html
     assert "changes this pick" in html
-    assert 'colspan="7"' in html
+    assert 'colspan="8"' in html
     assert 'colspan="5"' not in html

@@ -1,0 +1,173 @@
+{
+  "family": "ats_form_streak_early_2026_11_23",
+  "signals": {
+    "ats_form_streak_on_model_early_regress_flag": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; null below 95th percentile.",
+      "closing_ground": null,
+      "description": "One term on the model-alone probability, LOSO logistic at the Tuesday opener, 1,503 decisive 2020-25 games. [808, 695] v base [810, 693]; null pct 46.5; log loss 0.69338 v 0.69223; changed 30 [14, 16]; folds {'2020': -0.009184718845240358, '2021': -0.08125317977497236, '2022': -0.031127149598209065, '2023': -0.012881913432550499, '2024': -0.027176312607219387, '2025': -0.08953065193339264}.",
+      "effect": -0.133067,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_streak_early_2026_11_23",
+      "interval": [
+        -0.990099,
+        0.461741
+      ],
+      "league": "nfl",
+      "notes": "Owner ask 2026-11-23; declared in docs/lanes/ats-form-and-team-record-2026-11-23.md at 14:52:21Z before the read; 5 declared looks plus one descriptive weeks 9+ flag cell.",
+      "plain_summary": "Adding the early-season back-the-cold-team rule to the model gave 2 fewer wins over six seasons.",
+      "probability_positive": 0.3425,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/streak_early.json",
+      "standard_error": null
+    },
+    "ats_form_streak_on_model_early_streak_diff": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; null below 95th percentile.",
+      "closing_ground": null,
+      "description": "One term on the model-alone probability, LOSO logistic at the Tuesday opener, 1,503 decisive 2020-25 games. [814, 689] v base [810, 693]; null pct 87.0; log loss 0.69180 v 0.69223; changed 158 [81, 77]; folds {'2020': -0.09656621365536432, '2021': -0.07286084459416754, '2022': -0.09919012925006085, '2023': -0.07739150750471638, '2024': -0.09826761492517659, '2025': -0.052510311762777075}.",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_streak_early_2026_11_23",
+      "interval": [
+        -0.85752,
+        1.512163
+      ],
+      "league": "nfl",
+      "notes": "Owner ask 2026-11-23; declared in docs/lanes/ats-form-and-team-record-2026-11-23.md at 14:52:21Z before the read; 5 declared looks plus one descriptive weeks 9+ flag cell.",
+      "plain_summary": "Adding early-season covering streaks to the model gave 4 more wins over six seasons, within luck.",
+      "probability_positive": 0.597,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/ats_form/streak_early.json",
+      "standard_error": null
+    },
+    "ats_form_streak_regress_flag_weeks_2_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; no positive control.",
+      "closing_ground": null,
+      "description": "Screen vs opener REG 2011-25, pushes dropped, effect per SD in accuracy points in the follow-streak direction (regress flag: back-the-cold-team direction). Halves {'2011-2018': 0.8561672544677956, '2019-2025': -0.4161427143409854}; null pct 54.0; record [104, 101].",
+      "effect": 0.2657,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_streak_early_2026_11_23",
+      "interval": [
+        -2.400971,
+        3.008341
+      ],
+      "league": "nfl",
+      "notes": "Owner ask 2026-11-23; declared in docs/lanes/ats-form-and-team-record-2026-11-23.md at 14:52:21Z before the read; 5 declared looks plus one descriptive weeks 9+ flag cell.",
+      "plain_summary": "Backing a team that failed to cover three straight, in weeks 2-8 only, went 104-101: a coin flip.",
+      "probability_positive": 0.569,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 1527,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/streak_early.json",
+      "standard_error": null
+    },
+    "ats_form_streak_regress_flag_weeks_9_plus_descriptive": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; no positive control.",
+      "closing_ground": null,
+      "description": "Screen vs opener REG 2011-25, pushes dropped, effect per SD in accuracy points in the follow-streak direction (regress flag: back-the-cold-team direction). Halves {'2011-2018': 1.382467638375471, '2019-2025': -0.8943238324352747}; null pct 59.0; record [236, 232].",
+      "effect": 0.228707,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_streak_early_2026_11_23",
+      "interval": [
+        -1.793602,
+        2.421919
+      ],
+      "league": "nfl",
+      "notes": "Owner ask 2026-11-23; declared in docs/lanes/ats-form-and-team-record-2026-11-23.md at 14:52:21Z before the read; 5 declared looks plus one descriptive weeks 9+ flag cell.",
+      "plain_summary": "Backing a team that failed to cover three straight, from week 9 on, went 236-232.",
+      "probability_positive": 0.589,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 2040,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/streak_early.json",
+      "standard_error": null
+    },
+    "ats_form_streak_streak_diff_weeks_2_8": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole interval below zero in the follow-streak direction: early-season streak momentum resolved wrong sign; the fade direction stays open.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Screen vs opener REG 2011-25, pushes dropped, effect per SD in accuracy points in the follow-streak direction (regress flag: back-the-cold-team direction). Halves {'2011-2018': -1.5798622073401338, '2019-2025': -2.5588114114435676}; null pct 5.0; record [561, 619].",
+      "effect": -2.04266,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_streak_early_2026_11_23",
+      "interval": [
+        -4.274092,
+        -0.203707
+      ],
+      "league": "nfl",
+      "notes": "Owner ask 2026-11-23; declared in docs/lanes/ats-form-and-team-record-2026-11-23.md at 14:52:21Z before the read; 5 declared looks plus one descriptive weeks 9+ flag cell.",
+      "plain_summary": "In weeks 2-8, picking the team on the longer covering streak went 561-619; the colder team covered more.",
+      "probability_positive": 0.013,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 1527,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/streak_early.json",
+      "standard_error": null
+    },
+    "ats_form_streak_streak_diff_weeks_9_plus": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; no positive control.",
+      "closing_ground": null,
+      "description": "Screen vs opener REG 2011-25, pushes dropped, effect per SD in accuracy points in the follow-streak direction (regress flag: back-the-cold-team direction). Halves {'2011-2018': 0.509428062466978, '2019-2025': 0.47020099590818115}; null pct 71.0; record [878, 825].",
+      "effect": 0.486109,
+      "effect_units": "accuracy_points",
+      "family": "ats_form_streak_early_2026_11_23",
+      "interval": [
+        -0.897499,
+        1.762102
+      ],
+      "league": "nfl",
+      "notes": "Owner ask 2026-11-23; declared in docs/lanes/ats-form-and-team-record-2026-11-23.md at 14:52:21Z before the read; 5 declared looks plus one descriptive weeks 9+ flag cell.",
+      "plain_summary": "From week 9 on, covering streaks said nothing about the next game.",
+      "probability_positive": 0.758,
+      "recorded_at": "2026-11-23",
+      "reliability": 1.0,
+      "sample_blocks": 15,
+      "sample_games": 2040,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/ats_form/streak_early.json",
+      "standard_error": null
+    }
+  }
+}

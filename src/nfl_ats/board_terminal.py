@@ -983,9 +983,11 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         policy_html = escape(policy.composition_text) + "."
 
     default_game_id = _default_game_id(content)
+    show_team_record = not archived
+    column_count = 8 if show_team_record else 7
     rows: list[str] = []
     for day, day_games in groupby(content.games, key=lambda game: game.kickoff_group_label):
-        rows.append(f'<tr class="grp"><td colspan="7">{escape(day)}</td></tr>')
+        rows.append(f'<tr class="grp"><td colspan="{column_count}">{escape(day)}</td></tr>')
         for game in day_games:
             pick_text = f"{escape(game.pick_team)} {escape(game.pick_spread_text)}"
             market_text = (
@@ -1067,7 +1069,13 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 f"{escape(game.probability_text)}</td>"
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
-                "</tr>"
+                + (
+                    '<td class="team-record" data-label="Model on this team">'
+                    f"{escape(game.team_record_text) if game.team_record_text else '&ndash;'}</td>"
+                    if show_team_record
+                    else ""
+                )
+                + "</tr>"
             )
 
     market_help = (
@@ -1112,13 +1120,23 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         "Slight, Lean or Strong: how firmly the cover chance clears this pick's own "
         "three-way split. The note below the table gives the exact cutoffs."
     )
+    team_record_help = (
+        "Our record this season in games where we picked this team, before this week. "
+        "In past seasons a team's record here did not predict the next pick: going "
+        "against the model on teams where it was below .500 would have done worse."
+    )
     column_guide = (
         '<details class="board-column-guide"><summary>Column guide</summary><dl>'
         f"<dt>Books now</dt><dd>{escape(market_help)}</dd>"
         f"<dt>Cover chance</dt><dd>{escape(probability_help)}</dd>"
         f"<dt>Flips at</dt><dd>{escape(flip_help)}</dd>"
         f"<dt>Confidence</dt><dd>{escape(confidence_help)}</dd>"
-        "</dl></details>"
+        + (
+            f"<dt>Model on this team</dt><dd>{escape(team_record_help)}</dd>"
+            if show_team_record
+            else ""
+        )
+        + "</dl></details>"
     )
     table = (
         '<table class="board"><thead><tr>'
@@ -1128,7 +1146,14 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         f'<th><abbr title="{escape(flip_help)}">'
         "Flips at</abbr></th>"
         f'<th><abbr title="{escape(confidence_help)}">Confidence</abbr></th>'
-        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
+        + (
+            f'<th><abbr title="{escape(team_record_help)}">Model on this team</abbr></th>'
+            if show_team_record
+            else ""
+        )
+        + "</tr></thead><tbody>"
+        + "".join(rows)
+        + "</tbody></table>"
     )
     details = (
         f"{_best_pick_note_html(content)}"

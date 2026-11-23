@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [ats-form-and-team-record-2026-11-23](done/ats-form-and-team-record-2026-11-23.md) - DONE 2026-11-23: hot/cold ATS streaks backtested 2011-25 (momentum refuted; early-season fade of the hot road team is real but adds nothing to the model, same as mod57-p2r); per-team model records (NYJ 14-24 picked 2020-25, not usable for picks); board column "Model on this team" shows this season's record.
 - [goal-55-backwards-2026-11-21](goal-55-backwards-2026-11-21.md) - START HERE for the owner's 55% model goal (2026-11-21): model alone at the opener 802-701; best servable arm, gameday who-plays (S_ALL_v2), 812-691, serving test failed, frozen forward log built for Weeks 12-18; who-plays and market ceilings both 823 of 827 needed; Tuesday 11-24 go-live steps in its Next.
 - [full-steam-2026-11-14](full-steam-2026-11-14.md) - START HERE 2026-11-14: simulator final run finished and graded 20:10 ET (SIM-08 and SIM-30 closed, nothing served); Sunday and Tuesday lists in its Next; roadmap reconcile of 100 stale rows in four groups; dashboard unit; pool-standing alarm; refill queue in its Next.
 - [pool-standing-refresh](pool-standing-refresh.md) - 2026-11-12: weekly refresh of the dashboard's pool-standing panel (Splash standings read, three scripts, publish); Week 9 done (rank 65 of 250, 70 points); scheduler staleness check still to add.
