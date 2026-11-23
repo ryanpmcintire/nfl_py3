@@ -1121,7 +1121,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         "three-way split. The note below the table gives the exact cutoffs."
     )
     team_record_help = (
-        "Our record this season in games where we picked this team, before this week. "
+        "Our record this season in games where we picked each team, before this week: "
+        "the team we picked first, then the other team. "
         "In past seasons a team's record here did not predict the next pick: going "
         "against the model on teams where it was below .500 would have done worse."
     )

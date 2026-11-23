@@ -2873,7 +2873,13 @@ def _with_team_records(
             outcomes,
             season=int(season),
             week=int(week),
-            picks={game.game_id: game.pick_team for game in games},
+            picks={
+                game.game_id: (
+                    game.pick_team,
+                    game.away if game.pick_team == game.home else game.home,
+                )
+                for game in games
+            },
         )
     except Exception:
         return games
