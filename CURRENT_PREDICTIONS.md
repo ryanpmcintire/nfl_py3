@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 11
 
-Published from the synchronized weak stack model, 2026-11-22 17:19 UTC.
+Published from the synchronized weak stack model, 2026-11-23 17:23 UTC.
 
-<!-- publication: model_id=fb0e66331c5ea75b published_at_utc=2026-11-22T17:19:53.376623+00:00 -->
+<!-- publication: model_id=97b239efd46d79c7 published_at_utc=2026-11-23T17:23:36.973154+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
