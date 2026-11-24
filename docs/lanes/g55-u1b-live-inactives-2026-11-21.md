@@ -30,7 +30,8 @@ Make the live gameday inactives capture (src/nfl_ats/inactives_capture.py; jobs 
 - One crash in agree.py: status column clash, fixed. The scheduler slot patch was not written because the cap was hit.
 
 ## Next
-- Write tests/scratch/g55_u1b/capture_scheduler_slots.patch from a copy of the scheduler. Root decides.
+- 2026-11-24 08:40 EST: inactives_capture.patch applied and both slot changes below made directly in scripts/capture_scheduler.py (working tree, uncommitted; details in g55-u7-forward-logger-2026-11-21.md State). Remaining here: the deadline-actives rerun below.
+- (done) Slot changes, originally planned as a patch:
   - (a) inactives_sun_early_second grace 15 -> 40, so the window closes at the 13:00 kickoff. run_capture already rejects rows captured after kickoff.
   - (b) A new job, inactives_thu_primetime_second, Thursday 19:35, grace 15, `_inactives_capture("thu_primetime")`, dedupe_dir data/players/inactives, dedupe 30, catch_up False, inserted before inactives_thu_primetime.
   - Then run `git apply --check`.

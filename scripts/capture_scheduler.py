@@ -1330,6 +1330,38 @@ SCHEDULE: tuple[Job, ...] = (
         "lock has run.",
         added_on="2026-11-14",
     ),
+    *(
+        Job(
+            f"thanksgiving_total_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "thanksgiving_total.py"),
+                "--games",
+                "2026_12_CHI_DET,2026_12_PHI_DAL,2026_12_KC_BUF",
+                "--only-on",
+                only_on,
+                "--out",
+                str(REPO / "artifacts" / "thanksgiving_total" / "2026_week12.json"),
+            ],
+            True,
+            "Owner side pot 2026: all three Thanksgiving picks right plus the closest combined "
+            "final score. Recomputes the combined-score guess from the newest totals and the "
+            "card's current sides, after the Wednesday evening refresh and after the Thursday "
+            "inactives refresh before the 1:00 PM kickoff, and pushes it to the owner. Exits "
+            "without work on any other date.",
+            added_on="2026-11-24",
+        )
+        for day, at, grace, only_on in (
+            ("wed", "18:40", 60, "2026-11-25"),
+            ("thu", "12:10", 30, "2026-11-26"),
+        )
+    ),
     Job(
         "forward_ledger_tue",
         "tue",
@@ -2656,13 +2688,16 @@ SCHEDULE: tuple[Job, ...] = (
         "inactives_sun_early_second",
         "sun",
         "12:20",
-        15,
+        40,
         _inactives_capture("sun_early"),
         True,
         "Second pass for the 13:00 ET slate (T-40): measured Weeks 3-6, the 11:35 pass "
         "saw only 7-9 of 24-28 pending teams listed by rotowire, which posts per game "
         "staggered. dedupe_minutes=30 because the 60-minute default would swallow "
-        "this run (11:35 snapshot is 45 minutes older).",
+        "this run (11:35 snapshot is 45 minutes older). Grace 40 (2026-11-24) closes the "
+        "window at the 13:00 kickoff: in Week 10 this pass queued behind the noon batch "
+        "and started at 13:14, losing 5 team-games, and the capture already drops rows "
+        "taken after kickoff.",
         dedupe_dir="data/players/inactives",
         dedupe_minutes=30,
         added_on="2026-10-18",
@@ -2720,6 +2755,22 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/players/inactives",
         dedupe_minutes=60,
         added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_thu_primetime_second",
+        "thu",
+        "19:35",
+        15,
+        _inactives_capture("thu_primetime"),
+        True,
+        "Second pass for the Thursday primetime slate (T-40 for 20:15): the single 18:50 "
+        "pass caught 1 of 2 teams in Weeks 4, 6, 9 and 10 and 0 of 2 in Week 8. "
+        "dedupe_minutes=30 because the 18:50 snapshot is 45 minutes older and the "
+        "60-minute default would swallow this run.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=30,
+        added_on="2026-11-24",
         catch_up=False,
     ),
     Job(
@@ -2881,6 +2932,45 @@ SCHEDULE: tuple[Job, ...] = (
         "ten minutes before the fixed Sunday 16:00 ET lock.",
         added_on="2026-09-02",
         catch_up=False,
+    ),
+    *(
+        Job(
+            f"g55_forward_{sub}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "g55_s_all_v2_forward.py"),
+                sub,
+            ],
+            True,
+            "G55-U7 frozen forward log: the model-alone pick at the Tuesday opener with live "
+            "actives from the latest inactives capture in the 90 minutes before each game's "
+            "deadline, beside the frozen base and the served card. Each pregame slot follows "
+            "an inactives capture and its refresh pass and sits after them in this schedule, "
+            "and its grace closes before that slate's first kickoff or the Sunday 16:00 ET "
+            "lock. Graded Tuesday; nothing is refit.",
+            added_on="2026-11-24",
+        )
+        for sub, day, at, grace in (
+            ("pregame", "wed", "19:20", 35),
+            ("pregame", "thu", "12:00", 50),
+            ("pregame", "thu", "15:30", 50),
+            ("pregame", "thu", "19:20", 45),
+            ("pregame", "thu", "19:40", 25),
+            ("pregame", "sat", "15:55", 55),
+            ("pregame", "sat", "19:20", 50),
+            ("pregame", "sun", "08:40", 40),
+            ("pregame", "sun", "12:00", 50),
+            ("pregame", "sun", "12:50", 9),
+            ("pregame", "sun", "15:05", 45),
+            ("pregame", "sun", "15:40", 15),
+            ("score", "tue", "09:25", 60),
+        )
     ),
     Job(
         "referee_assignments_wed",
@@ -3621,6 +3711,13 @@ def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
         if status not in {"OK", "CAUGHT_UP"}:
             send_notification("NFL card check failed", detail[:ALARM_DETAIL_CHARS])
         return
+    if job.name.startswith("thanksgiving_total_"):
+        result = parse_job_json(stdout) if status in {"OK", "CAUGHT_UP"} else None
+        if result is not None and result.get("status") == "ok":
+            send_notification("Thanksgiving score guess", str(result.get("message", "")))
+        elif status not in {"OK", "CAUGHT_UP"}:
+            send_notification("Thanksgiving score guess failed", detail[:ALARM_DETAIL_CHARS])
+        return
     if not job.name.startswith(("refresh_", "lineups_")):
         return
     if status not in {"OK", "CAUGHT_UP"}:
@@ -3682,6 +3779,13 @@ RECORDING_FLAGS: frozenset[str] = frozenset(
 def dry_command(command: list[str]) -> list[str]:
     stripped = [token for token in command if token not in RECORDING_FLAGS]
     if "independent-validation" in stripped and "capture" in stripped and "--dry" not in stripped:
+        return [*stripped, "--dry"]
+    if (
+        len(stripped) >= 6
+        and Path(stripped[4]).name == "g55_s_all_v2_forward.py"
+        and stripped[5] == "pregame"
+        and "--dry" not in stripped
+    ):
         return [*stripped, "--dry"]
     if (
         len(stripped) >= 5

@@ -662,6 +662,9 @@ def _copy_sheet_html(content: BoardContent) -> str:
             f"Tiebreaker ({view.matchup_text}): {view.away_team} {view.guess_away} - "
             f"{view.home_team} {view.guess_home}, total {view.guess_home + view.guess_away}"
         )
+    if content.side_pot_guess is not None:
+        side_pot = f"Thanksgiving combined score: {content.side_pot_guess}"
+        tiebreak = f"{tiebreak}\n{side_pot}" if tiebreak else side_pot
     return (
         '<div role="group" aria-label="Copy the picks" style="margin-bottom:12px;">'
         '<button type="button" class="sort-btn" data-copy-sheet '
@@ -1160,7 +1163,13 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         f"{_best_pick_note_html(content)}"
         f"{_injury_state_html(content)}"
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
-        '<details class="policy-note"><summary>How confidence and '
+        + (
+            '<p class="policy-note"><b>Thanksgiving side pot</b> &mdash; '
+            f"{escape(content.side_pot_text)}</p>"
+            if content.side_pot_text
+            else ""
+        )
+        + '<details class="policy-note"><summary>How confidence and '
         "late changes are handled</summary>"
         f"{_confidence_legend_html(content)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'

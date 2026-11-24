@@ -595,7 +595,10 @@ def _leans_against_pick(game_explanation: GameExplanation | None, pick_side: str
 
 
 def _what_tips_it_sentence(
-    game_explanation: GameExplanation | None, pick_side: str, overlays: OverlaysComponent
+    game_explanation: GameExplanation | None,
+    pick_side: str,
+    overlays: OverlaysComponent,
+    carried_by_terms: bool = False,
 ) -> str:
 
     if game_explanation is None:
@@ -605,7 +608,9 @@ def _what_tips_it_sentence(
     phrases = _join_two_or_three([driver.phrase for driver in game_explanation.drivers[:2]])
     if _leans_against_pick(game_explanation, pick_side):
         sentence = f"The model's biggest inputs lean {game_explanation.pick_team}: {phrases}"
-        if not overlays.firings:
+        if carried_by_terms:
+            sentence += f", and the adjustments that follow carry the pick to {pick_side}"
+        elif not overlays.firings:
             sentence += f", but taken together its inputs land on {pick_side}"
         return sentence + "."
     sentence = f"What tips it: {phrases} favour {game_explanation.pick_team}"
@@ -665,6 +670,9 @@ def _term_effect_points(
     return difference * (1.0 if pick_is_home else -1.0) * 100.0
 
 
+SERVED_TERMS_PUSH_PREFIX = "Pushing the cover chance up:"
+
+
 def served_terms_sentence(
     model: PickProbabilityModel, row: Mapping[str, Any], pick_side: str, pick_is_home: bool
 ) -> str:
@@ -700,7 +708,7 @@ def served_terms_sentence(
         return "The chance to cover rests on the model's own read of the game."
     sentence = ""
     if phrases:
-        sentence = f"Pushing the cover chance up: {'; '.join(phrases)}."
+        sentence = f"{SERVED_TERMS_PUSH_PREFIX} {'; '.join(phrases)}."
     if opposed:
         sentence = (sentence + " " if sentence else "") + (
             f"Pulling it down: {'; '.join(opposed)}."
@@ -781,7 +789,13 @@ def render_pick_text(
                 else _push_sentence(market_line.home_spread_line, push_probability)
             )
         ),
-        _what_tips_it_sentence(game_explanation, model_probability.pick_side, overlays),
+        _what_tips_it_sentence(
+            game_explanation,
+            model_probability.pick_side,
+            overlays,
+            carried_by_terms=served_terms is not None
+            and served_terms.startswith(SERVED_TERMS_PUSH_PREFIX),
+        ),
         (
             served_terms
             if served_terms is not None

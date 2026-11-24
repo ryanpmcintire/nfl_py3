@@ -4,6 +4,7 @@ import argparse
 import re
 import sys
 import time
+import unicodedata
 import urllib.robotparser
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -18,7 +19,9 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from nfl_ats.io import atomic_json, atomic_parquet  # noqa: E402
+from nfl_ats.players import _normalized_player_name  # noqa: E402
 from nfl_ats.provenance import sha256_bytes, utc_now  # noqa: E402
+from nfl_ats.quarterbacks import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from scripts.ingest_nflcom_injuries import (  # noqa: E402
     CELL,
     NICKNAME_TO_CODE,
@@ -36,6 +39,9 @@ FALLBACK_URL = "https://www.rotowire.com/football/inactives.php"
 FALLBACK_ROBOTS_URL = "https://www.rotowire.com/robots.txt"
 USER_AGENT = "nfl-ats-research-snapshot/1.0 (private research; contact: local repo owner)"
 DEFAULT_DELAY_SECONDS = 2.5
+INACTIVES_POSTING_LEAD = pd.Timedelta(minutes=90)
+NAME_SUFFIXES = frozenset({"jr", "sr", "ii", "iii", "iv", "v"})
+GAMEDAY_CANDIDATE_STATUSES = frozenset({"ACT", "INA", "DEV"})
 
 PRIMARY_PLACEHOLDER_TEXT = "Please check back soon for NFL Inactive Reports for this Season"
 FALLBACK_PLACEHOLDER_TEXT = "No teams have announced their inactives for this week yet"
@@ -57,6 +63,7 @@ EMPTY_REASON_SEASON_COMPLETE = "no_upcoming_reg_kickoff"
 EMPTY_REASON_UNRECOGNIZED_STRUCTURE = "unrecognized_page_structure"
 EMPTY_REASON_FETCH_FAILED = "primary_and_fallback_fetch_failed"
 EMPTY_REASON_STALE_AFTER_KICKOFF = "stale_after_kickoff"
+EMPTY_REASON_BEFORE_POSTING = "before_inactives_posting"
 
 PARQUET_COLUMNS = [
     "captured_at_utc",
@@ -70,6 +77,8 @@ PARQUET_COLUMNS = [
     "position",
     "status",
     "source_url",
+    "gsis_id",
+    "match_rule",
 ]
 
 _SECTION_SPLIT_CANDIDATES = (
@@ -275,6 +284,77 @@ def _parse_rotowire_grid(
     return rows, warnings
 
 
+def _name_tokens(value: object) -> list[str]:
+    text = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode("ascii")
+    tokens = [
+        "".join(character for character in token if character.isalnum())
+        for token in text.lower().replace("-", " ").split()
+    ]
+    tokens = [token for token in tokens if token]
+    while len(tokens) > 2 and tokens[-1] in NAME_SUFFIXES:
+        tokens.pop()
+    return tokens
+
+
+def _name_keys(value: object) -> dict[str, str]:
+    tokens = _name_tokens(value)
+    if not tokens:
+        return {}
+    return {
+        "exact": _normalized_player_name(value),
+        "suffix": "".join(tokens),
+        "initial_last": f"{tokens[0][0]}|{tokens[-1]}" if len(tokens) > 1 else "",
+        "last": tokens[-1] if len(tokens) > 1 else "",
+    }
+
+
+def latest_weekly_rosters(repo: Path) -> Path | None:
+    hits = sorted((repo / "data" / "players" / "raw").glob("*/weekly_rosters.parquet"))
+    return hits[-1] if hits else None
+
+
+def attach_roster_ids(frame: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
+    result = frame.copy()
+    result["gsis_id"] = pd.Series(pd.NA, index=result.index, dtype="string")
+    result["match_rule"] = pd.Series(pd.NA, index=result.index, dtype="string")
+    if result.empty or rosters is None or rosters.empty:
+        return result
+    pool = rosters.loc[rosters["gsis_id"].notna() & rosters["full_name"].notna()].copy()
+    pool["team"] = pool["team"].astype(str).replace(TEAM_ABBREVIATION_ALIASES)
+    teams = result["team"].astype(str).replace(TEAM_ABBREVIATION_ALIASES)
+    for (season, week, team), index in result.groupby(
+        [result["season"], result["week"], teams]
+    ).groups.items():
+        team_rows = pool.loc[pool["season"].eq(season) & pool["team"].eq(team)]
+        team_rows = team_rows.loc[team_rows["week"].le(week)]
+        if team_rows.empty:
+            continue
+        roster = team_rows.loc[team_rows["week"].eq(team_rows["week"].max())]
+        candidates = roster.loc[roster["status"].isin(GAMEDAY_CANDIDATE_STATUSES)]
+        lookups: dict[str, dict[str, set[str]]] = {}
+        for rule, source in (
+            ("exact", roster),
+            ("suffix", candidates),
+            ("initial_last", candidates),
+            ("last", candidates),
+        ):
+            table: dict[str, set[str]] = {}
+            for name, gsis in zip(source["full_name"], source["gsis_id"], strict=False):
+                key = _name_keys(name).get(rule, "")
+                if key:
+                    table.setdefault(key, set()).add(str(gsis))
+            lookups[rule] = table
+        for row in index:
+            keys = _name_keys(result.at[row, "player_name"])
+            for rule, table in lookups.items():
+                found = table.get(keys.get(rule, ""), set())
+                if len(found) == 1:
+                    result.at[row, "gsis_id"] = next(iter(found))
+                    result.at[row, "match_rule"] = rule
+                    break
+    return result
+
+
 def _schedule_lookup(
     repo: Path, season: int, week: int
 ) -> dict[str, tuple[str, str, str, pd.Timestamp | None]]:
@@ -463,12 +543,16 @@ def run_capture(
         capture_time = capture_time.tz_convert(UTC)
     accepted_rows: list[dict[str, Any]] = []
     stale_row_count = 0
+    early_row_count = 0
     for row in rows:
         game_id, home_team, away_team, kickoff_utc = schedule_map.get(
             row["team"], (None, None, None, None)
         )
         if kickoff_utc is not None and capture_time >= kickoff_utc:
             stale_row_count += 1
+            continue
+        if kickoff_utc is not None and capture_time < kickoff_utc - INACTIVES_POSTING_LEAD:
+            early_row_count += 1
             continue
         row["captured_at_utc"] = row.pop("fetched_at_utc")
         row["game_id"] = game_id
@@ -480,6 +564,12 @@ def run_capture(
         warnings.append(f"rejected {stale_row_count} inactive rows captured at or after kickoff")
         if not rows:
             empty_reason = EMPTY_REASON_STALE_AFTER_KICKOFF
+    if early_row_count:
+        warnings.append(
+            f"rejected {early_row_count} inactive rows captured before the 90-minute posting"
+        )
+        if not rows and empty_reason is None:
+            empty_reason = EMPTY_REASON_BEFORE_POSTING
 
     ok = True
     if not rows and empty_reason is None:
@@ -489,7 +579,15 @@ def run_capture(
             empty_reason = EMPTY_REASON_UNRECOGNIZED_STRUCTURE
         ok = False
 
+    roster_path = latest_weekly_rosters(repo) if rows else None
     frame = pd.DataFrame(rows, columns=PARQUET_COLUMNS)
+    if roster_path is not None:
+        frame = attach_roster_ids(
+            frame,
+            pd.read_parquet(
+                roster_path, columns=["season", "week", "team", "full_name", "gsis_id", "status"]
+            ),
+        )[PARQUET_COLUMNS]
     atomic_parquet(frame, snapshot / "inactives.parquet")
 
     manifest = {
@@ -523,6 +621,8 @@ def run_capture(
             else None
         ),
         "row_count": len(frame),
+        "roster_snapshot": roster_path.parent.name if roster_path is not None else None,
+        "rows_matched_to_roster": int(frame["gsis_id"].notna().sum()),
         "teams_seen": sorted(str(t) for t in frame["team"].dropna().unique()) if len(frame) else [],
         "empty_reason": empty_reason,
         "warnings": warnings[:50],

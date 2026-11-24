@@ -1969,6 +1969,8 @@ class BoardContent:
     tiebreaker: TiebreakerView = field(default_factory=_default_tiebreaker_view)
     rivals: RivalRulesPanel = field(default_factory=_default_rival_rules)
     week_changes: WeekChangesPanel = field(default_factory=_default_week_changes)
+    side_pot_text: str = ""
+    side_pot_guess: int | None = None
 
     @property
     def pick_lock_note(self) -> str | None:
@@ -4332,6 +4334,38 @@ def _confidence_legend_text(bands: StrengthBands | None, landing_sentence: str) 
     return f"{legend} {landing_sentence}".strip()
 
 
+def _load_side_pot(
+    artifacts_root: Path, season: float | None, week: float | None
+) -> tuple[str, int | None]:
+    if season is None or week is None:
+        return "", None
+    path = artifacts_root / "thanksgiving_total" / f"{int(season)}_week{int(week)}.json"
+    if not path.is_file():
+        return "", None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        guess = int(payload["combined_guess"])
+        low, high = (int(value) for value in payload["middle_half"])
+        games = [dict(game) for game in payload["games"]]
+    except (OSError, ValueError, KeyError, TypeError):
+        return "", None
+    if payload.get("status") != "ok" or not games:
+        return "", None
+    matchups = [str(game["matchup"]) for game in games]
+    picks = [str(game["card_pick"]) for game in games if game.get("card_pick")]
+    games_text = ", ".join(matchups[:-1]) + f" and {matchups[-1]}"
+    text = (
+        f"A separate pool prize goes to whoever gets all three Thanksgiving games right "
+        f"({games_text}) and comes closest to their combined final score. Our combined "
+        f"score guess is {guess} points, the middle of what the sportsbook totals expect "
+        f"in the games where all three of our picks win; half of such outcomes land "
+        f"between {low} and {high}."
+    )
+    if len(picks) == len(games):
+        text += f" It assumes {', '.join(picks[:-1])} and {picks[-1]} all cover."
+    return text, guess
+
+
 def load_board_content(
     artifacts_root: Path,
     *,
@@ -4517,6 +4551,7 @@ def load_board_content(
     deadlines = game_deadlines(ordered)
     season_number = _number(artifacts.metadata.get("season"))
     week_number = _number(artifacts.metadata.get("week"))
+    side_pot_text, side_pot_guess = _load_side_pot(artifacts_root, season_number, week_number)
     frozen = frozen_picks(
         artifacts_root,
         now=generated,
@@ -4849,6 +4884,8 @@ def load_board_content(
             now=generated,
         ),
         tiebreaker=tiebreaker_view,
+        side_pot_text=side_pot_text,
+        side_pot_guess=side_pot_guess,
         rivals=_build_rival_rules(
             paper_decisions,
             challenger_decisions,
