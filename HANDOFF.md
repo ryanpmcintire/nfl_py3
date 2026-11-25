@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-24T20:02:41.732069+00:00`
+Refreshed at: `2026-11-25T23:23:39.983857+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-11-24T20:02:41.732069+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e52d007ea39b` — Week 12 lock, Thanksgiving side-pot score guess, goal-55 Tuesday scheduler steps
-- Pending change set: 281 paths
+- Baseline commit: `78f1427d8a0a` — Republish the site with the latest settled results
+- Pending change set: 287 paths
   - `M  CURRENT_PREDICTIONS.md`
   - ` M README.md`
   - `M  docs/findings.html`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-24T20:02:41.732069+00:00`
   - ` M scripts/mod23_unit9b.py`
   - ` M scripts/mod24_u1.py`
   - ` M scripts/mod24_u2.py`
-  - ...and 261 more
+  - ...and 267 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `79918556abd00f67`
+- Model ID: `24317d54af2130e4`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261124T194916Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261125T171544Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,174 / 2,238 (52.46%)**
-- Linked forecast: **2026 Week 12**, created `2026-11-24T19:45:47.675018+00:00`
+- Linked forecast: **2026 Week 12**, created `2026-11-25T17:12:18.349221+00:00`
 
 The 52.46% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 12** from model `79918556abd00f67`, published `2026-11-24T19:54:59.313835+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 12** from model `24317d54af2130e4`, published `2026-11-25T17:22:00.585472+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

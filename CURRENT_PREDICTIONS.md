@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 12
 
-Published from the synchronized weak stack model, 2026-11-24 19:54 UTC.
+Published from the synchronized weak stack model, 2026-11-25 17:22 UTC.
 
-<!-- publication: model_id=79918556abd00f67 published_at_utc=2026-11-24T19:54:59.313835+00:00 -->
+<!-- publication: model_id=24317d54af2130e4 published_at_utc=2026-11-25T17:22:00.585472+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -14,22 +14,22 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Wed, Nov 25 | GB at LA   | LA -2.5          | 52.7%          |
-| Thu, Nov 26 | CHI at DET | CHI -2.5         | 54.5%          |
-| Thu, Nov 26 | KC at BUF  | BUF -2.5         | 57.5%          |
-| Thu, Nov 26 | PHI at DAL | PHI +8.5         | 54.6%          |
-| Fri, Nov 27 | DEN at PIT | DEN -2.5         | 56.1%          |
-| Sun, Nov 29 | ATL at MIN | ATL +6.5         | 51.5%          |
-| Sun, Nov 29 | BAL at HOU | HOU -6.5         | 54.4%          |
-| Sun, Nov 29 | LV at CLE  | LV +4.5          | 51.9%          |
-| Sun, Nov 29 | NE at LAC  | NE +1.5          | 53.3%          |
-| Sun, Nov 29 | NO at CIN  | CIN -9.5         | 53.2%          |
-| Sun, Nov 29 | NYG at IND | IND +6.5         | 52.0%          |
-| Sun, Nov 29 | NYJ at MIA | ★ NYJ -3.5       | 65.0%          |
-| Sun, Nov 29 | SEA at SF  | SEA +3.5         | 61.8%          |
-| Sun, Nov 29 | TEN at JAX | TEN +14.5        | 53.2%          |
-| Sun, Nov 29 | WAS at ARI | ARI +7.5         | 51.0%          |
-| Mon, Nov 30 | CAR at TB  | CAR +2.5         | 52.2%          |
+| Wed, Nov 25 | GB at LA   | LA -2.5          | 53.3%          |
+| Thu, Nov 26 | CHI at DET | DET +2.5         | 51.5%          |
+| Thu, Nov 26 | KC at BUF  | BUF -2.5         | 58.0%          |
+| Thu, Nov 26 | PHI at DAL | PHI +8.5         | 54.1%          |
+| Fri, Nov 27 | DEN at PIT | DEN -2.5         | 62.1%          |
+| Sun, Nov 29 | ATL at MIN | ATL +6.5         | 50.9%          |
+| Sun, Nov 29 | BAL at HOU | HOU -6.5         | 55.0%          |
+| Sun, Nov 29 | LV at CLE  | LV +4.5          | 51.3%          |
+| Sun, Nov 29 | NE at LAC  | NE +1.5          | 65.9%          |
+| Sun, Nov 29 | NO at CIN  | CIN -9.5         | 53.8%          |
+| Sun, Nov 29 | NYG at IND | IND +6.5         | 54.0%          |
+| Sun, Nov 29 | NYJ at MIA | ★ NYJ -3.5       | 70.5%          |
+| Sun, Nov 29 | SEA at SF  | SEA +3.5         | 63.8%          |
+| Sun, Nov 29 | TEN at JAX | TEN +14.5        | 52.6%          |
+| Sun, Nov 29 | WAS at ARI | ARI +7.5         | 54.4%          |
+| Mon, Nov 30 | CAR at TB  | CAR +2.5         | 51.6%          |
 
 **Tiebreaker (last game, CAR at TB):** TB 22 - CAR 20, total 42 (market total 43.5) -- consistent with the CAR +2.5 pick.
 
@@ -40,5 +40,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-No pick changes since the Tuesday card.
+1 pick changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+
+| Matchup    | Previous pick   | New pick   | Cover chance   |
+|:-----------|:----------------|:-----------|:---------------|
+| CHI at DET | CHI             | DET        | 51.5%          |
 <!-- LATE_WEEK_REFRESH:END -->
