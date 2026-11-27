@@ -19,22 +19,22 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Wed, Nov 25 | GB at LA   | LA -2.5          | 52.7%          |
-| Thu, Nov 26 | CHI at DET | CHI -2.5         | 54.6%          |
-| Thu, Nov 26 | KC at BUF  | BUF -2.5         | 57.4%          |
-| Thu, Nov 26 | PHI at DAL | PHI +8.5         | 54.7%          |
-| Fri, Nov 27 | DEN at PIT | DEN -2.5         | 56.0%          |
-| Sun, Nov 29 | ATL at MIN | ATL +6.5         | 51.5%          |
-| Sun, Nov 29 | BAL at HOU | HOU -6.5         | 54.4%          |
-| Sun, Nov 29 | LV at CLE  | LV +4.5          | 51.9%          |
-| Sun, Nov 29 | NE at LAC  | NE +1.5          | 53.3%          |
-| Sun, Nov 29 | NO at CIN  | CIN -9.5         | 53.2%          |
-| Sun, Nov 29 | NYG at IND | IND +6.5         | 52.0%          |
-| Sun, Nov 29 | NYJ at MIA | ★ NYJ -3.5       | 65.0%          |
-| Sun, Nov 29 | SEA at SF  | SEA +3.5         | 61.8%          |
-| Sun, Nov 29 | TEN at JAX | TEN +14.5        | 53.2%          |
-| Sun, Nov 29 | WAS at ARI | ARI +7.5         | 51.0%          |
-| Mon, Nov 30 | CAR at TB  | CAR +2.5         | 52.2%          |
+| Wed, Nov 25 | GB at LA   | LA -2.5          | 53.3%          |
+| Thu, Nov 26 | CHI at DET | DET +2.5         | 54.3%          |
+| Thu, Nov 26 | KC at BUF  | BUF -2.5         | 60.7%          |
+| Thu, Nov 26 | PHI at DAL | PHI +8.5         | 54.0%          |
+| Fri, Nov 27 | DEN at PIT | DEN -2.5         | 61.9%          |
+| Sun, Nov 29 | ATL at MIN | ATL +6.5         | 51.2%          |
+| Sun, Nov 29 | BAL at HOU | HOU -6.5         | 54.9%          |
+| Sun, Nov 29 | LV at CLE  | LV +4.5          | 51.4%          |
+| Sun, Nov 29 | NE at LAC  | NE +1.5          | 68.8%          |
+| Sun, Nov 29 | NO at CIN  | CIN -9.5         | 54.0%          |
+| Sun, Nov 29 | NYG at IND | IND +6.5         | 55.5%          |
+| Sun, Nov 29 | NYJ at MIA | ★ NYJ -3.5       | 73.7%          |
+| Sun, Nov 29 | SEA at SF  | SEA +3.5         | 61.2%          |
+| Sun, Nov 29 | TEN at JAX | TEN +14.5        | 52.6%          |
+| Sun, Nov 29 | WAS at ARI | ARI +7.5         | 56.3%          |
+| Mon, Nov 30 | CAR at TB  | CAR +2.5         | 51.7%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`24317d54af2130e4`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`eb88b45297e5013d`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.81%, 55.85%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.46%** (1,174 of 2,238 non-push games), week-blocked 95% interval [50.36%, 54.51%].

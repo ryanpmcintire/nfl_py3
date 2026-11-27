@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 12
 
-Published from the synchronized weak stack model, 2026-11-25 17:22 UTC.
+Published from the synchronized weak stack model, 2026-11-26 22:19 UTC.
 
-<!-- publication: model_id=24317d54af2130e4 published_at_utc=2026-11-25T17:22:00.585472+00:00 -->
+<!-- publication: model_id=eb88b45297e5013d published_at_utc=2026-11-26T22:19:42.420975+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,25 +15,25 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Wed, Nov 25 | GB at LA   | LA -2.5          | 53.3%          |
-| Thu, Nov 26 | CHI at DET | DET +2.5         | 51.5%          |
-| Thu, Nov 26 | KC at BUF  | BUF -2.5         | 58.0%          |
-| Thu, Nov 26 | PHI at DAL | PHI +8.5         | 54.1%          |
-| Fri, Nov 27 | DEN at PIT | DEN -2.5         | 62.1%          |
-| Sun, Nov 29 | ATL at MIN | ATL +6.5         | 50.9%          |
-| Sun, Nov 29 | BAL at HOU | HOU -6.5         | 55.0%          |
-| Sun, Nov 29 | LV at CLE  | LV +4.5          | 51.3%          |
-| Sun, Nov 29 | NE at LAC  | NE +1.5          | 65.9%          |
-| Sun, Nov 29 | NO at CIN  | CIN -9.5         | 53.8%          |
-| Sun, Nov 29 | NYG at IND | IND +6.5         | 54.0%          |
-| Sun, Nov 29 | NYJ at MIA | ★ NYJ -3.5       | 70.5%          |
-| Sun, Nov 29 | SEA at SF  | SEA +3.5         | 63.8%          |
+| Thu, Nov 26 | CHI at DET | DET +2.5         | 54.3%          |
+| Thu, Nov 26 | KC at BUF  | BUF -2.5         | 60.7%          |
+| Thu, Nov 26 | PHI at DAL | PHI +8.5         | 54.0%          |
+| Fri, Nov 27 | DEN at PIT | DEN -2.5         | 65.7%          |
+| Sun, Nov 29 | ATL at MIN | ATL +6.5         | 51.2%          |
+| Sun, Nov 29 | BAL at HOU | HOU -6.5         | 54.9%          |
+| Sun, Nov 29 | LV at CLE  | LV +4.5          | 51.4%          |
+| Sun, Nov 29 | NE at LAC  | NE +1.5          | 71.1%          |
+| Sun, Nov 29 | NO at CIN  | CIN -9.5         | 54.0%          |
+| Sun, Nov 29 | NYG at IND | IND +6.5         | 55.5%          |
+| Sun, Nov 29 | NYJ at MIA | ★ NYJ -3.5       | 73.7%          |
+| Sun, Nov 29 | SEA at SF  | SEA +3.5         | 61.2%          |
 | Sun, Nov 29 | TEN at JAX | TEN +14.5        | 52.6%          |
-| Sun, Nov 29 | WAS at ARI | ARI +7.5         | 54.4%          |
-| Mon, Nov 30 | CAR at TB  | CAR +2.5         | 51.6%          |
+| Sun, Nov 29 | WAS at ARI | ARI +7.5         | 56.3%          |
+| Mon, Nov 30 | CAR at TB  | CAR +2.5         | 51.7%          |
 
-**Tiebreaker (last game, CAR at TB):** TB 22 - CAR 20, total 42 (market total 43.5) -- consistent with the CAR +2.5 pick.
+**Tiebreaker (last game, CAR at TB):** TB 22 - CAR 20, total 42 (market total 44) -- consistent with the CAR +2.5 pick.
 
-**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 54% using only Tuesday's information and 59% once later line moves were known; slight estimates won 53% and 52%. These broad groups do not establish a large advantage for the single highest estimate.
 
@@ -44,5 +44,5 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| CHI at DET | CHI             | DET        | 51.5%          |
+| CHI at DET | CHI             | DET        | 54.3%          |
 <!-- LATE_WEEK_REFRESH:END -->
